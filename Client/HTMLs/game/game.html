@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Isekai Fantasy</title>
+    <link rel="stylesheet" href="game.css" />
+    <link rel="stylesheet" href="../../classes/Cards/CharacterCard/CharacterCard.css" />
+    <link rel="stylesheet" href="../../classes/Cards/SkillCard/SkillCard.css" />
+    <link rel="stylesheet" href="../../classes/Cards/ItemCard/ItemCard.css" />
+    <link rel="stylesheet" href="../../classes/popup/popup.css" />
+    <link rel="stylesheet" href="../../classes/BattleReport/BattleReportMenu.css" />
+    <link rel="stylesheet" href="../../classes/BattleReport/BattleReplay/BattleReplay.css" />
+    <link rel="stylesheet" href="../../classes/GameMenu/GameMenu.css">
+    <link rel="stylesheet" href="../../classes/GameMenu/SkillMenu/SkillMenu.css">
+    <link rel="stylesheet" href="../../classes/GameMenu/EquipmentsAndItemsMenu/EquipmentsAndItemsMenu.css">
+</head> 
+<body>
+
+<div class="game-container">
+    <div class="top-left">
+        <div class="player-box-portrait">
+            <img src="../../assets/portrait/m1.png" id="player-portrait" alt="Player Portrait">
+        </div>
+    </div>
+
+    <div class="top-middle">
+       
+    </div>
+
+    <div class="top-right">
+        <div class="gameScreen-menu">
+            <button id="menu-battleReport">Battles</button>
+        </div>
+    </div>
+
+    <div class="middle-left">
+        <div class="companions-box">
+            <div class="companion-0 hidden">
+                <div class="companion-portrait">
+                    <img src="../../assets/portrait/m2.png" id="companion-portrait-0" alt="Companion Portrait 0">
+                </div>
+            </div>
+            <div class="companion-1 hidden">
+                <div class="companion-portrait">
+                    <img src="../../assets/portrait/m3.png"  id="companion-portrait-1" alt="Companion Portrait 1">
+                </div>
+            </div>
+            <div class="companion-2 hidden">
+                <div class="companion-portrait">
+                    <img src="../../assets/portrait/m4.png"  id="companion-portrait-2" alt="Companion Portrait 2">
+                </div>
+            </div>
+            <div class="companion-3 hidden">
+                <div class="companion-portrait" >
+                    <img src="../../assets/portrait/m5.png" id="companion-portrait-3" alt="Companion Portrait 3">
+                </div>
+            </div>
+            <div class="companion-4 hidden">
+                <div class="companion-portrait">
+                    <img src="../../assets/portrait/m6.png"  id="companion-portrait-4" alt="Companion Portrait 4">
+                </div>
+            </div>
+        </div>  
+    </div>
+
+    <div class="middle">
+        <div class="dialogueBoxCharacter-left"></div>
+        <div class="dialogueBoxCharacter-space"></div>
+        <div class="dialogueBoxCharacter-right"></div>
+    </div>
+
+    <div class="middle-right">
+          <div class="gameScreen-menu">
+            <button id="menu-action">Action</button>
+            <button id="menu-move">Quests</button>
+            <button id="menu-inventory">Inventory</button>
+            <button id="menu-options">Options</button>
+            <button id="menu-help">Help</button>
+          </div>
+    </div>
+</div>
+<div class="bottom-panel">
+    <div class="showConsole">
+        
+    </div>
+</div>
+</body>
+
+<script src="../../server.js">  </script>
+<script src="../../classes/WS/WS.js"></script>
+<script src="../../classes/BattleReport/BattleReportMenu.js"></script>
+<script src="../../classes/BattleReport/BattleReplay/BattleReplay.js"></script>
+<script src="../../classes/character/Character.js"></script>
+<script src="../../classes/Cards/CharacterCard/CharacterCard.js"></script>
+<script src="../../classes/Cards/SkillCard/SkillCard.js"></script>
+<script src="../../classes/Cards/ItemCard/ItemCard.js"></script>
+<script src="../../classes/EventManager/EventManager.js"></script>
+<script src="../../classes/popup/popup.js"></script>
+<script src="../../classes/GameMenu/GameMenu.js"></script>
+<script src="../../classes/GameMenu/SkillMenu/SkillMenu.js"></script>
+<script src="../../classes/GameMenu/EquipmentsAndItemsMenu/EquipementsAndItemsMenu.js"></script>
+<script src="gameModel.js"></script>
+<script src="gameViewModel.js"></script>
+<script src="../../classes/dialogue/dialogue.js"></script>
+<script>
+    showHelp = () => {
+        alert("This is a help message");
+    }
+</script>
+</html>

@@ -1,0 +1,316 @@
+/* Reset default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #6b6b6b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: #c9bda6;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 95vw;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.characterInformationContainer {
+    display: grid;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    width: 100%;
+    
+}
+
+.character-information {
+    display: flex;
+    justify-content:space-around;
+    width: 97vw;
+    padding-left: 10vw;
+    padding-right: 10vw;
+}
+
+.information {
+    width: 15vw;
+    margin-bottom: 5vh;
+    margin-right: 1vw;
+}
+
+.attributes,
+.proficiencies,
+.artisans {
+    padding: 10px;
+    background-color: #ffffff;
+    width: 16vw;
+    margin-right: 1vw;
+}
+
+#remainingPoints {
+    padding: 5px;
+    font-size: 0.7rem;
+    margin-bottom: 10px;
+    margin-left: 1vw;
+    background-color: #f0f0f0;
+    height: 10%;
+}
+
+.startingGoldAndButtons {
+    padding: 5px;
+    font-size: 0.7rem;
+    margin-bottom: 10px;
+    margin-left: 1vw;
+    background-color: #f0f0f0;
+    height: 20%;
+}
+
+#staringGold {
+    font-size: 0.6rem;
+}
+
+#gold {
+    color: #e0c112;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+#goldUp, #goldDown {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#points {
+    color: #4CAF50;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.portraitButtons {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.character-information img {
+    width: 15vw;
+    border: 1px solid #ccc;
+}
+
+.character-information button {
+    font-size: 1.5rem;
+    padding: 5px 10px;
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.attributes h2,
+.proficiencies h2,
+.artisans h2 {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.attribute,
+.proficiency,
+.artisan {
+    margin: 1vh;
+}
+
+.attribute-row,
+.proficiency-row,
+.artisan-row {
+    display: flex;
+    align-items: center;
+    padding-bottom: 0.5vh;
+}
+
+.label {
+    font-weight: bold;
+    width: 120px;
+}
+
+.attribute button,
+.proficiencies button,
+.artisans button {
+    font-size: 0.7vh;
+    margin-left: 0.5vw;
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.skillsContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 1vh;
+    padding: 1vh;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-content: flex-start;
+    align-items: flex-start;
+}
+
+.internalSkill,
+.skill {
+    background-color: #ffffff;
+    width: 40vw;
+    height: 25vh;
+}
+
+.internalSkill h2,
+.skill h2 {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.internalSkill button {
+    font-size: 1.8vh;
+    border: none;
+    cursor: pointer;
+    width: 11vw;
+    height: 10vh;
+    background-color: #f0f0f0;
+    margin: 1vh;
+}
+
+.internalSkill button.active {
+    background-color: #adeca9;
+}
+
+.skill button.active {
+    background-color: #adeca9;
+}
+
+.internalSkill, .skill {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px;
+}
+
+.internalSkill isSelected {
+    background-color: #adeca9;
+    outline: none; /* Remove the default focus outline */
+}
+
+.skill button {
+    font-size: 1.3vh;
+    margin-left: 0.5vw;
+    border: none;
+    cursor: pointer;
+    width: 5.8vw;
+    height: 4vh;
+    background-color: #f0f0f0;
+    margin: 0.3vh;
+}
+
+.infoCircle {
+    font-size: 14px;
+    color: #62a4ff;
+    cursor: pointer;
+}
+
+.create-button {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#createCharacterButton {
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#createCharacterButton:hover {
+    background-color: #45a049;
+}
+
+.characterBackgroundSelectionContainer {
+    background-color: white;
+    position: relative;
+    width: 10vw;
+    padding: auto;
+    margin-left: 1vw;
+    border-radius: 4px;
+}
+
+.scrollContainer {
+    height: 26vh;
+    width: 10vw;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+
+.selectionZone {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2vh;
+    margin-right: 3vw;
+    margin-left: 3vw;
+    padding-right: 3vw;
+}
+
+.dropdownSelector {
+    height: 30vh;
+    width: 27vw;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f0f0f0;
+    font-size: 15px;
+}
+
+#raceSelection, #classSelection, #backgroundSelection {
+    width: 10vw;
+    padding: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#backgroundLabel {
+    font-weight: bold;
+    font-style: italic;
+    margin-bottom: 2vh;
+    font-size: 15px;
+}
+
+#backGroundDescription {
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+#backgroundTrait {
+    font-style: italic;
+    margin-top: 3vh;
+    font-size: 13px;
+}
+
+.description {
+    margin: 10px;
+}

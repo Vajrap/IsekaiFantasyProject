@@ -1,0 +1,74 @@
+<!-- register.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="./register.css">
+    <link rel="stylesheet" href="../../popup/popup.css">
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-form" id="registerForm">
+            <div class="register-form-username">
+                <label for="reg-username">Username:</label>
+                <input type="text" id="reg-username" name="username">
+            </div>
+            <div class="register-form-password">
+                <label for="reg-password">Password:</label>
+                <input type="password" id="reg-password" name="password">
+            </div>
+            <div class="register-form-confirm-password">
+                <label for="reg-confirm-password">Confirm Password:</label>
+                <input type="password" id="reg-confirm-password" name="confirm-password">
+            </div>
+            <div class="register-form-eula">
+                <div class="eula-container">
+                    <label for="eula">End User License Agreement (EULA):</label>
+                    <textarea id="eula" name="eula" rows="10" readonly>
+Isekai Fantasy End User License Agreement (EULA)
+                        
+IMPORTANT - READ CAREFULLY: This End User License Agreement ("EULA") is a legal agreement between you (either an individual or a single entity) and Isekai Fantasy, including its developers and affiliates, regarding the Isekai Fantasy software and related materials.
+                        
+1. DEFINITIONS
+"Software" refers to the Isekai Fantasy software application, including all related materials, updates, and accompanying documentation.
+                        
+2. LICENSE GRANT
+Subject to the terms of this EULA, Isekai Fantasy grants you a limited, non-exclusive, non-transferable license to use the Software for personal and non-commercial purposes.                        
+
+3. RESTRICTIONS
+- You may not sublicense, rent, lease, sell, or distribute the Software.
+- You may not modify, adapt, translate, or create derivative works based upon the Software.
+- You may not reverse engineer, decompile, disassemble, or otherwise attempt to discover the source code of the Software.
+                        
+4. TERMINATION
+Without prejudice to any other rights, Isekai Fantasy may terminate this EULA if you fail to comply with the terms and conditions herein. In such event, you must destroy all copies of the Software and all of its component parts.
+                        
+5. DISCLAIMER OF WARRANTY
+The Software is provided "as is," with all faults, defects, and errors, and without warranty of any kind.
+                        
+6. LIMITATION OF LIABILITY
+To the maximum extent permitted by applicable law, in no event shall Isekai Fantasy or its developers be liable for any special, incidental, indirect, or consequential damages whatsoever arising out of the use of or inability to use the Software.
+                        
+7. MISCELLANEOUS
+This EULA represents the complete agreement concerning the Software between you and Isekai Fantasy and supersedes all prior agreements and representations, whether written or oral.
+                        
+By clicking "Register", you acknowledge that you have read, understood, and agree to be bound by the terms and conditions of this EULA.
+                    </textarea>
+                </div>
+                <input type="checkbox" id="eula-checkbox">
+                <label for="eula-checkbox">I agree to the EULA term.</label>
+            </div>
+            <div class="register-form-submit">
+                <button class="registerButton disabled">Register</button>
+            </div>
+            When Registering is complete, please click <a id="backToLogin" href="../../index.html">Back to Login</a>.
+        </div>
+    </div>
+
+    <script defer src="../../server.js"></script>
+    <script defer src="./register.js"></script>
+    <script defer src="../../popup/popup.js"></script>
+</body>
+</html>

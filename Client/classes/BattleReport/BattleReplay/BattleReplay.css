@@ -1,0 +1,626 @@
+/* Battle Replay Specific Styles */
+.battleReplay-menu-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 98vw;
+    height: 98vh;
+    background-color: rgb(79, 79, 79);
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+}
+
+.battleReplay-menu-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 5vh;
+    z-index: 10;
+}
+
+.battleReplay-cardInUse {
+    width: 50vw;
+    margin-left: 8vw;
+    position-anchor: center;
+}
+
+.battleReplay-menu-button {
+    margin: 0 10px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #193757;
+    color: white;
+    width: 100px;
+    height: 40px;
+    border-radius: 20%;
+}
+
+.battleReplay-menu-button:hover {
+    background-color: #f3f7fb;
+    color: #193757;
+}
+
+.battleReplay-battleArea {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    height: 50vh;
+    margin-bottom: 20vh;
+}
+
+.battleReplay-partyContainerA {
+    display: grid;
+    grid-template-areas: 
+        "char4 char1"
+        "char5 char2"
+        "char6 char3";
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 25%;
+}
+
+.battleReplay-partyContainerB {
+    display: grid;
+    grid-template-areas: 
+        "char1 char4"
+        "char2 char5"
+        "char3 char6";
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    margin-right: 4vw;
+    width: 25%;
+}
+
+.battleReplay-charContainer {
+    display: flex;
+    width: 14vw;
+    height: 20vh;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 0.5vh;
+    background-color: rgb(199, 177, 148);
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+.battleReplay-charContainer.active {
+    transform: scale(1.1);
+}
+
+.battleReplay-charContainer.isDead {
+    filter: grayscale(100%);
+}
+
+.battleReplay-charPortraitAndName {
+    display: flex;
+    font-size: 2vw;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.battleReplay-charPortrait {
+    width: 6vw;
+}
+
+.battleReplay-charName {
+    margin: 5px 0;
+    font-size: 14px;
+    color: black;
+}
+
+.battleReplay-charStats {
+    gap: 1vh;
+    margin-bottom: auto;
+    margin-top: auto;
+    width: 100%;
+    font-size: 1vh;
+    color: black;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
+}
+
+.battleReplay-charStats-Element {
+    font-size: 0.7vw;
+    margin-bottom: 2vh;
+    background-color: #939393;
+    padding: 0.2vh;
+    border-radius: 10px;
+}
+
+.battleReplay-charStats-Element.low {
+    color: red;
+}
+
+.battleReplay-charResources {
+    gap: 1vh;
+    margin-bottom: auto;
+    margin-top: auto;
+    width: 100%;
+    font-size: 1vh;
+    color: black;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
+}
+
+.battleReplay-charResources-Element {
+    font-size: 0.7vw;
+    background-color: #939393;
+    padding: 0.4vh;
+    margin-bottom: 0.1vh;
+    border-radius: 10px;
+}
+
+.battleReplay-turnDescription {
+    position: absolute;
+    bottom: 20px;
+    transform: translateX(-50%);
+    width: 96vw;
+    height: 18vh;
+    text-align: center;
+    font-size: 18px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    text-align: left;
+    margin-bottom: 2vh;
+    background-color: black;
+    color: white;
+}
+
+.battleReplay-menu-closeBtn {
+    width: 10vw;
+    height: 5vh;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #193757;
+    color: rgb(110, 0, 0);
+}
+
+/* Special Effects */
+/* General Actor Skill Effects */
+.actor-skill-effect,
+.target-skill-effect {
+    transition: transform 0.3s, background-color 0.3s;
+}
+
+/* Physical Attacks */
+.skill-effect-slash,
+.skill-effect-blunt,
+.skill-effect-pierce,
+.skill-effect-noElement_physical,
+.skill-effect-order_physical,
+.skill-effect-water_physical,
+.skill-effect-air_physical,
+.skill-effect-chaos_physical,
+.skill-effect-geo_physical,
+.skill-effect-fire_physical,
+.skill-effect-noElement_magical,
+.skill-effect-order_magical,
+.skill-effect-water_magical,
+.skill-effect-air_magical,
+.skill-effect-chaos_magical,
+.skill-effect-geo_magical,
+.skill-effect-fire_magical,
+.skill-effect-noElement_cast,
+.skill-effect-order_cast,
+.skill-effect-ice_cast,
+.skill-effect-water_cast,
+.skill-effect-spirit_cast,
+.skill-effect-air_cast,
+.skill-effect-lightning_cast,
+.skill-effect-chaos_cast,
+.skill-effect-demonic_cast,
+.skill-effect-fire_cast,
+.skill-effect-metal_cast,
+.skill-effect-geo_cast,
+.skill-effect-angelic_cast,
+.skill-effect-human_cast,
+.skill-effect-ghost_cast,
+.skill-effect-holy_cast,
+.skill-effect-life_cast,
+.skill-effect-poison_cast,
+.skill-effect-dark_cast,
+.skill-effect-arcane_cast,
+.skill-effect-noElement_chi,
+.skill-effect-order_chi,
+.skill-effect-ice_chi,
+.skill-effect-water_chi,
+.skill-effect-spirit_chi,
+.skill-effect-air_chi,
+.skill-effect-lightning_chi,
+.skill-effect-chaos_chi,
+.skill-effect-demonic_chi,
+.skill-effect-fire_chi,
+.skill-effect-metal_chi,
+.skill-effect-geo_chi,
+.skill-effect-angelic_chi,
+.skill-effect-human_chi,
+.skill-effect-ghost_chi,
+.skill-effect-holy_chi,
+.skill-effect-life_chi,
+.skill-effect-poison_chi,
+.skill-effect-dark_chi {
+    transform: scale(1.1);
+    background-color: azure;
+}
+
+/* Order Skills */
+.skill-effect-order_physical,
+.skill-effect-order_magical,
+.skill-effect-order_cast,
+.skill-effect-order_chi {
+    background-color: goldenrod;
+}
+
+/* Ice Skills */
+.skill-effect-ice_cast,
+.skill-effect-ice_chi {
+    background-color: lightblue;
+}
+
+/* Water Skills */
+.skill-effect-water_physical,
+.skill-effect-water_magical,
+.skill-effect-water_cast,
+.skill-effect-water_chi {
+    background-color: blue;
+}
+
+/* Spirit Skills */
+.skill-effect-spirit_cast,
+.skill-effect-spirit_chi {
+    background-color: turquoise;
+}
+
+/* Air Skills */
+.skill-effect-air_physical,
+.skill-effect-air_magical,
+.skill-effect-air_cast,
+.skill-effect-air_chi {
+    background-color: lightgreen;
+}
+
+/* Lightning Skills */
+.skill-effect-lightning_cast,
+.skill-effect-lightning_chi {
+    background-color: yellow;
+}
+
+/* Chaos Skills */
+.skill-effect-chaos_physical,
+.skill-effect-chaos_magical,
+.skill-effect-chaos_cast,
+.skill-effect-chaos_chi {
+    background-color: purple;
+}
+
+/* Demonic Skills */
+.skill-effect-demonic_cast,
+.skill-effect-demonic_chi {
+    background-color: darkred;
+}
+
+/* Fire Skills */
+.skill-effect-fire_physical,
+.skill-effect-fire_magical,
+.skill-effect-fire_cast,
+.skill-effect-fire_chi {
+    background-color: red;
+}
+
+/* Metal Skills */
+.skill-effect-metal_cast,
+.skill-effect-metal_chi {
+    background-color: silver;
+}
+
+/* Geo Skills */
+.skill-effect-geo_physical,
+.skill-effect-geo_magical,
+.skill-effect-geo_cast,
+.skill-effect-geo_chi {
+    background-color: brown;
+}
+
+/* Angelic Skills */
+.skill-effect-angelic_cast,
+.skill-effect-angelic_chi {
+    background-color: white;
+}
+
+/* Human Skills */
+.skill-effect-human_cast,
+.skill-effect-human_chi {
+    background-color: peachpuff;
+}
+
+/* Ghost Skills */
+.skill-effect-ghost_cast,
+.skill-effect-ghost_chi {
+    background-color: ghostwhite;
+}
+
+/* Holy Skills */
+.skill-effect-holy_cast,
+.skill-effect-holy_chi {
+    background-color: lightgoldenrodyellow;
+}
+
+/* Life Skills */
+.skill-effect-life_cast,
+.skill-effect-life_chi {
+    background-color: lightgreen;
+}
+
+/* Poison Skills */
+.skill-effect-poison_cast,
+.skill-effect-poison_chi {
+    background-color: darkgreen;
+}
+
+/* Dark Skills */
+.skill-effect-dark_cast,
+.skill-effect-dark_chi {
+    background-color: black;
+}
+
+/* Arcane Skills */
+.skill-effect-arcane_cast {
+    background-color: darkviolet;
+}
+
+/* Target Effects */
+/* Physical Damage Effects */
+.target-skill-effect-noElement_slash_1,
+.target-skill-effect-noElement_slash_2,
+.target-skill-effect-noElement_slash_3,
+.target-skill-effect-noElement_blunt_1,
+.target-skill-effect-noElement_blunt_2,
+.target-skill-effect-noElement_blunt_3,
+.target-skill-effect-noElement_pierce_1,
+.target-skill-effect-noElement_pierce_2,
+.target-skill-effect-noElement_pierce_3,
+.target-skill-effect-noElement {
+    animation: shake 0.5s;
+    background-color: rgba(255, 255, 255, 0.3); /* Orange for physical damage effects */
+}
+
+/* Order Damage Effects */
+.target-skill-effect-order_1,
+.target-skill-effect-order_2,
+.target-skill-effect-order_3 {
+    animation: shake 0.5s;
+    background-color: goldenrod;
+}
+
+/* Ice Damage Effects */
+.target-skill-effect-ice_1,
+.target-skill-effect-ice_2,
+.target-skill-effect-ice_3 {
+    animation: shake 0.5s;
+    background-color: lightblue;
+}
+
+/* Water Damage Effects */
+.target-skill-effect-water_1,
+.target-skill-effect-water_2,
+.target-skill-effect-water_3 {
+    animation: shake 0.5s;
+    background-color: blue;
+}
+
+/* Spirit Damage Effects */
+.target-skill-effect-spirit_1,
+.target-skill-effect-spirit_2,
+.target-skill-effect-spirit_3 {
+    animation: shake 0.5s;
+    background-color: turquoise;
+}
+
+/* Air Damage Effects */
+.target-skill-effect-air_1,
+.target-skill-effect-air_2,
+.target-skill-effect-air_3 {
+    animation: shake 0.5s;
+    background-color: lightgreen;
+}
+
+/* Lightning Damage Effects */
+.target-skill-effect-lightning_1,
+.target-skill-effect-lightning_2,
+.target-skill-effect-lightning_3 {
+    animation: shake 0.5s;
+    background-color: yellow;
+}
+
+/* Chaos Damage Effects */
+.target-skill-effect-chaos_1,
+.target-skill-effect-chaos_2,
+.target-skill-effect-chaos_3 {
+    animation: shake 0.5s;
+    background-color: purple;
+}
+
+/* Demonic Damage Effects */
+.target-skill-effect-demonic_1,
+.target-skill-effect-demonic_2,
+.target-skill-effect-demonic_3 {
+    animation: shake 0.5s;
+    background-color: darkred;
+}
+
+/* Fire Damage Effects */
+.target-skill-effect-fire_1,
+.target-skill-effect-fire_2,
+.target-skill-effect-fire_3 {
+    animation: shake 0.5s;
+    background-color: red;
+}
+
+/* Metal Damage Effects */
+.target-skill-effect-metal_1,
+.target-skill-effect-metal_2,
+.target-skill-effect-metal_3 {
+    animation: shake 0.5s;
+    background-color: silver;
+}
+
+/* Geo Damage Effects */
+.target-skill-effect-geo_1,
+.target-skill-effect-geo_2,
+.target-skill-effect-geo_3 {
+    animation: shake 0.5s;
+    background-color: brown;
+}
+
+/* Angelic Damage Effects */
+.target-skill-effect-angelic_1,
+.target-skill-effect-angelic_2,
+.target-skill-effect-angelic_3 {
+    animation: shake 0.5s;
+    background-color: white;
+}
+
+/* Human Damage Effects */
+.target-skill-effect-human_1,
+.target-skill-effect-human_2,
+.target-skill-effect-human_3 {
+    animation: shake 0.5s;
+    background-color: peachpuff;
+}
+
+/* Ghost Damage Effects */
+.target-skill-effect-ghost_1,
+.target-skill-effect-ghost_2,
+.target-skill-effect-ghost_3 {
+    animation: shake 0.5s;
+    background-color: ghostwhite;
+}
+
+/* Holy Damage Effects */
+.target-skill-effect-holy_1,
+.target-skill-effect-holy_2,
+.target-skill-effect-holy_3 {
+    animation: shake 0.5s;
+    background-color: lightgoldenrodyellow;
+}
+
+/* Life Damage Effects */
+.target-skill-effect-life_1,
+.target-skill-effect-life_2,
+.target-skill-effect-life_3 {
+    animation: shake 0.5s;
+    background-color: lightgreen;
+}
+
+/* Poison Damage Effects */
+.target-skill-effect-poison_1,
+.target-skill-effect-poison_2,
+.target-skill-effect-poison_3 {
+    animation: shake 0.5s;
+    background-color: darkgreen;
+}
+
+/* Dark Damage Effects */
+.target-skill-effect-dark_1,
+.target-skill-effect-dark_2,
+.target-skill-effect-dark_3 {
+    animation: shake 0.5s;
+    background-color: black;
+}
+
+/* Arcane Damage Effects */
+.target-skill-effect-arcane_1,
+.target-skill-effect-arcane_2,
+.target-skill-effect-arcane_3 {
+    animation: shake 0.5s;
+    background-color: darkviolet;
+}
+
+/* Buff Effects */
+.target-skill-effect-stoneSkin,
+.target-skill-effect-counterAttack,
+.target-skill-effect-cautious,
+.target-skill-effect-lightBall,
+.target-skill-effect-focus,
+.target-skill-effect-defend,
+.target-skill-effect-defensiveStance,
+.target-skill-effect-taunt,
+.target-skill-effect-arcaneShield,
+.target-skill-effect-timeWarp,
+.target-skill-effect-weaponMagicalCoating,
+.target-skill-effect-stealth,
+.target-skill-effect-bless,
+.target-skill-effect-haste,
+.target-skill-effect-berserk,
+.target-skill-effect-shielded,
+.target-skill-effect-inspiration,
+.target-skill-effect-fightingSpirit,
+.target-skill-effect-divineShield,
+.target-skill-effect-manaShield,
+.target-skill-effect-zealotsFury,
+.target-skill-effect-primalRoar {
+    background-color: rgba(0, 255, 0, 0.3); /* Green for buff effects */
+}
+
+/* Debuff Effects */
+.target-skill-effect-stun,
+.target-skill-effect-blind,
+.target-skill-effect-slow,
+.target-skill-effect-bleed,
+.target-skill-effect-poison,
+.target-skill-effect-bound,
+.target-skill-effect-paralyse,
+.target-skill-effect-burn,
+.target-skill-effect-awed,
+.target-skill-effect-cursed,
+.target-skill-effect-freeze,
+.target-skill-effect-confuse,
+.target-skill-effect-fear,
+.target-skill-effect-entangled,
+.target-skill-effect-soaked {
+    background-color: rgba(0, 0, 255, 0.3); /* Blue for debuff effects */
+}
+
+/* Example for a stunned effect */
+.target-skill-effect-stun::before {
+    content: url('path/to/stun-icon.png');
+    animation: rotate 1s infinite linear;
+}
+
+/* Rotate animation */
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Shake animation */
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.shake {
+    animation: shake 0.5s;
+    animation-iteration-count: 1;
+}

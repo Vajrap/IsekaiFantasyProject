@@ -1,0 +1,262 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Create A Character</title>
+     <link rel="stylesheet" href="./character_creation.css">
+     <link rel="stylesheet" href="/classes/popup/popup.css">
+ </head>
+ <body>
+     <div class="container">
+
+         <div class="characterInformationContainer">
+             <div class="character-information">
+                 <div class="information">
+                     <p id="name">ชื่อ: <input type="text" id="characterName" placeholder="โปรดระบุชื่อตัวละคร"></p>
+                     <p id="portrait"> 
+                         <img id="characterPortrait" src="../../assets/portrait/m1.png" alt="Character Portrait">
+                         <div class="portraitButtons">
+                             <button id="prevPortrait">←</button>
+                             <button id="nextPortrait">→</button>
+                         </div>
+                     </p>
+                 </div>
+                 <div class="attributes">
+                    <h2>ค่าสถานะ <span class="infoCircle" id="stat-info-1">ⓘ</span></h2>
+                    <div class="attribute">
+                        <div class="attribute-row">
+                            <p class="label" id="strengthLabel">กล้ามเนื้อ: </p>
+                            <span id="strengthValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="enduranceLabel">อดทน: </p>
+                            <span id="enduranceValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="breathLabel">ลมหายใจ: </p>
+                            <span id="breathValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="planarLabel">เวทย์มนต์: </p>
+                            <span id="planarValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="dexterityLabel">สมดุลย์: </p>
+                            <span id="dexterityValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="agilityLabel">ความเร็ว: </p>
+                            <span id="agilityValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="vitalityLabel">สุขภาพ: </p>
+                            <span id="vitalityValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="willpowerLabel">กำลังใจ: </p>
+                            <span id="willpowerValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="intelligenceLabel">ปัญญา: </p>
+                            <span id="intelligenceValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="leadershipLabel">ผู้นำ: </p>
+                            <span id="leadershipValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="charismaLabel">สเน่ห์: </p>
+                            <span id="charismaValue">0</span>
+                        </div>
+                        <div class="attribute-row">
+                            <p class="label" id="luckLabel">โชค: </p>
+                            <span id="luckValue">0</span>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="proficiencies">
+                    <h2>ความชำนาญ <span class="infoCircle" id="stat-info-2">ⓘ</span></h2>
+                    <div class="proficiency">
+                        <div class="proficiency-row">
+                            <p class="label" id="bareHandLabel">มือเปล่า:</p>
+                            <span id="bareHandValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="swordLabel">กระบี่:</p>
+                            <span id="swordValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="bladeLabel">ดาบ:</p>
+                            <span id="bladeValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="spearLabel">หอก:</p>
+                            <span id="spearValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="axeLabel">ขวาน:</p>
+                            <span id="axeValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="maceLabel">ฆ้อน:</p>
+                            <span id="maceValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="bowLabel">ธนู:</p>
+                            <span id="bowValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="daggerLabel">มีดสั้น:</p>
+                            <span id="daggerValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="magicWandLabel">คทาเวทย์:</p>
+                            <span id="magicWandValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="staffLabel">ไม้เท้า:</p>
+                            <span id="staffValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="tomeLabel">หนังสือ:</p>
+                            <span id="tomeValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="orbLabel">ลูกแก้ว:</p>
+                            <span id="orbValue">0</span>
+                        </div>
+                        <div class="proficiency-row">
+                            <p class="label" id="shieldLabel">โล่ห์:</p>
+                            <span id="shieldValue">0</span>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="artisans">
+                    <h2>อาชีพการงาน <span class="infoCircle" id="stat-info-3">ⓘ</span></h2>
+                    <div class="artisan">
+                        <div class="artisan-row">
+                            <p class="label" id="miningLabel">ขุดแร่:</p>
+                            <span id="miningValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="smithingLabel">ตีเหล็ก:</p>
+                            <span id="smithingValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="woodCuttingLabel">ตัดไม้:</p>
+                            <span id="woodCuttingValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="carpentryLabel">ช่างไม้:</p>
+                            <span id="carpentryValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="foragingLabel">เก็บเกี่ยว:</p>
+                            <span id="foragingValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="weavingLabel">ทอผ้า:</p>
+                            <span id="weavingValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="skinningLabel">ฟอกหนัง:</p>
+                            <span id="skinningValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="tanningLabel">ตัดเย็บหนังสัตว์:</p>
+                            <span id="tanningValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="jewelryLabel">เครื่องประดับ:</p>
+                            <span id="jewelryValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="cookingLabel">ทำอาหาร:</p>
+                            <span id="cookingValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="alchemyLabel">เคมี:</p>
+                            <span id="alchemyValue">0</span>
+                        </div>
+                        <div class="artisan-row">
+                            <p class="label" id="enchantingLabel">เสริมเวทย์:</p>
+                            <span id="enchantingValue">0</span>
+                        </div>
+                    </div>
+                </div>
+             </div>
+
+             <div class="selectionZone">
+             <div class="dropdownSelector">
+                <label for="raceSelection">เผ่าพันธุ์:</label>
+                <select id="raceSelection">
+                    <option value="raceHuman">มนุษย์</option>
+                    <option value="raceElven">เอลฟ์</option>
+                    <option value="raceOrc">ออร์ค</option>
+                    <option value="raceTriton">ไทรทัน</option>
+                    <option value="raceDwarf">ดวอร์ฟ</option>
+                    <option value="raceHalfling">ฮาล์ฟลิ่ง</option>
+                    <option value="raceHalfElf">ครึ่งเอลฟ์</option>
+                    <option value="raceHalfOrc">ครึ่งออร์ค</option>
+                    <option value="raceHalfTriton">ครึ่งไทรทัน</option>
+                    <option value="raceDwarfling">ดวอร์ฟลิ่ง</option>
+                    <option value="raceElvon">เอลวอน</option>
+                </select>
+                <div id="raceDescription" class="description">เลือกเผ่าพันธุ์เพื่อดูคำอธิบาย</div>
+            </div>
+
+            <div class="dropdownSelector">
+                <label for="classSelection">อาชีพ:</label>
+                <select id="classSelection">
+                    <option value="classCleric">นักบวช</option>
+                    <option value="classMage">จอมเวท</option>
+                    <option value="classScout">นักสอดแนม</option>
+                    <option value="classHexbinder">นักผูกคำสาป</option>
+                    <option value="classFighter">นักรบ</option>
+                    <option value="classWarden">วอร์เดน</option>
+                    <option value="classGuardian">ผู้พิทักษ์</option>
+                    <option value="classSpellblade">นักดาบเวท</option>
+                    <option value="classSkirmisher">นักลอบโจมตี</option>
+                    <option value="classOccultist">นักอาคม</option>
+                    <option value="classSoldier">ทหาร</option>
+                    <option value="classTemplar">เทมพลาร์</option>
+                </select>
+                <div id="classDescription" class="description">เลือกอาชีพเพื่อดูคำอธิบาย</div>
+            </div>
+            
+            <div class="dropdownSelector">
+                <label for="backgroundSelection">พื้นเพ:</label>
+                <select id="backgroundSelection">
+                    <option value="backgroundMageApprentice">เด็กฝึกเวทย์</option>
+                    <option value="backgroundDesertedMilitary">ทหารหนีทัพ</option>
+                    <option value="backgroundTavernBrawler">นักสู้ในร้านเหล้า</option>
+                    <option value="backgroundFallenNobility">ลูกหลานตระกูลดัง</option>
+                    <option value="backgroundMercsChild">ลูกทหารรับจ้าง</option>
+                    <option value="backgroundTraineeInCaravan">เด็กฝึกงานในขบวนพ่อค้า</option>
+                    <option value="backgroundWanderingMusician">นักดนตรีพเนจร</option>
+                    <option value="backgroundApprenticeScribe">ผู้ช่วยจดบันทึก</option>
+                    <option value="backgroundAbandonedFarmhand">เด็กฟาร์มที่ถูกทอดทิ้ง</option>
+                    <option value="backgroundStreetUrchin">เด็กเร่ร่อนในเมือง</option>
+                    <option value="backgroundFailedCraftsman">ช่างฝึกหัด</option>
+                    <option value="backgroundInnkeepersChild">ลูกเจ้าของโรงแรม</option>
+                </select>
+                <div id="backgroundDescription" class="description">เลือกพื้นเพเพื่อดูคำอธิบาย</div>
+            </div>
+            </div>
+
+        <div class="create-button">
+            <button id="createCharacterButton">Create a Character</button>
+        </div>
+    </div>
+ 
+     <script src="../../server.js"></script>
+     <script src="/classes/WS/WS.js"></script>
+     <script src="/classes/popup/popup.js"></script>
+     <script src="/classes/character/Character.js"></script>     
+     <script src="./characterCreationModel.js"></script>
+     <script src="./characterCreationViewModel.js"></script>
+ </body>
+ </html>

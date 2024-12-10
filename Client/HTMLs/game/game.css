@@ -1,0 +1,403 @@
+/* Reset some default styles */
+body, h1, h2, h3, p {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font-family: Arial, sans-serif;
+    vertical-align: baseline;
+    box-sizing: border-box;
+    /* background-color: #4B6171; */
+    color: #a4ceab;
+    height: 100%;
+    width: 100%;
+}
+
+.label-container{
+    padding-top: 23.5vh;
+    padding-left: 18.75vw;
+    padding-right: 18.75vw;
+}
+
+.text-container{
+    padding-top: 1vh;
+    padding-left: 18.75vw;
+    padding-bottom: 23.5vh;
+    padding-right: 24vw;
+    color: white;
+    font-size: 2vh;
+}
+
+.textNextButton{
+    width: 5vw;
+    height: 5vh;
+    position: absolute;
+    right: 24vw;
+    bottom: 28.75vh;
+}
+
+.showConsole {
+  background-color: black;
+  color: white;
+  /* width: 95vw;
+  height: 95vh; */
+  font-family: monospace;
+  overflow: auto;
+}
+
+/* Container for the game layout */
+.game-container {
+    display: grid;
+    grid-template-columns: 10% 80% 10%;
+    grid-template-rows:  15vh 60vh;
+    grid-template-areas:
+        "top-left top-middle top-right"
+        "middle-left middle middle-right";
+    height: 75vh; 
+    width: 100vw; 
+}
+
+/* Top-Left */
+.top-left {
+    position: relative;
+    padding-left: 0.25vw;
+    }
+
+#character-background-image{
+    position: absolute;
+    height: 20vh;
+    width: 15vw;
+    z-index: 1;
+}
+
+#character-portrait{
+    position: absolute;
+    height: 20vh;
+    bottom: 1%;
+    left: 50%;
+    transform: translate(-50% , 0);
+    z-index: 2;
+}
+
+.character-data{
+    display: grid;
+    grid-template-areas: 
+    "name"
+    "gender" 
+    "faction"
+    "energy" "mood"
+}
+
+
+/* Top-Middle */
+.top-middle {
+    border-color: #000000;
+    /* width: 100%; */
+}
+
+.actions-container {
+    font-size: 16px;
+    display: grid;
+    grid-template-areas: 
+    "daySun dayMon dayTue dayWed dayThu dayFri daySat"
+    "nigSun nigMon nigTue nigWed nigThu nigFri nigSta"
+    "label  label   label label    label label label";
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows:  1.2fr 1.2fr 0.5fr;
+    height: 100%; 
+    width: 100%; 
+    padding-left: 0.4vh;
+    align-items: center;
+    align-content: center;
+    align-self: auto;
+    border-color: 2px solid #3ea3eb;
+    background-color: #33323d;
+}
+
+.actions-container img {
+    width: 9.1vw;
+    align-self: auto;
+}
+
+.actions-container img:hover {
+    transform: scale(0.95);
+    border-color: 1vw solid #3ea3eb;
+}
+
+/* Top-Right */
+.top-right {
+    width: 100%;
+    height: 100%;
+}
+
+
+.helpIcon {
+    position: fixed;
+    top: 1vh;
+    right: 2vw;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+}
+
+.helpIcon button {
+    width: 30px;
+    height: 30px;
+    background-color: transparent;
+    border: white solid 1px;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#character-info-button {
+    width: 75%; /* Adjust the size as needed */
+    aspect-ratio: 1 / 1;
+    background-color: #4CAF50; /* Background color */
+    border: none;
+    color: white; /* Text color */
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Box shadow */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions */
+}
+
+#character-info-button:hover {
+    background-color: #45a049; /* Darker background on hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* Larger shadow on hover */
+}
+
+#character-info-button:active {
+    background-color: #388E3C; /* Even darker background when clicked */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Smaller shadow when clicked */
+}
+
+#character-status-icon {
+    width: 100%;
+    height: 100%;
+    filter: brightness(1) invert(0);
+    mix-blend-mode: screen;
+}
+
+/* Middle-Left */
+.middle-left{
+    width: 100%;
+}
+
+.companions-box {
+    display: grid;
+    grid-template-areas: 
+    "companion-1" 
+    "companion-2" 
+    "companion-3" 
+    "companion-4" 
+    "companion-5";
+    grid-template-rows: 20% 20% 20% 20% 20%;
+    gap: 0px;
+}
+
+#player-portrait {
+    width: 4.5vw;
+    margin-left: 20%;
+    margin-top: 10%;
+    border-radius: 1vh;
+    border: 2px solid #529d96;
+}
+
+.companion-label {
+    font-size: 1.5vh;
+    color: #DAA520;
+}
+
+.companion-portrait img {
+    margin-left: 20%;
+    width: 4.5vw;    
+    border-radius: 1vh;
+}
+
+#companion-portrait-1, #companion-portrait-2, #companion-portrait-3, #companion-portrait-4, #companion-portrait-5 {
+    border: 2px solid #529d96;
+}
+
+.isDead {
+    filter: grayscale(100%);
+}
+
+.navigation-buttons {
+    padding-top: 1vh;
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    gap: 0px;
+}
+
+.navigation-buttons button {
+    border: 0px solid chocolate;
+    background-color: transparent;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.navigation-buttons img {
+    width: 100%;
+    height: 100%;
+}
+
+.navigation-buttons button:hover {
+    transform: scale(1.1);
+    background-color: #000000;
+    border-radius: 180px;
+}
+
+.navigation-buttons button:not(.active) {
+    color: rgb(0, 0, 0); /* Change the color for inactive buttons */
+}
+
+.user-screen {
+    display: grid;
+    grid-template-columns: 70% 30%;
+    font-size: 1.8vh;
+}
+
+.middle {
+    font-size: 30px;
+    display: grid;
+    grid-template-areas:
+    "dialogueBoxCharacter-left" "dialogueBoxCharacter-space" "dialogueBoxCharacter-right";
+    grid-template-columns: 33% 34% 33%;
+    align-content: center;
+    align-self: center;
+}
+
+.dialogueBoxCharacter-left img {
+    width: 100%;
+    border-radius: 1vh;
+    border: 5px solid #529d96;
+}
+
+.dialogueBoxCharacter-right img {
+    width: 100%;
+    border-radius: 1vh;
+    border: 5px solid #529d96;
+}
+
+.dialogueBoxCharacterName{
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.dialogueBoxText {
+    font-size: 20px;
+}
+
+.dialogueBoxOptions {
+    display: grid;
+    grid-auto-rows: 1fr;
+}
+
+.dialogueBoxOption {
+    align-items: flex-start;
+    font-size: 20px;
+    border: 2px solid #529d96;
+    padding: 5px;
+    margin: 5px;
+    cursor: pointer;
+    text-align: left; /* Align the text to the left */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+}
+
+.dialogueBoxOption:hover {
+    background-color: #529d96; /* Change background color on hover */
+    color: #ffffff; /* Change text color on hover */
+}
+
+.gameScreen-menu {
+    display: grid;
+    grid-auto-flow: row;
+    gap: 0px;
+}
+
+.gameScreen-menu button {
+    width: 5vw;
+    height: 5vw;
+    margin-bottom: 20px;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: rgba(255, 255, 255, 1);
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.gameScreen-menu button:hover {
+    background-image: url(../../assets/icons/testIcon.png);
+}
+
+
+.location-scenery img{
+    display: grid;    
+    width: 50vw;
+    margin-left: 10vw;
+}
+
+/* Style for the training view container */
+.cg-screen {
+    position: grid;
+    width: 65vw;
+    height: 55vh;
+    background-color: #494949;
+    border: 5px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-wrap: wrap;
+    overflow-y: auto;
+  }
+  
+  
+  .trainingView button {
+    position: grid;
+    margin: 0.1vw;
+    width: 10.6vw;
+    height: 10.6vh;
+    background-color: #000000;
+    border: none;
+    font-size: 2vh;
+    cursor: pointer;
+  }
+
+
+.bottom-panel {
+    width: 100%;
+    height: 25vh;
+    color: white;
+    display: grid;
+    grid-template-areas: '.showConsole' '.helpIcon';
+}
+
+.showConsole {
+    width: 85vw;
+    height: 15vh;
+    overflow-y: auto;
+    padding: 30px;
+    margin-left: 5%;
+    margin-bottom: 30px;
+    background-color: rgb(0, 0, 0);
+    opacity: 0.8;
+    border-radius: 10px;
+}
+
+
+.narrator-box {
+    margin: 10px;
+    padding: 50px;
+    width: 100%;
+    height: 100%;
+    border-color: rgb(215, 167, 167);
+}
+
+.hidden {
+    display: none !important;
+}
+
+

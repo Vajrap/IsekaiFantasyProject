@@ -1,0 +1,14 @@
+{
+    "liveServer.settings.port": 5501,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:IsekaiFantasy-Server}/database.sqlite",
+            "name": "Arcane Beam"
+        }
+    ],
+    "sqltools.useNodeRuntime": true,
+    "bitoAI.codeCompletion.enableAutoCompletion": true,
+    "bitoAI.codeCompletion.enableCommentToCode": true
+}

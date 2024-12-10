@@ -1,0 +1,142 @@
+.characterCard {
+    width: 30vw;
+    height: 95vh;
+    background-color: rgb(6, 6, 6);
+    display: grid;
+    grid-template-areas: "characterCard-front characterCard-back";
+    border: 1vh solid palegoldenrod;
+}
+
+.characterCard-front {
+    width: 30vw;
+    height: 95vh;
+    background-image: url(../../../assets/cardBG/01.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: beige;
+    display: grid;
+    grid-template-areas: 
+    "characterCard-front-info", 
+    "characterCard-front-portrait",
+    "characterCard-front-activeInternal",
+    "characterCard-front-equipments",
+    "characterCard-front-traits",
+    "characterCard-front-skills",
+    "characterCard-front-position";
+}
+
+.characterCard-back {
+    width: 30vw;
+    height: 95vh;
+    background-image: url(../../assets/background/card_bg.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: grid;
+    grid-template-areas:
+    "characterCard-back-attributes",
+    "characterCard-back-proficiencies",
+    "characterCard-back-battlers",
+    "characterCard-back-elements",
+    "characterCard-back-artisans",
+    "characterCard-back-learnedSkills";
+    background-color: rosybrown;
+}
+
+.characterCard-portrait {
+    width: 20vw;
+    border-radius: 5%;
+    margin-inline-start: 5vw;
+    margin-top: 0.1vh;
+    margin-bottom: 0.1vh;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+.characterCard-panel-backgroundBox {
+    background-color: darkolivegreen;
+}
+
+.characterCard-panel-Info, .characterCard-panel-Active-Internal, .characterCard-panel-Equipments, .characterCard-panel-Traits, .characterCard-panel-Skill-Sequence, .characterCard-panel-Party-Position, .characterCard-panel-Attributes, .characterCard-panel-Battlers, .characterCard-panel-Elements, .characterCard-panel-Artisans, .characterCard-panel-Learned-Skills, .characterCard-panel-Proficiencies, .characterCard-panel-Learned-Internal {
+    margin-bottom: 0.4vh;
+    margin-left: 0.5vw;
+    margin-right: 0.5vw;
+    background-color: darkslategrey;
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.characterCard-panel-Learned-Internal {
+    height: 10vh;
+}
+
+.characterCard-panel-Learned-Skills {
+    height: 32vh;
+}
+
+.characterCard-panel-Info {
+    margin-top: 0.5vh;
+    display: grid;
+    padding: 0.5vh;
+    background-color: rgb(124, 137, 101);
+}
+
+.characterCard-panel-Equipments {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: 30% 70%;
+}
+
+.characterCard-status-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: 33% 34% 33%;
+}
+
+.characterCard-equipment-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: 25% 25% 25% 25%; 
+}
+
+.characterCard-skill-container {
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: 25% 25% 25% 25%; 
+}
+
+.characterCard-info-valueContainer {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: 33% 34% 33%;
+}
+
+.characterCard-panel-label {
+    color: midnightblue;
+    font-weight: bold;
+    font-size: 2vh;
+}
+
+.characterCard-item-label {
+    padding-top: 0.3vh;
+    padding-left: 0.5vw;
+    color: beige;
+    font-weight: bold;
+    font-size: 1.5vh;
+}
+
+.characterCard-panel-label-Active-Internal, .characterCard-panel-label-Equipments, .characterCard-panel-label-Traits, .characterCard-panel-label-Skill-Sequence, .characterCard-panel-label-Party-Position, .characterCard-panel-label-Attributes, .characterCard-panel-label-Battlers, .characterCard-panel-label-Elements, .characterCard-panel-label-Artisans, .characterCard-panel-label-Learned-Skills, .characterCard-panel-label-Proficiencies, .characterCard-panel-label-Learned-Internal {
+    padding-left: 0.5vw;
+    background-color: darkolivegreen;
+}
+
+.characterCard-item-value {
+    padding-top: 0.3vh;
+    padding-left: 0.5vw;
+    color: blanchedalmond;
+    font-weight: normal;
+    font-size: 1.5vh;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
