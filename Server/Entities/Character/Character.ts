@@ -60,10 +60,45 @@ import { DiceEnum } from "../../Utility/Enum/DamageDIce";
 import { SkillConsume } from "../Skills/SubClasses/SkillConsume";
 import { calculateBaseStat } from "./CalculateHPMPSP";
 import { CharacterClass, class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden } from "../../API/Routes/CreateCharacter/ClassEnum";
-// import { RaceEnum } from "../../API/Routes/CreateCharacter/RaceEnum";
-import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
-import { ClassEnum } from "../../../Common/RequestResponse/characterCreation";
+import { RaceEnum, ClassEnum, BackgroundEnum } from "../../../Common/RequestResponse/characterCreation";
 import { dwarflingRace, dwarfRace, elvenRace, elvonRace, halfElvenRace, halflingRace, halfOrcRace, halfTritonRace, humanRace, orcRace, tritonRace } from "../../Database/Character/RacesStatus";
+import { 
+    raceDwarf, 
+    raceDwarfling, 
+    raceElven, 
+    raceElvon, 
+    raceHalfElf, 
+    raceHalfOrc, 
+    raceHalfTriton,
+    raceHalfling, 
+    raceHuman, 
+    raceOrc, 
+    raceTriton,
+    classCleric,
+    classFighter,
+    classGuardian,
+    classHexbinder,
+    classMage,
+    classOccultist,
+    classScout,
+    classSkirmisher,
+    classSoldier,
+    classSpellblade,
+    classTemplar,
+    classWarden,
+    backgroundAbandonedFarmhand,
+    backgroundApprenticeScribe,
+    backgroundFallenNobility,
+    backgroundFailedCraftsman,
+    backgroundInnkeepersChild,
+    backgroundDesertedMilitary,
+    backgroundMageApprentice,
+    backgroundMercsChild,
+    backgroundStreetUrchin,
+    backgroundTavernBrawler,
+    backgroundTraineeInCaravan,
+    backgroundWanderingMusician 
+} from '../../../Common/Entity/raceClassBackground';
 
 export class Character {
 	id: string;
@@ -72,7 +107,7 @@ export class Character {
 	type: CharacterType | undefined = undefined;
 	gender: "male" | "female" | "none" | undefined = undefined;
 	portrait: any = null;
-	background: any = null;
+	background: string = '';
 	race: RaceEnum;
 	alignment: CharacterAlignment = new CharacterAlignment({
 		good: 0,
@@ -133,7 +168,7 @@ export class Character {
 		this.gender = gender;
 		this.race = race? race: RaceEnum.UNDEFINED;
 		this.portrait = null;
-		this.background = null;
+		this.background = '';
 		this.mood = 0;
 		this.gold = 0;
 		this.level = 1;
@@ -3048,6 +3083,7 @@ export class PlayerCharacter extends Character {
 			enchanting: number,
 			selectedClass?: ClassEnum,
 			selectedRace?: RaceEnum,
+			selectedBackground?: BackgroundEnum,
 		}
 	) {
 		super(uuidv4(), dto.name, dto.gender);
@@ -3094,7 +3130,7 @@ export class PlayerCharacter extends Character {
 		this.status.artisans.enchanting.base = dto.enchanting;
 		this.gold = 50;
 		// Method for class selection
-		setCharacterStatus(this, dto.selectedClass, dto.selectedRace)
+		setCharacterStatus(this, dto.selectedClass, dto.selectedRace, dto.selectedBackground)
 	}
 }
 
@@ -3144,13 +3180,89 @@ function switchClass(selectedClass?: ClassEnum): CharacterClass | null {
 	return null;
 }
 
+function switchRace(selectedRace?: RaceEnum) {
+	switch (selectedRace) {
+		case RaceEnum.DWARF:
+			return raceDwarf;
+		break;
+		case RaceEnum.DWARFLING:
+			return raceDwarfling;
+		break;
+		case RaceEnum.ELVEN:
+			return raceElven;
+		break;
+		case RaceEnum.ELVON:
+			return raceElvon;
+		break;
+		case RaceEnum.HALFLING:
+			return raceHalfling;
+		break;
+		case RaceEnum.HALF_ELF:
+			return raceHalfElf;
+		break;
+		case RaceEnum.HALF_ORC:
+			return raceHalfOrc;
+		break;
+		case RaceEnum.HALF_TRITON:
+			return raceHalfTriton;
+		break;
+		case RaceEnum.HUMAN:
+			return raceHuman;
+		break;
+		case RaceEnum.ORC:
+			return raceOrc;
+		break;
+		case RaceEnum.TRITON:
+			return raceTriton;
+		break;
+		default:
+			return null;
+		break;
+	}
+}
+
+function switchBackground(selectedBackground?: BackgroundEnum) {
+	switch (selectedBackground) {
+		case BackgroundEnum.ABANDONED_FARMHAND:
+			return backgroundAbandonedFarmhand;
+		case BackgroundEnum.APPRENTICE_SCRIBE:
+			return backgroundApprenticeScribe;
+		case BackgroundEnum.FALLEN_NOBILITY:
+			return backgroundFallenNobility;
+		case BackgroundEnum.FAILED_CRAFTSMAN:
+			return backgroundFailedCraftsman;
+		case BackgroundEnum.INNKEEPERS_CHILD:
+			return backgroundInnkeepersChild;
+		case BackgroundEnum.DESERTED_MILITARY:
+			return backgroundDesertedMilitary;
+		case BackgroundEnum.MAGE_APPRENTICE:
+			return backgroundMageApprentice;
+		case BackgroundEnum.MERCS_CHILD:
+			return backgroundMercsChild;
+		case BackgroundEnum.STREET_URCHIN:
+			return backgroundStreetUrchin;
+		case BackgroundEnum.TAVERN_BRAWLER:
+			return backgroundTavernBrawler;
+		case BackgroundEnum.TRAINEE_IN_CARAVAN:
+			return backgroundTraineeInCaravan;
+		case BackgroundEnum.WANDERING_MUSICIAN:
+			return backgroundWanderingMusician;
+		default:
+			return null;
+	}
+}
+
+
 
 export async function setCharacterStatus(
 	character: Character,
 	classSelected?: ClassEnum ,
 	raceSelected?: RaceEnum,
+	backGroundSelected?: BackgroundEnum
 ) {
 	let characterClass = switchClass(classSelected);
+	let characterRace = switchRace(raceSelected);
+	let characterBackground = switchBackground(backGroundSelected);
 
 	if (characterClass != null) {
 		for (const attribute in characterClass.bonusStats.attribute) {
