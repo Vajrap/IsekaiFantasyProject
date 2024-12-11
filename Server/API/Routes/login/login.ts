@@ -1,89 +1,127 @@
 import { UserID, UserDBRow } from '../../../Authenticate/UserID';
-import { DB, db } from '../../../Database';
+import { db } from '../../../Database';
+import {LoginRequest, LoginResponse, LoginResponseStatus} from '../../../../Common/RequestResponse/login'
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
-namespace Constant {
-    export const status_error = 'error';
-    export const status_success = 'success';
-    export const message_user_does_not_exist = 'ชื่อผู้ใช้งานนี้ไม่มีอยู่ในระบบ กรุณาลองใหม่อีกครั้ง';
-    export const message_wrong_password = 'รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง';
-}
+export async function loginHandler(
+    username: string,
+    password: string
+): Promise<LoginResponse> {
+    const existingUser = await findExistingUser(username);
+    if (!existingUser) { return { 
+        status: LoginResponseStatus.Failed, 
+        message: "ไม่มีผู้ใช้นี้ในระบบ" 
+    }; }
 
-interface UserDoesNotExistResponse {
-    status: typeof Constant.status_error;
-    message: typeof Constant.message_user_does_not_exist;
-}
-
-interface WrongPasswordResponse {
-    status: typeof Constant.status_error;
-    message: typeof Constant.message_wrong_password;
-}
-
-interface LoggedInWithCharacterResponse {
-    status: typeof Constant.status_success;
-    message: 'Logged in with character';
-    characterID: string;
-    userID: string;
-}
-
-interface LoggedInWithoutCharacterResponse {
-    status: typeof Constant.status_success;
-    message: 'Logged in without character';
-}
-
-class LoginAuthenticator {
-    db: DB;
-    constructor(){
-        this.db = db;
+    if (!await isPasswordCorrect(password, existingUser.password)) {
+        return {
+            status: LoginResponseStatus.Failed,
+            message: "รหัสผ่านไม่ถูกต้อง"
+        };
     }
 
-    async login(username: string, password: string) {
-        const existingUser = await this.findExistingUser(username);
-        if (!existingUser) {
-            return { 
-                status: Constant.status_error, 
-                message: Constant.message_user_does_not_exist 
-            } as UserDoesNotExistResponse;
-        }
+    return loginMethod(existingUser);
+}
 
-        const isPasswordCorrect = await existingUser.validateInputPassword(password);
-
-        if (!isPasswordCorrect) {
-            return { 
-                status: Constant.status_error, 
-                message: Constant.message_wrong_password 
-            } as WrongPasswordResponse;
-        }
-
-        const characterID = existingUser.characterID;
-        if (!characterID) {
-            console.log(existingUser);
-            return { 
-                status: Constant.status_success, 
-                message: 'Logged in without character',
-                userID: existingUser.userID
-            } as LoggedInWithoutCharacterResponse;
-        } else if (characterID) {
-            return { 
-                status: Constant.status_success, 
-                message: 'Logged in with character', 
-                characterID: characterID,
-                userID: existingUser.userID
-            } as LoggedInWithCharacterResponse;
-        }
+export async function autoLoginHandler(token: string): Promise<LoginResponse> {
+    const existingUser = await findExistingUserByToken(token);
+    if (!existingUser) {
+        return {
+            status: LoginResponseStatus.Failed,
+            message: "ไม่พบผู้ใช้นี้ในระบบ"
+        };
     }
 
-    private async findExistingUser(username: string): Promise<UserID | undefined> {
-        try {
-            const row: UserDBRow = await this.db.read('users', 'username', username);
-            if (!row) {
-                return undefined;
-            }
-            return UserID.createFromDBRow(row);
-        } catch (err) {
-            console.error('Error finding existing user.');
-            throw err;
-        }
+    return loginMethod(existingUser);
+}
+
+async function loginMethod(existingUser: UserID) {
+    let tokenResult = await generateToken(existingUser);
+    const characterID = existingUser.characterID;
+    if (!characterID) {
+        return {
+            status: LoginResponseStatus.LoggedInWithNoCharacter,
+            message: "เข้าสู่ระบบสำเร็จโดยไม่มีตัวละคร", // "Logged in without character"
+            userID: existingUser.userID,
+            token: tokenResult.token,
+            tokenExpiredAt: tokenResult.tokenExpiresAt.toISOString()
+        };
+    } else {
+        return {
+            status: LoginResponseStatus.LoggedInWithCharacter,
+            message: "เข้าสู่ระบบสำเร็จพร้อมตัวละคร", // "Logged in with character"
+            userID: existingUser.userID,
+            characterID: characterID,
+            token: tokenResult.token,
+            tokenExpiredAt: tokenResult.tokenExpiresAt.toISOString()
+        };
     }
 }
 
-export const loginAuthenticator = new LoginAuthenticator();
+async function findExistingUser(username: string): Promise<UserID | undefined> {
+    try {
+        const row: UserDBRow = await db.read('users', 'username', username);
+        return row ? UserID.createFromDBRow(row) : undefined;
+    } catch (err) {
+        console.error(`Error finding user: ${username}`, err);
+        throw err;
+    }
+}
+
+async function findExistingUserByToken(token: string): Promise<UserID | undefined> {
+    try {
+        const row: UserDBRow = await db.read('users', 'token', token);
+        return row ? UserID.createFromDBRow(row) : undefined;
+    } catch (err) {
+        console.error(`Error finding user by token: ${token}`, err);
+        throw err;
+    }
+}
+
+async function isPasswordCorrect(password: string, hash: string): Promise<boolean> {
+    return await bcrypt.compare(password, hash);
+}
+
+interface TokenResult {
+    token: string;
+    tokenExpiresAt: Date;
+}
+
+async function generateToken(existingUser: UserID): Promise<TokenResult> {
+    if (existingUser.token && existingUser.tokenExpiresAt) {
+        const tokenExpiresAt = new Date(existingUser.tokenExpiresAt);
+        if (tokenExpiresAt > new Date()) {
+            return {
+                token: existingUser.token,
+                tokenExpiresAt
+            };
+        }
+    }
+
+    // Token is expired or undefined; generate a new one
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 1 week
+    await saveTokenIntoExistingUser({ token, tokenExpiresAt }, existingUser?.userID ?? '');
+    
+    return { token, tokenExpiresAt };
+}
+
+async function saveTokenIntoExistingUser(tokenResult: TokenResult, userID: string) {
+    try {
+        await db.writeOver(
+            {
+                tableName: 'users',
+                primaryKeyColumnName: 'userID',
+                primaryKeyValue: userID
+            }, 
+            [
+                { dataKey: 'token', value: tokenResult.token },
+                { dataKey: 'tokenExpiresAt', value: tokenResult.tokenExpiresAt.toISOString() }
+            ]
+        )
+    } catch (err) {
+        console.error('Error saving token into existing user.');
+        throw err;
+    }
+}

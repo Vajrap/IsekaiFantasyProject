@@ -1,7 +1,6 @@
 export interface RegisterRequest {
     username: string;
     password: string;
-    email: string;
 }
 
 export interface RegisterResponse {
@@ -10,6 +9,6 @@ export interface RegisterResponse {
 }
 
 export enum RegisterReponseStatus {
-    Failed = 'failed',
-    Registered = 'registered'
+    Failed = 'ล้มเหลว',
+    Registered = 'ลงทะเบียนสำเร็จ'
 }

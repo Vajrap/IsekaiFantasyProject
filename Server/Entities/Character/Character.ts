@@ -40,8 +40,8 @@ import {
 	ProficiencyMap,
 } from "./Subclasses/CharacterDataEnum";
 import { DamageTypes } from "../../Utility/Enum/DamageTypes";
-import { InternalResponseType } from "../../../Common/ResponseTypes/Internal";
-import { SkillResponseType } from "../../../Common/ResponseTypes/Skill";
+// import { InternalResponseType } from "../../../Common/ResponseTypes/Internal";
+// import { SkillResponseType } from "../../../Common/ResponseTypes/Skill";
 import { StoryFlags } from "../../Game/StoryEvent/StoryFlags";
 import { getSkillFromDB, Skill } from "../Skills/Skill";
 import { EquipmentType, WeaponType } from "../../Utility/Enum/EquipmentTypes";
@@ -59,8 +59,10 @@ import { CharacterBattleContext } from "./CharacterBattleContext";
 import { DiceEnum } from "../../Utility/Enum/DamageDIce";
 import { SkillConsume } from "../Skills/SubClasses/SkillConsume";
 import { calculateBaseStat } from "./CalculateHPMPSP";
-import { CharacterClass, class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden, ClassEnum } from "../../API/Routes/CreateCharacter/ClassEnum";
-import { RaceEnum } from "../../API/Routes/CreateCharacter/RaceEnum";
+import { CharacterClass, class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden } from "../../API/Routes/CreateCharacter/ClassEnum";
+// import { RaceEnum } from "../../API/Routes/CreateCharacter/RaceEnum";
+import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
+import { ClassEnum } from "../../../Common/RequestResponse/characterCreation";
 import { dwarflingRace, dwarfRace, elvenRace, elvonRace, halfElvenRace, halflingRace, halfOrcRace, halfTritonRace, humanRace, orcRace, tritonRace } from "../../Database/Character/RacesStatus";
 
 export class Character {
@@ -881,25 +883,25 @@ export class Character {
 
 	//MARK: INTERNAL
 	//We start with methods that can be called from others
-	learnInternal(internalID: string): InternalResponseType {
-		const internal =
-			InternalRepository[internalID as keyof typeof InternalRepository];
-		if (!internal) {
-			throw new Error(`Internal with id:${internalID} not exist.`);
-		}
-		for (const learnedInternal of this.internals) {
-			if (learnedInternal.internal === internal) {
-				return InternalResponseType.SuccessAlreadyLearned;
-			}
-		}
-		if (!this.validateInternalLearning(internal)) {
-			return InternalResponseType.SuccessNotEligibleToLearn;
-		}
-		const newInternal = { internal: internal, level: 1, exp: 0 };
-		this.internals.push(newInternal);
-		this.applyInternalPassiveBonuses(internal, 1);
-		return InternalResponseType.SuccessLearning;
-	}
+	// learnInternal(internalID: string): InternalResponseType {
+	// 	const internal =
+	// 		InternalRepository[internalID as keyof typeof InternalRepository];
+	// 	if (!internal) {
+	// 		throw new Error(`Internal with id:${internalID} not exist.`);
+	// 	}
+	// 	for (const learnedInternal of this.internals) {
+	// 		if (learnedInternal.internal === internal) {
+	// 			return InternalResponseType.SuccessAlreadyLearned;
+	// 		}
+	// 	}
+	// 	if (!this.validateInternalLearning(internal)) {
+	// 		return InternalResponseType.SuccessNotEligibleToLearn;
+	// 	}
+	// 	const newInternal = { internal: internal, level: 1, exp: 0 };
+	// 	this.internals.push(newInternal);
+	// 	this.applyInternalPassiveBonuses(internal, 1);
+	// 	return InternalResponseType.SuccessLearning;
+	// }
 
 	validateInternalLearning(internal: Internal): boolean {
 		if (internal.requirement) {
@@ -920,23 +922,23 @@ export class Character {
 		return true;
 	}
 
-	trainInternal(internalID: string, expGained: number): InternalResponseType {
-		const internal = this.internals.find((i) => i.internal.id === internalID);
-		if (!internal) {
-			throw new Error(
-				`Character ${this.id} didn't learned internal with id:${internalID}`
-			);
-		}
-		const internalObj =
-			InternalRepository[internalID as keyof typeof InternalRepository];
-		const expNeeded = internalObj.neededExp(internal.level);
-		internal.exp += expGained;
-		if (internal.exp >= expNeeded) {
-			this.levelUpInternal(internal);
-			return InternalResponseType.SuccessTrainingWithLevelUp;
-		}
-		return InternalResponseType.SuccessTrainingWithoutLevelUp;
-	}
+	// trainInternal(internalID: string, expGained: number): InternalResponseType {
+	// 	const internal = this.internals.find((i) => i.internal.id === internalID);
+	// 	if (!internal) {
+	// 		throw new Error(
+	// 			`Character ${this.id} didn't learned internal with id:${internalID}`
+	// 		);
+	// 	}
+	// 	const internalObj =
+	// 		InternalRepository[internalID as keyof typeof InternalRepository];
+	// 	const expNeeded = internalObj.neededExp(internal.level);
+	// 	internal.exp += expGained;
+	// 	if (internal.exp >= expNeeded) {
+	// 		this.levelUpInternal(internal);
+	// 		return InternalResponseType.SuccessTrainingWithLevelUp;
+	// 	}
+	// 	return InternalResponseType.SuccessTrainingWithoutLevelUp;
+	// }
 
 	levelUpInternal(internal: {
 		internal: Internal;
@@ -1115,38 +1117,38 @@ export class Character {
 	}
 
 	//MARK: SKILL
-	async learnSkill(skillID: string): Promise<SkillResponseType> {
-		let skill;
+	// async learnSkill(skillID: string): Promise<SkillResponseType> {
+	// 	let skill;
 
-		if (skillID.includes("auto")) {
-			skill = SkillRepository[skillID as keyof typeof SkillRepository];
-		} else {
-			skill = await getSkillFromDB(skillID);
-		}
+	// 	if (skillID.includes("auto")) {
+	// 		skill = SkillRepository[skillID as keyof typeof SkillRepository];
+	// 	} else {
+	// 		skill = await getSkillFromDB(skillID);
+	// 	}
 
-		if (!skill) {
-			throw new Error(
-				`Skill with id ${skillID} not found in SkillRepository or database.`
-			);
-		}
+	// 	if (!skill) {
+	// 		throw new Error(
+	// 			`Skill with id ${skillID} not found in SkillRepository or database.`
+	// 		);
+	// 	}
 
-		if (
-			this.skills.some((s) => s.skill.id === skillID) ||
-			this.activeSkills.some((s) => s.skill.id === skillID)
-		) {
-			console.log(`Skill with id ${skillID} is already learned`);
-			return SkillResponseType.SuccessAlreadyLearned;
-		}
+	// 	if (
+	// 		this.skills.some((s) => s.skill.id === skillID) ||
+	// 		this.activeSkills.some((s) => s.skill.id === skillID)
+	// 	) {
+	// 		console.log(`Skill with id ${skillID} is already learned`);
+	// 		return SkillResponseType.SuccessAlreadyLearned;
+	// 	}
 
-		if (!this.validateSkillLearning(skill)) {
-			console.log(`Not eligible to learn skill with id ${skillID}`);
-			return SkillResponseType.SuccessNotEligibleToLearn;
-		}
+	// 	if (!this.validateSkillLearning(skill)) {
+	// 		console.log(`Not eligible to learn skill with id ${skillID}`);
+	// 		return SkillResponseType.SuccessNotEligibleToLearn;
+	// 	}
 
-		this.skills.push({ skill: skill, level: 1, exp: 0 });
+	// 	this.skills.push({ skill: skill, level: 1, exp: 0 });
 
-		return SkillResponseType.SuccessLearning;
-	}
+	// 	return SkillResponseType.SuccessLearning;
+	// }
 
 	validateSkillLearning(skill: Skill): boolean {
 		const traitIDArray = [];
@@ -1164,39 +1166,39 @@ export class Character {
 		);
 	}
 
-	async trainSkill(
-		skillID: string,
-		expGained: number
-	): Promise<SkillResponseType> {
-		//We need to find first if the skill is in skills or in activeSkills?
-		let skill = this.skills.find((s) => s.skill.id === skillID);
-		if (!skill) {
-			skill = this.activeSkills.find((s) => s.skill.id === skillID);
-		}
-		if (!skill) {
-			throw new Error(`Skill with id ${skillID} not found in this character`);
-		}
+	// async trainSkill(
+	// 	skillID: string,
+	// 	expGained: number
+	// ): Promise<SkillResponseType> {
+	// 	//We need to find first if the skill is in skills or in activeSkills?
+	// 	let skill = this.skills.find((s) => s.skill.id === skillID);
+	// 	if (!skill) {
+	// 		skill = this.activeSkills.find((s) => s.skill.id === skillID);
+	// 	}
+	// 	if (!skill) {
+	// 		throw new Error(`Skill with id ${skillID} not found in this character`);
+	// 	}
 
-		let skillObject;
+	// 	let skillObject;
 
-		if (skillID.includes("auto")) {
-			skillObject = SkillRepository[skillID as keyof typeof SkillRepository];
-		} else {
-			skillObject = await getSkillFromDB(skillID);
-		}
-		if (!skillObject) {
-			throw new Error(`Skill with id ${skillID} not found`);
-		}
+	// 	if (skillID.includes("auto")) {
+	// 		skillObject = SkillRepository[skillID as keyof typeof SkillRepository];
+	// 	} else {
+	// 		skillObject = await getSkillFromDB(skillID);
+	// 	}
+	// 	if (!skillObject) {
+	// 		throw new Error(`Skill with id ${skillID} not found`);
+	// 	}
 
-		const expNeeded = skillObject.neededExp(skill.level);
-		skill.exp += expGained;
-		if (skill.exp >= expNeeded) {
-			skill.level++;
-			skill.exp -= expNeeded;
-			return SkillResponseType.SuccessTrainingWithLevelUp;
-		}
-		return SkillResponseType.SuccessTrainingWithoutLevelUp;
-	}
+	// 	const expNeeded = skillObject.neededExp(skill.level);
+	// 	skill.exp += expGained;
+	// 	if (skill.exp >= expNeeded) {
+	// 		skill.level++;
+	// 		skill.exp -= expNeeded;
+	// 		return SkillResponseType.SuccessTrainingWithLevelUp;
+	// 	}
+	// 	return SkillResponseType.SuccessTrainingWithoutLevelUp;
+	// }
 
 	//Instead of Validate as a 'must' we may use this to help player see how the deck should be built
 	async validateActiveSkills(): Promise<SuccessResponse | ErrorResponse> {
@@ -3164,9 +3166,9 @@ export async function setCharacterStatus(
 			characterClass.bonusStats.artisan[artisan as keyof CharacterStatus["artisans"]];
 		};
 
-		for (const skill of characterClass.skills) {
-			await character.learnSkill(skill);
-		};
+		// for (const skill of characterClass.skills) {
+		// 	await character.learnSkill(skill);
+		// };
 	
 		for (let i = character.skills.length - 1; i >=0; i--) {
 			let skill = character.skills[i];

@@ -3,21 +3,7 @@ import { ClothSeedEnum } from "../../../Database/Item/Gear/Seeds/Cloth";
 import { GearSeedWeaponEnum } from "../../../Database/Item/Gear/Seeds/Weapon";
 import { SkillEnum } from "../../../Database/Skill/skill";
 import { TraitEnum } from "../../../Entities/Traits/TraitEnums";
-
-export enum ClassEnum {
-    CLERIC = 'นักบวช', // Cleric
-    MAGE = 'จอมเวท', // Mage
-    SCOUT = 'นักสอดแนม', // Scout (replaces Rogue)
-    HEXBINDER = 'นักผูกคำสาป', // Hexbinder (replaces Warlock for balance)
-    FIGHTER = 'นักสู้', // Fighter
-    WARDEN = 'ดรูอิด', // Warden (replaces Druid for a toned name)
-    GUARDIAN = 'ผู้พิทักษ์', // Guardian
-    SPELLBLADE = 'นักดาบเวท', // Spellblade (replaces Swordmage)
-    SKIRMISHER = 'นักลอบโจมตี', // Skirmisher (replaces Assassin for balance)
-    OCCULTIST = 'นักอาคม', // Occultist
-    SOLDIER = 'นักรบ', // Soldier (replaces Knight for simplicity)
-    TEMPLAR = 'นักรบศักดิ์สิทธิ์', // Templar (replaces Paladin for balance)
-}
+import { ClassEnum } from '../../../../Common/RequestResponse/characterCreation';
 
 /*
 Cleric:

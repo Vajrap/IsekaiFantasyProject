@@ -28,6 +28,8 @@ export class UserID {
     password: string;
     userID: string
     characterID: string = ""
+    token: string = ""
+    tokenExpiresAt: Date = new Date()
 
     constructor(username: string, password: string) {
         this.userID = uuidv4();

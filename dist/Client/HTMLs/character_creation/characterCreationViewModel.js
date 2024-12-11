@@ -1,69 +1,32 @@
-const races = {
-    raceHuman: raceHuman,
-    raceElven: raceElven,
-    raceOrc: raceOrc,
-    raceTriton: raceTriton,
-    raceDwarf: raceDwarf,
-    raceHalfling: raceHalfling,
-    raceHalfElf: raceHalfElf,
-    raceHalfOrc: raceHalfOrc,
-    raceHalfTriton: raceHalfTriton,
-    raceDwarfling: raceDwarfling,
-    raceElvon: raceElvon,
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-
-const classes = {
-    classCleric: classCleric,
-    classMage: classMage,
-    classScout: classScout,
-    classHexbinder: classHexbinder,
-    classFighter: classFighter,
-    classWarden: classWarden,
-    classGuardian: classGuardian,
-    classSpellblade: classSpellblade,
-    classSkirmisher: classSkirmisher,
-    classOccultist: classOccultist,
-    classSoldier: classSoldier,
-    classTemplar: classTemplar,
-}
-
-const backGrounds = {
-    backgroundMageApprentice: backgroundMageApprentice,
-    backgroundDesertedMilitary: backgroundDesertedMilitary,
-    backgroundTavernBrawler: backgroundTavernBrawler,
-    backgroundFallenNobility: backgroundFallenNobility,
-    backgroundMercsChild: backgroundMercsChild,
-    backgroundTraineeInCaravan: backgroundTraineeInCaravan,
-    backgroundWanderingMusician: backgroundWanderingMusician,
-    backgroundApprenticeScribe: backgroundApprenticeScribe,
-    backgroundAbandonedFarmhand: backgroundAbandonedFarmhand,
-    backgroundStreetUrchin: backgroundStreetUrchin,
-    backgroundFailedCraftsman: backgroundFailedCraftsman,
-    backgroundInnkeepersChild: backgroundInnkeepersChild,
-}
-
+import { ClassEnum, RaceEnum, BackgroundEnum, CharacterCreationResponseStatus } from '../../../Common/RequestResponse/characterCreation';
+import { characterCreationModel, matchBackground, matchClass, matchRace } from './characterCreationModel';
+import { popup } from '../../classes/popup/popup';
 class CharacterCreationViewModel {
     constructor() {
         this.model = characterCreationModel;
         this.initializeDOMElements();
         this.initializeEventListeners();
         this.currentPortrait = 1;
-
         // Bindings
         this.portraitL = this.portraitL.bind(this);
         this.portraitR = this.portraitR.bind(this);
-        this.backgroundUpHandle = this.backgroundUpHandle.bind(this);
-        this.backgroundDownHandle = this.backgroundDownHandle.bind(this);
         this.updateUI = this.updateUI.bind(this);
         this.createCharacterButtonPressed = this.createCharacterButtonPressed.bind(this);
-
-        this.model.selectRace(raceHuman);
-        this.model.selectClass(classCleric);
-        this.model.selectBackground(backgroundMageApprentice);
+        this.model.selectRace(RaceEnum.HUMAN);
+        this.model.selectClass(ClassEnum.CLERIC);
+        this.model.selectBackground(BackgroundEnum.MAGE_APPRENTICE);
         // Set initial UI
         this.updateUI();
     }
-
     initializeDOMElements() {
         // Selecting DOM elements
         this.dom = {
@@ -119,7 +82,6 @@ class CharacterCreationViewModel {
             statInfo_1: document.getElementById('stat-info-1'),
             statInfo_2: document.getElementById('stat-info-2'),
             statInfo_3: document.getElementById('stat-info-3'),
-
             raceSelection: document.getElementById('raceSelection'),
             classSelection: document.getElementById('classSelection'),
             backgroundSelection: document.getElementById('backgroundSelection'),
@@ -128,7 +90,6 @@ class CharacterCreationViewModel {
             backgroundDescription: document.getElementById('backgroundDescription'),
         };
     }
-
     initializeEventListeners() {
         this.dom.prevPortrait.addEventListener('click', this.portraitL);
         this.dom.nextPortrait.addEventListener('click', this.portraitR);
@@ -136,110 +97,137 @@ class CharacterCreationViewModel {
         this.dom.statInfo_1.addEventListener('click', () => popup.show('ค่าสถานะตัวละคร', statusDescription));
         this.dom.statInfo_2.addEventListener('click', () => popup.show('ค่าสถานะตัวละคร', statusDescription));
         this.dom.statInfo_3.addEventListener('click', () => popup.show('ค่าสถานะตัวละคร', statusDescription));
-        
         this.dom.raceSelection.addEventListener('change', (event) => {
-            const selectedRaceKey = event.target.value; // Value now directly matches object key
-            const raceObject = races[selectedRaceKey]; // Fetch the object from the `races` map
-            if (raceObject) {
-                this.model.selectRace(raceObject); // Pass the correct object
+            const target = event.target;
+            if (target) {
+                const selectedRaceKey = target.value;
+                if (!(selectedRaceKey in RaceEnum)) {
+                    console.error(`Invalid race selected: ${selectedRaceKey}`);
+                    return;
+                }
+                this.model.selectRace(selectedRaceKey);
                 this.updateUI();
-            } else {
-                console.error(`Race not found for: ${selectedRaceKey}`);
+            }
+            else {
+                console.error(`Invalid target: ${target}`);
             }
         });
-    
         this.dom.classSelection.addEventListener('change', (event) => {
-            const selectedClass = event.target.value;
-            const classObject = classes[selectedClass];
-            this.model.selectClass(classObject); // Dynamically fetch class
-            this.updateUI();
+            const target = event.target;
+            if (target) {
+                const selectedClassKey = target.value;
+                if (!(selectedClassKey in ClassEnum)) {
+                    console.error(`Invalid class selected: ${selectedClassKey}`);
+                    return;
+                }
+                this.model.selectClass(selectedClassKey);
+                this.updateUI();
+            }
+            else {
+                console.error(`Invalid target: ${target}`);
+            }
         });
-    
         this.dom.backgroundSelection.addEventListener('change', (event) => {
-            const selectedBackground = event.target.value;
-            const backgroundObject = backGrounds[selectedBackground];
-            this.model.selectBackground(backgroundObject);
-            this.updateUI();
+            const target = event.target;
+            if (target) {
+                const selectedBackgroundKey = target.value;
+                if (!(selectedBackgroundKey in BackgroundEnum)) {
+                    console.error(`Invalid background selected: ${selectedBackgroundKey}`);
+                    return;
+                }
+                this.model.selectBackground(selectedBackgroundKey);
+                this.updateUI();
+            }
+            else {
+                console.error(`Invalid target: ${target}`);
+            }
         });
     }
-
     portraitL() {
         if (this.currentPortrait === 1) {
             this.currentPortrait = 110;
-        } else {
+        }
+        else {
             this.currentPortrait -= 1;
         }
-        document.getElementById('characterPortrait').src = `../../assets/portrait/m${this.currentPortrait}.png`
+        const characterPortrait = document.getElementById('characterPortrait');
+        if (characterPortrait) {
+            characterPortrait.src = `../../assets/portrait/m${this.currentPortrait}.png`;
+        }
     }
-
     portraitR() {
         if (this.currentPortrait === 110) {
             this.currentPortrait = 1;
-        } else {
+        }
+        else {
             this.currentPortrait += 1;
         }
-        document.getElementById('characterPortrait').src = `../../assets/portrait/m${this.currentPortrait}.png`
+        const characterPortrait = document.getElementById('characterPortrait');
+        if (characterPortrait) {
+            characterPortrait.src = `../../assets/portrait/m${this.currentPortrait}.png`;
+        }
     }
-
-    backgroundUpHandle() {
-        const allBackgroundsAmount = characterBackgrounds.length;
-        const currentBackgroundNumber = this.model.selectedBackground;
-        if (currentBackgroundNumber === allBackgroundsAmount - 1) {
-            this.model.selectedBackground = 0;
-        }
-        else {
-            this.model.selectedBackground++;
-        }
-        this.updateUI();
-    }
-
-    backgroundDownHandle() {
-        const allBackgroundsAmount = characterBackgrounds.length;
-        const currentBackgroundNumber = this.model.selectedBackground;
-        if (currentBackgroundNumber === 0) {
-            this.model.selectedBackground = allBackgroundsAmount - 1;
-        }
-        else {
-            this.model.selectedBackground--;
-        }
-        this.updateUI();
-    }
-
     updateUI() {
         const formatNumber = (num) => num.toString().padStart(2, '0');
-    
         // Generic function to update UI for a given type
         const updateValues = (type) => {
             for (const key in this.model[type]) {
                 let elementID = `${key}Value`;
                 let value = this.model[type][key];
                 if (document.getElementById(elementID)) {
-                    document.getElementById(elementID).textContent = formatNumber(value);
+                    const element = document.getElementById(elementID);
+                    if (element) {
+                        element.textContent = formatNumber(value);
+                    }
                 }
             }
-
-            this.dom.raceDescription.innerHTML = this.model.selectedRace.description;
-            this.dom.classDescription.innerHTML = this.model.selectedClass.description;
-            this.dom.backgroundDescription.innerHTML = this.model.selectedBackground.description
+            let raceObj = matchRace(this.model.selectedRace);
+            if (raceObj === undefined || raceObj === null) {
+                console.error(`Invalid Race`);
+                return;
+            }
+            let classObj = matchClass(this.model.selectedClass);
+            if (classObj === undefined || classObj === null) {
+                console.error(`Invalid Class`);
+                return;
+            }
+            let backgroundObj = matchBackground(this.model.selectedBackground);
+            if (backgroundObj === undefined || backgroundObj === null) {
+                console.error(`Invalid Background`);
+                return;
+            }
+            this.dom.raceDescription.innerHTML = raceObj.description;
+            this.dom.classDescription.innerHTML = classObj.description;
+            this.dom.backgroundDescription.innerHTML = backgroundObj.description;
         };
-    
         // Update attributes, proficiencies, and artisans
         updateValues("attributes");
         updateValues("proficiencies");
         updateValues("artisans");
-
-        // Here we're update the Description in Race, Class and Background        
     }
-
     createCharacterButtonPressed() {
-        const characterName = document.getElementById('characterName').value;
-        const portrait = `m${this.currentPortrait}`;
-        this.model.createCharacter(characterName, portrait);
+        return __awaiter(this, void 0, void 0, function* () {
+            const characterNameElement = document.getElementById('characterName');
+            if (!characterNameElement) {
+                console.error('Character name element not found');
+                return;
+            }
+            const characterName = characterNameElement.value;
+            const portrait = `m${this.currentPortrait}`;
+            let result = yield this.model.createCharacter(characterName, portrait);
+            if (result.status === CharacterCreationResponseStatus.INVALID_NAME) {
+                popup.show('อุ๊ปส์! ชื่อตัวละครไม่ถูกต้อง', result.message, [{
+                        label: 'ตกลง',
+                        action: popup.hide
+                    }]);
+            }
+            else if (result.status === CharacterCreationResponseStatus.SUCCESS) {
+                // Redirect into Game
+            }
+        });
     }
 }
-
 const characterCreationViewModel = new CharacterCreationViewModel();
-
 const statusDescription = `
 <div style="text-align: left;">
 ตัวละครในเกมนี้ประกอบไปด้วยค่าต่าง ๆ (status) 3 ส่วนเป็นหลักได้แก่<br><br>
@@ -272,4 +260,3 @@ const statusDescription = `
     </div>
 </div>
 `;
-

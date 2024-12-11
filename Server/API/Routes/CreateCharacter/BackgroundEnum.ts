@@ -1,4 +1,5 @@
 import { TraitEnum } from "../../../Entities/Traits/TraitEnums";
+import { BackgroundEnum } from '../../../../Common/RequestResponse/characterCreation';
 
 class Background {
     name: BackgroundEnum;
@@ -148,22 +149,6 @@ class Background {
             }
         }
     }
-}
-
-
-export enum BackgroundEnum {
-    MAGE_APPRENTICE = 'เด็กฝึกเวทย์',
-    DESERTED_MILITARY = 'ทหารหนีทัพ',
-    TAVERN_BRAWLER = 'นักสู้ในร้านเหล้า',
-    FALLEN_NOBILITY = 'ลูกหลานตระกูลดัง',
-    MERCS_CHILD = 'ลูกทหารรับจ้าง',
-    TRAINEE_IN_CARAVAN = 'เด็กฝึกงานในขบวนพ่อค้า',
-    WANDERING_MUSICIAN = 'นักดนตรีพเนจร',
-    APPRENTICE_SCRIBE = 'ผู้ช่วยจดบันทึก',
-    ABANDONED_FARMHAND = 'เด็กฟาร์มที่ถูกทอดทิ้ง',
-    STREET_URCHIN = 'เด็กเร่ร่อนในเมือง',
-    FAILED_CRAFTSMAN = 'ช่างฝึกหัด',
-    INNKEEPERS_CHILD = 'ลูกเจ้าของโรงแรม',
 }
 
 export const background_mage_apprentice = new Background(

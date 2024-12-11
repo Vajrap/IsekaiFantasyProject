@@ -1,0 +1,17 @@
+class Env {
+    serverURL: string
+    wsHost: string
+    constructor(){
+        this.serverURL = 'http://localhost:3030';
+        this.wsHost = 'ws://localhost:3030';
+        // this.serverURL = 'http://49.228.247.69:3030',
+        // this.wsHost = 'ws://49.228.247.69:3030'
+        // this.serverURL = 'https://9f090kw5-3030.asse.devtunnels.ms'
+        // this.wsHost = 'wss://9f090kw5-3030.asse.devtunnels.ms'
+    }
+    ip = () => { return this.serverURL }
+    ws = () => { return this.wsHost }
+}
+
+export const env = new Env();
+

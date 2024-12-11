@@ -1,50 +1,53 @@
 import { UserID,  } from '../../../Authenticate/UserID';
-import { DB, db } from '../../../Database';
+import { db } from '../../../Database';
 import { RegisterRequest, RegisterReponseStatus, RegisterResponse  } from '../../../../Common/RequestResponse/register';
 import { Request } from 'express';
+import bcrypt from "bcrypt";
 
-export async function registerHander(req: Request): Promise<RegisterResponse> {
+export async function registerHandler(req: Request): Promise<RegisterResponse> {
     const request = req.body as RegisterRequest;
 
     let [username, password] = [request.username, request.password];
 
-    const [validateSuccess, response] = await validateUser(username, password);
+    const {isValid, response} = await validateUser(username, password);
 
-    if (!validateSuccess) {
-        return response || { status: RegisterReponseStatus.Failed, message: 'Unknown error' };
+    if (!isValid) {
+        return response || { status: RegisterReponseStatus.Failed, message: 'ข้อผิดพลาดที่ไม่รู้จัก' };
     } else {
         await registerUser(username, password);
-        return { status: RegisterReponseStatus.Registered, message: 'User registered' };
+        return { status: RegisterReponseStatus.Registered, message: 'ลงทะเบียนสำเร็จ' };
     }
 }
 
-async function validateUser(username: string, password: string): Promise<[boolean, RegisterResponse|null]> {
-    // user exists
+type ValidationResult = { isValid: boolean, response?: RegisterResponse };
+
+async function validateUser(username: string, password: string): Promise<ValidationResult> {
+    // ผู้ใช้มีอยู่แล้ว
     if (await validateIfUserExists(username)) {
-        return [false, { status: RegisterReponseStatus.Failed, message: 'User already exists' }];
+        return { isValid: false, response: { status: RegisterReponseStatus.Failed, message: 'ผู้ใช้นี้มีอยู่แล้ว' } };
     }
-    // username at least 5 characters
+    // ชื่อผู้ใช้อย่างน้อย 5 ตัวอักษร
     if (username.length < 5) {
-        return [false, { status: RegisterReponseStatus.Failed, message: 'Username must be at least 5 characters long' }];
+        return { isValid: false, response: { status: RegisterReponseStatus.Failed, message: 'ชื่อผู้ใช้ต้องมีอย่างน้อย 5 ตัวอักษร' } };
     }
-    // password at least 8 characters
+    // รหัสผ่านอย่างน้อย 8 ตัวอักษร
     if (password.length < 8) {
-        return [false, { status: RegisterReponseStatus.Failed, message: 'Password must be at least 8 characters long' }];
+        return { isValid: false, response: { status: RegisterReponseStatus.Failed, message: 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร' } };
     }
-    // at least 1 number
+    // อย่างน้อย 1 ตัวเลข
     if (password.match(/[0-9]/) === null) {
-        return [false, { status: RegisterReponseStatus.Failed, message: 'Password must contain at least 1 number' }];
+        return { isValid: false, response: { status: RegisterReponseStatus.Failed, message: 'รหัสผ่านต้องมีอย่างน้อย 1 ตัวเลข' } };
     }
-    // at least 1 lowercase letter
+    // อย่างน้อย 1 ตัวอักษรพิมพ์เล็ก
     if (password.match(/[a-z]/) === null) {
-        return [false, { status: RegisterReponseStatus.Failed, message: 'Password must contain at least 1 lowercase letter' }];
+        return { isValid: false, response: { status: RegisterReponseStatus.Failed, message: 'รหัสผ่านต้องมีอย่างน้อย 1 ตัวอักษรพิมพ์เล็ก' } };
     }
-    // at least 1 uppercase letter
+    // อย่างน้อย 1 ตัวอักษรพิมพ์ใหญ่
     if (password.match(/[A-Z]/) === null) {
-        return [false, { status: RegisterReponseStatus.Failed, message: 'Password must contain at least 1 uppercase letter' }];
+        return { isValid: false, response: { status: RegisterReponseStatus.Failed, message: 'รหัสผ่านต้องมีอย่างน้อย 1 ตัวอักษรพิมพ์ใหญ่' } };
     }
 
-    return [true, null];
+    return { isValid: true };
 }
 
 async function validateIfUserExists(username: string) {
@@ -52,14 +55,13 @@ async function validateIfUserExists(username: string) {
         const row = await db.read('users', 'username', username);
         return !!row; // true if row exists, false otherwise
     } catch (err) {
-        console.error('Error validating if user exists');
         throw err;
     }
 }
 
 async function registerUser(username: string, password: string) {
+    const hashPassword = await bcrypt.hash(password, 10);
     const user = new UserID(username, password);
-    console.log(user);
     await db.writeNew(
         {
             tableName:'users', 
@@ -67,7 +69,7 @@ async function registerUser(username: string, password: string) {
             primaryKeyValue: user.username
             }, 
         [
-            { dataKey: 'password', value: password }, 
+            { dataKey: 'password', value: hashPassword }, 
             { dataKey: 'userID', value: user.userID }
         ]
     );

@@ -1,0 +1,76 @@
+;
+export var CharacterCreationResponseStatus;
+(function (CharacterCreationResponseStatus) {
+    CharacterCreationResponseStatus["SUCCESS"] = "SUCCESS";
+    CharacterCreationResponseStatus["INVALID_NAME"] = "INVALID_NAME";
+})(CharacterCreationResponseStatus || (CharacterCreationResponseStatus = {}));
+;
+;
+export var BackgroundEnum;
+(function (BackgroundEnum) {
+    BackgroundEnum["MAGE_APPRENTICE"] = "\u0E40\u0E14\u0E47\u0E01\u0E1D\u0E36\u0E01\u0E40\u0E27\u0E17\u0E22\u0E4C";
+    BackgroundEnum["DESERTED_MILITARY"] = "\u0E17\u0E2B\u0E32\u0E23\u0E2B\u0E19\u0E35\u0E17\u0E31\u0E1E";
+    BackgroundEnum["TAVERN_BRAWLER"] = "\u0E19\u0E31\u0E01\u0E2A\u0E39\u0E49\u0E43\u0E19\u0E23\u0E49\u0E32\u0E19\u0E40\u0E2B\u0E25\u0E49\u0E32";
+    BackgroundEnum["FALLEN_NOBILITY"] = "\u0E25\u0E39\u0E01\u0E2B\u0E25\u0E32\u0E19\u0E15\u0E23\u0E30\u0E01\u0E39\u0E25\u0E14\u0E31\u0E07";
+    BackgroundEnum["MERCS_CHILD"] = "\u0E25\u0E39\u0E01\u0E17\u0E2B\u0E32\u0E23\u0E23\u0E31\u0E1A\u0E08\u0E49\u0E32\u0E07";
+    BackgroundEnum["TRAINEE_IN_CARAVAN"] = "\u0E40\u0E14\u0E47\u0E01\u0E1D\u0E36\u0E01\u0E07\u0E32\u0E19\u0E43\u0E19\u0E02\u0E1A\u0E27\u0E19\u0E1E\u0E48\u0E2D\u0E04\u0E49\u0E32";
+    BackgroundEnum["WANDERING_MUSICIAN"] = "\u0E19\u0E31\u0E01\u0E14\u0E19\u0E15\u0E23\u0E35\u0E1E\u0E40\u0E19\u0E08\u0E23";
+    BackgroundEnum["APPRENTICE_SCRIBE"] = "\u0E1C\u0E39\u0E49\u0E0A\u0E48\u0E27\u0E22\u0E08\u0E14\u0E1A\u0E31\u0E19\u0E17\u0E36\u0E01";
+    BackgroundEnum["ABANDONED_FARMHAND"] = "\u0E40\u0E14\u0E47\u0E01\u0E1F\u0E32\u0E23\u0E4C\u0E21\u0E17\u0E35\u0E48\u0E16\u0E39\u0E01\u0E17\u0E2D\u0E14\u0E17\u0E34\u0E49\u0E07";
+    BackgroundEnum["STREET_URCHIN"] = "\u0E40\u0E14\u0E47\u0E01\u0E40\u0E23\u0E48\u0E23\u0E48\u0E2D\u0E19\u0E43\u0E19\u0E40\u0E21\u0E37\u0E2D\u0E07";
+    BackgroundEnum["FAILED_CRAFTSMAN"] = "\u0E0A\u0E48\u0E32\u0E07\u0E1D\u0E36\u0E01\u0E2B\u0E31\u0E14";
+    BackgroundEnum["INNKEEPERS_CHILD"] = "\u0E25\u0E39\u0E01\u0E40\u0E08\u0E49\u0E32\u0E02\u0E2D\u0E07\u0E42\u0E23\u0E07\u0E41\u0E23\u0E21";
+})(BackgroundEnum || (BackgroundEnum = {}));
+export var ClassEnum;
+(function (ClassEnum) {
+    ClassEnum["CLERIC"] = "\u0E19\u0E31\u0E01\u0E1A\u0E27\u0E0A";
+    ClassEnum["MAGE"] = "\u0E08\u0E2D\u0E21\u0E40\u0E27\u0E17";
+    ClassEnum["SCOUT"] = "\u0E19\u0E31\u0E01\u0E2A\u0E2D\u0E14\u0E41\u0E19\u0E21";
+    ClassEnum["HEXBINDER"] = "\u0E19\u0E31\u0E01\u0E1C\u0E39\u0E01\u0E04\u0E33\u0E2A\u0E32\u0E1B";
+    ClassEnum["FIGHTER"] = "\u0E19\u0E31\u0E01\u0E2A\u0E39\u0E49";
+    ClassEnum["WARDEN"] = "\u0E14\u0E23\u0E39\u0E2D\u0E34\u0E14";
+    ClassEnum["GUARDIAN"] = "\u0E1C\u0E39\u0E49\u0E1E\u0E34\u0E17\u0E31\u0E01\u0E29\u0E4C";
+    ClassEnum["SPELLBLADE"] = "\u0E19\u0E31\u0E01\u0E14\u0E32\u0E1A\u0E40\u0E27\u0E17";
+    ClassEnum["SKIRMISHER"] = "\u0E19\u0E31\u0E01\u0E25\u0E2D\u0E1A\u0E42\u0E08\u0E21\u0E15\u0E35";
+    ClassEnum["OCCULTIST"] = "\u0E19\u0E31\u0E01\u0E2D\u0E32\u0E04\u0E21";
+    ClassEnum["SOLDIER"] = "\u0E19\u0E31\u0E01\u0E23\u0E1A";
+    ClassEnum["TEMPLAR"] = "\u0E19\u0E31\u0E01\u0E23\u0E1A\u0E28\u0E31\u0E01\u0E14\u0E34\u0E4C\u0E2A\u0E34\u0E17\u0E18\u0E34\u0E4C";
+})(ClassEnum || (ClassEnum = {}));
+export var RaceEnum;
+(function (RaceEnum) {
+    RaceEnum["HUMAN"] = "\u0E21\u0E19\u0E38\u0E29\u0E22\u0E4C";
+    RaceEnum["ELVEN"] = "\u0E40\u0E2D\u0E25\u0E1F\u0E4C";
+    RaceEnum["ORC"] = "\u0E2D\u0E2D\u0E23\u0E4C\u0E04";
+    RaceEnum["TRITON"] = "\u0E44\u0E17\u0E23\u0E17\u0E31\u0E19";
+    RaceEnum["DWARF"] = "\u0E14\u0E27\u0E2D\u0E23\u0E4C\u0E1F";
+    RaceEnum["HALFLING"] = "\u0E2E\u0E32\u0E25\u0E4C\u0E1F\u0E25\u0E34\u0E48\u0E07";
+    RaceEnum["HALF_ELF"] = "\u0E04\u0E23\u0E36\u0E48\u0E07\u0E40\u0E2D\u0E25\u0E1F\u0E4C";
+    RaceEnum["HALF_ORC"] = "\u0E04\u0E23\u0E36\u0E48\u0E07\u0E2D\u0E2D\u0E23\u0E4C\u0E04";
+    RaceEnum["HALF_TRITON"] = "\u0E04\u0E23\u0E36\u0E48\u0E07\u0E44\u0E17\u0E23\u0E17\u0E31\u0E19";
+    RaceEnum["DWARFLING"] = "\u0E14\u0E27\u0E2D\u0E23\u0E4C\u0E1F\u0E25\u0E34\u0E48\u0E07";
+    RaceEnum["ELVON"] = "\u0E40\u0E2D\u0E25\u0E27\u0E2D\u0E19";
+    // Monster
+    RaceEnum["GOBLIN"] = "\u0E01\u0E4A\u0E2D\u0E1A\u0E25\u0E34\u0E19";
+    RaceEnum["KOBOLD"] = "\u0E42\u0E04\u0E42\u0E1A\u0E25\u0E14\u0E4C";
+    RaceEnum["FELINE"] = "\u0E40\u0E1F\u0E25\u0E35\u0E19";
+    RaceEnum["CANINE"] = "\u0E40\u0E04\u0E19\u0E35\u0E19";
+    RaceEnum["AVIAN"] = "\u0E2A\u0E31\u0E15\u0E27\u0E4C\u0E1B\u0E35\u0E01";
+    RaceEnum["INSECT"] = "\u0E41\u0E21\u0E25\u0E07";
+    RaceEnum["REPTILE"] = "\u0E2A\u0E31\u0E15\u0E27\u0E4C\u0E40\u0E25\u0E37\u0E49\u0E2D\u0E22\u0E04\u0E25\u0E32\u0E19";
+    RaceEnum["AQUATIC"] = "\u0E2A\u0E31\u0E15\u0E27\u0E4C\u0E19\u0E49\u0E33";
+    RaceEnum["PLANT"] = "\u0E1E\u0E37\u0E0A";
+    RaceEnum["DRAGON"] = "\u0E21\u0E31\u0E07\u0E01\u0E23";
+    RaceEnum["GIANT"] = "\u0E22\u0E31\u0E01\u0E29\u0E4C";
+    RaceEnum["ELEMENTAL"] = "\u0E18\u0E32\u0E15\u0E38";
+    RaceEnum["CELESTIAL"] = "\u0E40\u0E17\u0E27\u0E17\u0E39\u0E15";
+    RaceEnum["CONSTRUCT"] = "\u0E2A\u0E34\u0E48\u0E07\u0E01\u0E48\u0E2D\u0E2A\u0E23\u0E49\u0E32\u0E07";
+    RaceEnum["OOZE"] = "\u0E40\u0E21\u0E37\u0E2D\u0E01";
+    RaceEnum["SPIRIT"] = "\u0E27\u0E34\u0E0D\u0E0D\u0E32\u0E13";
+    RaceEnum["MONSTROSITY"] = "\u0E2A\u0E31\u0E15\u0E27\u0E4C\u0E1B\u0E23\u0E30\u0E2B\u0E25\u0E32\u0E14";
+    RaceEnum["FIEND"] = "\u0E2D\u0E2A\u0E39\u0E23";
+    RaceEnum["DEMON"] = "\u0E1B\u0E35\u0E28\u0E32\u0E08";
+    RaceEnum["UNDEAD"] = "\u0E1C\u0E35\u0E14\u0E34\u0E1A";
+    RaceEnum["TROLL"] = "\u0E42\u0E17\u0E23\u0E25";
+    // 
+    RaceEnum["UNDEFINED"] = "\u0E44\u0E21\u0E48\u0E23\u0E30\u0E1A\u0E38";
+})(RaceEnum || (RaceEnum = {}));

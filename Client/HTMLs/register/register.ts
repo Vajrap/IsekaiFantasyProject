@@ -1,19 +1,23 @@
-// register.js
+import { popup } from "../../classes/popup/popup";
+import { env } from "../../env";
+import { RegisterRequest, RegisterResponse, RegisterReponseStatus } from "../../../Common/RequestResponse/register";
 
 class RegisterModel {
+    private usernameField: HTMLInputElement;
+    private passwordField: HTMLInputElement;
+    private confirmPasswordField: HTMLInputElement;
+    private eulaCheckbox: HTMLInputElement;
+    private registerButton: HTMLButtonElement;
     constructor() {
-        this.usernameField = document.getElementById("reg-username");
-        this.passwordField = document.getElementById("reg-password");
-        this.confirmPasswordField = document.getElementById("reg-confirm-password");
-        this.eulaCheckbox = document.getElementById("eula-checkbox");
-        this.registerForm = document.getElementById("registerForm");
-        this.registerButton = document.querySelector(".registerButton");
-
+        this.usernameField = document.getElementById("reg-username") as HTMLInputElement;
+        this.passwordField = document.getElementById("reg-password") as HTMLInputElement;
+        this.confirmPasswordField = document.getElementById("reg-confirm-password") as HTMLInputElement;
+        this.eulaCheckbox = document.getElementById("eula-checkbox") as HTMLInputElement;
+        this.registerButton = document.querySelector(".registerButton") as HTMLButtonElement;
 
         // Bind the submitRegister method to the current instance
         this.submitRegister = this.submitRegister.bind(this);
         this.checkPasswords = this.checkPasswords.bind(this);
-
 
         // Adding event listener to the register button
         this.passwordField.addEventListener("input", this.checkPasswords);
@@ -53,61 +57,64 @@ class RegisterModel {
         }
     }
 
-    async submitRegister(event) {
+    async submitRegister(event: Event) {
         event.preventDefault();
 
         try {
-            const url = `${server.ip()}/auth/register`;
+            const url = `${env.ip()}/register`;
 
-            const jsonData = JSON.stringify({
+            const jsonData: RegisterRequest = {
                 username: this.getUsernameInput(),
-                password: this.getPasswordInput()
-            });
+                password: this.getPasswordInput(),
+            };
 
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: jsonData
+                body: JSON.stringify(jsonData)
             });
 
-            const responseData = await response.json();
+            const responseData: RegisterResponse  = await response.json();
 
             if (!response.ok) {
-                throw new Error(responseData.result.message);
+                throw new Error(responseData.message);
             }
 
-            if (responseData.result.status === 'success') {
+            if (responseData.status === RegisterReponseStatus.Registered) {
                 popup.show(
-                    responseData.result.status,
-                    responseData.result.message,
+                    responseData.status,
+                    responseData.message,
                     [{
-                        label: "Ok",
-                        action: Popup.hide
-                        // () => { 
-                            // window.location.href = '../../index.html' 
-                            // console.log('Redirect to login page');
-                        // }
+                        label: "ตกลง",
+                        action: popup.hide
                     }]
                 );
                 return;
             } else {
                 popup.show(
-                    responseData.result.status,
-                    responseData.result.message,
+                    responseData.status,
+                    responseData.message,
                     [{
-                        label: "Ok",
-                        action: Popup.hide
+                        label: "ตกลง",
+                        action: popup.hide
                     }]
                 );
             }
         } catch (error) {
             console.error('Error:', error);
-            this.showPopup({ result: { status: 'error', message: 'An unexpected error occurred. Please try again later.' } });
+            popup.show(
+                "ข้อผิดพลาด",
+                "เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง",
+                [{
+                    label: "ตกลง",
+                    action: popup.hide
+                }]
+            );        
         }
     }
 
 }
 
-const registerModel = new RegisterModel();
+export const registerModel = new RegisterModel();

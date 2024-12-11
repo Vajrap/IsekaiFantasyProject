@@ -1,4 +1,4 @@
-import { RaceEnum } from "../../API/Routes/CreateCharacter/RaceEnum"
+import { RaceEnum } from "../../../Common/RequestResponse/characterCreation"
 import { CharacterArchetype } from "../../Entities/Character/Subclasses/CharacterArchetype"
 import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType"
 import { GearSeedArmorEnum } from "../Item/Gear/Seeds/Armor"

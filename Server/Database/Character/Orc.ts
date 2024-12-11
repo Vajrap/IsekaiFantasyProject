@@ -1,4 +1,4 @@
-import { RaceEnum } from "../../API/Routes/CreateCharacter/RaceEnum";
+import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
 import { CharacterArchetype } from "../../Entities/Character/Subclasses/CharacterArchetype";
 import { CharacterStatus } from "../../Entities/Character/Subclasses/CharacterStatus";
 import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType";

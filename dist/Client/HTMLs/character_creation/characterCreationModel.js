@@ -1,48 +1,13 @@
-
-const raceEnum = {
-    human: 'มนุษย์',
-    elven: 'เอลฟ์',
-    orc: 'ออร์ค',
-    triton: 'ไทรทัน',
-    dwarf: 'ดวอร์ฟ',
-    halfling: 'ฮาล์ฟลิ่ง',
-    halfElf: 'ครึ่งเอลฟ์',
-    halfOrc: 'ครึ่งออร์ค',
-    halfTriton: 'ครึ่งไทรทัน',
-    dwarfling: 'ดวอร์ฟลิ่ง',
-    elvon: 'เอลวอน',
-}
-
-const classEnum = {
-    cleric: 'นักบวช',
-    mage: 'จอมเวท',
-    scout: 'นักสอดแนม',
-    hexbinder: 'นักผูกคำสาป',
-    fighter: 'นักสู้',
-    warden: 'ดรูอิด',
-    guardian: 'ผู้พิทักษ์',
-    spellblade: 'นักดาบเวท',
-    skirmisher: 'นักลอบโจมตี',
-    occultist: 'นักอาคม',
-    soldier: 'นักรบ',
-    templar: 'นักรบศักดิ์สิทธิ์',
-}
-
-const backgroundEnum = {
-    mageApprentice: 'เด็กฝึกเวทย์',
-    desertedMilitary: 'ทหารหนีทัพ',
-    tavernBrawler: 'นักสู้ในร้านเหล้า',
-    fallenNobility: 'ชนชั้นสูงที่ล่มสลาย',
-    mercsChild: 'ลูกทหารรับจ้าง',
-    traineeInCaravan: 'เด็กฝึกงานในขบวนพ่อค้า',
-    wanderingMusician: 'นักดนตรีพเนจร',
-    apprenticeScribe: 'ผู้ช่วยจดบันทึก',
-    abandonedFarmhand: 'เด็กฟาร์มที่ถูกทอดทิ้ง',
-    streetUrchin: 'เด็กเร่ร่อนในเมือง',
-    failedCraftsman: 'ช่างฝึกหัดที่ล้มเหลว',
-    innkeepersChild: 'ลูกเจ้าของโรงแรม',
-}
-
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+import { ClassEnum, RaceEnum, BackgroundEnum, CharacterCreationResponseStatus } from '../../../Common/RequestResponse/characterCreation';
 // Races
 const raceHuman = {
     attributes: {
@@ -60,8 +25,7 @@ const raceHuman = {
         endurance: 6,
     },
     description: `มนุษย์ในเอเวอร์เมียร์มีความยืดหยุ่นและความหลากหลายในการดำรงชีวิต พวกเขาโดดเด่นในฐานะนักสำรวจ นักประดิษฐ์ และผู้ก่อตั้งชุมชนใหม่ ด้วยการปรับตัวที่รวดเร็วและความทะเยอทะยาน มนุษย์สามารถเติมเต็มบทบาทได้หลากหลาย ไม่ว่าจะเป็นนักรบ นักการทูต หรือพ่อค้า ความหลากหลายทางวัฒนธรรมทำให้มนุษย์เป็นผู้นำในการเชื่อมโยงและสร้างความสมดุลระหว่างเผ่าพันธุ์`
-}
-
+};
 const raceElven = {
     attributes: {
         charisma: 7,
@@ -78,8 +42,7 @@ const raceElven = {
         endurance: 5,
     },
     description: `เอลฟ์เป็นเผ่าพันธุ์ที่มีความสง่างามและสืบทอดมรดกทางวัฒนธรรมมายาวนาน พวกเขามีความเชื่อมโยงกับธรรมชาติอย่างลึกซึ้งและความสามารถในการใช้พลังธาตุที่โดดเด่น เอลฟ์บางกลุ่มมุ่งเน้นชีวิตที่กลมกลืนกับป่าไม้ ขณะที่บางกลุ่มเลือกพัฒนาเทคนิคการต่อสู้ที่เน้นความแม่นยำและความรวดเร็ว พวกเขาคือผู้พิทักษ์แห่งความสมดุลและวัฒนธรรมอันล้ำค่า`
-}
-
+};
 const raceOrc = {
     attributes: {
         charisma: 5,
@@ -96,8 +59,7 @@ const raceOrc = {
         endurance: 7,
     },
     description: `ออร์คเป็นเผ่าพันธุ์ที่ให้ความสำคัญกับความแข็งแกร่งและความสามัคคีในชุมชน วัฒนธรรมของพวกเขาเต็มไปด้วยเกียรติยศและความจงรักภักดี ออร์คไม่ได้เป็นเพียงนักรบที่ทรงพลัง แต่ยังเป็นนักแก้ไขปัญหาที่มุ่งมั่นในวิทยาการและการพัฒนา อาณาเขตของพวกเขาเป็นทั้งศูนย์กลางการค้าและสถานที่ฝึกฝนที่มีชีวิตชีวา`
-}
-
+};
 const raceTriton = {
     attributes: {
         charisma: 5,
@@ -115,7 +77,6 @@ const raceTriton = {
     },
     description: `ไทรทันอาศัยอยู่ตามแนวชายฝั่งหรือใกล้แหล่งน้ำ ด้วยความสามารถในการกลั้นหายใจได้นานและความชำนาญในพลังธาตุ (Planar) พวกเขาโดดเด่นในบทบาทนักสำรวจ นักเดินเรือ และผู้พิทักษ์ชุมชนริมน้ำ ไทรทันมีวิถีชีวิตที่มุ่งเน้นการพึ่งพาสภาพแวดล้อมทางธรรมชาติและการปรับตัวในสถานการณ์ที่หลากหลาย`
 };
-
 const raceDwarf = {
     attributes: {
         charisma: 5,
@@ -133,7 +94,6 @@ const raceDwarf = {
     },
     description: `คนแคระเป็นเผ่าพันธุ์ที่เชี่ยวชาญด้านช่างฝีมือและการก่อสร้าง พวกเขาอาศัยอยู่ในภูเขาสูงและเครือข่ายเหมืองลึก สร้างสรรค์ผลงานที่ยืนยาวทั้งในด้านอาวุธและสถาปัตยกรรม วัฒนธรรมของคนแคระเน้นความขยันและความมุ่งมั่น ซึ่งทำให้พวกเขาเป็นพันธมิตรที่น่าเชื่อถือและผู้เชี่ยวชาญในสาขาที่พวกเขาเลือก`
 };
-
 const raceHalfling = {
     attributes: {
         charisma: 6,
@@ -151,7 +111,6 @@ const raceHalfling = {
     },
     description: `ฮาล์ฟลิ่งเป็นเผ่าพันธุ์ที่รักความเรียบง่ายและอิสระ พวกเขาอาศัยอยู่ในหมู่บ้านชนบทหรือเขตที่เต็มไปด้วยทุ่งหญ้า วิถีชีวิตของพวกเขาเน้นการร่วมมือในชุมชนและการพึ่งพาตนเอง ฮาล์ฟลิ่งมีความชำนาญในด้านการลอบเร้นและการสำรวจ ทำให้พวกเขาเป็นนักผจญภัยและนักการทูตที่มีประสิทธิภาพ`
 };
-
 const raceHalfElf = {
     attributes: {
         charisma: 7,
@@ -169,7 +128,6 @@ const raceHalfElf = {
     },
     description: `ฮาล์ฟเอลฟ์คือผู้ที่ผสมผสานมรดกของมนุษย์และเอลฟ์ไว้ในตัวเอง พวกเขามักมีมุมมองที่เป็นเอกลักษณ์ต่อโลก และสามารถปรับตัวได้ในหลากหลายวัฒนธรรม ความสามารถในการดึงจุดแข็งของทั้งสองเผ่าพันธุ์ทำให้พวกเขาเป็นนักสำรวจที่มีความคิดสร้างสรรค์ หรือผู้นำที่เชื่อมโยงชุมชนต่าง ๆ เข้าด้วยกัน`
 };
-
 const raceHalfOrc = {
     attributes: {
         charisma: 5,
@@ -187,7 +145,6 @@ const raceHalfOrc = {
     },
     description: `ฮาล์ฟออร์คเป็นที่รู้จักในด้านความกล้าหาญและพลังอันยิ่งใหญ่ที่มาพร้อมกับความยืดหยุ่นของมนุษย์ พวกเขามักแสวงหาความสมดุลระหว่างเกียรติยศของออร์คและความทะเยอทะยานของมนุษย์ ฮาล์ฟออร์คสามารถเป็นทั้งนักรบที่ดุดันและนักแก้ไขปัญหาที่ใช้ไหวพริบเพื่อสร้างโอกาสในสังคม`
 };
-
 const raceHalfTriton = {
     attributes: {
         charisma: 6,
@@ -205,7 +162,6 @@ const raceHalfTriton = {
     },
     description: `ฮาล์ฟไทรทันเป็นผู้ที่ผสมผสานความสามารถในการสำรวจและความเชื่อมโยงกับธรรมชาติของไทรทันเข้ากับความหลากหลายของมนุษย์ พวกเขาเป็นนักเดินเรือและผู้พิทักษ์ชุมชนที่มีวิสัยทัศน์กว้างไกล ด้วยความสามารถเฉพาะตัว ฮาล์ฟไทรทันมักจะมีบทบาทสำคัญในการสร้างเส้นทางใหม่หรือการปกป้องทรัพยากรที่สำคัญ`
 };
-
 const raceDwarfling = {
     attributes: {
         charisma: 6,
@@ -223,7 +179,6 @@ const raceDwarfling = {
     },
     description: `ดวอร์ฟลิ่งเป็นเผ่าพันธุ์ที่สืบทอดความขยันและความแม่นยำของคนแคระ พร้อมกับความกระฉับกระเฉงของฮาล์ฟลิ่ง พวกเขามักโดดเด่นในฐานะช่างฝีมือหรือผู้สร้างสรรค์ที่ผสานความละเอียดและความยืดหยุ่นได้อย่างสมดุล ดวอร์ฟลิ่งคือผู้เชื่อมโยงวิทยาการกับชีวิตประจำวันที่ลงตัว`
 };
-
 const raceElvon = {
     attributes: {
         charisma: 7,
@@ -241,7 +196,6 @@ const raceElvon = {
     },
     description: `เอลวอนเป็นเอลฟ์สายพิเศษที่พัฒนาความชำนาญในพลังธาตุให้สอดคล้องกับการใช้ชีวิตแบบนักสำรวจ พวกเขาเชี่ยวชาญการควบคุมพลังงานธรรมชาติในแบบที่ผสมผสานกับศาสตร์การต่อสู้ เอลวอนมักมีบทบาทสำคัญในฐานะผู้รักษาหรือผู้พิทักษ์ทรัพยากรธรรมชาติในช่วงเวลาสำคัญ`
 };
-
 // Class
 const classCleric = {
     attributes: {
@@ -267,8 +221,7 @@ const classCleric = {
                 <li>เกราะหนังเบา (Light Leather Armor)</li>
             </ul>
             `
-}
-
+};
 const classMage = {
     attributes: {
         planar: 1,
@@ -292,8 +245,7 @@ const classMage = {
                 <li>ผ้าไหม (Silk Cloth)</li>
             </ul>
         `
-}
-
+};
 const classScout = {
     attributes: {
         dexterity: 1,
@@ -316,8 +268,7 @@ const classScout = {
                 <li>เกราะหนังเบา (Light Leather Armor)</li>
             </ul>
         `
-}
-
+};
 const classHexbinder = {
     attributes: {
         planar: 1,
@@ -342,8 +293,7 @@ const classHexbinder = {
                 <li>เกราะหนังเบา (Light Leather Armor)</li>
             </ul>
         `
-}
-
+};
 const classFighter = {
     attributes: {
         strength: 1,
@@ -366,8 +316,7 @@ const classFighter = {
         <li>เกราะหนังเบา (Light Leather Armor)</li>
     </ul>
 `
-}
-
+};
 const classWarden = {
     attributes: {
         breath: 1,
@@ -392,8 +341,7 @@ const classWarden = {
                 <li>ผ้าไหม (Silk Cloth)</li>
             </ul>
         `
-}
-
+};
 const classGuardian = {
     attributes: {
         endurance: 1,
@@ -418,8 +366,7 @@ const classGuardian = {
                 <li>เกราะหนังเบา (Light Leather Armor)</li>
             </ul>
         `
-}
-
+};
 const classSpellblade = {
     attributes: {
         planar: 1,
@@ -444,8 +391,7 @@ const classSpellblade = {
                 <li>เกราะหนังเบา (light leather armor)</li>
             </ul>
         `
-}
-
+};
 const classSkirmisher = {
     attributes: {
         agility: 1,
@@ -470,7 +416,6 @@ const classSkirmisher = {
         </ul>
     `
 };
-
 const classOccultist = {
     attributes: {
         planar: 1,
@@ -495,7 +440,6 @@ const classOccultist = {
         </ul>
     `
 };
-
 const classSoldier = {
     attributes: {
         vitality: 1,
@@ -521,7 +465,6 @@ const classSoldier = {
         </ul>
     `
 };
-
 const classTemplar = {
     attributes: {
         charisma: 1,
@@ -548,13 +491,13 @@ const classTemplar = {
         </ul>
     `
 };
-
 //Background
 const backgroundMageApprentice = {
     attributes: {
         intelligence: 1,
     },
     proficiencies: {},
+    artisans: {},
     description: `
         <strong>เด็กฝึกเวทย์</strong>: คุณเคยเป็นเด็กฝึกเวทย์ที่ได้รับการฝึกฝนจากอาจารย์ผู้มีชื่อเสียง แต่วันหนึ่งอาจารย์ของคุณหายตัวไปอย่างไร้ร่องรอย ทิ้งคำถามมากมายและความฝันที่ยังไม่สมบูรณ์ไว้ คุณต้องออกเดินทางเพื่อตามหาคำตอบและเติมเต็มเส้นทางเวทย์มนตร์ด้วยตัวเอง
         <br/><br/>
@@ -570,12 +513,12 @@ const backgroundMageApprentice = {
         </ul>
     `
 };
-
 const backgroundDesertedMilitary = {
     attributes: {
         strength: 1,
     },
     proficiencies: {},
+    artisans: {},
     description: `
         <strong>ทหารหนีทัพ</strong>: คุณเคยเป็นทหารผู้ภักดีในสนามรบ แต่สงครามที่โหดร้ายสร้างบาดแผลในใจจนคุณตัดสินใจละทิ้งหน้าที่และหาหนทางชีวิตใหม่ที่อิสระจากอดีต
         <br/><br/>
@@ -592,12 +535,12 @@ const backgroundDesertedMilitary = {
         </ul>
     `
 };
-
 const backgroundTavernBrawler = {
     attributes: {
         agility: 1,
     },
     proficiencies: {},
+    artisans: {},
     description: `
         <strong>นักสู้ในร้านเหล้า</strong>: ชีวิตในร้านเหล้าสอนให้คุณรู้จักการต่อสู้โดยไร้กฎเกณฑ์ คุณรอดพ้นจากสถานการณ์ลำบากและฝึกฝนจนกลายเป็นคนแข็งแกร่ง ทั้งทางร่างกายและจิตใจ ตอนนี้คุณพร้อมจะเริ่มต้นใหม่เพื่อค้นหาสิ่งที่ดีกว่าในชีวิต
         <br/><br/>
@@ -613,12 +556,12 @@ const backgroundTavernBrawler = {
         </ul>
     `
 };
-
 const backgroundFallenNobility = {
     attributes: {
         charisma: 1,
     },
     proficiencies: {},
+    artisans: {},
     description: `
         <strong>ลูกหลานตระกูลดัง</strong>: ครั้งหนึ่งคุณเคยใช้ชีวิตหรูหราในคฤหาสน์ แต่หลังจากครอบครัวล่มสลาย คุณต้องเผชิญกับความลำบาก แม้ว่าจะสูญเสียทุกสิ่ง แต่คุณยังคงยึดมั่นในศักดิ์ศรีและความหวังเพื่อสร้างอนาคตใหม่
         <br/><br/>
@@ -635,12 +578,12 @@ const backgroundFallenNobility = {
         </ul>
     `
 };
-
 const backgroundMercsChild = {
-attributes: {
+    attributes: {
         dexterity: 1,
     },
     proficiencies: {},
+    artisans: {},
     description: `
         <strong>ลูกทหารรับจ้าง</strong>: ในวัยเด็ก คุณเดินทางไปกับกองทหารรับจ้างที่ต่อสู้เพื่อทองคำมากกว่าความเชื่อ คุณเรียนรู้ศิลปะแห่งสงครามและการเอาตัวรอด แต่เมื่อถึงเวลา คุณตัดสินใจสร้างชื่อเสียงของตัวเองในแบบที่แตกต่าง
         <br/><br/>
@@ -656,12 +599,12 @@ attributes: {
         </ul>
     `
 };
-
 const backgroundTraineeInCaravan = {
     attributes: {
         luck: 1,
     },
     proficiencies: {},
+    artisans: {},
     description: `
         <strong>เด็กฝึกงานในขบวนพ่อค้า</strong>: การเดินทางไปกับขบวนพ่อค้าเต็มไปด้วยบทเรียนและความเสี่ยง คุณเห็นโลกที่กว้างใหญ่และท้าทาย แต่เมื่อโตขึ้น คุณเลือกที่จะละทิ้งชีวิตเร่ร่อนเพื่อค้นหาสิ่งที่ยั่งยืนกว่า
         <br/><br/>
@@ -677,7 +620,6 @@ const backgroundTraineeInCaravan = {
         </ul>
     `
 };
-
 const backgroundWanderingMusician = {
     attributes: {
         charisma: 1,
@@ -704,7 +646,6 @@ const backgroundWanderingMusician = {
         </ul>
     `,
 };
-
 const backgroundApprenticeScribe = {
     attributes: {
         intelligence: 1,
@@ -731,7 +672,6 @@ const backgroundApprenticeScribe = {
         </ul>
     `,
 };
-
 const backgroundAbandonedFarmhand = {
     attributes: {
         strength: 1,
@@ -756,7 +696,6 @@ const backgroundAbandonedFarmhand = {
         </ul>
     `,
 };
-
 const backgroundStreetUrchin = {
     attributes: {
         dexterity: 1,
@@ -783,7 +722,6 @@ const backgroundStreetUrchin = {
         </ul>
     `,
 };
-
 const backgroundFailedCraftsman = {
     attributes: {
         dexterity: 1,
@@ -808,7 +746,6 @@ const backgroundFailedCraftsman = {
         </ul>
     `,
 };
-
 const backgroundInnkeepersChild = {
     attributes: {
         charisma: 1,
@@ -835,9 +772,7 @@ const backgroundInnkeepersChild = {
         </ul>
     `,
 };
-
-
-class CharacterCreationModel {
+export class CharacterCreationModel {
     constructor() {
         this.attributes = {
             charisma: 0,
@@ -853,7 +788,6 @@ class CharacterCreationModel {
             strength: 0,
             endurance: 0,
         };
-
         this.proficiencies = {
             bareHand: 6,
             sword: 6,
@@ -869,7 +803,6 @@ class CharacterCreationModel {
             tome: 6,
             orb: 6,
         };
-
         this.artisans = {
             mining: 6,
             smithing: 6,
@@ -884,147 +817,225 @@ class CharacterCreationModel {
             alchemy: 6,
             enchanting: 6,
         };
-        
-        this.selectedClass = null;
-        this.selectedRace = null;
-        this.selectedBackground = null;
-
-        this.ws = characterCreationWS;
+        this.selectedClass = ClassEnum.CLERIC;
+        this.selectedRace = RaceEnum.HUMAN;
+        this.selectedBackground = BackgroundEnum.MAGE_APPRENTICE;
     }
-
-    // connectWebSocket() {
-    //     this.ws.connect();
-
-    //     this.ws.onopen = () => {
-    //         console.log('WebSocket connection established');
-    //     };
-
-    //     this.ws.on('CHARACTER_CREATED', (message) => {
-    //         console.log('Character created:', message);
-    //         window.location.href = '../game/game.html'
-    //     });
-
-    //     this.ws.on('UPDATE', (message) => {
-    //         this.updateModel(message);
-    //     });
-
-    //     this.ws.on('ERROR', (message) => {
-    //         popup.show(message.type, message.message);
-    //     });
-
-    //     this.ws.onclose = () => {
-    //         console.log('WebSocket connection closed');
-    //     };
-
-    //     this.ws.onerror = (error) => {
-    //         console.error('WebSocket error:', error);
-    //     };
-    // }
-    // Change from WebSocket to normal API call since we don't have the increasing-decreasing stat anymore
-    // API will send
-    // Name, race, class, background, let the BE deal with the creation itself
-
-    updateModel(data) {
-        // Merging attributes, proficiencies, and artisans correctly
-        if (data.attributes) {
-            Object.assign(this.attributes, data.attributes);
-        }
-        if (data.proficiencies) {
-            Object.assign(this.proficiencies, data.proficiencies);
-        }
-        if (data.artisans) {
-            Object.assign(this.artisans, data.artisans);
-        }
-        // Updating other fields
-        this.creationPoints = (data.creationPoints !== undefined) ? data.creationPoints : this.creationPoints;
-        this.startingGold = (data.startingGold !== undefined) ? data.startingGold : this.startingGold;
-        this.selectedSkills = data.selectedSkills;
-        this.selectedInternalSkill = data.selectedInternalSkill;
-
-        characterCreationViewModel.updateUI();
-    }
-
-    sendMessage(message) {
-        if (this.ws && this.ws.ws.readyState === WebSocket.OPEN) {
-            this.ws.send(message);
-        } else {
-            console.error('WebSocket is not open');
-        }
-    }
-
     createCharacter(characterName, portrait) {
-        const message = {
-            type: 'CREATE',
-            characterName,
-            portrait,
-            background: this.selectedBackground,
-            userID: this.userID,
-        };
-        this.sendMessage(message);
+        return __awaiter(this, void 0, void 0, function* () {
+            const message = {
+                characterName,
+                portrait,
+                race: this.selectedRace,
+                class: this.selectedClass,
+                background: this.selectedBackground,
+            };
+            return yield sendCharacterCreationRequest(message);
+        });
     }
-
     selectRace(race) {
-        // If a race was already selected, subtract its attributes
+        const raceObject = matchRace(race);
+        if (raceObject == null) {
+            console.error('Invalid Race');
+            return;
+        }
         if (this.selectedRace != null) {
-            this.previousRace = this.selectedRace;
-            for (const key in this.attributes) {
-                this.attributes[key] -= this.previousRace.attributes[key];
+            const previousRaceObject = matchRace(this.selectedRace);
+            if (previousRaceObject == null) {
+                console.error('Invalid Previous Race');
+                return;
+            }
+            for (const key in previousRaceObject.attributes) {
+                const attributeKey = key;
+                this.attributes[attributeKey] -=
+                    previousRaceObject.attributes[attributeKey];
             }
         }
-    
-        // Set the new selected race
         this.selectedRace = race;
-    
-        // Add the new race's attributes
-        for (const key in this.attributes) {
-            this.attributes[key] += this.selectedRace.attributes[key];
+        for (const key in raceObject.attributes) {
+            const attributeKey = key;
+            this.attributes[attributeKey] +=
+                raceObject.attributes[attributeKey];
         }
     }
-
-    selectClass(classSelect) {
+    selectClass(classEnum) {
+        const classObject = matchClass(classEnum);
+        if (classObject == null) {
+            console.error('Invalid Class');
+            return;
+        }
         if (this.selectedClass != null) {
-            this.previousClass = this.selectedClass;
-            for (const key in this.previousClass.attributes) {
-                this.attributes[key] -= this.previousClass.attributes[key];
+            const previousClassObject = matchClass(this.selectedClass);
+            if (previousClassObject == null) {
+                console.error('Invalid Previous Class');
+                return;
             }
-            for (const key in this.previousClass.proficiencies) {
-                this.proficiencies[key] -= this.previousClass.proficiencies[key];
+            for (const key in previousClassObject.attributes) {
+                const attributeKey = key;
+                this.attributes[attributeKey] -=
+                    previousClassObject.attributes[attributeKey];
+            }
+            for (const key in previousClassObject.proficiencies) {
+                const proficiencyKey = key;
+                this.proficiencies[proficiencyKey] -=
+                    previousClassObject.proficiencies[proficiencyKey];
             }
         }
-        this.selectedClass = classSelect;
-
-        for (const key in classSelect.attributes) {
-            this.attributes[key] += this.selectedClass.attributes[key];
+        this.selectedClass = classEnum;
+        for (const key in classObject.attributes) {
+            const attributeKey = key;
+            this.attributes[attributeKey] +=
+                classObject.attributes[attributeKey];
         }
-        for (const key in classSelect.proficiencies) {
-            this.proficiencies[key] += this.selectedClass.proficiencies[key];
+        for (const key in classObject.proficiencies) {
+            const proficiencyKey = key;
+            this.proficiencies[proficiencyKey] +=
+                classObject.proficiencies[proficiencyKey];
         }
-    };
-
-    selectBackground(backGround) {
+    }
+    ;
+    selectBackground(backGroundEnum) {
+        const backGroundObject = matchBackground(backGroundEnum);
+        if (backGroundObject == null) {
+            console.error('Invalid Background');
+            return;
+        }
         if (this.selectedBackground != null) {
-            this.previousBackground = this.selectedBackground;
-            for (const key in this.previousBackground.attributes) {
-                this.attributes[key] -= this.previousBackground.attributes[key];
+            const previousBackground = matchBackground(this.selectedBackground);
+            if (previousBackground == null) {
+                console.error('Invalid Previous Background');
+                return;
             }
-            for (const key in this.previousBackground.proficiencies) {
-                this.proficiencies[key] -= this.previousBackground.proficiencies[key];
+            for (const key in previousBackground.attributes) {
+                const attributeKey = key;
+                this.attributes[attributeKey] -=
+                    previousBackground.attributes[attributeKey];
             }
-            for (const key in this.previousBackground.artisans) {
-                this.artisans[key] -= this.previousBackground.artisans[key];
+            for (const key in previousBackground.proficiencies) {
+                const proficiencyKey = key;
+                this.proficiencies[proficiencyKey] -=
+                    previousBackground.proficiencies[proficiencyKey];
+            }
+            for (const key in previousBackground.artisans) {
+                const artisanKey = key;
+                this.artisans[artisanKey] -=
+                    previousBackground.artisans[artisanKey];
             }
         }
-
-        this.selectedBackground = backGround;
-
-        for (const key in backGround.attributes) {
-            this.attributes[key] += this.selectedBackground.attributes[key];
+        this.selectedBackground = backGroundEnum;
+        for (const key in backGroundObject.attributes) {
+            const attributeKey = key;
+            this.attributes[attributeKey] +=
+                backGroundObject.attributes[attributeKey];
         }
-        for (const key in backGround.proficiencies) {
-            this.proficiencies[key] += this.selectedBackground.proficiencies[key];
+        for (const key in backGroundObject.proficiencies) {
+            const proficiencyKey = key;
+            this.proficiencies[proficiencyKey] +=
+                backGroundObject.proficiencies[proficiencyKey];
+        }
+        for (const key in backGroundObject.artisans) {
+            const artisanKey = key;
+            this.artisans[artisanKey] +=
+                backGroundObject.artisans[artisanKey];
         }
     }
 }
-
-const characterCreationModel = new CharacterCreationModel();
-// characterCreationModel.connectWebSocket();
+export function matchRace(raceEnum) {
+    switch (raceEnum) {
+        case RaceEnum.HUMAN:
+            return raceHuman;
+        case RaceEnum.ELVEN:
+            return raceElven;
+        case RaceEnum.ORC:
+            return raceOrc;
+        case RaceEnum.TRITON:
+            return raceTriton;
+        case RaceEnum.DWARF:
+            return raceDwarf;
+        case RaceEnum.HALFLING:
+            return raceHalfling;
+        case RaceEnum.HALF_ELF:
+            return raceHalfElf;
+        case RaceEnum.HALF_ORC:
+            return raceHalfOrc;
+        case RaceEnum.HALF_TRITON:
+            return raceHalfTriton;
+        case RaceEnum.DWARFLING:
+            return raceDwarfling;
+        case RaceEnum.ELVON:
+            return raceElvon;
+        default:
+            return null;
+    }
+}
+export function matchClass(classEnum) {
+    switch (classEnum) {
+        case ClassEnum.CLERIC:
+            return classCleric;
+        case ClassEnum.FIGHTER:
+            return classFighter;
+        case ClassEnum.GUARDIAN:
+            return classGuardian;
+        case ClassEnum.HEXBINDER:
+            return classHexbinder;
+        case ClassEnum.MAGE:
+            return classMage;
+        case ClassEnum.OCCULTIST:
+            return classOccultist;
+        case ClassEnum.SCOUT:
+            return classScout;
+        case ClassEnum.SKIRMISHER:
+            return classSkirmisher;
+        case ClassEnum.SOLDIER:
+            return classSoldier;
+        case ClassEnum.SPELLBLADE:
+            return classSpellblade;
+        case ClassEnum.TEMPLAR:
+            return classTemplar;
+        case ClassEnum.WARDEN:
+            return classWarden;
+        default:
+            return null;
+    }
+}
+export function matchBackground(backgroundEnum) {
+    switch (backgroundEnum) {
+        case BackgroundEnum.MAGE_APPRENTICE:
+            return backgroundMageApprentice;
+        case BackgroundEnum.DESERTED_MILITARY:
+            return backgroundDesertedMilitary;
+        case BackgroundEnum.TAVERN_BRAWLER:
+            return backgroundTavernBrawler;
+        case BackgroundEnum.FALLEN_NOBILITY:
+            return backgroundFallenNobility;
+        case BackgroundEnum.MERCS_CHILD:
+            return backgroundMercsChild;
+        case BackgroundEnum.TRAINEE_IN_CARAVAN:
+            return backgroundTraineeInCaravan;
+        case BackgroundEnum.WANDERING_MUSICIAN:
+            return backgroundWanderingMusician;
+        case BackgroundEnum.APPRENTICE_SCRIBE:
+            return backgroundApprenticeScribe;
+        case BackgroundEnum.ABANDONED_FARMHAND:
+            return backgroundAbandonedFarmhand;
+        case BackgroundEnum.STREET_URCHIN:
+            return backgroundStreetUrchin;
+        case BackgroundEnum.FAILED_CRAFTSMAN:
+            return backgroundFailedCraftsman;
+        case BackgroundEnum.INNKEEPERS_CHILD:
+            return backgroundInnkeepersChild;
+        default:
+            return null;
+    }
+}
+function sendCharacterCreationRequest(message) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log('Sending Character Creation Request', message);
+        return {
+            status: CharacterCreationResponseStatus.SUCCESS,
+            message: 'Character Created Successfully',
+            characterId: '1234567890',
+        };
+    });
+}
+export const characterCreationModel = new CharacterCreationModel();

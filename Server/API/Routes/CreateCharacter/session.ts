@@ -2,8 +2,9 @@ import WebSocket from "ws";
 import { EventEmitter } from 'events';
 import { db } from "../../../Database";
 import { PlayerCharacter } from "../../../Entities/Character/Character";
-import { class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden, ClassEnum } from "./ClassEnum";
-import { RaceEnum } from "./RaceEnum";
+import { class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden } from "./ClassEnum";
+import { ClassEnum } from "../../../../Common/RequestResponse/characterCreation";
+import { RaceEnum } from "../../../../Common/RequestResponse/characterCreation";
 import { dwarflingRace, dwarfRace, elvenRace, elvonRace, halfElvenRace, halflingRace, halfOrcRace, halfTritonRace, humanRace, orcRace, tritonRace } from "../../../Database/Character/RacesStatus";
 import { game } from "../../../server";
 

@@ -6,7 +6,9 @@ export async function createUsersTableIfNotExist() {
         username TEXT PRIMARY KEY,
         password TEXT,
         userID TEXT,
-        characterID TEXT
+        characterID TEXT,
+        token TEXT,
+        tokenExpiredAt TIMESTAMP
     `;
 
     await createTableIfNotExists(tableName, tableStructure, [], 'username', false);
