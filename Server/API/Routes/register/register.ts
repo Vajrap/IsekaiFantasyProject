@@ -1,14 +1,22 @@
-import { UserID,  } from '../../../Authenticate/UserID';
+import { UserID, UserDBRow } from '../../../Authenticate/UserID';
 import { db } from '../../../Database';
 import { RegisterRequest, RegisterReponseStatus, RegisterResponse  } from '../../../../Common/RequestResponse/register';
 import { Request } from 'express';
 import bcrypt from "bcrypt";
 
-export async function registerHandler(req: Request): Promise<RegisterResponse> {
-    const request = req.body as RegisterRequest;
+export async function registerHandler(
+    username: string,
+    password: string
+): Promise<RegisterResponse> {
+    const existingUser = await findExistingUser(username);
+    if (existingUser) {
+        return { 
+            status: RegisterReponseStatus.Failed, 
+            message: "ผู้ใช้นี้มีอยู่แล้ว" 
+        }; 
+    }
 
-    let [username, password] = [request.username, request.password];
-
+    console.log(username, password)
     const {isValid, response} = await validateUser(username, password);
 
     if (!isValid) {
@@ -48,6 +56,16 @@ async function validateUser(username: string, password: string): Promise<Validat
     }
 
     return { isValid: true };
+}
+
+async function findExistingUser(username: string): Promise<UserID | undefined> {
+    try {
+        const row: UserDBRow = await db.read('users', 'username', username);
+        return row ? UserID.createFromDBRow(row) : undefined;
+    } catch (err) {
+        console.error(`Error finding user: ${username}`, err);
+        throw err;
+    }
 }
 
 async function validateIfUserExists(username: string) {

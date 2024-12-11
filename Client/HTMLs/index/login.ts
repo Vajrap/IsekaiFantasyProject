@@ -1,6 +1,6 @@
-import { LoginRequest, LoginResponse, LoginResponseStatus } from "../../../Common/RequestResponse/login";
-import { env } from "../../env";
-import { popup } from "../../classes/popup/popup";
+import { LoginRequest, LoginResponse, LoginResponseStatus } from "../../../Common/RequestResponse/login.js";
+import { env } from "../../env.js";
+import { popup } from "../../classes/popup/popup.js";
 
 class LoginModel {
   userField: HTMLInputElement;
@@ -30,9 +30,9 @@ class LoginModel {
 
   redirectToAppropriatePage(statusType: LoginResponseStatus) {
     if (statusType === LoginResponseStatus.LoggedInWithCharacter) {
-      window.location.href = '../HTMLs/game/game.html';
+      window.location.href = '../../../Client/HTMLs/game/game.html';
     } else {
-      window.location.href = '../HTMLs/character_creation/character_creation.html';
+      window.location.href = '../../../Client/HTMLs/character_creation/character_creation.html';
     }
   }
 
@@ -43,7 +43,7 @@ class LoginModel {
 
   async autoLogin() {
     try {
-      const url = `${env.ip()}/auth/autoLogin`;
+      const url = `${env.ip()}/autoLogin`;
       const token = localStorage.getItem('isekaiFantasy_token') ?? '';
       const response = await fetch(url, {
         method: 'POST',
@@ -74,7 +74,7 @@ class LoginModel {
 
   async submitLogin() {
     try {
-      const url = `${env.ip()}/auth/login`;
+      const url = `${env.ip()}/login`;
       const jsonData: LoginRequest = {
         username: this.getUsernameInput(),
         password: this.getPasswordInput()
@@ -92,7 +92,9 @@ class LoginModel {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
   
-      const responseData: LoginResponse = await response.json();
+      const raw = await response.json();
+      const responseData: LoginResponse = raw.result;
+
       if (
         responseData.status === LoginResponseStatus.LoggedInWithCharacter || 
         responseData.status === LoginResponseStatus.LoggedInWithNoCharacter
@@ -108,7 +110,7 @@ class LoginModel {
           responseData.message,
           [{
             label: "ตกลง",
-            action: popup.hide
+            action: popup.hide.bind(popup)
           }]
         );
       }
@@ -120,7 +122,7 @@ class LoginModel {
           'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณหรือทดลองใหม่อีกครั้ง',
           [{
             label: 'ตกลง',
-            action: popup.hide
+            action: popup.hide.bind(popup)
           }]
         );
       } else if (error instanceof Error && error.message.includes('HTTP error')) {
@@ -131,7 +133,7 @@ class LoginModel {
           `เซิร์ฟเวอร์ส่งข้อผิดพลาดกลับมา (HTTP ${statusCode}) กรุณาลองใหม่อีกครั้ง`,
           [{
             label: 'ตกลง',
-            action: popup.hide
+            action: popup.hide.bind(popup)
           }]
         );
       } else {
@@ -141,7 +143,7 @@ class LoginModel {
           'เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง',
           [{
             label: 'ตกลง',
-            action: popup.hide
+            action: popup.hide.bind(popup)
           }]
         );
       }

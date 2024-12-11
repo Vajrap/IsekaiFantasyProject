@@ -7,31 +7,129 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { ClassEnum, RaceEnum, BackgroundEnum, CharacterCreationResponseStatus } from '../../../Common/RequestResponse/characterCreation';
-import { characterCreationModel, matchBackground, matchClass, matchRace } from './characterCreationModel';
-import { popup } from '../../classes/popup/popup';
+import { ClassEnum, RaceEnum, BackgroundEnum, CharacterCreationResponseStatus } from '../../../Common/RequestResponse/characterCreation.js';
+import { characterCreationModel, matchBackground, matchClass, matchRace } from './characterCreationModel.js';
+import { popup } from '../../classes/popup/popup.js';
 class CharacterCreationViewModel {
     constructor() {
+        this.getPortraitString = () => {
+            return `${this.model.selectedGender}_${this.model.selectedRace}_${this.model.portraitNumber.toString()}`;
+        };
+        this.portraitL = () => {
+            this.model.portraitL();
+            this.updatePortrait();
+        };
+        this.portraitR = () => {
+            this.model.portraitR();
+            this.updatePortrait();
+        };
+        this.genderMale = () => {
+            this.model.selectGender("MALE");
+            this.updatePortrait();
+            this.dom.genderMale.classList.add('active');
+            this.dom.genderFemale.classList.remove('active');
+        };
+        this.genderFemale = () => {
+            this.model.selectGender("FEMALE");
+            this.updatePortrait();
+            this.dom.genderFemale.classList.add('active');
+            this.dom.genderMale.classList.remove('active');
+        };
+        this.createCharacterButtonPressed = () => __awaiter(this, void 0, void 0, function* () {
+            const characterNameElement = document.getElementById('characterName');
+            if (!characterNameElement) {
+                console.error('Character name element not found');
+                return;
+            }
+            if (characterNameElement.value.length < 3) {
+                popup.show('อุ๊ปส์! ชื่อตัวละครสั้นเกินไป', 'ชื่อตัวละครต้องมีอย่างน้อย 3 ตัวอักษร', [{
+                        label: 'ตกลง',
+                        action: popup.hide.bind(popup)
+                    }]);
+            }
+            const characterName = characterNameElement.value;
+            let result = yield this.model.createCharacter(characterName, this.portrait);
+            if (result.status === CharacterCreationResponseStatus.INVALID_NAME) {
+                popup.show('อุ๊ปส์! ชื่อตัวละครไม่ถูกต้อง', result.message, [{
+                        label: 'ตกลง',
+                        action: popup.hide.bind(popup)
+                    }]);
+            }
+            else if (result.status === CharacterCreationResponseStatus.SUCCESS) {
+                // Redirect into Game
+            }
+        });
         this.model = characterCreationModel;
         this.initializeDOMElements();
         this.initializeEventListeners();
-        this.currentPortrait = 1;
         // Bindings
         this.portraitL = this.portraitL.bind(this);
         this.portraitR = this.portraitR.bind(this);
+        this.genderMale = this.genderMale.bind(this);
+        this.genderFemale = this.genderFemale.bind(this);
         this.updateUI = this.updateUI.bind(this);
         this.createCharacterButtonPressed = this.createCharacterButtonPressed.bind(this);
-        this.model.selectRace(RaceEnum.HUMAN);
-        this.model.selectClass(ClassEnum.CLERIC);
-        this.model.selectBackground(BackgroundEnum.MAGE_APPRENTICE);
+        this.model.selectRace("HUMAN");
+        this.model.selectClass("CLERIC");
+        this.model.selectBackground("MAGE_APPRENTICE");
+        this.model.selectGender("MALE");
+        this.portrait = `${this.model.selectedGender}_${this.model.selectedRace}_${this.model.portraitNumber.toString()}`;
+        this.dom.genderMale.classList.add('active'); // Highlight male button
         // Set initial UI
         this.updateUI();
+    }
+    updatePortrait() {
+        const string = this.getPortraitString();
+        const src = `../../assets/portrait/${string}.png`;
+        this.portrait = string;
+        this.dom.characterPortrait.src = src;
+    }
+    updateUI() {
+        const formatNumber = (num) => num.toString().padStart(2, '0');
+        // Generic function to update UI for a given type
+        const updateValues = (type) => {
+            for (const key in this.model[type]) {
+                let elementID = `${key}Value`;
+                let value = this.model[type][key];
+                if (document.getElementById(elementID)) {
+                    const element = document.getElementById(elementID);
+                    if (element) {
+                        element.textContent = formatNumber(value);
+                    }
+                }
+            }
+            let raceObj = matchRace(this.model.selectedRace);
+            if (raceObj === undefined || raceObj === null) {
+                console.error(`Invalid Race`);
+                return;
+            }
+            let classObj = matchClass(this.model.selectedClass);
+            if (classObj === undefined || classObj === null) {
+                console.error(`Invalid Class`);
+                return;
+            }
+            let backgroundObj = matchBackground(this.model.selectedBackground);
+            if (backgroundObj === undefined || backgroundObj === null) {
+                console.error(`Invalid Background`);
+                return;
+            }
+            this.dom.raceDescription.innerHTML = raceObj.description;
+            this.dom.classDescription.innerHTML = classObj.description;
+            this.dom.backgroundDescription.innerHTML = backgroundObj.description;
+            this.updatePortrait();
+        };
+        // Update attributes, proficiencies, and artisans
+        updateValues("attributes");
+        updateValues("proficiencies");
+        updateValues("artisans");
     }
     initializeDOMElements() {
         // Selecting DOM elements
         this.dom = {
             prevPortrait: document.getElementById('prevPortrait'),
             nextPortrait: document.getElementById('nextPortrait'),
+            genderMale: document.getElementById('genderMale'),
+            genderFemale: document.getElementById('genderFemale'),
             characterPortrait: document.getElementById('characterPortrait'),
             createCharacterButton: document.getElementById('createCharacterButton'),
             internalSkillInfo: document.getElementById('internalSkill-info'),
@@ -93,6 +191,8 @@ class CharacterCreationViewModel {
     initializeEventListeners() {
         this.dom.prevPortrait.addEventListener('click', this.portraitL);
         this.dom.nextPortrait.addEventListener('click', this.portraitR);
+        this.dom.genderMale.addEventListener('click', this.genderMale);
+        this.dom.genderFemale.addEventListener('click', this.genderFemale);
         this.dom.createCharacterButton.addEventListener('click', this.createCharacterButtonPressed);
         this.dom.statInfo_1.addEventListener('click', () => popup.show('ค่าสถานะตัวละคร', statusDescription));
         this.dom.statInfo_2.addEventListener('click', () => popup.show('ค่าสถานะตัวละคร', statusDescription));
@@ -140,89 +240,6 @@ class CharacterCreationViewModel {
             }
             else {
                 console.error(`Invalid target: ${target}`);
-            }
-        });
-    }
-    portraitL() {
-        if (this.currentPortrait === 1) {
-            this.currentPortrait = 110;
-        }
-        else {
-            this.currentPortrait -= 1;
-        }
-        const characterPortrait = document.getElementById('characterPortrait');
-        if (characterPortrait) {
-            characterPortrait.src = `../../assets/portrait/m${this.currentPortrait}.png`;
-        }
-    }
-    portraitR() {
-        if (this.currentPortrait === 110) {
-            this.currentPortrait = 1;
-        }
-        else {
-            this.currentPortrait += 1;
-        }
-        const characterPortrait = document.getElementById('characterPortrait');
-        if (characterPortrait) {
-            characterPortrait.src = `../../assets/portrait/m${this.currentPortrait}.png`;
-        }
-    }
-    updateUI() {
-        const formatNumber = (num) => num.toString().padStart(2, '0');
-        // Generic function to update UI for a given type
-        const updateValues = (type) => {
-            for (const key in this.model[type]) {
-                let elementID = `${key}Value`;
-                let value = this.model[type][key];
-                if (document.getElementById(elementID)) {
-                    const element = document.getElementById(elementID);
-                    if (element) {
-                        element.textContent = formatNumber(value);
-                    }
-                }
-            }
-            let raceObj = matchRace(this.model.selectedRace);
-            if (raceObj === undefined || raceObj === null) {
-                console.error(`Invalid Race`);
-                return;
-            }
-            let classObj = matchClass(this.model.selectedClass);
-            if (classObj === undefined || classObj === null) {
-                console.error(`Invalid Class`);
-                return;
-            }
-            let backgroundObj = matchBackground(this.model.selectedBackground);
-            if (backgroundObj === undefined || backgroundObj === null) {
-                console.error(`Invalid Background`);
-                return;
-            }
-            this.dom.raceDescription.innerHTML = raceObj.description;
-            this.dom.classDescription.innerHTML = classObj.description;
-            this.dom.backgroundDescription.innerHTML = backgroundObj.description;
-        };
-        // Update attributes, proficiencies, and artisans
-        updateValues("attributes");
-        updateValues("proficiencies");
-        updateValues("artisans");
-    }
-    createCharacterButtonPressed() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const characterNameElement = document.getElementById('characterName');
-            if (!characterNameElement) {
-                console.error('Character name element not found');
-                return;
-            }
-            const characterName = characterNameElement.value;
-            const portrait = `m${this.currentPortrait}`;
-            let result = yield this.model.createCharacter(characterName, portrait);
-            if (result.status === CharacterCreationResponseStatus.INVALID_NAME) {
-                popup.show('อุ๊ปส์! ชื่อตัวละครไม่ถูกต้อง', result.message, [{
-                        label: 'ตกลง',
-                        action: popup.hide
-                    }]);
-            }
-            else if (result.status === CharacterCreationResponseStatus.SUCCESS) {
-                // Redirect into Game
             }
         });
     }

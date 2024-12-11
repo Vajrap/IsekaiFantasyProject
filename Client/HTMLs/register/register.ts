@@ -1,6 +1,6 @@
-import { popup } from "../../classes/popup/popup";
-import { env } from "../../env";
-import { RegisterRequest, RegisterResponse, RegisterReponseStatus } from "../../../Common/RequestResponse/register";
+import { popup } from "../../classes/popup/popup.js";
+import { env } from "../../env.js";
+import { RegisterRequest, RegisterResponse, RegisterReponseStatus } from "../../../Common/RequestResponse/register.js";
 
 class RegisterModel {
     private usernameField: HTMLInputElement;
@@ -62,7 +62,6 @@ class RegisterModel {
 
         try {
             const url = `${env.ip()}/register`;
-
             const jsonData: RegisterRequest = {
                 username: this.getUsernameInput(),
                 password: this.getPasswordInput(),
@@ -76,11 +75,12 @@ class RegisterModel {
                 body: JSON.stringify(jsonData)
             });
 
-            const responseData: RegisterResponse  = await response.json();
-
             if (!response.ok) {
-                throw new Error(responseData.message);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+
+            const raw = await response.json();
+            const responseData: RegisterResponse  = raw.result;
 
             if (responseData.status === RegisterReponseStatus.Registered) {
                 popup.show(
@@ -88,7 +88,7 @@ class RegisterModel {
                     responseData.message,
                     [{
                         label: "ตกลง",
-                        action: popup.hide
+                        action: popup.hide.bind(popup)
                     }]
                 );
                 return;
@@ -98,7 +98,7 @@ class RegisterModel {
                     responseData.message,
                     [{
                         label: "ตกลง",
-                        action: popup.hide
+                        action: popup.hide.bind(popup)
                     }]
                 );
             }
@@ -109,7 +109,7 @@ class RegisterModel {
                 "เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง",
                 [{
                     label: "ตกลง",
-                    action: popup.hide
+                    action: popup.hide.bind(popup)
                 }]
             );        
         }

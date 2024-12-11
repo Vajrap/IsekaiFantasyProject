@@ -1,6 +1,6 @@
 import { UserID, UserDBRow } from '../../../Authenticate/UserID';
 import { db } from '../../../Database';
-import {LoginRequest, LoginResponse, LoginResponseStatus} from '../../../../Common/RequestResponse/login'
+import { LoginResponse, LoginResponseStatus} from '../../../../Common/RequestResponse/login'
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
@@ -9,10 +9,12 @@ export async function loginHandler(
     password: string
 ): Promise<LoginResponse> {
     const existingUser = await findExistingUser(username);
-    if (!existingUser) { return { 
-        status: LoginResponseStatus.Failed, 
-        message: "ไม่มีผู้ใช้นี้ในระบบ" 
-    }; }
+    if (!existingUser) {
+        return { 
+            status: LoginResponseStatus.Failed, 
+            message: "ไม่มีผู้ใช้นี้ในระบบ" 
+        }; 
+    }
 
     if (!await isPasswordCorrect(password, existingUser.password)) {
         return {
@@ -26,12 +28,15 @@ export async function loginHandler(
 
 export async function autoLoginHandler(token: string): Promise<LoginResponse> {
     const existingUser = await findExistingUserByToken(token);
-    if (!existingUser) {
+
+    console.log(existingUser);
+    if (!existingUser || existingUser === undefined) {
         return {
             status: LoginResponseStatus.Failed,
             message: "ไม่พบผู้ใช้นี้ในระบบ"
         };
     }
+
 
     return loginMethod(existingUser);
 }
@@ -71,7 +76,9 @@ async function findExistingUser(username: string): Promise<UserID | undefined> {
 
 async function findExistingUserByToken(token: string): Promise<UserID | undefined> {
     try {
+        console.log(token);
         const row: UserDBRow = await db.read('users', 'token', token);
+        console.log(row);
         return row ? UserID.createFromDBRow(row) : undefined;
     } catch (err) {
         console.error(`Error finding user by token: ${token}`, err);
@@ -90,8 +97,10 @@ interface TokenResult {
 
 async function generateToken(existingUser: UserID): Promise<TokenResult> {
     if (existingUser.token && existingUser.tokenExpiresAt) {
+        console.log('Token and tokenExpiresAt already exist');
         const tokenExpiresAt = new Date(existingUser.tokenExpiresAt);
         if (tokenExpiresAt > new Date()) {
+            console.log('Token is not expired');
             return {
                 token: existingUser.token,
                 tokenExpiresAt

@@ -7,9 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { popup } from "../../classes/popup/popup";
-import { env } from "../../env";
-import { RegisterReponseStatus } from "../../../Common/RequestResponse/register";
+import { popup } from "../../classes/popup/popup.js";
+import { env } from "../../env.js";
+import { RegisterReponseStatus } from "../../../Common/RequestResponse/register.js";
 class RegisterModel {
     constructor() {
         this.usernameField = document.getElementById("reg-username");
@@ -67,21 +67,22 @@ class RegisterModel {
                     },
                     body: JSON.stringify(jsonData)
                 });
-                const responseData = yield response.json();
                 if (!response.ok) {
-                    throw new Error(responseData.message);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                const raw = yield response.json();
+                const responseData = raw.result;
                 if (responseData.status === RegisterReponseStatus.Registered) {
                     popup.show(responseData.status, responseData.message, [{
                             label: "ตกลง",
-                            action: popup.hide
+                            action: popup.hide.bind(popup)
                         }]);
                     return;
                 }
                 else {
                     popup.show(responseData.status, responseData.message, [{
                             label: "ตกลง",
-                            action: popup.hide
+                            action: popup.hide.bind(popup)
                         }]);
                 }
             }
@@ -89,7 +90,7 @@ class RegisterModel {
                 console.error('Error:', error);
                 popup.show("ข้อผิดพลาด", "เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง", [{
                         label: "ตกลง",
-                        action: popup.hide
+                        action: popup.hide.bind(popup)
                     }]);
             }
         });

@@ -11,7 +11,8 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 router.post('/register', async (req: Request, res: Response) => {
-    const result = await registerHandler(req.body);
+    const { username, password } = req.body;
+    const result = await registerHandler(username, password);
     res.json({ result });
 });
 

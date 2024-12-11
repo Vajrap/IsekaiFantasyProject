@@ -2,7 +2,7 @@ class Env {
     serverURL: string
     wsHost: string
     constructor(){
-        this.serverURL = 'http://localhost:3030';
+        this.serverURL = 'http://localhost:3030/route';
         this.wsHost = 'ws://localhost:3030';
         // this.serverURL = 'http://49.228.247.69:3030',
         // this.wsHost = 'ws://49.228.247.69:3030'
@@ -14,4 +14,3 @@ class Env {
 }
 
 export const env = new Env();
-

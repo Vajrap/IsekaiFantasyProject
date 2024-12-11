@@ -312,5 +312,34 @@ body {
 }
 
 .description {
-    margin: 10px;
+    margin: 5px;
+    height: 20vh;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 5px;
 }
+
+/* Default style for gender buttons */
+#genderMale,
+#genderFemale {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Highlight for male button */
+#genderMale.active {
+    background-color: #007bff; /* Blue */
+    color: white;
+    border-color: #0056b3;
+}
+
+/* Highlight for female button */
+#genderFemale.active {
+    background-color: #ff69b4; /* Pink */
+    color: white;
+    border-color: #c71585;
+}
+

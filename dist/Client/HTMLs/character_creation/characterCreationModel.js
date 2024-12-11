@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { ClassEnum, RaceEnum, BackgroundEnum, CharacterCreationResponseStatus } from '../../../Common/RequestResponse/characterCreation';
+import { CharacterCreationResponseStatus } from '../../../Common/RequestResponse/characterCreation.js';
 // Races
 const raceHuman = {
     attributes: {
@@ -774,19 +774,20 @@ const backgroundInnkeepersChild = {
 };
 export class CharacterCreationModel {
     constructor() {
+        this.portraitNumber = 1;
         this.attributes = {
-            charisma: 0,
-            luck: 0,
-            intelligence: 0,
-            leadership: 0,
-            vitality: 0,
-            willpower: 0,
-            breath: 0,
-            planar: 0,
-            dexterity: 0,
-            agility: 0,
-            strength: 0,
-            endurance: 0,
+            charisma: 6,
+            luck: 6,
+            intelligence: 6,
+            leadership: 6,
+            vitality: 6,
+            willpower: 6,
+            breath: 6,
+            planar: 6,
+            dexterity: 6,
+            agility: 6,
+            strength: 6,
+            endurance: 6,
         };
         this.proficiencies = {
             bareHand: 6,
@@ -817,9 +818,11 @@ export class CharacterCreationModel {
             alchemy: 6,
             enchanting: 6,
         };
-        this.selectedClass = ClassEnum.CLERIC;
-        this.selectedRace = RaceEnum.HUMAN;
-        this.selectedBackground = BackgroundEnum.MAGE_APPRENTICE;
+        this.selectedClass = "CLERIC";
+        this.selectedRace = "HUMAN";
+        this.selectedBackground = "MAGE_APPRENTICE";
+        this.selectedGender = "MALE";
+        this.portraitNumber = 1;
     }
     createCharacter(characterName, portrait) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -939,90 +942,109 @@ export class CharacterCreationModel {
                 backGroundObject.artisans[artisanKey];
         }
     }
+    selectGender(gender) {
+        this.selectedGender = gender;
+    }
+    portraitL() {
+        if (this.portraitNumber === 1) {
+            this.portraitNumber = 20;
+        }
+        else {
+            this.portraitNumber -= 1;
+        }
+    }
+    portraitR() {
+        if (this.portraitNumber === 20) {
+            this.portraitNumber = 1;
+        }
+        else {
+            this.portraitNumber += 1;
+        }
+    }
 }
-export function matchRace(raceEnum) {
-    switch (raceEnum) {
-        case RaceEnum.HUMAN:
+export function matchRace(race) {
+    switch (race) {
+        case 'HUMAN':
             return raceHuman;
-        case RaceEnum.ELVEN:
+        case "ELVEN":
             return raceElven;
-        case RaceEnum.ORC:
+        case "ORC":
             return raceOrc;
-        case RaceEnum.TRITON:
+        case "TRITON":
             return raceTriton;
-        case RaceEnum.DWARF:
+        case "DWARF":
             return raceDwarf;
-        case RaceEnum.HALFLING:
+        case "HALFLING":
             return raceHalfling;
-        case RaceEnum.HALF_ELF:
+        case "HALF_ELF":
             return raceHalfElf;
-        case RaceEnum.HALF_ORC:
+        case "HALF_ORC":
             return raceHalfOrc;
-        case RaceEnum.HALF_TRITON:
+        case "HALF_TRITON":
             return raceHalfTriton;
-        case RaceEnum.DWARFLING:
+        case "DWARFLING":
             return raceDwarfling;
-        case RaceEnum.ELVON:
+        case "ELVON":
             return raceElvon;
         default:
             return null;
     }
 }
-export function matchClass(classEnum) {
-    switch (classEnum) {
-        case ClassEnum.CLERIC:
+export function matchClass(className) {
+    switch (className) {
+        case "CLERIC":
             return classCleric;
-        case ClassEnum.FIGHTER:
+        case "FIGHTER":
             return classFighter;
-        case ClassEnum.GUARDIAN:
+        case "GUARDIAN":
             return classGuardian;
-        case ClassEnum.HEXBINDER:
+        case "HEXBINDER":
             return classHexbinder;
-        case ClassEnum.MAGE:
+        case "MAGE":
             return classMage;
-        case ClassEnum.OCCULTIST:
+        case "OCCULTIST":
             return classOccultist;
-        case ClassEnum.SCOUT:
+        case "SCOUT":
             return classScout;
-        case ClassEnum.SKIRMISHER:
+        case "SKIRMISHER":
             return classSkirmisher;
-        case ClassEnum.SOLDIER:
+        case "SOLDIER":
             return classSoldier;
-        case ClassEnum.SPELLBLADE:
+        case "SPELLBLADE":
             return classSpellblade;
-        case ClassEnum.TEMPLAR:
+        case "TEMPLAR":
             return classTemplar;
-        case ClassEnum.WARDEN:
+        case "WARDEN":
             return classWarden;
         default:
             return null;
     }
 }
-export function matchBackground(backgroundEnum) {
-    switch (backgroundEnum) {
-        case BackgroundEnum.MAGE_APPRENTICE:
+export function matchBackground(background) {
+    switch (background) {
+        case "MAGE_APPRENTICE":
             return backgroundMageApprentice;
-        case BackgroundEnum.DESERTED_MILITARY:
+        case "DESERTED_MILITARY":
             return backgroundDesertedMilitary;
-        case BackgroundEnum.TAVERN_BRAWLER:
+        case "TAVERN_BRAWLER":
             return backgroundTavernBrawler;
-        case BackgroundEnum.FALLEN_NOBILITY:
+        case "FALLEN_NOBILITY":
             return backgroundFallenNobility;
-        case BackgroundEnum.MERCS_CHILD:
+        case "MERCS_CHILD":
             return backgroundMercsChild;
-        case BackgroundEnum.TRAINEE_IN_CARAVAN:
+        case "TRAINEE_IN_CARAVAN":
             return backgroundTraineeInCaravan;
-        case BackgroundEnum.WANDERING_MUSICIAN:
+        case "WANDERING_MUSICIAN":
             return backgroundWanderingMusician;
-        case BackgroundEnum.APPRENTICE_SCRIBE:
+        case "APPRENTICE_SCRIBE":
             return backgroundApprenticeScribe;
-        case BackgroundEnum.ABANDONED_FARMHAND:
+        case "ABANDONED_FARMHAND":
             return backgroundAbandonedFarmhand;
-        case BackgroundEnum.STREET_URCHIN:
+        case "STREET_URCHIN":
             return backgroundStreetUrchin;
-        case BackgroundEnum.FAILED_CRAFTSMAN:
+        case "FAILED_CRAFTSMAN":
             return backgroundFailedCraftsman;
-        case BackgroundEnum.INNKEEPERS_CHILD:
+        case "INNKEEPERS_CHILD":
             return backgroundInnkeepersChild;
         default:
             return null;

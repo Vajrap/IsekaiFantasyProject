@@ -1,9 +1,9 @@
 export interface CreateCharacterRequest {
     characterName: string;
     portrait: string;
-    race: RaceEnum;
-    class: ClassEnum;
-    background: BackgroundEnum;
+    race: string;
+    class: string;
+    background: string;
 };
 
 export enum CharacterCreationResponseStatus {

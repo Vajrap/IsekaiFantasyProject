@@ -30,10 +30,10 @@ class LoginModel {
     }
     redirectToAppropriatePage(statusType) {
         if (statusType === LoginResponseStatus.LoggedInWithCharacter) {
-            window.location.href = '../HTMLs/game/game.html';
+            window.location.href = '../../../Client/HTMLs/game/game.html';
         }
         else {
-            window.location.href = '../HTMLs/character_creation/character_creation.html';
+            window.location.href = '../../../Client/HTMLs/character_creation/character_creation.html';
         }
     }
     checkForAutoLogin() {
@@ -44,7 +44,7 @@ class LoginModel {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const url = `${env.ip()}/auth/autoLogin`;
+                const url = `${env.ip()}/autoLogin`;
                 const token = (_a = localStorage.getItem('isekaiFantasy_token')) !== null && _a !== void 0 ? _a : '';
                 const response = yield fetch(url, {
                     method: 'POST',
@@ -74,7 +74,7 @@ class LoginModel {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
             try {
-                const url = `${env.ip()}/auth/login`;
+                const url = `${env.ip()}/login`;
                 const jsonData = {
                     username: this.getUsernameInput(),
                     password: this.getPasswordInput()
@@ -89,7 +89,8 @@ class LoginModel {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                const responseData = yield response.json();
+                const raw = yield response.json();
+                const responseData = raw.result;
                 if (responseData.status === LoginResponseStatus.LoggedInWithCharacter ||
                     responseData.status === LoginResponseStatus.LoggedInWithNoCharacter) {
                     if (responseData.token && responseData.tokenExpiredAt) {
@@ -101,7 +102,7 @@ class LoginModel {
                 else {
                     popup.show(responseData.status, responseData.message, [{
                             label: "ตกลง",
-                            action: popup.hide
+                            action: popup.hide.bind(popup)
                         }]);
                 }
             }
@@ -110,7 +111,7 @@ class LoginModel {
                     console.log('เกิดข้อผิดพลาดเกี่ยวกับเครือข่าย:', error);
                     popup.show('ข้อผิดพลาดทางเครือข่าย', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณหรือทดลองใหม่อีกครั้ง', [{
                             label: 'ตกลง',
-                            action: popup.hide
+                            action: popup.hide.bind(popup)
                         }]);
                 }
                 else if (error instanceof Error && error.message.includes('HTTP error')) {
@@ -118,14 +119,14 @@ class LoginModel {
                     console.log(`ข้อผิดพลาด HTTP: ${statusCode}`);
                     popup.show('ข้อผิดพลาดจากเซิร์ฟเวอร์', `เซิร์ฟเวอร์ส่งข้อผิดพลาดกลับมา (HTTP ${statusCode}) กรุณาลองใหม่อีกครั้ง`, [{
                             label: 'ตกลง',
-                            action: popup.hide
+                            action: popup.hide.bind(popup)
                         }]);
                 }
                 else {
                     console.error('ข้อผิดพลาดที่ไม่คาดคิด:', error);
                     popup.show('ข้อผิดพลาดที่ไม่คาดคิด', 'เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง', [{
                             label: 'ตกลง',
-                            action: popup.hide
+                            action: popup.hide.bind(popup)
                         }]);
                 }
             }
