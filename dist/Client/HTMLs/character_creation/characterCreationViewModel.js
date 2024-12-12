@@ -49,7 +49,7 @@ class CharacterCreationViewModel {
             }
             const characterName = characterNameElement.value;
             let result = yield this.model.createCharacter(characterName, this.portrait);
-            if (result.status === CharacterCreationResponseStatus.INVALID_NAME) {
+            if (result.status === CharacterCreationResponseStatus.FAILED) {
                 popup.show('อุ๊ปส์! ชื่อตัวละครไม่ถูกต้อง', result.message, [{
                         label: 'ตกลง',
                         action: popup.hide.bind(popup)
@@ -57,6 +57,7 @@ class CharacterCreationViewModel {
             }
             else if (result.status === CharacterCreationResponseStatus.SUCCESS) {
                 // Redirect into Game
+                console.log('Character created successfully');
             }
         });
         this.model = characterCreationModel;

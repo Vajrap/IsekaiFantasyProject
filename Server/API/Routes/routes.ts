@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { loginHandler, autoLoginHandler } from './login/login';
 import { registerHandler } from './register/register';
+import { createCharacterHandler } from './CreateCharacter/createCharacter';
 
 export const router = express.Router();
 
@@ -19,5 +20,11 @@ router.post('/register', async (req: Request, res: Response) => {
 router.post('/autoLogin', async (req: Request, res: Response) => {
     const { token } = req.body;
     const result = await autoLoginHandler(token);
+    res.json({ result });
+});
+
+router.post('/createCharacter', async (req: Request, res: Response) => {
+    const { characterName, portrait, race, className, background, token } = req.body;
+    const result = await createCharacterHandler(characterName, portrait, race, className, background, token);
     res.json({ result });
 });

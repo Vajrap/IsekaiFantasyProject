@@ -39,7 +39,6 @@ import {
     backgroundTraineeInCaravan,
     backgroundWanderingMusician 
 } from '../../../../Common/Entity/raceClassBackground';
-
 import { db } from '../../../Database';
 
 export async function createCharacterHandler(    
@@ -84,6 +83,10 @@ export async function createCharacterHandler(
     const raceDate = getRace(race);
     const classData = getClass(className);
     const backgroundData = getBackground(background);
+
+    console.log('raceData', raceDate);
+    console.log('classData', classData);
+    console.log('backgroundData', backgroundData);
 
     return {
         // TODO: Implement character creation logic here

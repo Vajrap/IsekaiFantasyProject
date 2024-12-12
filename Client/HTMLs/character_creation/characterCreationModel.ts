@@ -36,6 +36,7 @@ import {
     backgroundTraineeInCaravan,
     backgroundWanderingMusician 
 } from '../../../Common/Entity/raceClassBackground.js';
+import { env } from '../../env.js';
 export class CharacterCreationModel {
     attributes: CharacterAttributesInterface;
     proficiencies: CharacterProficienciesInterface;
@@ -109,6 +110,7 @@ export class CharacterCreationModel {
             race: this.selectedRace,
             class: this.selectedClass,
             background: this.selectedBackground,
+            gender: this.selectedGender
         };
         return await sendCharacterCreationRequest(message);
     }
@@ -341,11 +343,41 @@ export function matchBackground(background: string) {
 async function sendCharacterCreationRequest(message: CreateCharacterRequest): Promise<CreateCharacterResponse> {
     console.log('Sending Character Creation Request', message);
     
-    return {
-        status: CharacterCreationResponseStatus.SUCCESS,
-        message: 'Character Created Successfully',
-        characterId: '1234567890',
+    try {
+        const url = `${env.ip()}/createCharacter`;
+        const jsonData: CreateCharacterRequest = {
+            characterName: message.characterName,
+            portrait: message.portrait,
+            race: message.race,
+            class: message.class,
+            background: message.background,
+            gender:message.gender
+        };
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const raw = await response.json();
+        const responseData: CreateCharacterResponse = raw.result;
+        
+        return responseData;
+    } catch (error) {
+        let message: CreateCharacterResponse = {
+            status: CharacterCreationResponseStatus.FATAL_ERROR,
+            message: "Unexpeted Error"
+        } 
+        return message;
     };
+
 }
 
 export const characterCreationModel = new CharacterCreationModel();

@@ -21,8 +21,7 @@ export const raceHuman = {
     },
     description: `มนุษย์ในเอเวอร์เมียร์มีความยืดหยุ่นและความหลากหลายในการดำรงชีวิต พวกเขาโดดเด่นในฐานะนักสำรวจ นักประดิษฐ์ และผู้ก่อตั้งชุมชนใหม่ ด้วยการปรับตัวที่รวดเร็วและความทะเยอทะยาน มนุษย์สามารถเติมเต็มบทบาทได้หลากหลาย ไม่ว่าจะเป็นนักรบ นักการทูต หรือพ่อค้า ความหลากหลายทางวัฒนธรรมทำให้มนุษย์เป็นผู้นำในการเชื่อมโยงและสร้างความสมดุลระหว่างเผ่าพันธุ์`,
     traits: [TraitEnum.trait_bodySize_medium, TraitEnum.trait_human_adaptable, TraitEnum.trait_human_versatile]
-}
-
+};
 export const raceElven = {
     name: 'เอลฟ์',
     hp: 5,
@@ -44,8 +43,7 @@ export const raceElven = {
     },
     description: `เอลฟ์เป็นเผ่าพันธุ์ที่มีความสง่างามและสืบทอดมรดกทางวัฒนธรรมมายาวนาน พวกเขามีความเชื่อมโยงกับธรรมชาติอย่างลึกซึ้งและความสามารถในการใช้พลังธาตุที่โดดเด่น เอลฟ์บางกลุ่มมุ่งเน้นชีวิตที่กลมกลืนกับป่าไม้ ขณะที่บางกลุ่มเลือกพัฒนาเทคนิคการต่อสู้ที่เน้นความแม่นยำและความรวดเร็ว พวกเขาคือผู้พิทักษ์แห่งความสมดุลและวัฒนธรรมอันล้ำค่า`,
     traits: [TraitEnum.trait_bodySize_medium, TraitEnum.trait_elven_darkvision, TraitEnum.trait_elven_planarAffinity]
-}
-
+};
 export const raceOrc = {
     name: 'ออร์ค',
     hp: 7,
@@ -67,8 +65,7 @@ export const raceOrc = {
     },
     description: `ออร์คเป็นเผ่าพันธุ์ที่ให้ความสำคัญกับความแข็งแกร่งและความสามัคคีในชุมชน วัฒนธรรมของพวกเขาเต็มไปด้วยเกียรติยศและความจงรักภักดี ออร์คไม่ได้เป็นเพียงนักรบที่ทรงพลัง แต่ยังเป็นนักแก้ไขปัญหาที่มุ่งมั่นในวิทยาการและการพัฒนา อาณาเขตของพวกเขาเป็นทั้งศูนย์กลางการค้าและสถานที่ฝึกฝนที่มีชีวิตชีวา`,
     traits: [TraitEnum.trait_bodySize_large, TraitEnum.trait_orc_intimidatePresence, TraitEnum.trait_orc_savageResilience]
-}
-
+};
 export const raceTriton = {
     name: 'ไทรทัน',
     hp: 6,
@@ -91,7 +88,6 @@ export const raceTriton = {
     description: `ไทรทันอาศัยอยู่ตามแนวชายฝั่งหรือใกล้แหล่งน้ำ ด้วยความสามารถในการกลั้นหายใจได้นานและความชำนาญในพลังธาตุ (Planar) พวกเขาโดดเด่นในบทบาทนักสำรวจ นักเดินเรือ และผู้พิทักษ์ชุมชนริมน้ำ ไทรทันมีวิถีชีวิตที่มุ่งเน้นการพึ่งพาสภาพแวดล้อมทางธรรมชาติและการปรับตัวในสถานการณ์ที่หลากหลาย`,
     traits: [TraitEnum.trait_bodySize_medium, TraitEnum.trait_triton_planarAffinity, TraitEnum.trait_triton_slippery]
 };
-
 export const raceDwarf = {
     name: 'คนแคระ',
     hp: 7,
@@ -112,9 +108,8 @@ export const raceDwarf = {
         endurance: 9,
     },
     description: `คนแคระเป็นเผ่าพันธุ์ที่เชี่ยวชาญด้านช่างฝีมือและการก่อสร้าง พวกเขาอาศัยอยู่ในภูเขาสูงและเครือข่ายเหมืองลึก สร้างสรรค์ผลงานที่ยืนยาวทั้งในด้านอาวุธและสถาปัตยกรรม วัฒนธรรมของคนแคระเน้นความขยันและความมุ่งมั่น ซึ่งทำให้พวกเขาเป็นพันธมิตรที่น่าเชื่อถือและผู้เชี่ยวชาญในสาขาที่พวกเขาเลือก`,
-    traits:[TraitEnum.trait_bodySize_small, TraitEnum.trait_dwarf_darkvision, TraitEnum.trait_dwarf_sturdy]
+    traits: [TraitEnum.trait_bodySize_small, TraitEnum.trait_dwarf_darkvision, TraitEnum.trait_dwarf_sturdy]
 };
-
 export const raceHalfling = {
     name: 'ฮาล์ฟลิ่ง',
     hp: 5,
@@ -135,9 +130,8 @@ export const raceHalfling = {
         endurance: 5,
     },
     description: `ฮาล์ฟลิ่งเป็นเผ่าพันธุ์ที่รักความเรียบง่ายและอิสระ พวกเขาอาศัยอยู่ในหมู่บ้านชนบทหรือเขตที่เต็มไปด้วยทุ่งหญ้า วิถีชีวิตของพวกเขาเน้นการร่วมมือในชุมชนและการพึ่งพาตนเอง ฮาล์ฟลิ่งมีความชำนาญในด้านการลอบเร้นและการสำรวจ ทำให้พวกเขาเป็นนักผจญภัยและนักการทูตที่มีประสิทธิภาพ`,
-    traits:[TraitEnum.trait_bodySize_small, TraitEnum.trait_halfling_lucky, TraitEnum.trait_halfling_nimble]
+    traits: [TraitEnum.trait_bodySize_small, TraitEnum.trait_halfling_lucky, TraitEnum.trait_halfling_nimble]
 };
-
 export const raceHalfElf = {
     name: "ฮาล์ฟเอลฟ์",
     hp: 6,
@@ -158,9 +152,8 @@ export const raceHalfElf = {
         endurance: 6,
     },
     description: `ฮาล์ฟเอลฟ์คือผู้ที่ผสมผสานมรดกของมนุษย์และเอลฟ์ไว้ในตัวเอง พวกเขามักมีมุมมองที่เป็นเอกลักษณ์ต่อโลก และสามารถปรับตัวได้ในหลากหลายวัฒนธรรม ความสามารถในการดึงจุดแข็งของทั้งสองเผ่าพันธุ์ทำให้พวกเขาเป็นนักสำรวจที่มีความคิดสร้างสรรค์ หรือผู้นำที่เชื่อมโยงชุมชนต่าง ๆ เข้าด้วยกัน`,
-    traits:[TraitEnum.trait_bodySize_medium, TraitEnum.trait_halfElf_adaptable, TraitEnum.trait_halfElf_charming, TraitEnum.trait_halfElf_versatile]
+    traits: [TraitEnum.trait_bodySize_medium, TraitEnum.trait_halfElf_adaptable, TraitEnum.trait_halfElf_charming, TraitEnum.trait_halfElf_versatile]
 };
-
 export const raceHalfOrc = {
     name: "ฮาล์ฟออร์ค",
     hp: 7,
@@ -181,9 +174,8 @@ export const raceHalfOrc = {
         endurance: 7,
     },
     description: `ฮาล์ฟออร์คเป็นที่รู้จักในด้านความกล้าหาญและพลังอันยิ่งใหญ่ที่มาพร้อมกับความยืดหยุ่นของมนุษย์ พวกเขามักแสวงหาความสมดุลระหว่างเกียรติยศของออร์คและความทะเยอทะยานของมนุษย์ ฮาล์ฟออร์คสามารถเป็นทั้งนักรบที่ดุดันและนักแก้ไขปัญหาที่ใช้ไหวพริบเพื่อสร้างโอกาสในสังคม`,
-    traits:[TraitEnum.trait_bodySize_medium, TraitEnum.trait_halfOrc_bloodRage, TraitEnum.trait_halfOrc_intimidatePresence, TraitEnum.trait_halfOrc_savageResilience]
+    traits: [TraitEnum.trait_bodySize_medium, TraitEnum.trait_halfOrc_bloodRage, TraitEnum.trait_halfOrc_intimidatePresence, TraitEnum.trait_halfOrc_savageResilience]
 };
-
 export const raceHalfTriton = {
     name: "ฮาล์ฟไทรทัน",
     hp: 6,
@@ -204,9 +196,8 @@ export const raceHalfTriton = {
         endurance: 6,
     },
     description: `ฮาล์ฟไทรทันเป็นผู้ที่ผสมผสานความสามารถในการสำรวจและความเชื่อมโยงกับธรรมชาติของไทรทันเข้ากับความหลากหลายของมนุษย์ พวกเขาเป็นนักเดินเรือและผู้พิทักษ์ชุมชนที่มีวิสัยทัศน์กว้างไกล ด้วยความสามารถเฉพาะตัว ฮาล์ฟไทรทันมักจะมีบทบาทสำคัญในการสร้างเส้นทางใหม่หรือการปกป้องทรัพยากรที่สำคัญ`,
-    traits:[TraitEnum.trait_bodySize_medium, TraitEnum.trait_halfTriton_breathless, TraitEnum.trait_halfTriton_planarAffinity, TraitEnum.trait_halfTriton_slippery]
+    traits: [TraitEnum.trait_bodySize_medium, TraitEnum.trait_halfTriton_breathless, TraitEnum.trait_halfTriton_planarAffinity, TraitEnum.trait_halfTriton_slippery]
 };
-
 export const raceDwarfling = {
     name: "ดวอร์ฟลิ่ง",
     hp: 6,
@@ -227,9 +218,8 @@ export const raceDwarfling = {
         endurance: 7,
     },
     description: `ดวอร์ฟลิ่งเป็นเผ่าพันธุ์ที่สืบทอดความขยันและความแม่นยำของคนแคระ พร้อมกับความกระฉับกระเฉงของฮาล์ฟลิ่ง พวกเขามักโดดเด่นในฐานะช่างฝีมือหรือผู้สร้างสรรค์ที่ผสานความละเอียดและความยืดหยุ่นได้อย่างสมดุล ดวอร์ฟลิ่งคือผู้เชื่อมโยงวิทยาการกับชีวิตประจำวันที่ลงตัว`,
-    traits:[TraitEnum.trait_bodySize_small, TraitEnum.trait_dwarfling_lucky, TraitEnum.trait_dwarfling_darkvision, TraitEnum.trait_dwarfling_sturdy]
+    traits: [TraitEnum.trait_bodySize_small, TraitEnum.trait_dwarfling_lucky, TraitEnum.trait_dwarfling_darkvision, TraitEnum.trait_dwarfling_sturdy]
 };
-
 export const raceElvon = {
     name: "เอลวอน",
     hp: 5,
@@ -250,9 +240,8 @@ export const raceElvon = {
         endurance: 5,
     },
     description: `เอลวอนเป็นลูกครึ่งระหว่างเอลฟ์และไทรทัน พบได้ในบริเวณหมู่บ้านที่ติดกับธรรมชาติ เอลวอนมีจำนวนไม่มากนักแม้ว่าทั้งเอลฟ์และไทรทันจะไม่ได้มีปัญหากัน`,
-    traits:[TraitEnum.trait_bodySize_medium, TraitEnum.trait_elvon_darkvision, TraitEnum.trait_elvon_planarAffinity, TraitEnum.trait_elvon_slippery]
+    traits: [TraitEnum.trait_bodySize_medium, TraitEnum.trait_elvon_darkvision, TraitEnum.trait_elvon_planarAffinity, TraitEnum.trait_elvon_slippery]
 };
-
 // Class
 export const classCleric = {
     attributes: { charisma: 2, leadership: 2, luck: 2 },
@@ -273,8 +262,7 @@ export const classCleric = {
                 <li>เกราะหนังเบา (Light Leather Armor)</li>
             </ul>
             `
-}
-
+};
 export const classMage = {
     attributes: { intelligence: 2, willpower: 2, planar: 2 },
     proficiencies: { magicWand: 2, staff: 2, orb: 2 },
@@ -293,11 +281,10 @@ export const classMage = {
                 <li>ผ้าไหม (Silk Cloth)</li>
             </ul>
         `
-}
-
+};
 export const classScout = {
-    attributes:{ agility: 2, dexterity: 2, luck: 2 },
-    proficiencies:{ dagger: 2, spear: 2, bow: 2 },
+    attributes: { agility: 2, dexterity: 2, luck: 2 },
+    proficiencies: { dagger: 2, spear: 2, bow: 2 },
     description: `
             <strong>นักสอดแนม</strong>: นักสอดแนมผู้คล่องตัวและมีไหวพริบสูง เชี่ยวชาญการต่อสู้จากระยะไกลและการสำรวจพื้นที่
             <br/><br/>
@@ -312,11 +299,10 @@ export const classScout = {
                 <li>เกราะหนังเบา (Light Leather Armor)</li>
             </ul>
         `
-}
-
+};
 export const classHexbinder = {
-    attributes:{ intelligence: 2, charisma: 2, planar: 2 },
-    proficiencies:{ magicWand: 2, axe: 2, tome: 2 },
+    attributes: { intelligence: 2, charisma: 2, planar: 2 },
+    proficiencies: { magicWand: 2, axe: 2, tome: 2 },
     description: `
             <strong>นักผูกคำสาป</strong>: นักผูกคำสาปที่ใช้พลังมืดเพื่อควบคุมศัตรูและเสริมสร้างพลังของตัวเอง
             <br/><br/>
@@ -333,11 +319,10 @@ export const classHexbinder = {
                 <li>เกราะหนังเบา (Light Leather Armor)</li>
             </ul>
         `
-}
-
+};
 export const classFighter = {
-    attributes:{ strength: 2, endurance: 2, dexterity: 2 },
-    proficiencies:{ sword: 2, shield: 2, blade: 2 },
+    attributes: { strength: 2, endurance: 2, dexterity: 2 },
+    proficiencies: { sword: 2, shield: 2, blade: 2 },
     description: `
     <strong>นักรบ</strong>: นักรบมีความสมดุลในพลังและการป้องกัน เหมาะสำหรับการต่อสู้ระยะประชิด
     <br/><br/>
@@ -352,8 +337,7 @@ export const classFighter = {
         <li>เกราะหนังเบา (Light Leather Armor)</li>
     </ul>
 `
-}
-
+};
 export const classWarden = {
     attributes: { breath: 2, vitality: 2, planar: 2 },
     proficiencies: { axe: 2, spear: 2, shield: 2 },
@@ -373,8 +357,7 @@ export const classWarden = {
                 <li>ผ้าไหม (Silk Cloth)</li>
             </ul>
         `
-}
-
+};
 export const classGuardian = {
     attributes: { endurance: 2, vitality: 2, strength: 2 },
     proficiencies: { mace: 2, shield: 2, sword: 2 },
@@ -394,11 +377,10 @@ export const classGuardian = {
                 <li>เกราะหนังเบา (Light Leather Armor)</li>
             </ul>
         `
-}
-
+};
 export const classSpellblade = {
     attributes: { planar: 2, agility: 2, dexterity: 2 },
-    proficiencies: { blade: 2,magicWand: 2, sword: 2},
+    proficiencies: { blade: 2, magicWand: 2, sword: 2 },
     description: `
             <strong>นักดาบเวท</strong>: นักดาบเวทผู้ผสมผสานการต่อสู้และการใช้พลังเวทย์ในการโจมตีศัตรู พวกเขาเป็นผู้ที่มีความคล่องตัวและมีความแม่นยำในการโจมตี
             <br/><br/>
@@ -415,8 +397,7 @@ export const classSpellblade = {
                 <li>เกราะหนังเบา (light leather armor)</li>
             </ul>
         `
-}
-
+};
 export const classSkirmisher = {
     attributes: { agility: 2, dexterity: 2, luck: 2 },
     proficiencies: { dagger: 2, bareHand: 2, bow: 2 },
@@ -436,7 +417,6 @@ export const classSkirmisher = {
         </ul>
     `
 };
-
 export const classOccultist = {
     attributes: { planar: 2, intelligence: 2, charisma: 2 },
     proficiencies: { tome: 2, orb: 2, staff: 2 },
@@ -456,10 +436,9 @@ export const classOccultist = {
         </ul>
     `
 };
-
 export const classSoldier = {
     attributes: { vitality: 2, endurance: 2, strength: 2 },
-    proficiencies: { spear: 2, axe: 2, shield: 2},
+    proficiencies: { spear: 2, axe: 2, shield: 2 },
     description: `
         <strong>ทหาร</strong>: ทหารผู้มีความแข็งแกร่งและวินัยในสนามรบ เชี่ยวชาญการใช้อาวุธหลากหลายประเภท
         <br/><br/>
@@ -477,7 +456,6 @@ export const classSoldier = {
         </ul>
     `
 };
-
 export const classTemplar = {
     attributes: { charisma: 2, endurance: 2, vitality: 2 },
     proficiencies: { sword: 2, shield: 2, mace: 2 },
@@ -499,7 +477,6 @@ export const classTemplar = {
         </ul>
     `
 };
-
 //Background
 export const backgroundMageApprentice = {
     attributes: {
@@ -522,7 +499,6 @@ export const backgroundMageApprentice = {
         </ul>
     `
 };
-
 export const backgroundDesertedMilitary = {
     attributes: {
         strength: 1,
@@ -545,7 +521,6 @@ export const backgroundDesertedMilitary = {
         </ul>
     `
 };
-
 export const backgroundTavernBrawler = {
     attributes: {
         agility: 1,
@@ -567,7 +542,6 @@ export const backgroundTavernBrawler = {
         </ul>
     `
 };
-
 export const backgroundFallenNobility = {
     attributes: {
         charisma: 1,
@@ -590,9 +564,8 @@ export const backgroundFallenNobility = {
         </ul>
     `
 };
-
 export const backgroundMercsChild = {
-attributes: {
+    attributes: {
         dexterity: 1,
     },
     proficiencies: {},
@@ -612,7 +585,6 @@ attributes: {
         </ul>
     `
 };
-
 export const backgroundTraineeInCaravan = {
     attributes: {
         luck: 1,
@@ -634,7 +606,6 @@ export const backgroundTraineeInCaravan = {
         </ul>
     `
 };
-
 export const backgroundWanderingMusician = {
     attributes: {
         charisma: 1,
@@ -661,7 +632,6 @@ export const backgroundWanderingMusician = {
         </ul>
     `,
 };
-
 export const backgroundApprenticeScribe = {
     attributes: {
         intelligence: 1,
@@ -688,7 +658,6 @@ export const backgroundApprenticeScribe = {
         </ul>
     `,
 };
-
 export const backgroundAbandonedFarmhand = {
     attributes: {
         strength: 1,
@@ -713,7 +682,6 @@ export const backgroundAbandonedFarmhand = {
         </ul>
     `,
 };
-
 export const backgroundStreetUrchin = {
     attributes: {
         dexterity: 1,
@@ -740,7 +708,6 @@ export const backgroundStreetUrchin = {
         </ul>
     `,
 };
-
 export const backgroundFailedCraftsman = {
     attributes: {
         dexterity: 1,
@@ -765,7 +732,6 @@ export const backgroundFailedCraftsman = {
         </ul>
     `,
 };
-
 export const backgroundInnkeepersChild = {
     attributes: {
         charisma: 1,
