@@ -1,4 +1,8 @@
-import { LoginRequest, LoginResponse, LoginResponseStatus } from "../../../Common/RequestResponse/login.js";
+import { 
+  LoginRequest, 
+  LoginResponse, 
+  LoginResponseStatus 
+} from "../../../Common/RequestResponse/login.js";
 import { env } from "../../env.js";
 import { popup } from "../../classes/popup/popup.js";
 

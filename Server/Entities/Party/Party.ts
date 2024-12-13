@@ -29,6 +29,7 @@ export class Party {
 
 	//we would normally only allow creation of a party with an array of one character, but in battle we need to create a party with multiple characters
 	//When Player character was created, it created a party of itself, so it's one character in a party.
+
 	constructor(
 		characters: Character[],
 		isTemporarilyBattleScenePartyForTargeting: boolean = false

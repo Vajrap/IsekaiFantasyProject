@@ -26,7 +26,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Goblin Sword Male
     new CharacterArchetype({
         name: "Goblin",
-        gender: "male",
+        gender: "MALE",
         type: CharacterType.humanoid,
         id: GoblinID.goblin_sword_m,
         level: 1,
@@ -189,7 +189,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Goblin Sword Female
     new CharacterArchetype({
         name: "Goblin",
-        gender: "female",
+        gender: "FEMALE",
         type: CharacterType.humanoid,
         id: GoblinID.goblin_sword_f,
         level: 1,
@@ -351,7 +351,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Goblin Bow Male
     new CharacterArchetype({
         name: "Goblin",
-        gender: "male",
+        gender: "MALE",
         type: CharacterType.humanoid,
         id: GoblinID.goblin_bow_m,
         level: 1,
@@ -513,7 +513,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Goblin Bow Female
     new CharacterArchetype({
         name: "Goblin",
-        gender: "female",
+        gender: "FEMALE",
         type: CharacterType.humanoid,
         id: GoblinID.goblin_bow_f,
         level: 1,
@@ -675,7 +675,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Goblin Pike Male
     new CharacterArchetype({
         name: "Goblin",
-        gender: "male",
+        gender: "MALE",
         type: CharacterType.humanoid,
         id: GoblinID.goblin_pike_m,
         level: 1,
@@ -837,7 +837,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Goblin Pike Female
     new CharacterArchetype({
         name: "Goblin",
-        gender: "female",
+        gender: "FEMALE",
         type: CharacterType.humanoid,
         id: GoblinID.goblin_pike_f,
         level: 1,
@@ -999,7 +999,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Hobgoblin Sword Male
     new CharacterArchetype({
         name: "Hobgoblin",
-        gender: "male",
+        gender: "MALE",
         type: CharacterType.humanoid,
         id: GoblinID.hobgoblin_sword_m,
         level: 5,
@@ -1162,7 +1162,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Hobgoblin Sword Female
     new CharacterArchetype({
         name: "Hobgoblin",
-        gender: "female",
+        gender: "FEMALE",
         type: CharacterType.humanoid,
         id: GoblinID.hobgoblin_sword_f,
         level: 5,
@@ -1325,7 +1325,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Hobgoblin Great Axe Male
     new CharacterArchetype({
         name: "Hobgoblin",
-        gender: "male",
+        gender: "MALE",
         type: CharacterType.humanoid,
         id: GoblinID.hobgoblin_greatAxe_m,
         level: 5,
@@ -1487,7 +1487,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Hobgoblin Great Axe Female
     new CharacterArchetype({
         name: "Hobgoblin",
-        gender: "female",
+        gender: "FEMALE",
         type: CharacterType.humanoid,
         id: GoblinID.hobgoblin_greatAxe_f,
         level: 5,
@@ -1649,7 +1649,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Goblin Leader Male
     new CharacterArchetype({
         name: "Goblin Leader",
-        gender: "male",
+        gender: "MALE",
         type: CharacterType.humanoid,
         id: GoblinID.goblin_leader_m,
         level: 3,
@@ -1812,7 +1812,7 @@ export const GoblinSeed: CharacterArchetype[] = [
     // Goblin Leader Female
     new CharacterArchetype({
         name: "Goblin Leader",
-        gender: "female",
+        gender: "FEMALE",
         type: CharacterType.humanoid,
         id: GoblinID.goblin_leader_f,
         level: 3,

@@ -62,17 +62,42 @@ export class CharacterCreationModel {
         this.selectedGender = "MALE";
         this.portraitNumber = 1;
     }
-    createCharacter(characterName, portrait) {
+    sendCharacterCreationRequest(characterName, portrait) {
         return __awaiter(this, void 0, void 0, function* () {
-            const message = {
-                characterName,
-                portrait,
-                race: this.selectedRace,
-                class: this.selectedClass,
-                background: this.selectedBackground,
-                gender: this.selectedGender
-            };
-            return yield sendCharacterCreationRequest(message);
+            try {
+                const url = `${env.ip()}/createCharacter`;
+                const jsonData = {
+                    characterName: characterName,
+                    portrait: portrait,
+                    race: this.selectedRace,
+                    class: this.selectedClass,
+                    background: this.selectedBackground,
+                    gender: this.selectedGender,
+                    token: localStorage.getItem('isekaiFantasy_token') || ''
+                };
+                const response = yield fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const raw = yield response.json();
+                const responseData = raw.result;
+                console.log('Character Creation Parsed Response:', raw);
+                return responseData;
+            }
+            catch (error) {
+                let message = {
+                    status: CharacterCreationResponseStatus.FATAL_ERROR,
+                    message: "Unexpeted Error"
+                };
+                return message;
+            }
+            ;
         });
     }
     selectRace(race) {
@@ -288,42 +313,5 @@ export function matchBackground(background) {
         default:
             return null;
     }
-}
-function sendCharacterCreationRequest(message) {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log('Sending Character Creation Request', message);
-        try {
-            const url = `${env.ip()}/createCharacter`;
-            const jsonData = {
-                characterName: message.characterName,
-                portrait: message.portrait,
-                race: message.race,
-                class: message.class,
-                background: message.background,
-                gender: message.gender
-            };
-            const response = yield fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(jsonData)
-            });
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const raw = yield response.json();
-            const responseData = raw.result;
-            return responseData;
-        }
-        catch (error) {
-            let message = {
-                status: CharacterCreationResponseStatus.FATAL_ERROR,
-                message: "Unexpeted Error"
-            };
-            return message;
-        }
-        ;
-    });
 }
 export const characterCreationModel = new CharacterCreationModel();
