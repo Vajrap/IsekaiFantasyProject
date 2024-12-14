@@ -25,7 +25,7 @@ app.use(cors({
     origin: function (origin, callback) {
         const allowedOrigins = [
             'http://127.0.0.1:5500',
-            'https://9f090kw5-3030.asse.devtunnels.ms'
+            'https://4cskhjm2-3030.asse.devtunnels.ms/'
         ];
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
@@ -36,6 +36,8 @@ app.use(cors({
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
 }));
+
+app.options('*', cors());
 
 // Middleware setup
 app.use(express.json());
