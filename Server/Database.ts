@@ -120,7 +120,6 @@ export class DB {
                             console.error('Error writing data to database', err.message);
                             reject(err);
                         } else {
-                            console.log(`${count > 0 ? 'Updated' : 'Inserted'} row in ${tableName} with ${primaryKeyColumnName} = ${primaryKeyValue}`);
                             resolve();
                         }
                     });

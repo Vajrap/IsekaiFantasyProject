@@ -51,7 +51,7 @@ export class CharacterCreationModel {
     selectedClass: string;
     selectedRace: string;
     selectedBackground: string;
-    selectedgender: "MALE" | "FEMALE"
+    selectedGender: "MALE" | "FEMALE"
     portraitNumber: number = 1;
     constructor() {
         this.attributes = {
@@ -120,7 +120,8 @@ export class CharacterCreationModel {
                 class: this.selectedClass,
                 background: this.selectedBackground,
                 gender: this.selectedGender,
-                token: localStorage.getItem('isekaiFantasy_token') || ''
+                // token: localStorage.getItem('isekaiFantasy_token') || ''
+                userID: localStorage.getItem('isekaiFantasy_userID') || ''
             };
     
             const response = await fetch(url, {

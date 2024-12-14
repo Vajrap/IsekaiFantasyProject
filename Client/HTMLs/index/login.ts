@@ -99,6 +99,8 @@ class LoginModel {
       const raw = await response.json();
       const responseData: LoginResponse = raw.result;
 
+      localStorage.setItem('isekaiFantasy_userID', responseData.userID ?? '');
+      
       if (
         responseData.status === LoginResponseStatus.LoggedInWithCharacter || 
         responseData.status === LoginResponseStatus.LoggedInWithNoCharacter
@@ -153,6 +155,7 @@ class LoginModel {
       }
     }
   }
+  
 }
 
 // Create an instance of LoginModel

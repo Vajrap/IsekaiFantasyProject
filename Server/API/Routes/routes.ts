@@ -24,7 +24,8 @@ router.post('/autoLogin', async (req: Request, res: Response) => {
 });
 
 router.post('/createCharacter', async (req: Request, res: Response) => {
-    const { characterName, portrait, race, className, background, gender, token } = req.body;
-    const result = await createCharacterHandler(characterName, portrait, race, className, background, gender, token);
+    console.log('Create Character Route called');
+    const { characterName, portrait, race, className, background, gender, userID } = req.body;
+    const result = await createCharacterHandler(characterName, portrait, race, className, background, gender, userID);
     res.json({ result });
 });

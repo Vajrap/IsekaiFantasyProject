@@ -13,9 +13,9 @@ export interface LoginResponse {
 }
 
 export enum LoginResponseStatus {
-    Failed = 'ล้มเหลว',
-    LoggedInWithNoCharacter = 'เข้าสู่ระบบสร้างตัวละคร',
-    LoggedInWithCharacter = 'เข้าสู่ระบบสำเร็จ'
+    Failed = 'Failed',
+    LoggedInWithNoCharacter = 'LoggedInWithNoCharacter',
+    LoggedInWithCharacter = 'LoggedInWithCharacter'
 }
 
 export interface AutoLoginRequest {

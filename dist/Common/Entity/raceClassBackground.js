@@ -654,7 +654,15 @@ var TraitEnum;
     TraitEnum["trait_bornSurvivor"] = "trait_bornSurvivor";
     TraitEnum["trait_lightWalker"] = "trait_lightWalker";
     TraitEnum["trait_determined"] = "trait_determined";
+    TraitEnum["trait_mageApprentice"] = "trait_mageApprentice";
 })(TraitEnum || (TraitEnum = {}));
+// export const backgroundMageApprentice = {
+//     attributes: {
+//         intelligence: 1,
+//     },
+//     proficiencies: {},
+//     artisans: {},
+//     description: `
 // Races
 export const raceHuman = {
     name: 'มนุษย์',
@@ -1153,7 +1161,8 @@ export const backgroundMageApprentice = {
             <li>การเล่นแร่แปรธาตุ: 2</li>
             <li>การเสริมพลังเวทย์: 1</li>
         </ul>
-    `
+    `,
+    trait: TraitEnum.trait_agility_01
 };
 export const backgroundDesertedMilitary = {
     attributes: {
@@ -1175,7 +1184,8 @@ export const backgroundDesertedMilitary = {
             <li>การเก็บของป่า: 1</li>
             <li>การทำอาหาร: 1</li>
         </ul>
-    `
+    `,
+    trait: TraitEnum.trait_hardWorker
 };
 export const backgroundTavernBrawler = {
     attributes: {
@@ -1196,7 +1206,8 @@ export const backgroundTavernBrawler = {
             <li>การทำอาหาร: 2</li>
             <li>การลอกหนังสัตว์: 1</li>
         </ul>
-    `
+    `,
+    trait: TraitEnum.trait_focusedStrike
 };
 export const backgroundFallenNobility = {
     attributes: {
@@ -1218,7 +1229,8 @@ export const backgroundFallenNobility = {
             <li>การทอผ้า: 1</li>
             <li>การเล่นแร่แปรธาตุ: 1</li>
         </ul>
-    `
+    `,
+    trait: TraitEnum.trait_socialCharm
 };
 export const backgroundMercsChild = {
     attributes: {
@@ -1239,7 +1251,8 @@ export const backgroundMercsChild = {
             <li>การตีเหล็ก: 2</li>
             <li>การฟอกหนัง: 1</li>
         </ul>
-    `
+    `,
+    trait: TraitEnum.trait_hardWorker
 };
 export const backgroundTraineeInCaravan = {
     attributes: {
@@ -1260,7 +1273,8 @@ export const backgroundTraineeInCaravan = {
             <li>การตัดไม้: 1</li>
             <li>การสร้างไม้: 2</li>
         </ul>
-    `
+    `,
+    trait: TraitEnum.trait_nimbleFingers
 };
 export const backgroundWanderingMusician = {
     attributes: {
@@ -1287,6 +1301,7 @@ export const backgroundWanderingMusician = {
             <li>การทำอาหาร: 1</li>
         </ul>
     `,
+    trait: TraitEnum.trait_socialCharm
 };
 export const backgroundApprenticeScribe = {
     attributes: {
@@ -1313,6 +1328,7 @@ export const backgroundApprenticeScribe = {
             <li>การปรุงยา: 1</li>
         </ul>
     `,
+    trait: TraitEnum.trait_quickLearner
 };
 export const backgroundAbandonedFarmhand = {
     attributes: {
@@ -1337,6 +1353,7 @@ export const backgroundAbandonedFarmhand = {
             <li>การทำอาหาร: 1</li>
         </ul>
     `,
+    trait: TraitEnum.trait_hardWorker
 };
 export const backgroundStreetUrchin = {
     attributes: {
@@ -1363,6 +1380,7 @@ export const backgroundStreetUrchin = {
             <li>การทอผ้า: 1</li>
         </ul>
     `,
+    trait: TraitEnum.trait_lightWalker
 };
 export const backgroundFailedCraftsman = {
     attributes: {
@@ -1387,6 +1405,7 @@ export const backgroundFailedCraftsman = {
             <li>การสร้างไม้: 1</li>
         </ul>
     `,
+    trait: TraitEnum.trait_determined
 };
 export const backgroundInnkeepersChild = {
     attributes: {
@@ -1413,4 +1432,5 @@ export const backgroundInnkeepersChild = {
             <li>การทำเครื่องประดับ: 1</li>
         </ul>
     `,
+    trait: TraitEnum.trait_balancedStep
 };

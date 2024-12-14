@@ -72,7 +72,7 @@ class LoginModel {
     }
     submitLogin() {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c;
             try {
                 const url = `${env.ip()}/login`;
                 const jsonData = {
@@ -91,6 +91,7 @@ class LoginModel {
                 }
                 const raw = yield response.json();
                 const responseData = raw.result;
+                localStorage.setItem('isekaiFantasy_userID', (_a = responseData.userID) !== null && _a !== void 0 ? _a : '');
                 if (responseData.status === LoginResponseStatus.LoggedInWithCharacter ||
                     responseData.status === LoginResponseStatus.LoggedInWithNoCharacter) {
                     if (responseData.token && responseData.tokenExpiredAt) {
@@ -115,7 +116,7 @@ class LoginModel {
                         }]);
                 }
                 else if (error instanceof Error && error.message.includes('HTTP error')) {
-                    const statusCode = error.message ? parseInt((_b = (_a = error.message.split(':').pop()) === null || _a === void 0 ? void 0 : _a.trim()) !== null && _b !== void 0 ? _b : '0') : 0;
+                    const statusCode = error.message ? parseInt((_c = (_b = error.message.split(':').pop()) === null || _b === void 0 ? void 0 : _b.trim()) !== null && _c !== void 0 ? _c : '0') : 0;
                     console.log(`ข้อผิดพลาด HTTP: ${statusCode}`);
                     popup.show('ข้อผิดพลาดจากเซิร์ฟเวอร์', `เซิร์ฟเวอร์ส่งข้อผิดพลาดกลับมา (HTTP ${statusCode}) กรุณาลองใหม่อีกครั้ง`, [{
                             label: 'ตกลง',

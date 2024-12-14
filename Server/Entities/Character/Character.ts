@@ -3033,7 +3033,6 @@ export class Character {
 export class PlayerCharacter extends Character {
 	bagSize: number;
 	storyFlags: StoryFlags;
-	userID: string;
 	constructor(
 		name: string,
 		gender: "MALE" | "FEMALE",
@@ -3043,16 +3042,17 @@ export class PlayerCharacter extends Character {
 		userID: string
 	) {
 		super(
-			uuidv4(), 
+			userID, 
 			name, 
 			gender,
 		);
-		this.userID = userID;
+		this.type = CharacterType.humanoid;
 		this.bagSize = 15;
 		this.storyFlags = new StoryFlags();
 		this.gold = 50;
-		
+
 		setCharacterStatus(this, className, race, background);
+		this.setBodyValue();
 	}
 }
 

@@ -8,7 +8,7 @@ export async function createUsersTableIfNotExist() {
         userID TEXT,
         characterID TEXT,
         token TEXT,
-        tokenExpiredAt TIMESTAMP
+        tokenExpiresAt TIMESTAMP
     `;
 
     await createTableIfNotExists(tableName, tableStructure, [], 'username', false);

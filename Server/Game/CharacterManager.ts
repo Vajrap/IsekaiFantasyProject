@@ -7,7 +7,7 @@ export class CharacterManager {
         this.characters = [];
     }
     getPlayerCharacterByUserID(userID: string): PlayerCharacter {
-        const player = this.players.find(p => p.userID === userID);
+        const player = this.players.find(p => p.id === userID);
         if (!player) { throw new Error(`Player with ID ${userID} not found`); }
         return player;
     }

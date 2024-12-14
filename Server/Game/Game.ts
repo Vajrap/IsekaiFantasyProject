@@ -13,6 +13,8 @@ import { createGameTimeTableIfNotExists } from "../Database/GameTime/GameTime";
 import { createGearTableIfNotExists } from "../Database/Item/Gear/createGearTableIfNotExists";
 import { createSkillTableIfNotExists } from "../Database/Skill/skill";
 import { createUsersTableIfNotExist } from "../Database/User/CreateUsersTableIfNotExist";
+import { createPartyTableIfNotExist } from "../Database/Party/Party";
+import { createPlayerCharacterTableIfNotExists } from "../Database/Character/PlayerCharacter";
 
 export class Game {
     characterManager: CharacterManager = new CharacterManager();
@@ -48,7 +50,9 @@ export class Game {
                 createItemResourceTableIfNotExists(),
                 createItemConsumableTableIfNotExists(),
                 createSkillTableIfNotExists(),
-                createGearTableIfNotExists()
+                createGearTableIfNotExists(),
+                createPlayerCharacterTableIfNotExists(),
+                createPartyTableIfNotExist(),
             ]);
 
             console.log('Database initialized successfully.');

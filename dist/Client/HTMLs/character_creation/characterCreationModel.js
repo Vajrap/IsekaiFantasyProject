@@ -73,7 +73,8 @@ export class CharacterCreationModel {
                     class: this.selectedClass,
                     background: this.selectedBackground,
                     gender: this.selectedGender,
-                    token: localStorage.getItem('isekaiFantasy_token') || ''
+                    // token: localStorage.getItem('isekaiFantasy_token') || ''
+                    userID: localStorage.getItem('isekaiFantasy_userID') || ''
                 };
                 const response = yield fetch(url, {
                     method: 'POST',
