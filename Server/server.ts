@@ -7,7 +7,6 @@ import { Game } from './Game/Game';
 import WebSocket from 'ws';
 import { WebSocketService } from './API/WebSocket/WebSocketService';
 import readline from 'readline';
-import { CharacterCreationWebsocketService } from './API/Routes/CreateCharacter/session';
 import { router } from './API/Routes/routes';
 
 //Run with npx ts-node server.ts
@@ -16,15 +15,19 @@ const app = express();
 const port = 3030;
 
 // Allowed origins
-const allowedOrigins = [
-    'http://127.0.0.1:5500',
-    'https://9f090kw5-3030.asse.devtunnels.ms'
-];
+// const allowedOrigins = [
+//     'http://127.0.0.1:5500',
+//     'https://9f090kw5-3030.asse.devtunnels.ms'
+// ];
 
 // CORS configuration
 app.use(cors({
     origin: function (origin, callback) {
-        if (origin && allowedOrigins.indexOf(origin) !== -1) {
+        const allowedOrigins = [
+            'http://127.0.0.1:5500',
+            'https://9f090kw5-3030.asse.devtunnels.ms'
+        ];
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
@@ -67,7 +70,7 @@ const websocketHandlers: { [key: string]: WebSocketService } = {
     // '/travel-ws': travelWebSocketService,
     // '/battle-ws': battleWebSocketService,
     // '/game-ws': gameWebSocketService,
-    '/character-creation-ws': new CharacterCreationWebsocketService(wssCore)
+    // '/character-creation-ws': new CharacterCreationWebsocketService(wssCore)
 };
 
 server.on('upgrade', (request: any, socket: any, head: any) => {
