@@ -272,13 +272,8 @@ export const class_cleric = new CharacterClass(
     },
     [TraitEnum.trait_cleric_01],
     {
-        attribute: {
-            willpower: 1,
-        },
-        proficiency: {
-            mace: 1,
-            shield: 2,
-        },
+        attribute: { charisma: 2, leadership: 2, luck: 2 },
+        proficiency: { mace: 2, shield: 2, tome: 2 },    
         artisan: {}
     }
 );
@@ -295,13 +290,8 @@ export const class_mage = new CharacterClass(
     },
     [TraitEnum.trait_mage_01],
     {
-        attribute: {
-            planar: 1,
-        },
-        proficiency: {
-            magicWand: 2,
-            tome: 1,
-        },
+        attribute: { intelligence: 2, willpower: 2, planar: 2 },
+        proficiency: { magicWand: 2, staff: 2, orb: 2 },
         artisan: {}
     }
 );
@@ -318,13 +308,8 @@ export const class_scout = new CharacterClass(
     },
     [TraitEnum.trait_scout_01],
     {
-        attribute: {
-            dexterity: 1,
-        },
-        proficiency: {
-            bow: 1,
-            dagger: 2,
-        },
+        attribute:{ agility: 2, dexterity: 2, luck: 2 },
+        proficiency:{ dagger: 2, spear: 2, bow: 2 },
         artisan: {}
     }
 );
@@ -341,13 +326,8 @@ export const class_hexbinder = new CharacterClass(
     },
     [TraitEnum.trait_hexbinder_01],
     {
-        attribute: {
-            planar: 1,
-        },
-        proficiency: {
-            orb: 1,
-            staff: 2,
-        },
+        attribute:{ intelligence: 2, charisma: 2, planar: 2 },
+        proficiency:{ magicWand: 2, axe: 2, tome: 2 },
         artisan: {}
     }
 );
@@ -364,13 +344,8 @@ export const class_fighter = new CharacterClass(
     },
     [TraitEnum.trait_fighter_01],
     {
-        attribute: {
-            strength: 1,
-        },
-        proficiency: {
-            sword: 2,
-            shield: 1,
-        },
+        attribute:{ strength: 2, endurance: 2, dexterity: 2 },
+        proficiency:{ sword: 2, shield: 2, blade: 2 },    
         artisan: {}
     }
 );
@@ -387,13 +362,8 @@ export const class_warden = new CharacterClass(
     },
     [TraitEnum.trait_warden_01],
     {
-        attribute: {
-            breath: 1,
-        },
-        proficiency: {
-            axe: 1,
-            spear: 2,
-        },
+        attribute: { breath: 2, vitality: 2, planar: 2 },
+        proficiency: { axe: 2, spear: 2, shield: 2 },    
         artisan: {}
     }
 );
@@ -410,13 +380,8 @@ export const class_guardian = new CharacterClass(
     },
     [TraitEnum.trait_guardian_01],
     {
-        attribute: {
-            endurance: 1,
-        },
-        proficiency: {
-            mace: 2,
-            shield: 1,
-        },
+        attribute: { endurance: 2, vitality: 2, strength: 2 },
+        proficiency: { mace: 2, shield: 2, sword: 2 },            
         artisan: {}
     }
 );
@@ -434,13 +399,8 @@ export const class_spellblade = new CharacterClass(
     },
     [TraitEnum.trait_spellblade_01],
     {
-        attribute: {
-            planar: 1,
-        },
-        proficiency: {
-            blade: 1,
-            magicWand: 2,
-        },
+        attribute: { planar: 2, agility: 2, dexterity: 2 },
+        proficiency: { blade: 2,magicWand: 2, sword: 2},
         artisan: {}
     }
 );
@@ -457,13 +417,8 @@ export const class_skirmisher = new CharacterClass(
     },
     [TraitEnum.trait_skirmisher_01],
     {
-        attribute: {
-            agility: 1,
-        },
-        proficiency: {
-            dagger: 1,
-            bareHand: 2,
-        },
+        attribute: { agility: 2, dexterity: 2, luck: 2 },
+        proficiency: { dagger: 2, bareHand: 2, bow: 2 },
         artisan: {}
     }
 );
@@ -480,13 +435,8 @@ export const class_occultist = new CharacterClass(
     },
     [TraitEnum.trait_occultist_01],
     {
-        attribute: {
-            planar: 1,
-        },
-        proficiency: {
-            tome: 1,
-            orb: 2,
-        },
+        attribute: { planar: 2, intelligence: 2, charisma: 2 },
+        proficiency: { tome: 2, orb: 2, staff: 2 },
         artisan: {}
     }
 );
@@ -503,13 +453,8 @@ export const class_soldier = new CharacterClass(
     },
     [TraitEnum.trait_soldier_01],
     {
-        attribute: {
-            vitality: 1,
-        },
-        proficiency: {
-            spear: 2,
-            axe: 1,
-        },
+        attribute: { vitality: 2, endurance: 2, strength: 2 },
+        proficiency: { spear: 2, axe: 2, shield: 2},
         artisan: {}
     }
 );
@@ -526,13 +471,8 @@ export const class_templar = new CharacterClass(
     },
     [TraitEnum.trait_templar_01],
     {
-        attribute: {
-            charisma: 1,
-        },
-        proficiency: {
-            sword: 2,
-            shield: 1,
-        },
+        attribute: { charisma: 2, endurance: 2, vitality: 2 },
+        proficiency: { sword: 2, shield: 2, mace: 2 },
         artisan: {}
     }
 );

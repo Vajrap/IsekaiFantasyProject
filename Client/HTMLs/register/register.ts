@@ -1,6 +1,10 @@
 import { popup } from "../../classes/popup/popup.js";
 import { env } from "../../env.js";
-import { RegisterRequest, RegisterResponse, RegisterReponseStatus } from "../../../Common/RequestResponse/register.js";
+import { 
+    RegisterRequest, 
+    RegisterResponse, 
+    RegisterReponseStatus 
+} from "../../../Common/RequestResponse/register.js";
 
 class RegisterModel {
     private usernameField: HTMLInputElement;

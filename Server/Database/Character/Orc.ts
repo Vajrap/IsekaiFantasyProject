@@ -176,7 +176,7 @@ let traits = orcRace.traits;
 export const OrcSeed: CharacterArchetype[] = [
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "male",
+		gender: "MALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_sword_m,
 		level: 5,
@@ -223,7 +223,7 @@ export const OrcSeed: CharacterArchetype[] = [
 
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "female",
+		gender: "FEMALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_sword_f,
 		level: 5,
@@ -270,7 +270,7 @@ export const OrcSeed: CharacterArchetype[] = [
 
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "male",
+		gender: "MALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_greatsword_m,
 		level: 5,
@@ -431,7 +431,7 @@ export const OrcSeed: CharacterArchetype[] = [
 	}),
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "female",
+		gender: "FEMALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_greatsword_f,
 		level: 5,
@@ -593,7 +593,7 @@ export const OrcSeed: CharacterArchetype[] = [
 
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "male",
+		gender: "MALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_greataxe_m,
 		level: 5,
@@ -754,7 +754,7 @@ export const OrcSeed: CharacterArchetype[] = [
 	}),
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "female",
+		gender: "FEMALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_greataxe_f,
 		level: 5,
@@ -916,7 +916,7 @@ export const OrcSeed: CharacterArchetype[] = [
 
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "male",
+		gender: "MALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_bow_m,
 		level: 5,
@@ -959,7 +959,7 @@ export const OrcSeed: CharacterArchetype[] = [
 	}),
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "female",
+		gender: "FEMALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_bow_f,
 		level: 5,
@@ -1005,7 +1005,7 @@ export const OrcSeed: CharacterArchetype[] = [
 
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "male",
+		gender: "MALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_wand_m,
 		level: 5,
@@ -1051,7 +1051,7 @@ export const OrcSeed: CharacterArchetype[] = [
 	}),
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "female",
+		gender: "FEMALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_wand_f,
 		level: 5,
@@ -1098,7 +1098,7 @@ export const OrcSeed: CharacterArchetype[] = [
 
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "male",
+		gender: "MALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_staff_m,
 		level: 5,
@@ -1145,7 +1145,7 @@ export const OrcSeed: CharacterArchetype[] = [
 
 	new CharacterArchetype({
 		name: "Orc",
-		gender: "female",
+		gender: "FEMALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_staff_f,
 		level: 5,
@@ -1192,7 +1192,7 @@ export const OrcSeed: CharacterArchetype[] = [
 
 	new CharacterArchetype({
 		name: "Orc Chieftain",
-		gender: "male",
+		gender: "MALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_chieftain_warrior_m,
 		level: 10,
@@ -1238,7 +1238,7 @@ export const OrcSeed: CharacterArchetype[] = [
 	}),
 	new CharacterArchetype({
 		name: "Orc Chieftain",
-		gender: "female",
+		gender: "FEMALE",
 		type: CharacterType.humanoid,
 		id: OrcID.orc_chieftain_warrior_f,
 		level: 10,

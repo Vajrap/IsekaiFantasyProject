@@ -60,6 +60,7 @@ Fabric
 18. solar weave
 
 run server with: npx ts-node server.ts
+compile Client and Common ts to js with: tsc from root directory
 
 
 window.config = {

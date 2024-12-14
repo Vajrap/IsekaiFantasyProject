@@ -4,6 +4,7 @@ import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, Tar
 import { CharacterStatusEnum } from "../../Utility/Enum/CharacterStatusTypes";
 import { LocationActionEnum } from "../../Utility/Enum/LocationActions+Events";
 import { DiceEnum } from "../../Utility/Enum/DamageDIce";
+import { GameLocation } from "../Location/GameLocation";
 
 export class Party {
 	partyID: string;
@@ -24,20 +25,25 @@ export class Party {
 	};
 	isTemporarilyBattleScenePartyForTargeting: boolean = false;
 	isTravelling: boolean = false;
+	// Should move to LocationEnum
+	location: string = "None";
 	// travelManager: TravelManager;
 	// currentLocation: GameLocation;
 
 	//we would normally only allow creation of a party with an array of one character, but in battle we need to create a party with multiple characters
 	//When Player character was created, it created a party of itself, so it's one character in a party.
+
 	constructor(
 		characters: Character[],
 		isTemporarilyBattleScenePartyForTargeting: boolean = false
 	) {
+		this.characters[0] = characters[0] as Character;
 		this.isTemporarilyBattleScenePartyForTargeting =
 			isTemporarilyBattleScenePartyForTargeting;
 		this.partyID = isTemporarilyBattleScenePartyForTargeting
 			? "temp"
 			: characters[0].id;
+		console.log(this.characters[0].id)
 		if (this.partyID === "temp") {
 			this.addCharactersToTemporarilyBattleSceneParty(characters);
 		} else {

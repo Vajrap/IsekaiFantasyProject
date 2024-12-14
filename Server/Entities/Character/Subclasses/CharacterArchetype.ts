@@ -4,7 +4,7 @@ import { CharacterType } from "./CharacterType";
 
 export class CharacterArchetype {
     name: string;
-    gender: "male" | "female" | "none";
+    gender: "MALE" | "FEMALE" | "NONE";
     id: string;
     type: CharacterType;
     level: number;
@@ -129,7 +129,7 @@ export class CharacterArchetype {
     classModifier?: ClassModifier;
     constructor(dto:{
         name: string,
-        gender: "male" | "female" | "none",
+        gender: "MALE" | "FEMALE" | "NONE",
         id: string,
         type: CharacterType,
         level: number,

@@ -48,15 +48,26 @@ class CharacterCreationViewModel {
                     }]);
             }
             const characterName = characterNameElement.value;
-            let result = yield this.model.createCharacter(characterName, this.portrait);
-            if (result.status === CharacterCreationResponseStatus.INVALID_NAME) {
+            let result = yield this.model.sendCharacterCreationRequest(characterName, this.portrait);
+            if (result.status === CharacterCreationResponseStatus.FAILED) {
                 popup.show('อุ๊ปส์! ชื่อตัวละครไม่ถูกต้อง', result.message, [{
                         label: 'ตกลง',
                         action: popup.hide.bind(popup)
                     }]);
             }
-            else if (result.status === CharacterCreationResponseStatus.SUCCESS) {
+            if (result.status === CharacterCreationResponseStatus.FATAL_ERROR) {
+                popup.show('ข้อผิดพลาดร้ายแรง!', result.message, [{
+                        label: 'ตกลง',
+                        // Need to redirect back to login page at this point
+                        action: popup.hide.bind(popup)
+                        // localStorage.removeItem('isekaiFantasy_token');
+                        // localStorage.removeItem('isekaiFantasy_tokenExpiredAt');
+                        // window.location.href = '../../../Client/index.html';                             
+                    }]);
+            }
+            if (result.status === CharacterCreationResponseStatus.SUCCESS) {
                 // Redirect into Game
+                console.log('Character created successfully');
             }
         });
         this.model = characterCreationModel;

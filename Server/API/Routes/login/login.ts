@@ -8,8 +8,11 @@ export async function loginHandler(
     username: string,
     password: string
 ): Promise<LoginResponse> {
+    console.log(`Login Handler called`)
     const existingUser = await findExistingUser(username);
-    if (!existingUser) {
+    console.log(existingUser);
+    if (existingUser === undefined || !existingUser === null) { 
+        console.log('User not found');
         return { 
             status: LoginResponseStatus.Failed, 
             message: "ไม่มีผู้ใช้นี้ในระบบ" 
@@ -65,6 +68,7 @@ async function loginMethod(existingUser: UserID) {
 }
 
 async function findExistingUser(username: string): Promise<UserID | undefined> {
+    console.log('Finding user:', username);
     try {
         const row: UserDBRow = await db.read('users', 'username', username);
         return row ? UserID.createFromDBRow(row) : undefined;
@@ -111,7 +115,8 @@ async function generateToken(existingUser: UserID): Promise<TokenResult> {
     // Token is expired or undefined; generate a new one
     const token = crypto.randomBytes(32).toString('hex');
     const tokenExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 1 week
-    await saveTokenIntoExistingUser({ token, tokenExpiresAt }, existingUser?.userID ?? '');
+    // ! This SaveToken is not used during production since it'll cause the live server's HTML to refresh every time data is update and cause wrong Front End Scenario/
+    // await saveTokenIntoExistingUser({ token, tokenExpiresAt }, existingUser?.userID ?? '');
     
     return { token, tokenExpiresAt };
 }

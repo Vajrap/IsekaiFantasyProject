@@ -6,7 +6,7 @@
 // 	portrait: string;
 // 	constructor(
 // 		name: string,
-// 		gender: "male" | "female" | "none",
+// 		gender: "MALE" | "female" | "none",
 // 		archetype: CharacterArchetype,
 // 		description: string,
 // 		portrait: string

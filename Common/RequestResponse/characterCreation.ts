@@ -4,6 +4,8 @@ export interface CreateCharacterRequest {
     race: string;
     class: string;
     background: string;
+    gender: 'MALE' | 'FEMALE';
+    userID: string;
 };
 
 export enum CharacterCreationResponseStatus {

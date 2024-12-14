@@ -1,5 +1,16 @@
-import { ClassEnum, RaceEnum, BackgroundEnum, CharacterCreationResponseStatus } from '../../../Common/RequestResponse/characterCreation.js';
-import { characterCreationModel, CharacterCreationModel, matchBackground, matchClass, matchRace } from './characterCreationModel.js';
+import { 
+    ClassEnum, 
+    RaceEnum, 
+    BackgroundEnum, 
+    CharacterCreationResponseStatus 
+} from '../../../Common/RequestResponse/characterCreation.js';
+import { 
+    characterCreationModel, 
+    CharacterCreationModel, 
+    matchBackground, 
+    matchClass, 
+    matchRace 
+} from './characterCreationModel.js';
 import { popup } from '../../classes/popup/popup.js';
 
 class CharacterCreationViewModel {
@@ -188,8 +199,8 @@ class CharacterCreationViewModel {
 
         const characterName = characterNameElement.value;
 
-        let result = await this.model.createCharacter(characterName, this.portrait);
-        if (result.status === CharacterCreationResponseStatus.INVALID_NAME) {
+        let result = await this.model.sendCharacterCreationRequest(characterName, this.portrait);
+        if (result.status === CharacterCreationResponseStatus.FAILED) {
             popup.show(
                 'อุ๊ปส์! ชื่อตัวละครไม่ถูกต้อง', 
                 result.message, 
@@ -198,8 +209,24 @@ class CharacterCreationViewModel {
                     action: popup.hide.bind(popup)
                 }]
             );
-        } else if (result.status === CharacterCreationResponseStatus.SUCCESS) {
+        }
+        if (result.status === CharacterCreationResponseStatus.FATAL_ERROR) {
+            popup.show(
+                'ข้อผิดพลาดร้ายแรง!', 
+                result.message, 
+                [{ 
+                    label:'ตกลง', 
+                    // Need to redirect back to login page at this point
+                    action: popup.hide.bind(popup)
+                        // localStorage.removeItem('isekaiFantasy_token');
+                        // localStorage.removeItem('isekaiFantasy_tokenExpiredAt');
+                        // window.location.href = '../../../Client/index.html';                             
+                }]
+            );
+        } 
+        if (result.status === CharacterCreationResponseStatus.SUCCESS) {
             // Redirect into Game
+            console.log('Character created successfully');
         }
     }
 

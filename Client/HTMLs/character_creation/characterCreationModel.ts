@@ -1,4 +1,11 @@
-import { CharacterAttributesInterface, CharacterProficienciesInterface, CharacterArtisansInterface, CreateCharacterRequest, CreateCharacterResponse, CharacterCreationResponseStatus } from '../../../Common/RequestResponse/characterCreation.js';
+import { 
+    CharacterAttributesInterface, 
+    CharacterProficienciesInterface, 
+    CharacterArtisansInterface, 
+    CreateCharacterRequest, 
+    CreateCharacterResponse, 
+    CharacterCreationResponseStatus 
+} from '../../../Common/RequestResponse/characterCreation.js';
 import { 
     raceDwarf, 
     raceDwarfling, 
@@ -36,6 +43,7 @@ import {
     backgroundTraineeInCaravan,
     backgroundWanderingMusician 
 } from '../../../Common/Entity/raceClassBackground.js';
+import { env } from '../../env.js';
 export class CharacterCreationModel {
     attributes: CharacterAttributesInterface;
     proficiencies: CharacterProficienciesInterface;
@@ -98,19 +106,50 @@ export class CharacterCreationModel {
         this.selectedGender = "MALE";
         this.portraitNumber = 1;
     }
-
-    async createCharacter(
+    async sendCharacterCreationRequest( 
         characterName: string, 
         portrait: string
     ): Promise<CreateCharacterResponse> {
-        const message: CreateCharacterRequest = {
-            characterName,
-            portrait,
-            race: this.selectedRace,
-            class: this.selectedClass,
-            background: this.selectedBackground,
+
+        try {
+            const url = `${env.ip()}/createCharacter`;
+            const jsonData: CreateCharacterRequest = {
+                characterName: characterName,
+                portrait: portrait,
+                race: this.selectedRace,
+                class: this.selectedClass,
+                background: this.selectedBackground,
+                gender: this.selectedGender,
+                // token: localStorage.getItem('isekaiFantasy_token') || ''
+                userID: localStorage.getItem('isekaiFantasy_userID') || ''
+            };
+    
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+            });
+                    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const raw = await response.json();
+            const responseData: CreateCharacterResponse = raw.result;
+            
+            console.log('Character Creation Parsed Response:', raw);
+    
+            return responseData;
+        } catch (error) {
+            let message: CreateCharacterResponse = {
+                status: CharacterCreationResponseStatus.FATAL_ERROR,
+                message: "Unexpeted Error"
+            } 
+            return message;
         };
-        return await sendCharacterCreationRequest(message);
+    
     }
 
     selectRace(race: string) {
@@ -338,14 +377,6 @@ export function matchBackground(background: string) {
     }
 }
 
-async function sendCharacterCreationRequest(message: CreateCharacterRequest): Promise<CreateCharacterResponse> {
-    console.log('Sending Character Creation Request', message);
-    
-    return {
-        status: CharacterCreationResponseStatus.SUCCESS,
-        message: 'Character Created Successfully',
-        characterId: '1234567890',
-    };
-}
+
 
 export const characterCreationModel = new CharacterCreationModel();

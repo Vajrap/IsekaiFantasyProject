@@ -666,4 +666,6 @@ export enum TraitEnum {
      trait_bornSurvivor = 'trait_bornSurvivor',
      trait_lightWalker = 'trait_lightWalker',
      trait_determined = 'trait_determined',
+     trait_mageApprentice = 'trait_mageApprentice',
+     
 }

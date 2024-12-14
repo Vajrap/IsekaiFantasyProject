@@ -24,7 +24,7 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
     //MARK: EDMUND AZURE
     new CharacterArchetype({
         name: "King Edmund Azure",
-        gender: "male",
+        gender: "MALE",
         id: NPCID.npc_king_edmund_azure,
         type: CharacterType.humanoid,
         level: 20,
@@ -188,7 +188,7 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
     //MARK: ELARA AZURE
     new CharacterArchetype({
         name: "Queen Elara Azure",
-        gender: 'female',
+        gender: 'FEMALE',
         id: NPCID.npc_queen_elara_azure,
         type: CharacterType.humanoid,
         level: 18,
@@ -352,7 +352,7 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
     //MARK: LYSANDRA AZURE
     new CharacterArchetype({
         name: "Princess Lysandra Azure",
-        gender: "female",
+        gender: "FEMALE",
         id: NPCID.npc_princess_lysandra_azure,
         type: CharacterType.humanoid,
         level: 20,
@@ -517,7 +517,7 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
     new CharacterArchetype({
         //Supreme Mage, mage class level 70
         name: "Archmagus Vaelin",
-        gender: "male",
+        gender: "MALE",
         id: NPCID.npc_archmagus_vaelin,
         type: CharacterType.humanoid,
         level: 70,
@@ -682,7 +682,7 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
     new CharacterArchetype({
         //Grandmaster of Laoh's temple, super powerful monk, level 85
         name: "Grand Abbot Zhenwu",
-        gender: "male",
+        gender: "MALE",
         id: NPCID.npc_grand_abbot_zhenwu,
         type: CharacterType.humanoid,
         level: 85,
@@ -847,7 +847,7 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
     new CharacterArchetype({
         //Master of Heaven's decree, super powerful martial artist, level 95
         name: "Li Tianming",
-        gender: "male",
+        gender: "MALE",
         id: NPCID.npc_li_tianming,
         type: CharacterType.humanoid,
         level: 95,
@@ -1012,7 +1012,7 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
     new CharacterArchetype({
         //Heven's decree, daughter of Li Tianming, martial artist, level 60
         name: "Li Xueyue",
-        gender: "female",
+        gender: "FEMALE",
         id: NPCID.npc_li_xueyue,
         type: CharacterType.humanoid,
         level: 60,
@@ -1177,7 +1177,7 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
     new CharacterArchetype({
         //Fire mage, powerful mage, level 40
         name: "Karin Farsee",
-        gender: "female",
+        gender: "FEMALE",
         id: NPCID.npc_karin_farsee,
         type: CharacterType.humanoid,
         level: 40,

@@ -105,7 +105,7 @@ export class Character {
 	partyID: string | "none" = "none";
 	name: string;
 	type: CharacterType | undefined = undefined;
-	gender: "male" | "female" | "none" | undefined = undefined;
+	gender: "MALE" | "FEMALE" | "NONE" | undefined = undefined;
 	portrait: any = null;
 	background: string = '';
 	race: RaceEnum;
@@ -158,7 +158,7 @@ export class Character {
 	constructor(
 		id: string,
 		name: string,
-		gender?: "male" | "female" | "none",
+		gender?: "MALE" | "FEMALE" | "NONE",
 		archetype?: CharacterArchetype,
 		race?: RaceEnum,
 	) {
@@ -1152,38 +1152,34 @@ export class Character {
 	}
 
 	//MARK: SKILL
-	// async learnSkill(skillID: string): Promise<SkillResponseType> {
-	// 	let skill;
+	async learnSkill(skillID: string): Promise<void> {
+		let skill;
 
-	// 	if (skillID.includes("auto")) {
-	// 		skill = SkillRepository[skillID as keyof typeof SkillRepository];
-	// 	} else {
-	// 		skill = await getSkillFromDB(skillID);
-	// 	}
+		if (skillID.includes("auto")) {
+			skill = SkillRepository[skillID as keyof typeof SkillRepository];
+		} else {
+			skill = await getSkillFromDB(skillID);
+		}
 
-	// 	if (!skill) {
-	// 		throw new Error(
-	// 			`Skill with id ${skillID} not found in SkillRepository or database.`
-	// 		);
-	// 	}
+		if (!skill) {
+			throw new Error(
+				`Skill with id ${skillID} not found in SkillRepository or database.`
+			);
+		}
 
-	// 	if (
-	// 		this.skills.some((s) => s.skill.id === skillID) ||
-	// 		this.activeSkills.some((s) => s.skill.id === skillID)
-	// 	) {
-	// 		console.log(`Skill with id ${skillID} is already learned`);
-	// 		return SkillResponseType.SuccessAlreadyLearned;
-	// 	}
+		if (
+			this.skills.some((s) => s.skill.id === skillID) ||
+			this.activeSkills.some((s) => s.skill.id === skillID)
+		) {
+			console.log(`Skill with id ${skillID} is already learned`);
+		}
 
-	// 	if (!this.validateSkillLearning(skill)) {
-	// 		console.log(`Not eligible to learn skill with id ${skillID}`);
-	// 		return SkillResponseType.SuccessNotEligibleToLearn;
-	// 	}
+		if (!this.validateSkillLearning(skill)) {
+			console.log(`Not eligible to learn skill with id ${skillID}`);
+		}
 
-	// 	this.skills.push({ skill: skill, level: 1, exp: 0 });
-
-	// 	return SkillResponseType.SuccessLearning;
-	// }
+		this.skills.push({ skill: skill, level: 1, exp: 0 });
+	}
 
 	validateSkillLearning(skill: Skill): boolean {
 		const traitIDArray = [];
@@ -3037,100 +3033,26 @@ export class Character {
 export class PlayerCharacter extends Character {
 	bagSize: number;
 	storyFlags: StoryFlags;
-	userID: string;
 	constructor(
-		dto: {
-			gender: "male" | "female" | "none",
-			portrait: string,
-			name: string,
-			userID: string,
-			charisma: number,
-			luck: number,
-			intelligence: number,
-			leadership: number,
-			vitality: number,
-			willpower: number,
-			breath: number,
-			planar: number,
-			dexterity: number,
-			agility: number,
-			strength: number,
-			endurance: number,
-			bareHand: number,
-			sword: number,
-			blade: number,
-			dagger: number,
-			spear: number,
-			axe: number,
-			mace: number,
-			shield: number,
-			bow: number,
-			magicWand: number,
-			staff: number,
-			tome: number,
-			orb: number,
-			mining: number,
-			smithing: number,
-			woodcutting: number,
-			carpentry: number,
-			foraging: number,
-			weaving: number,
-			skinning: number,
-			tanning: number,
-			jewelry: number,
-			alchemy: number,
-			cooking: number,
-			enchanting: number,
-			selectedClass?: ClassEnum,
-			selectedRace?: RaceEnum,
-			selectedBackground?: BackgroundEnum,
-		}
+		name: string,
+		gender: "MALE" | "FEMALE",
+		race: RaceEnum,
+		className: ClassEnum,
+		background: BackgroundEnum,
+		userID: string
 	) {
-		super(uuidv4(), dto.name, dto.gender);
-		this.userID = dto.userID;
-		this.portrait = dto.portrait;
+		super(
+			userID, 
+			name, 
+			gender,
+		);
+		this.type = CharacterType.humanoid;
 		this.bagSize = 15;
 		this.storyFlags = new StoryFlags();
-		this.status.attributes.agility.base = dto.agility;
-		this.status.attributes.breath.base = dto.breath;
-		this.status.attributes.charisma.base = dto.charisma;
-		this.status.attributes.dexterity.base = dto.dexterity;
-		this.status.attributes.endurance.base = dto.endurance;
-		this.status.attributes.intelligence.base = dto.intelligence;
-		this.status.attributes.leadership.base = dto.leadership;
-		this.status.attributes.luck.base = dto.luck;
-		this.status.attributes.planar.base = dto.planar;
-		this.status.attributes.strength.base = dto.strength;
-		this.status.attributes.vitality.base = dto.vitality;
-		this.status.attributes.willpower.base = dto.willpower;
-		this.status.proficiencies.bareHand.base = dto.bareHand;
-		this.status.proficiencies.sword.base = dto.sword;
-		this.status.proficiencies.blade.base = dto.blade;
-		this.status.proficiencies.dagger.base = dto.dagger;
-		this.status.proficiencies.spear.base = dto.spear;
-		this.status.proficiencies.axe.base = dto.axe;
-		this.status.proficiencies.mace.base = dto.mace;
-		this.status.proficiencies.shield.base = dto.shield;
-		this.status.proficiencies.bow.base = dto.bow;
-		this.status.proficiencies.magicWand.base = dto.magicWand;
-		this.status.proficiencies.staff.base = dto.staff;
-		this.status.proficiencies.tome.base = dto.tome;
-		this.status.proficiencies.orb.base = dto.orb;
-		this.status.artisans.mining.base = dto.mining;
-		this.status.artisans.smithing.base = dto.smithing;
-		this.status.artisans.woodcutting.base = dto.woodcutting;
-		this.status.artisans.carpentry.base = dto.carpentry;
-		this.status.artisans.foraging.base = dto.foraging;
-		this.status.artisans.weaving.base = dto.weaving;
-		this.status.artisans.skinning.base = dto.skinning;
-		this.status.artisans.tanning.base = dto.tanning;
-		this.status.artisans.jewelry.base = dto.jewelry;
-		this.status.artisans.alchemy.base = dto.alchemy;
-		this.status.artisans.cooking.base = dto.cooking;
-		this.status.artisans.enchanting.base = dto.enchanting;
 		this.gold = 50;
-		// Method for class selection
-		setCharacterStatus(this, dto.selectedClass, dto.selectedRace, dto.selectedBackground)
+
+		setCharacterStatus(this, className, race, background);
+		this.setBodyValue();
 	}
 }
 
@@ -3225,30 +3147,43 @@ function switchBackground(selectedBackground?: BackgroundEnum) {
 	switch (selectedBackground) {
 		case BackgroundEnum.ABANDONED_FARMHAND:
 			return backgroundAbandonedFarmhand;
+			break;
 		case BackgroundEnum.APPRENTICE_SCRIBE:
 			return backgroundApprenticeScribe;
+			break;
 		case BackgroundEnum.FALLEN_NOBILITY:
 			return backgroundFallenNobility;
+			break;
 		case BackgroundEnum.FAILED_CRAFTSMAN:
 			return backgroundFailedCraftsman;
+			break;
 		case BackgroundEnum.INNKEEPERS_CHILD:
 			return backgroundInnkeepersChild;
+			break;
 		case BackgroundEnum.DESERTED_MILITARY:
 			return backgroundDesertedMilitary;
+			break;
 		case BackgroundEnum.MAGE_APPRENTICE:
 			return backgroundMageApprentice;
+			break;
 		case BackgroundEnum.MERCS_CHILD:
 			return backgroundMercsChild;
+			break;
 		case BackgroundEnum.STREET_URCHIN:
 			return backgroundStreetUrchin;
+			break;
 		case BackgroundEnum.TAVERN_BRAWLER:
 			return backgroundTavernBrawler;
+			break;
 		case BackgroundEnum.TRAINEE_IN_CARAVAN:
 			return backgroundTraineeInCaravan;
+			break;
 		case BackgroundEnum.WANDERING_MUSICIAN:
 			return backgroundWanderingMusician;
+			break;
 		default:
 			return null;
+			break;
 	}
 }
 
@@ -3259,90 +3194,101 @@ export async function setCharacterStatus(
 	classSelected?: ClassEnum ,
 	raceSelected?: RaceEnum,
 	backGroundSelected?: BackgroundEnum
-) {
-	let characterClass = switchClass(classSelected);
-	let characterRace = switchRace(raceSelected);
-	let characterBackground = switchBackground(backGroundSelected);
+): Promise<Character> {
 
-	if (characterClass != null) {
-		for (const attribute in characterClass.bonusStats.attribute) {
-			character.status.attributes[attribute as keyof CharacterStatus["attributes"]].base += 
-			characterClass.bonusStats.attribute[attribute as keyof CharacterStatus["attributes"]];
-		};
-		for (const proficiency in characterClass.bonusStats.proficiency) {
-			character.status.proficiencies[proficiency as keyof CharacterStatus["proficiencies"]].base += 
-			characterClass.bonusStats.proficiency[proficiency as keyof CharacterStatus["proficiencies"]];
-		};
-		for (const artisan in characterClass.bonusStats.artisan) {
-			character.status.artisans[artisan as keyof CharacterStatus["artisans"]].base += 
-			characterClass.bonusStats.artisan[artisan as keyof CharacterStatus["artisans"]];
-		};
-
-		// for (const skill of characterClass.skills) {
-		// 	await character.learnSkill(skill);
-		// };
-	
-		for (let i = character.skills.length - 1; i >=0; i--) {
-			let skill = character.skills[i];
-			character.moveCardToBattle(skill.skill.id);
-		};
-	
-		if (characterClass.gears.mainHand != null) {
-			let mainHand = await db.getWeapon(characterClass.gears.mainHand);
-			character.equip("mainHand", mainHand);
-		}
-	
-		if (characterClass.gears.offHand != null) {
-			let offHand = await db.getWeapon(characterClass.gears.offHand);
-			character.equip("offHand", offHand);
-		}
-	
-		if (characterClass.gears.armor != null) {
-			let armor = await db.getArmor(characterClass.gears.armor);
-			character.equip("armor", armor);
-		}
-	
-		if (characterClass.gears.cloth != null) {
-			let cloth = await db.getArmor(characterClass.gears.cloth);
-			character.equip("cloth", cloth);
-		}
-	
-		if (characterClass.traits.length > 0) {
-			for (const traitID of characterClass.traits) {
-				let trait = TraitRepository[traitID as keyof typeof TraitRepository];
+	if (raceSelected != null && raceSelected != undefined) {
+		let characterRace = switchRace(raceSelected);
+		if (characterRace != null) {
+			for (const attribute in characterRace.attributes) {
+				character.status.attributes[attribute as keyof CharacterStatus["attributes"]].base += 
+				characterRace.attributes[attribute as keyof CharacterStatus["attributes"]];
+			}
+			character.raceHP = characterRace.hp;
+			character.raceMP = characterRace.mp;
+			character.raceSP = characterRace.sp;
+			for (const traitEnum of characterRace.traits) {
+				let trait = TraitRepository[traitEnum as keyof typeof TraitRepository];
 				character.gainTrait(trait);
 			}
 		}
 	}
-	
-	const raceAttributes = {
-		[RaceEnum.DWARF]: dwarfRace,
-		[RaceEnum.DWARFLING]: dwarflingRace,
-		[RaceEnum.ELVEN]: elvenRace,
-		[RaceEnum.ELVON]: elvonRace,
-		[RaceEnum.HALFLING]: halflingRace,
-		[RaceEnum.HALF_ELF]: halfElvenRace,
-		[RaceEnum.HALF_ORC]: halfOrcRace,
-		[RaceEnum.HALF_TRITON]: halfTritonRace,
-		[RaceEnum.HUMAN]: humanRace,
-		[RaceEnum.ORC]: orcRace,
-		[RaceEnum.TRITON]: tritonRace,
-	};
 
-	if (raceSelected != null) {
-		for (const attribute in character.status.attributes) {
-			character.status.attributes[attribute as keyof CharacterStatus["attributes"]].base += 
-			raceAttributes[raceSelected as keyof typeof raceAttributes][attribute as keyof CharacterStatus["attributes"]];
+	if (classSelected != null && classSelected != undefined) {
+		let characterClass = switchClass(classSelected);
+		if (characterClass != null) {
+			for (const attribute in characterClass.bonusStats.attribute) {
+				character.status.attributes[attribute as keyof CharacterStatus["attributes"]].base += 
+				characterClass.bonusStats.attribute[attribute as keyof CharacterStatus["attributes"]];
+			}
+			for (const proficiency in characterClass.bonusStats.proficiency) {
+				character.status.proficiencies[proficiency as keyof CharacterStatus["proficiencies"]].base += 
+				characterClass.bonusStats.proficiency[proficiency as keyof CharacterStatus["proficiencies"]];
+			}
+			for (const artisan in characterClass.bonusStats.artisan) {
+				character.status.artisans[artisan as keyof CharacterStatus["artisans"]].base += 
+				characterClass.bonusStats.artisan[artisan as keyof CharacterStatus["artisans"]];
+			}
+			for (const skill of characterClass.skills) {
+				await character.learnSkill(skill);
+			}
+			for (let i = character.skills.length - 1; i >=0; i--) {
+				let skill = character.skills[i];
+				character.moveCardToBattle(skill.skill.id);
+			}
+			if (characterClass.gears.mainHand != null) {
+				let mainHand = await db.getWeapon(characterClass.gears.mainHand);
+				character.equip("mainHand", mainHand);
+			}
+			if (characterClass.gears.offHand != null) {
+				let offHand = await db.getWeapon(characterClass.gears.offHand);
+				character.equip("offHand", offHand);
+			}
+			if (characterClass.gears.armor != null) {
+				let armor = await db.getArmor(characterClass.gears.armor);
+				character.equip("armor", armor);
+			}
+			if (characterClass.gears.cloth != null) {
+				let cloth = await db.getArmor(characterClass.gears.cloth);
+				character.equip("cloth", cloth);
+			}
+			if (characterClass.traits.length > 0) {
+				for (const traitID of characterClass.traits) {
+					let trait = TraitRepository[traitID as keyof typeof TraitRepository];
+					character.gainTrait(trait);
+				}
+			}
 		}
-	
-		character.raceHP = raceAttributes[raceSelected as keyof typeof raceAttributes].hp;
-		character.raceMP = raceAttributes[raceSelected as keyof typeof raceAttributes].mp;
-		character.raceSP = raceAttributes[raceSelected as keyof typeof raceAttributes].sp;
-	
-		for (const traitEnum of raceAttributes[raceSelected as keyof typeof raceAttributes].traits) {
-			let trait = TraitRepository[traitEnum as keyof typeof TraitRepository];
-			character.gainTrait(trait);
-		}	
 	}
+
+	if (backGroundSelected != null && backGroundSelected != undefined) {
+		let characterBackground = switchBackground(backGroundSelected);
+		if (characterBackground != null) {
+			if (characterBackground.attributes != null) {
+				for (const attribute in characterBackground.attributes) {
+					character.status.attributes[attribute as keyof CharacterStatus["attributes"]].base += 1;
+					(characterBackground.attributes as Record<string, number>)[attribute];
+				}
+			}
+			if (characterBackground.proficiencies != null) {
+				for (const proficiency in characterBackground.proficiencies) {
+					character.status.proficiencies[proficiency as keyof CharacterStatus["proficiencies"]].base += 1;
+					(characterBackground.proficiencies as Record<string, number>)[proficiency];
+				}
+			}
+			if (characterBackground.artisans != null) {
+				for (const artisan in characterBackground.artisans) {
+					character.status.artisans[artisan as keyof CharacterStatus["artisans"]].base += 1;
+					(characterBackground.artisans as Record<string, number>)[artisan];
+				}
+			}
+		
+			if (characterBackground.trait != null && characterBackground.trait != undefined) {
+				let trait = TraitRepository[characterBackground.trait as keyof typeof TraitRepository];
+				character.gainTrait(trait);
+			}
+		}
+	}
+
+	return character;
 }
 
