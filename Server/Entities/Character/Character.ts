@@ -156,17 +156,20 @@ export class Character {
 	arcaneAptitude: CharacterArcaneAptitude = new CharacterArcaneAptitude();
 	bagSize: number = 20;
 	constructor(
-		id: string,
-		name: string,
-		gender?: "MALE" | "FEMALE" | "NONE",
-		archetype?: CharacterArchetype,
-		race?: RaceEnum,
+		data: {
+			id: string,
+			name: string,
+			gender?: "MALE" | "FEMALE" | "NONE",
+			portrait?: string,
+			archetype?: CharacterArchetype,
+			race?: RaceEnum,
+		}
 	) {
-		this.id = id;
-		this.name = name;
-		this.type = archetype?.type || undefined;
-		this.gender = gender;
-		this.race = race? race: RaceEnum.UNDEFINED;
+		this.id = data.id;
+		this.name = data.name;
+		this.type = data.archetype?.type || undefined;
+		this.gender = data.gender;
+		this.race = data.race? data.race: RaceEnum.UNDEFINED;
 		this.portrait = null;
 		this.background = '';
 		this.mood = 0;
@@ -201,9 +204,10 @@ export class Character {
 			none: 0,
 		};
 		this.position = 0;
+		this.portrait = data.portrait;
 
-		if (archetype) {
-			this.setCharacterFromArcheType(archetype);
+		if (data.archetype) {
+			this.setCharacterFromArcheType(data.archetype);
 		}
 	}
 
@@ -3039,12 +3043,16 @@ export class PlayerCharacter extends Character {
 		race: RaceEnum,
 		className: ClassEnum,
 		background: BackgroundEnum,
-		userID: string
+		userID: string,
+		portrait: string
 	) {
 		super(
-			userID, 
-			name, 
-			gender,
+			{
+				id: userID, 
+				name: name, 
+				gender: gender,
+				portrait: portrait,
+			}
 		);
 		this.type = CharacterType.humanoid;
 		this.bagSize = 15;

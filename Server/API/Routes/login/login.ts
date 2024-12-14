@@ -3,6 +3,7 @@ import { db } from '../../../Database';
 import { LoginResponse, LoginResponseStatus} from '../../../../Common/RequestResponse/login'
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import { Character } from '../../../Entities/Character/Character';
 
 export async function loginHandler(
     username: string,
@@ -10,8 +11,7 @@ export async function loginHandler(
 ): Promise<LoginResponse> {
     console.log(`Login Handler called`)
     const existingUser = await findExistingUser(username);
-    console.log(existingUser);
-    if (existingUser === undefined || !existingUser === null) { 
+    if (!existingUser) { 
         console.log('User not found');
         return { 
             status: LoginResponseStatus.Failed, 
@@ -32,7 +32,7 @@ export async function loginHandler(
 export async function autoLoginHandler(token: string): Promise<LoginResponse> {
     const existingUser = await findExistingUserByToken(token);
 
-    console.log(existingUser);
+    // Silently fail if the user is not found, still this is suspicious, since there shouldn't be a token send to the server in the first place.
     if (!existingUser || existingUser === undefined) {
         return {
             status: LoginResponseStatus.Failed,
@@ -40,50 +40,36 @@ export async function autoLoginHandler(token: string): Promise<LoginResponse> {
         };
     }
 
-
     return loginMethod(existingUser);
 }
 
 async function loginMethod(existingUser: UserID) {
     let tokenResult = await generateToken(existingUser);
-    const characterID = existingUser.characterID;
-    if (!characterID) {
-        return {
-            status: LoginResponseStatus.LoggedInWithNoCharacter,
-            message: "เข้าสู่ระบบสำเร็จโดยไม่มีตัวละคร", // "Logged in without character"
-            userID: existingUser.userID,
-            token: tokenResult.token,
-            tokenExpiredAt: tokenResult.tokenExpiresAt.toISOString()
-        };
-    } else {
-        return {
-            status: LoginResponseStatus.LoggedInWithCharacter,
-            message: "เข้าสู่ระบบสำเร็จพร้อมตัวละคร", // "Logged in with character"
-            userID: existingUser.userID,
-            characterID: characterID,
-            token: tokenResult.token,
-            tokenExpiredAt: tokenResult.tokenExpiresAt.toISOString()
-        };
+    const playerCharacter = await db.read<Character>('playerCharacters', 'characterID', existingUser.userID);
+
+    let status = playerCharacter ? LoginResponseStatus.LoggedInWithCharacter : LoginResponseStatus.LoggedInWithNoCharacter;
+
+    return {
+        status: status,
+        message: "เข้าสู่ระบบสำเร็จ",
+        userID: existingUser.userID,
+        token: tokenResult.token,
+        tokenExpiredAt: tokenResult.tokenExpiresAt.toISOString()
     }
 }
 
-async function findExistingUser(username: string): Promise<UserID | undefined> {
-    console.log('Finding user:', username);
+async function findExistingUser(username: string): Promise<UserID | null> {
     try {
-        const row: UserDBRow = await db.read('users', 'username', username);
-        return row ? UserID.createFromDBRow(row) : undefined;
+        return await db.read<UserID>('users', 'username', username);
     } catch (err) {
         console.error(`Error finding user: ${username}`, err);
         throw err;
     }
 }
 
-async function findExistingUserByToken(token: string): Promise<UserID | undefined> {
+async function findExistingUserByToken(token: string): Promise<UserID | null> {
     try {
-        console.log(token);
-        const row: UserDBRow = await db.read('users', 'token', token);
-        console.log(row);
-        return row ? UserID.createFromDBRow(row) : undefined;
+        return await db.read<UserID>('users', 'token', token);
     } catch (err) {
         console.error(`Error finding user by token: ${token}`, err);
         throw err;
@@ -100,14 +86,13 @@ interface TokenResult {
 }
 
 async function generateToken(existingUser: UserID): Promise<TokenResult> {
+    // Check if the user's token is still valid, of so, return it
     if (existingUser.token && existingUser.tokenExpiresAt) {
-        console.log('Token and tokenExpiresAt already exist');
         const tokenExpiresAt = new Date(existingUser.tokenExpiresAt);
         if (tokenExpiresAt > new Date()) {
-            console.log('Token is not expired');
             return {
                 token: existingUser.token,
-                tokenExpiresAt
+                tokenExpiresAt: existingUser.tokenExpiresAt
             };
         }
     }

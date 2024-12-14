@@ -5,6 +5,7 @@ import {
     BackgroundEnum,
     RaceEnum
 } from '../../../../Common/RequestResponse/characterCreation';
+import { UserID } from '../../../Authenticate/UserID';
 import { db } from '../../../Database';
 import { PlayerCharacter } from '../../../Entities/Character/Character';
 import { Party } from '../../../Entities/Party/Party';
@@ -18,7 +19,7 @@ export async function createCharacterHandler(
     gender: "MALE" | "FEMALE",
     userID: string
 ): Promise<CreateCharacterResponse> {
-    const user = await db.read('users', 'userID', userID);
+    const user = await db.read<UserID>('users', 'userID', userID);
 
     if (!user || user === null) {
         return {
@@ -56,7 +57,8 @@ export async function createCharacterHandler(
         race,
         className,
         background,
-        user.userID
+        user.userID,
+        portrait
     );
 
     const party = new Party([character])
@@ -68,7 +70,7 @@ export async function createCharacterHandler(
         {
             tableName: 'PlayerCharacters',
             primaryKeyColumnName: 'id',
-            primaryKeyValue: user.id,
+            primaryKeyValue: user.userID,
         },
         [
             {dataKey: 'id', value: character.id},

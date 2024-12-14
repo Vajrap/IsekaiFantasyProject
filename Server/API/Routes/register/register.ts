@@ -1,7 +1,6 @@
 import { UserID, UserDBRow } from '../../../Authenticate/UserID';
 import { db } from '../../../Database';
-import { RegisterRequest, RegisterReponseStatus, RegisterResponse  } from '../../../../Common/RequestResponse/register';
-import { Request } from 'express';
+import { RegisterReponseStatus, RegisterResponse  } from '../../../../Common/RequestResponse/register';
 import bcrypt from "bcrypt";
 
 export async function registerHandler(
@@ -58,10 +57,9 @@ async function validateUser(username: string, password: string): Promise<Validat
     return { isValid: true };
 }
 
-async function findExistingUser(username: string): Promise<UserID | undefined> {
+async function findExistingUser(username: string): Promise<UserID | null> {
     try {
-        const row: UserDBRow = await db.read('users', 'username', username);
-        return row ? UserID.createFromDBRow(row) : undefined;
+        return await db.read<UserID>('users', 'username', username);
     } catch (err) {
         console.error(`Error finding user: ${username}`, err);
         throw err;

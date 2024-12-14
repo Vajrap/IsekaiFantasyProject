@@ -128,7 +128,7 @@ export class DB {
         });
     }
     
-    async read(tableName: string, primaryKey: string, primaryKeyValue: any): Promise<any> {
+    async read<T>(tableName: string, primaryKey: string, primaryKeyValue: any): Promise<T | null> {
         const sql = `SELECT * FROM ${tableName} WHERE ${primaryKey} = ?`;
         const params = [primaryKeyValue];
     
@@ -140,7 +140,7 @@ export class DB {
                 } else if (!row) {
                     return resolve(null);
                 } else {
-                    resolve(row);
+                    resolve(row as T);
                 }
             });
         });
@@ -176,7 +176,12 @@ export class DB {
 
     //MARK: Equipments
     async getWeapon(weapon: string): Promise<GearInstance> {
-        const weaponObj = await this.read('Gears', 'id', weapon);
+        const weaponObj = await this.read<{ 
+            defenseStats?: string; 
+            attackStats?: string; 
+            slottedJewels?: string; 
+            [key: string]: any 
+        }>('Gears', 'id', weapon);
         if (weaponObj) {
             // Parse JSON fields that are stored as TEXT
             const defenseStats = weaponObj.defenseStats ? JSON.parse(weaponObj.defenseStats) : undefined;
@@ -212,7 +217,11 @@ export class DB {
     }
     
     async getArmor(armor: string): Promise<GearInstance> {
-        const armorObj = await this.read('Gears', 'id', armor);
+        const armorObj = await this.read<{ 
+            defenseStats?: string; 
+            slottedJewels?: string; 
+            [key: string]: any 
+        }>('Gears', 'id', armor);
         if (armorObj) {
             // Parse JSON fields that are stored as TEXT
             const defenseStats = armorObj.defenseStats ? JSON.parse(armorObj.defenseStats) : undefined;

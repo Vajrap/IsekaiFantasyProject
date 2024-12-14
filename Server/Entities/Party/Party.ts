@@ -4,7 +4,6 @@ import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, Tar
 import { CharacterStatusEnum } from "../../Utility/Enum/CharacterStatusTypes";
 import { LocationActionEnum } from "../../Utility/Enum/LocationActions+Events";
 import { DiceEnum } from "../../Utility/Enum/DamageDIce";
-import { GameLocation } from "../Location/GameLocation";
 
 export class Party {
 	partyID: string;

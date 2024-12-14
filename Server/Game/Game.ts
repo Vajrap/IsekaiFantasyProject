@@ -103,16 +103,16 @@ export class Game {
             await createGameTimeTableIfNotExists();
 
             // Attempt to read the game time from the database
-            const result = await db.read('GameTime', 'id', 1); // Always read the first (and only) row with id=1
+            const result = await db.read<GameTime>('GameTime', 'id', 1); // Always read the first (and only) row with id=1
     
             if (result) {
                 // If the game time exists in the database, initialize GameTime with the stored values
-                const { dayPassed, day, hour, month, year } = result;
+                const { dayPassed, gameDateDay, gameDateHour, gameDateMonth, gameDateYear } = result;
                 this.gameTime = new GameTime(dayPassed);
-                this.gameTime.gameDateDay = day;
-                this.gameTime.gameDateHour = hour;
-                this.gameTime.gameDateMonth = month;
-                this.gameTime.gameDateYear = year;
+                this.gameTime.gameDateDay = gameDateDay;
+                this.gameTime.gameDateHour = gameDateHour;
+                this.gameTime.gameDateMonth = gameDateMonth;
+                this.gameTime.gameDateYear = gameDateYear;
             } else {
                 // If no game time is found in the database, initialize it with default values (1, 1, 1, 0)
                 console.log('No game time found in the database, initializing with default value (1-1-1-0).');
@@ -140,10 +140,10 @@ export class Game {
                 {tableName: 'GameTime', primaryKeyColumnName: 'id', primaryKeyValue: '1'},
                 [
                     {dataKey: 'dayPassed', value: dayPassed},
-                    {dataKey: 'day', value: day},
-                    {dataKey: 'hour', value: hour},
-                    {dataKey: 'month', value: month},
-                    {dataKey: 'year', value: year}
+                    {dataKey: 'gameDateDay', value: day},
+                    {dataKey: 'gameDateHour', value: hour},
+                    {dataKey: 'gameDateMonth', value: month},
+                    {dataKey: 'gameDateYear', value: year}
                 ]
             );
     
@@ -217,10 +217,12 @@ export class Game {
     
                 // Create a Character object from CharacterArchetype
                 const newCharacter = new Character(
-                    character.id,
-                    character.name,
-                    character.gender,
-                    archeType
+                    {
+                        id: character.id,
+                        name: character.name,
+                        gender: character.gender,
+                        archetype: archeType
+                    }
                 );
     
                 // Add the new character to the character manager
