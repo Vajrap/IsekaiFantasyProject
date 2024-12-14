@@ -7,7 +7,6 @@ export interface LoginResponse {
     status: LoginResponseStatus;
     message: string;
     userID?: string;
-    characterID?: string;
     token?: string;
     tokenExpiredAt?: string;
 }
