@@ -45,7 +45,7 @@ export async function autoLoginHandler(token: string): Promise<LoginResponse> {
 
 async function loginMethod(existingUser: UserID) {
     let tokenResult = await generateToken(existingUser);
-    const playerCharacter = await db.read<Character>('playerCharacters', 'characterID', existingUser.userID);
+    const playerCharacter = await db.read<Character>('playerCharacters', 'id', existingUser.userID);
 
     let status = playerCharacter ? LoginResponseStatus.LoggedInWithCharacter : LoginResponseStatus.LoggedInWithNoCharacter;
 

@@ -9,6 +9,7 @@ import { UserID } from '../../../Authenticate/UserID';
 import { db } from '../../../Database';
 import { PlayerCharacter } from '../../../Entities/Character/Character';
 import { Party } from '../../../Entities/Party/Party';
+import { Result, success, failure } from '../../../../Common/Lib/Result'
 
 export async function createCharacterHandler(    
     characterName: string,
@@ -18,59 +19,69 @@ export async function createCharacterHandler(
     background: BackgroundEnum,
     gender: "MALE" | "FEMALE",
     userID: string
-): Promise<CreateCharacterResponse> {
+): Promise<Result<CreateCharacterResponse>> {
+    const userResult = await validateUser(userID);
+    if (!userResult.success) return userResult;
+
+    const nameResult = await validateCharacterName(characterName);
+    if (!nameResult.success) return nameResult;
+
+    const creationResult = await createCharacterAndParty(userID, characterName, portrait, gender, race, className, background);
+    if (!creationResult.success) return creationResult;
+
+    return success({
+        status: CharacterCreationResponseStatus.SUCCESS,
+        message: 'Character created successfully',
+    });
+}
+
+
+async function validateUser(userID: string): Promise<Result<true>> {
     const user = await db.read<UserID>('users', 'userID', userID);
-
-    if (!user || user === null) {
-        return {
-            status: CharacterCreationResponseStatus.FATAL_ERROR,
-            message: 'FATAL ERROR! User not found'
-        };
+    if (!user) {
+        return failure('USER_NOT_FOUND', 'User does not exist.');
     }
-
     if (user.characterID) {
-        return {
-            status: CharacterCreationResponseStatus.FATAL_ERROR,
-            message: 'FATAL ERROR! User already has a character'
-        };
+        return failure('USER_HAS_CHARACTER', 'User already has a character.');
     }
+    return success(true);
+}
 
-    if (characterName.length < 3) {
-        return {
-            status: CharacterCreationResponseStatus.FAILED,
-            message: 'ตัวละครต้องมีชื่อมากกว่า 3 ตัวอักษรขึ้นไป'
-        };
+async function validateCharacterName(name: string): Promise<Result<true>> {
+    if (name.length < 3) {
+        return failure('INVALID_NAME', 'Name must be at least 3 characters long.');
     }
-
-    const existingCharacter = await db.read('PlayerCharacters', 'name', characterName);
-
+    const existingCharacter = await db.read('PlayerCharacters', 'name', name);
     if (existingCharacter) {
-        return {
-            status: CharacterCreationResponseStatus.FAILED,
-            message: 'ชื่อตัวละครนี้ถูกใช้ไปแล้ว'
-        };
+        return failure('NAME_TAKEN', 'Name is already taken.');
     }
+    return success(true);
+}
 
+async function createAndSaveCharacter(
+    userID: string,
+    characterName: string,
+    portrait: string,
+    gender: "MALE" | "FEMALE",
+    race: RaceEnum,
+    className: ClassEnum,
+    background: BackgroundEnum
+): Promise<Result<PlayerCharacter>> {
     const character = new PlayerCharacter(
         characterName,
         gender,
         race,
         className,
         background,
-        user.userID,
+        userID,
         portrait
     );
 
-    const party = new Party([character])
-    
-    // Then save both character and party to the database
-    // The reason we need party here is because party is how user control their character, through oarty of the main Character.
-    
     await db.writeNew(
         {
             tableName: 'PlayerCharacters',
             primaryKeyColumnName: 'id',
-            primaryKeyValue: user.userID,
+            primaryKeyValue: userID,
         },
         [
             {dataKey: 'id', value: character.id},
@@ -114,6 +125,11 @@ export async function createCharacterHandler(
         ]
     );
 
+    return success(character);
+}
+
+async function createAndSaveParty(character: PlayerCharacter): Promise<Result<true>> {
+    const party = new Party([character]);
     await db.writeNew(
         {
             tableName: 'Parties',
@@ -137,9 +153,36 @@ export async function createCharacterHandler(
         ]
     );
 
-    return {
-        // TODO: Implement character creation logic here
-        status: CharacterCreationResponseStatus.SUCCESS,
-        message: 'Character created successfully'
-    };
+    return success(true);
+}
+
+async function createCharacterAndParty(
+    userID: string,
+    characterName: string,
+    portrait: string,
+    gender: "MALE" | "FEMALE",
+    race: RaceEnum,
+    className: ClassEnum,
+    background: BackgroundEnum
+): Promise<Result<true>> {
+    // Check if a character or party already exists
+    const characterExists = await db.read('PlayerCharacters', 'id', userID);
+    if (characterExists) {
+        return failure('CHARACTER_ALREADY_EXISTS', 'A character for this user already exists.');
+    }
+
+    const partyExists = await db.read('Parties', 'partyID', userID);
+    if (partyExists) {
+        return failure('PARTY_ALREADY_EXISTS', 'A party for this user already exists.');
+    }
+    
+    // Create the character
+    const characterCreationProcess = await createAndSaveCharacter(userID, characterName, portrait, gender, race, className, background);
+    if (characterCreationProcess.success === false) { return failure('CHARACTER_CREATION_FAILED', 'Failed to create character.'); }
+
+    // Create the party
+    const partyCreationProcess = await createAndSaveParty(characterCreationProcess.data);
+    if (partyCreationProcess.success === false) { return failure('PARTY_CREATION_FAILED', 'Failed to create party.'); }
+
+    return success(true);
 }

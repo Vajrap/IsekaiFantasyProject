@@ -1,6 +1,5 @@
 import { CharacterStatus } from "./Subclasses/CharacterStatus";
 import { CharacterActiveInternalBonus } from "./Subclasses/CharacterActiveInternalBonus";
-// import { Internal, InternalRepository } from "../../Internal/Internal"
 import { Internal, InternalRepository } from "../Internal/Internal";
 import { CharacterResources } from "./Subclasses/CharacterResources";
 import { CharacterEquipments } from "./Subclasses/CharacterEquipments";
@@ -21,7 +20,6 @@ import { TraitEnum } from "../Traits/TraitEnums";
 import { ArmorDefense } from "../Items/Equipments/ArmorDefense";
 import { SkillRepository } from "../Skills/SkillRepository";
 import { CharacterArcaneAptitude } from "./Subclasses/CharacterArcaneAptitude";
-import { v4 as uuidv4 } from "uuid";
 import {
 	SuccessResponse,
 	ErrorResponse,
@@ -61,7 +59,6 @@ import { SkillConsume } from "../Skills/SubClasses/SkillConsume";
 import { calculateBaseStat } from "./CalculateHPMPSP";
 import { CharacterClass, class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden } from "../../API/Routes/CreateCharacter/ClassEnum";
 import { RaceEnum, ClassEnum, BackgroundEnum } from "../../../Common/RequestResponse/characterCreation";
-import { dwarflingRace, dwarfRace, elvenRace, elvonRace, halfElvenRace, halflingRace, halfOrcRace, halfTritonRace, humanRace, orcRace, tritonRace } from "../../Database/Character/RacesStatus";
 import { 
     raceDwarf, 
     raceDwarfling, 
@@ -74,18 +71,6 @@ import {
     raceHuman, 
     raceOrc, 
     raceTriton,
-    classCleric,
-    classFighter,
-    classGuardian,
-    classHexbinder,
-    classMage,
-    classOccultist,
-    classScout,
-    classSkirmisher,
-    classSoldier,
-    classSpellblade,
-    classTemplar,
-    classWarden,
     backgroundAbandonedFarmhand,
     backgroundApprenticeScribe,
     backgroundFallenNobility,
@@ -99,6 +84,7 @@ import {
     backgroundTraineeInCaravan,
     backgroundWanderingMusician 
 } from '../../../Common/Entity/raceClassBackground';
+import { CharacterInterface } from "../../../Common/RequestResponse/characterWS";
 
 export class Character {
 	id: string;
@@ -139,7 +125,7 @@ export class Character {
 	status: CharacterStatus = new CharacterStatus();
 	equipments: CharacterEquipments = new CharacterEquipments();
 	internals: { internal: Internal; level: number; exp: number }[] = [];
-	activeInternal: Internal | null = null;
+	activeInternal: {internal: Internal; level: number; exp: number } | null = null;
 	activeInternalBonus: CharacterActiveInternalBonus =
 		new CharacterActiveInternalBonus();
 	traits: Trait[] = [];
@@ -319,7 +305,7 @@ export class Character {
 		}
 
 		this.position = archetype.position ? archetype.position : 0;
-		this.itemsBag.items = archetype.itemsBag;
+		this.itemsBag = new ItemBag();
 		this.baseAC = archetype.baseAC;
 		this.location = archetype.location;
 		this.isSummoned = archetype.isSummoned;
@@ -984,7 +970,7 @@ export class Character {
 		level: number;
 		exp: number;
 	}) {
-		const isActiveInternal = this.activeInternal === internal.internal;
+		const isActiveInternal = this.activeInternal?.internal === internal.internal;
 		if (isActiveInternal) {
 			this.removeActiveInternalBonus(internal.internal, internal.level);
 		}
@@ -1025,8 +1011,8 @@ export class Character {
 		}
 		if (this.activeInternal) {
 			this.removeActiveInternalBonus(
-				this.activeInternal,
-				this.internals.find((i) => i.internal === this.activeInternal)?.level ||
+				this.activeInternal.internal,
+				this.internals.find((i) => i.internal === this.activeInternal?.internal)?.level ||
 					1
 			);
 		}
@@ -1039,7 +1025,7 @@ export class Character {
 					learnedInternal.internal,
 					learnedInternal.level
 				);
-				this.activeInternal = learnedInternal.internal;
+				this.activeInternal = learnedInternal;
 			}
 		}
 
@@ -1053,8 +1039,8 @@ export class Character {
 			throw new Error("No active internal, shouldn't be able to call this");
 		}
 		this.removeActiveInternalBonus(
-			this.activeInternal,
-			this.internals.find((i) => i.internal === this.activeInternal)?.level || 1
+			this.activeInternal.internal,
+			this.internals.find((i) => i.internal === this.activeInternal?.internal)?.level || 1
 		);
 		this.activeInternal = null;
 	}
@@ -1069,7 +1055,7 @@ export class Character {
 	}
 
 	removeActiveInternalBonus(internal: Internal, level: number) {
-		if (this.activeInternal != internal) {
+		if (this.activeInternal?.internal != internal) {
 			throw new Error(
 				`Intermal with id ${internal.id} is not an active internal of ${this.id}`
 			);
@@ -3032,6 +3018,65 @@ export class Character {
 			arcaneAptitude: this.arcaneAptitude,
 		});
 	}
+
+	intoInterface(): CharacterInterface {
+		return {
+			id: this.id,
+			partyID: this.partyID,
+			name: this.name,
+			type: this.type,
+			gender: this.gender,
+			portrait: this.portrait,
+			background: this.background,
+			race: this.race,
+			alignment: this.alignment.intoInterface(),
+			mood: this.mood,
+			energy: this.energy,
+			fame: this.fame,
+			level: this.level,
+			gold: this.gold,
+			isDead: this.isDead,
+			status: this.status.intoInterface(),
+			equipment: this.equipments.intoInterface(),
+			internals: this.internals.map(internal => ({
+				id: internal.internal.id,
+				name: internal.internal.name,
+				level: internal.level,
+				description: internal.internal.description,
+				tier: internal.internal.tier,
+			})),
+			activeInternal: {
+				id: this.activeInternal?.internal.id || "none",
+				name: this.activeInternal?.internal.name || "none",
+				level: this.activeInternal?.level || 0,
+				description: this.activeInternal?.internal.description || "none",
+				tier: this.activeInternal?.internal.tier || "none",
+			},
+			traits: this.traits.map(trait =>({
+				id: trait.id,
+				name: trait.name,
+				description: trait.description,
+			})),
+			skills: this.skills.map(skill => ({
+				id: skill.skill.id,
+				name: skill.skill.name,
+				level: skill.level,
+				description: skill.skill.baseDescription,
+				tier: skill.skill.tier,
+			})),
+			activeSkills: this.activeSkills.map(skill => ({
+				id: skill.skill.id,
+				name: skill.skill.name,
+				level: skill.level,
+				description: skill.skill.baseDescription,
+				tier: skill.skill.tier,
+			})),
+			position: this.position,
+			itemsBag: this.itemsBag.intoInterface(),
+			arcaneAptitude: this.arcaneAptitude.intoInterface(),
+			bagSize: this.bagSize,
+		};
+	}
 }
 
 export class PlayerCharacter extends Character {
@@ -3194,8 +3239,6 @@ function switchBackground(selectedBackground?: BackgroundEnum) {
 			break;
 	}
 }
-
-
 
 export async function setCharacterStatus(
 	character: Character,
