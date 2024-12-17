@@ -20,6 +20,28 @@ export class DB {
         return db;
     }
 
+    // Ensure JSON.stringify for object values, but keep primitives as-is
+    private serializeValue(value: any): string {
+        if (typeof value === "object" && value !== null) {
+            return JSON.stringify(value);
+        }
+        return value;
+    }
+
+    // Parse JSON strings back to objects
+    private deserializeRow(row: any): any {
+        if (!row) return null;
+        const parsedRow: any = {};
+        for (const key in row) {
+            try {
+                parsedRow[key] = JSON.parse(row[key]);
+            } catch {
+                parsedRow[key] = row[key]; // Keep primitive values as-is
+            }
+        }
+        return parsedRow;
+    }
+
     // Method to check if a table exists in the database
     async tableExists(tableName: string): Promise<boolean> {
        const sql = `SELECT name FROM sqlite_master WHERE type='table' AND name=?`;
@@ -35,14 +57,19 @@ export class DB {
         });
     }
 
+    // Create table
     async createTable(tableName: string, schema: string): Promise<void> {
         const sql = `CREATE TABLE IF NOT EXISTS ${tableName} (${schema})`;
-        this.db.run(sql, (err) => {
-            if (err) {
-                console.error(`Error creating table ${tableName}`, err.message);
-            } else {
-                console.log(`Table ${tableName} created or already exists.`);
-            }
+        return new Promise((resolve, reject) => {
+            this.db.run(sql, (err) => {
+                if (err) {
+                    console.error(`Error creating table "${tableName}": ${err.message}`);
+                    reject(err);
+                } else {
+                    console.log(`Table "${tableName}" is ready.`);
+                    resolve();
+                }
+            });
         });
     }
 
@@ -64,7 +91,7 @@ export class DB {
         // Extract the data keys (column names) and values for insertion
         const columns = data.map(d => d.dataKey).join(', ');
         const placeholders = data.map(() => '?').join(', ');
-        const values = data.map(d => d.value);
+        const values = data.map((d) => this.serializeValue(d.value));
     
         // Construct the SQL query for inserting a new row
         const sql = `INSERT INTO ${tableName} (${primaryKeyColumnName}, ${columns}) VALUES (?, ${placeholders})`;
@@ -88,9 +115,6 @@ export class DB {
         { tableName, primaryKeyColumnName, primaryKeyValue }: { tableName: string, primaryKeyColumnName: string, primaryKeyValue: string },
         data: { dataKey: string, value: any }[]
     ): Promise<void> {
-        // Construct the SQL check query to see if the row exists
-        const sqlCheck = `SELECT COUNT(*) as count FROM ${tableName} WHERE ${primaryKeyColumnName} = ?`;
-        
         // Dynamically create the UPDATE and INSERT SQL based on the provided data keys
         const setClause = data.map(d => `${d.dataKey} = ?`).join(', ');
         const updateSQL = `UPDATE ${tableName} SET ${setClause} WHERE ${primaryKeyColumnName} = ?`;
@@ -98,9 +122,12 @@ export class DB {
         const columns = data.map(d => d.dataKey).join(', ');
         const placeholders = data.map(() => '?').join(', ');
         const insertSQL = `INSERT INTO ${tableName} (${primaryKeyColumnName}, ${columns}) VALUES (?, ${placeholders})`;
-    
+        
         // Extract the values for the update and insert queries
-        const values = data.map(d => d.value);
+        const values = data.map((d) => this.serializeValue(d.value));
+
+        // Construct the SQL check query to see if the row exists
+        const sqlCheck = `SELECT COUNT(*) as count FROM ${tableName} WHERE ${primaryKeyColumnName} = ?`;
         
         return new Promise((resolve, reject) => {
             // First, check if the row exists
@@ -140,13 +167,13 @@ export class DB {
                 } else if (!row) {
                     return resolve(null);
                 } else {
-                    resolve(row as T);
+                    resolve(this.deserializeRow(row) as T | null);
                 }
             });
         });
     }
 
-    async readAll(tableName: string): Promise<any[]> {
+    async readAll<T>(tableName: string): Promise<any[]> {
         const sql = `SELECT * FROM ${tableName}`;
     
         return new Promise((resolve, reject) => {
@@ -155,7 +182,7 @@ export class DB {
                     console.error('Error running query', err.message);
                     reject(err);
                 } else {
-                    resolve(rows);
+                    resolve(rows.map((row) => this.deserializeRow(row)) as T[]);
                 }
             });
         });
@@ -176,18 +203,13 @@ export class DB {
 
     //MARK: Equipments
     async getWeapon(weapon: string): Promise<GearInstance> {
-        const weaponObj = await this.read<{ 
-            defenseStats?: string; 
-            attackStats?: string; 
-            slottedJewels?: string; 
-            [key: string]: any 
+        const weaponObj = await this.read<{
+            defenseStats?: any;
+            attackStats?: any;
+            slottedJewels?: any;
+            [key: string]: any;
         }>('Gears', 'id', weapon);
         if (weaponObj) {
-            // Parse JSON fields that are stored as TEXT
-            const defenseStats = weaponObj.defenseStats ? JSON.parse(weaponObj.defenseStats) : undefined;
-            const attackStats = weaponObj.attackStats ? JSON.parse(weaponObj.attackStats) : undefined;
-            const slottedJewels = weaponObj.slottedJewels ? JSON.parse(weaponObj.slottedJewels) : [];
-    
             // Instantiate and return a GearInstance object
             return new GearInstance({
                 id: weaponObj.id,
@@ -202,13 +224,13 @@ export class DB {
                 specificType: weaponObj.specificType,
                 jewelSlots: weaponObj.jewelSlots,
                 maxJewelGrade: weaponObj.maxJewelGrade,
-                defenseStats,
-                attackStats,
+                defenseStats: weaponObj.defenseStats,
+                attackStats: weaponObj.attackStats,
                 material: weaponObj.material,
                 spellCastingDamageMultiplier: weaponObj.spellCastingDamageMultiplier,
                 spellCastingPenaltyHit: weaponObj.spellCastingPenaltyHit,
                 arcaneAptitude: weaponObj.arcaneAptitude,
-                specialTrait: weaponObj.specialTrait ? JSON.parse(weaponObj.specialTrait) : [],
+                specialTrait: weaponObj.specialTrait,
                 class: weaponObj.class,
             });
         } else {
@@ -217,16 +239,12 @@ export class DB {
     }
     
     async getArmor(armor: string): Promise<GearInstance> {
-        const armorObj = await this.read<{ 
-            defenseStats?: string; 
-            slottedJewels?: string; 
-            [key: string]: any 
+        const armorObj = await this.read<{
+            defenseStats?: any;
+            slottedJewels?: any;
+            [key: string]: any;
         }>('Gears', 'id', armor);
         if (armorObj) {
-            // Parse JSON fields that are stored as TEXT
-            const defenseStats = armorObj.defenseStats ? JSON.parse(armorObj.defenseStats) : undefined;
-            const slottedJewels = armorObj.slottedJewels ? JSON.parse(armorObj.slottedJewels) : [];
-    
             // Instantiate and return a GearInstance object
             return new GearInstance({
                 id: armorObj.id,
@@ -241,12 +259,12 @@ export class DB {
                 specificType: armorObj.specificType,
                 jewelSlots: armorObj.jewelSlots,
                 maxJewelGrade: armorObj.maxJewelGrade,
-                defenseStats,
+                defenseStats: armorObj.defenseStats,
                 material: armorObj.material,
                 spellCastingDamageMultiplier: armorObj.spellCastingDamageMultiplier,
                 spellCastingPenaltyHit: armorObj.spellCastingPenaltyHit,
                 arcaneAptitude: armorObj.arcaneAptitude,
-                specialTrait: armorObj.specialTrait ? JSON.parse(armorObj.specialTrait) : [],
+                specialTrait: armorObj.specialTrait,
                 class: armorObj.class,
             });
         } else {

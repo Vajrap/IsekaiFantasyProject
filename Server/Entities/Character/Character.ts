@@ -9,7 +9,6 @@ import {
 	EffectAppender,
 	EffectResolver,
 } from "../../Game/Battle/EffectResolverAndAppender/EffectAppenderAndResolver";
-import { CharacterArchetype } from "./Subclasses/CharacterArchetype";
 import { BuffsAndDebuffs } from "./Subclasses/BuffsAndDebuffs";
 import { InternalBuffs } from "./Subclasses/InternalBuffs";
 import { ItemBag } from "../Items/Items";
@@ -90,8 +89,8 @@ export class Character {
 	id: string;
 	partyID: string | "none" = "none";
 	name: string;
-	type: CharacterType | undefined = undefined;
-	gender: "MALE" | "FEMALE" | "NONE" | undefined = undefined;
+	type: CharacterType;
+	gender: "MALE" | "FEMALE" | "NONE";
 	portrait: any = null;
 	background: string = '';
 	race: RaceEnum;
@@ -141,30 +140,37 @@ export class Character {
 	isSummoned: boolean = false;
 	arcaneAptitude: CharacterArcaneAptitude = new CharacterArcaneAptitude();
 	bagSize: number = 20;
+	storyFlags: StoryFlags;
+	// Relationship to other characters, key = character ID, value = relation value from -100 to 100, and status is the relationship status enum
+	relation: { [key: string]: { value: number; status: number } } = {};
 	constructor(
 		data: {
 			id: string,
 			name: string,
-			gender?: "MALE" | "FEMALE" | "NONE",
-			portrait?: string,
-			archetype?: CharacterArchetype,
-			race?: RaceEnum,
+			gender: "MALE" | "FEMALE" | "NONE",
+			portrait: string,
 		}
 	) {
 		this.id = data.id;
 		this.name = data.name;
-		this.type = data.archetype?.type || undefined;
+		this.type = CharacterType.none;
 		this.gender = data.gender;
-		this.race = data.race? data.race: RaceEnum.UNDEFINED;
-		this.portrait = null;
+		this.race = RaceEnum.UNDEFINED;
+		this.portrait = data.portrait || null;
 		this.background = '';
-		this.mood = 0;
-		this.gold = 0;
+		this.alignment = new CharacterAlignment({ good: 0, evil: 0, law: 0, chaos: 0 });
+		this.mood = 100;
+		this.energy = 100;
+		this.fame = 0;
 		this.level = 1;
+		this.gold = 0;
 		this.exp = 0;
 		this.isDead = false;
 		this.abGauge = 0;
 		this.lastTarget = null;
+		this.raceHP = 0;
+		this.raceMP = 0;
+		this.raceSP = 0;
 		this.baseHP = 1;
 		this.baseMP = 1;
 		this.baseSP = 1;
@@ -174,146 +180,25 @@ export class Character {
 		this.currentHP = 1;
 		this.currentMP = 1;
 		this.currentSP = 1;
-		this.itemsBag = new ItemBag();
 		this.status = new CharacterStatus();
 		this.equipments = new CharacterEquipments();
+		this.internals = [];
+		this.activeInternal = null;
 		this.activeInternalBonus = new CharacterActiveInternalBonus();
+		this.traits = [];
+		this.skills = [];
+		this.activeSkills = [];
 		this.buffsAndDebuffs = new BuffsAndDebuffs();
 		this.internalBuffs = new InternalBuffs();
-		this.resources = {
-			order: 0,
-			chaos: 0,
-			geo: 0,
-			water: 0,
-			air: 0,
-			fire: 0,
-			none: 0,
-		};
+		this.resources = new CharacterResources();
 		this.position = 0;
-		this.portrait = data.portrait;
-
-		if (data.archetype) {
-			this.setCharacterFromArcheType(data.archetype);
-		}
-	}
-
-	async setCharacterFromArcheType(archetype: CharacterArchetype) {
-		this.type = archetype.type;
-		this.level = archetype.level;
-		this.portrait = archetype.portrait;
-		this.race = archetype.race
-		this.background = archetype.background;
-		this.alignment.good = archetype.alignment.good;
-		this.alignment.evil = archetype.alignment.evil;
-		this.alignment.law = archetype.alignment.law;
-		this.alignment.chaos = archetype.alignment.chaos;
-		this.mood = archetype.mood;
-		this.energy = archetype.energy;
-		this.fame = archetype.fame;
-		this.gold = archetype.gold;
-		this.exp = archetype.exp;
-		this.isDead = archetype.isDead;
-		this.lastTarget = archetype.lastTarget;
-
-		for (const key in archetype.attributes) {
-			this.status.attributes[key as keyof CharacterStatus["attributes"]].base = 
-				archetype.attributes[key as keyof CharacterStatus["attributes"]].base;
-			this.status.attributes[key as keyof CharacterStatus["attributes"]].exp = 
-				archetype.attributes[key as keyof CharacterStatus["attributes"]].exp;
-		}
-
-		for (const key in archetype.proficiencies) {
-			this.status.proficiencies[key as keyof CharacterStatus["proficiencies"]].base = 
-				archetype.proficiencies[ key as keyof CharacterStatus["proficiencies"]].base;
-			this.status.proficiencies[key as keyof CharacterStatus["proficiencies"]].exp = 
-				archetype.proficiencies[ key as keyof CharacterStatus["proficiencies"]].exp
-		}
-
-		for (const key in archetype.battlers) {
-			this.status.battlers[key as keyof CharacterStatus["battlers"]].base = 
-				archetype.battlers[key as keyof CharacterStatus["battlers"]].base;
-			this.status.battlers[key as keyof CharacterStatus["battlers"]].exp = 
-				archetype.battlers[key as keyof CharacterStatus["battlers"]].exp;
-		}
-		for (const key in archetype.elements) {
-			this.status.elements[key as keyof CharacterStatus["elements"]].base =
-				archetype.elements[key as keyof CharacterStatus["elements"]].base;
-			this.status.elements[key as keyof CharacterStatus["elements"]].exp =
-				archetype.elements[key as keyof CharacterStatus["elements"]].exp;
-		}
-		for (const key in archetype.artisans) {
-			this.status.artisans[key as keyof CharacterStatus["artisans"]].base =
-				archetype.artisans[key as keyof CharacterStatus["artisans"]].base;
-			this.status.artisans[key as keyof CharacterStatus["artisans"]].exp =
-				archetype.artisans[key as keyof CharacterStatus["artisans"]].exp;
-		}
-		//TODO: create get itemFromID method to fetch the item from database.
-		this.equipments.constructFromDB(
-			archetype.equipments.mainHand,
-			archetype.equipments.offHand,
-			archetype.equipments.armor,
-			archetype.equipments.cloth,
-			archetype.equipments.headWear,
-			archetype.equipments.necklace,
-			archetype.equipments.ring
-		);
-
-		if (archetype.internals.length > 0) {
-			for (const internal of archetype.internals) {
-				const internalObj = await db.getInternal(internal.internalID);
-				this.internals.push({
-					internal: internalObj,
-					level: internal.level,
-					exp: internal.exp,
-				});
-			}
-		}
-
-		if (archetype.activeInternal != null) {
-			const internalObj = await db.getInternal(archetype.activeInternal);
-			this.activeInternal = internalObj;
-		}
-
-		for (const trait in archetype.traits) {
-			const traitObj =
-				TraitRepository[
-					archetype.traits[trait] as keyof typeof TraitRepository
-				];
-			this.gainTrait(traitObj);
-		}
-
-		if (archetype.skills.length > 0) {
-			for (const skill of archetype.skills) {
-				const skillObj = await db.getSkill(skill.skillID);
-				this.skills.push({
-					skill: skillObj,
-					level: skill.level,
-					exp: skill.exp,
-				});
-			}
-		}
-
-		if (archetype.activeSkills.length > 0) {
-			for (const skill of archetype.activeSkills) {
-				const skillObj = await db.getSkill(skill.skillID);
-				this.activeSkills.push({
-					skill: skillObj,
-					level: skill.level,
-					exp: skill.exp,
-				});
-			}
-		}
-
-		this.position = archetype.position ? archetype.position : 0;
 		this.itemsBag = new ItemBag();
-		this.baseAC = archetype.baseAC;
-		this.location = archetype.location;
-		this.isSummoned = archetype.isSummoned;
-		this.arcaneAptitude.aptitude = archetype.arcaneAptitude;
-		this.setBodyValue();
-		this.currentHP = archetype.currentHP ? archetype.currentHP : this.maxHP();
-		this.currentMP = archetype.currentMP ? archetype.currentMP : this.maxMP();
-		this.currentSP = archetype.currentSP ? archetype.currentSP : this.maxSP();
+		this.baseAC = 7;
+		this.location = "none";
+		this.isSummoned = false;
+		this.arcaneAptitude = new CharacterArcaneAptitude();
+		this.bagSize = 15;
+		this.storyFlags = new StoryFlags();
 	}
 
 	setBodyValue(): Character {
@@ -3077,37 +2962,39 @@ export class Character {
 			bagSize: this.bagSize,
 		};
 	}
+
+	
 }
 
-export class PlayerCharacter extends Character {
-	bagSize: number;
-	storyFlags: StoryFlags;
-	constructor(
-		name: string,
-		gender: "MALE" | "FEMALE",
-		race: RaceEnum,
-		className: ClassEnum,
-		background: BackgroundEnum,
-		userID: string,
-		portrait: string
-	) {
-		super(
-			{
-				id: userID, 
-				name: name, 
-				gender: gender,
-				portrait: portrait,
-			}
-		);
-		this.type = CharacterType.humanoid;
-		this.bagSize = 15;
-		this.storyFlags = new StoryFlags();
-		this.gold = 50;
+// export class PlayerCharacter extends Character {
+// 	bagSize: number;
+// 	storyFlags: StoryFlags;
+// 	constructor(
+// 		name: string,
+// 		gender: "MALE" | "FEMALE",
+// 		race: RaceEnum,
+// 		className: ClassEnum,
+// 		background: BackgroundEnum,
+// 		userID: string,
+// 		portrait: string
+// 	) {
+// 		super(
+// 			{
+// 				id: userID, 
+// 				name: name, 
+// 				gender: gender,
+// 				portrait: portrait,
+// 			}
+// 		);
+// 		this.type = CharacterType.humanoid;
+// 		this.bagSize = 15;
+// 		this.storyFlags = new StoryFlags();
+// 		this.gold = 50;
 
-		setCharacterStatus(this, className, race, background);
-		this.setBodyValue();
-	}
-}
+// 		setCharacterStatus(this, className, race, background);
+// 		this.setBodyValue();
+// 	}
+// }
 
 
 function switchClass(selectedClass?: ClassEnum): CharacterClass | null {

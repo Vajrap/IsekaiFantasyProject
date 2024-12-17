@@ -1,10 +1,8 @@
 import WebSocket from 'ws';
 import { EventEmitter } from 'events';
 import { db } from '../../Database';
-import { ErrorResponse, SuccessResponse } from './ResponseType';
-import { PlayerCharacter } from '../../Entities/Character/Character';
 import { game } from '../../server';
-import { GetCharacterRequest, GetCharacterResponse, UpdateSkillListRequest, UpdateSkillListResponse } from '../../../Common/RequestResponse/characterWS';
+import { GetCharacterRequest, GetCharacterResponse, UpdateSkillListRequest, UpdateSkillListResponse, GetPartyRequest, GetPartyResponse } from '../../../Common/RequestResponse/characterWS';
 import { failure, Result, success } from '../../../Common/Lib/Result';
 
 export class CharacterWebSocketService extends EventEmitter {
@@ -92,9 +90,6 @@ class CharacterSession {
             case 'UPDATE_SKILL_LIST':
                 this.handleUpdateSkillList(ws, data);
                 break;
-            default:
-                this.handleUnknownMessage(ws);
-                break;
         }
     }
 
@@ -163,12 +158,23 @@ class CharacterSession {
             return failure('Fail', 'Unknown Error');
         }
     }
-
-    private handleUnknownMessage(ws: WebSocket) {
-        const unknownMessage: ErrorResponse = {
-            type: 'ERROR',
-            message: 'Unknown message type',
-        };
-        this.service.sendUpdate(unknownMessage, this.userID);
-    }
 }
+
+// async function getParty(data: GetPartyRequest): Promise<Result<GetPartyResponse>> {
+//     try {
+//         const party = game.getParty(data.partyID);
+//         if (!party) {
+//             return failure('Fail', 'Party not found');
+//         }
+
+//         return success({
+//             type: 'GET_PARTY',
+//             status: 'SUCCESS',
+//             message: 'Success',
+//             party: party.intoInterface(),
+//         });
+
+//     } catch (error) {
+//         return failure('Fail', 'Unknown Error');
+//     }
+// }

@@ -23,6 +23,9 @@ export class WebSocketService {
                 const data: Message = JSON.parse(message);
 
                 switch (data.type) {
+                    case 'GET_PARTY':
+                        // Handle GET_PARTY message
+                        break;
                     default:
                         const unknownMessage: ErrorResponse = {
                             type: 'ERROR',
