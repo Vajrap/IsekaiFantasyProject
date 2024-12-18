@@ -31,4 +31,15 @@ export class CharacterArcaneAptitude {
         return capped / 100
     }
 
+    getArcaneAptitudeDescription(): string {
+        if (this.aptitude < 20) return 'ไม่เป็นสื่อเวทย์มนตร์';
+        if (this.aptitude < 50) return 'เป็นสื่อเวทย์มนตร์เล็กน้อย';
+        if (this.aptitude < 80) return 'เป็นสื่อเวทย์มนตร์ปานกลาง';
+        if (this.aptitude < 100) return 'เป็นสื่อเวทย์มนตร์สูง';
+        return 'สื่อเวทย์มนตร์สมบูรณ์แบบ';
+    }
+
+    intoInterface(): string {
+        return this.getArcaneAptitudeDescription();
+    }
 }

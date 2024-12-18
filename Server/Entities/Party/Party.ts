@@ -1,10 +1,9 @@
 import { Dice } from "../../Utility/Dice";
-import { Character, PlayerCharacter } from "../Character/Character";
+import { Character } from "../Character/Character";
 import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../Utility/Enum/TargetTypes";
 import { CharacterStatusEnum } from "../../Utility/Enum/CharacterStatusTypes";
 import { LocationActionEnum } from "../../Utility/Enum/LocationActions+Events";
 import { DiceEnum } from "../../Utility/Enum/DamageDIce";
-import { GameLocation } from "../Location/GameLocation";
 
 export class Party {
 	partyID: string;
@@ -16,15 +15,26 @@ export class Party {
 		"none",
 		"none",
 	];
-	actionsSequence: LocationActionEnum[] = [];
-	actionsList: { [time: number]: LocationActionEnum | null } = {
-		1: null,
-		2: null,
-		3: null,
-		4: null,
+	// actionsList = 7 days object, each day with 4 slots
+	actionsList: {
+		day1: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
+		day2: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
+		day3: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
+		day4: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
+		day5: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
+		day6: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
+		day7: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
+	} = {
+		day1: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
+		day2: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
+		day3: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
+		day4: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
+		day5: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
+		day6: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
+		day7: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
 	};
 	isTemporarilyBattleScenePartyForTargeting: boolean = false;
-	isTravelling: boolean = false;
+	isTraveling: boolean = false;
 	// Should move to LocationEnum
 	location: string = "None";
 	// travelManager: TravelManager;
@@ -55,10 +65,11 @@ export class Party {
 		// this.travelManager = new TravelManager(this.partyID, this.currentLocation)
 	}
 
-	getPlayerCharacter(): PlayerCharacter {
+	leader(): Character {
+		// leader is the character with the same id
 		return this.characters.find(
-			(character): character is PlayerCharacter => character !== "none"
-		) as PlayerCharacter;
+			character => character != "none" && character.id === this.partyID
+		) as Character;
 	}
 
 	//this only used for temporarily battle scene party for targeting

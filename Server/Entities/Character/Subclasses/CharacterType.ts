@@ -18,5 +18,6 @@ export enum CharacterType {
     undead = 'undead',
     summoned = 'summoned',
     magical = 'magical',
-    vermin = 'vermin'
+    vermin = 'vermin',
+    none = 'none'
 }

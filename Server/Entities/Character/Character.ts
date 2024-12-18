@@ -1,6 +1,5 @@
 import { CharacterStatus } from "./Subclasses/CharacterStatus";
 import { CharacterActiveInternalBonus } from "./Subclasses/CharacterActiveInternalBonus";
-// import { Internal, InternalRepository } from "../../Internal/Internal"
 import { Internal, InternalRepository } from "../Internal/Internal";
 import { CharacterResources } from "./Subclasses/CharacterResources";
 import { CharacterEquipments } from "./Subclasses/CharacterEquipments";
@@ -10,7 +9,6 @@ import {
 	EffectAppender,
 	EffectResolver,
 } from "../../Game/Battle/EffectResolverAndAppender/EffectAppenderAndResolver";
-import { CharacterArchetype } from "./Subclasses/CharacterArchetype";
 import { BuffsAndDebuffs } from "./Subclasses/BuffsAndDebuffs";
 import { InternalBuffs } from "./Subclasses/InternalBuffs";
 import { ItemBag } from "../Items/Items";
@@ -21,7 +19,6 @@ import { TraitEnum } from "../Traits/TraitEnums";
 import { ArmorDefense } from "../Items/Equipments/ArmorDefense";
 import { SkillRepository } from "../Skills/SkillRepository";
 import { CharacterArcaneAptitude } from "./Subclasses/CharacterArcaneAptitude";
-import { v4 as uuidv4 } from "uuid";
 import {
 	SuccessResponse,
 	ErrorResponse,
@@ -61,7 +58,6 @@ import { SkillConsume } from "../Skills/SubClasses/SkillConsume";
 import { calculateBaseStat } from "./CalculateHPMPSP";
 import { CharacterClass, class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden } from "../../API/Routes/CreateCharacter/ClassEnum";
 import { RaceEnum, ClassEnum, BackgroundEnum } from "../../../Common/RequestResponse/characterCreation";
-import { dwarflingRace, dwarfRace, elvenRace, elvonRace, halfElvenRace, halflingRace, halfOrcRace, halfTritonRace, humanRace, orcRace, tritonRace } from "../../Database/Character/RacesStatus";
 import { 
     raceDwarf, 
     raceDwarfling, 
@@ -74,18 +70,6 @@ import {
     raceHuman, 
     raceOrc, 
     raceTriton,
-    classCleric,
-    classFighter,
-    classGuardian,
-    classHexbinder,
-    classMage,
-    classOccultist,
-    classScout,
-    classSkirmisher,
-    classSoldier,
-    classSpellblade,
-    classTemplar,
-    classWarden,
     backgroundAbandonedFarmhand,
     backgroundApprenticeScribe,
     backgroundFallenNobility,
@@ -99,13 +83,14 @@ import {
     backgroundTraineeInCaravan,
     backgroundWanderingMusician 
 } from '../../../Common/Entity/raceClassBackground';
+import { CharacterInterface } from "../../../Common/RequestResponse/characterWS";
 
 export class Character {
 	id: string;
 	partyID: string | "none" = "none";
 	name: string;
-	type: CharacterType | undefined = undefined;
-	gender: "MALE" | "FEMALE" | "NONE" | undefined = undefined;
+	type: CharacterType;
+	gender: "MALE" | "FEMALE" | "NONE";
 	portrait: any = null;
 	background: string = '';
 	race: RaceEnum;
@@ -139,7 +124,7 @@ export class Character {
 	status: CharacterStatus = new CharacterStatus();
 	equipments: CharacterEquipments = new CharacterEquipments();
 	internals: { internal: Internal; level: number; exp: number }[] = [];
-	activeInternal: Internal | null = null;
+	activeInternal: {internal: Internal; level: number; exp: number } | null = null;
 	activeInternalBonus: CharacterActiveInternalBonus =
 		new CharacterActiveInternalBonus();
 	traits: Trait[] = [];
@@ -155,27 +140,37 @@ export class Character {
 	isSummoned: boolean = false;
 	arcaneAptitude: CharacterArcaneAptitude = new CharacterArcaneAptitude();
 	bagSize: number = 20;
+	storyFlags: StoryFlags;
+	// Relationship to other characters, key = character ID, value = relation value from -100 to 100, and status is the relationship status enum
+	relation: { [key: string]: { value: number; status: number } } = {};
 	constructor(
-		id: string,
-		name: string,
-		gender?: "MALE" | "FEMALE" | "NONE",
-		archetype?: CharacterArchetype,
-		race?: RaceEnum,
+		data: {
+			id: string,
+			name: string,
+			gender: "MALE" | "FEMALE" | "NONE",
+			portrait: string,
+		}
 	) {
-		this.id = id;
-		this.name = name;
-		this.type = archetype?.type || undefined;
-		this.gender = gender;
-		this.race = race? race: RaceEnum.UNDEFINED;
-		this.portrait = null;
+		this.id = data.id;
+		this.name = data.name;
+		this.type = CharacterType.none;
+		this.gender = data.gender;
+		this.race = RaceEnum.UNDEFINED;
+		this.portrait = data.portrait || null;
 		this.background = '';
-		this.mood = 0;
-		this.gold = 0;
+		this.alignment = new CharacterAlignment({ good: 0, evil: 0, law: 0, chaos: 0 });
+		this.mood = 100;
+		this.energy = 100;
+		this.fame = 0;
 		this.level = 1;
+		this.gold = 0;
 		this.exp = 0;
 		this.isDead = false;
 		this.abGauge = 0;
 		this.lastTarget = null;
+		this.raceHP = 0;
+		this.raceMP = 0;
+		this.raceSP = 0;
 		this.baseHP = 1;
 		this.baseMP = 1;
 		this.baseSP = 1;
@@ -185,145 +180,25 @@ export class Character {
 		this.currentHP = 1;
 		this.currentMP = 1;
 		this.currentSP = 1;
-		this.itemsBag = new ItemBag();
 		this.status = new CharacterStatus();
 		this.equipments = new CharacterEquipments();
+		this.internals = [];
+		this.activeInternal = null;
 		this.activeInternalBonus = new CharacterActiveInternalBonus();
+		this.traits = [];
+		this.skills = [];
+		this.activeSkills = [];
 		this.buffsAndDebuffs = new BuffsAndDebuffs();
 		this.internalBuffs = new InternalBuffs();
-		this.resources = {
-			order: 0,
-			chaos: 0,
-			geo: 0,
-			water: 0,
-			air: 0,
-			fire: 0,
-			none: 0,
-		};
+		this.resources = new CharacterResources();
 		this.position = 0;
-
-		if (archetype) {
-			this.setCharacterFromArcheType(archetype);
-		}
-	}
-
-	async setCharacterFromArcheType(archetype: CharacterArchetype) {
-		this.type = archetype.type;
-		this.level = archetype.level;
-		this.portrait = archetype.portrait;
-		this.race = archetype.race
-		this.background = archetype.background;
-		this.alignment.good = archetype.alignment.good;
-		this.alignment.evil = archetype.alignment.evil;
-		this.alignment.law = archetype.alignment.law;
-		this.alignment.chaos = archetype.alignment.chaos;
-		this.mood = archetype.mood;
-		this.energy = archetype.energy;
-		this.fame = archetype.fame;
-		this.gold = archetype.gold;
-		this.exp = archetype.exp;
-		this.isDead = archetype.isDead;
-		this.lastTarget = archetype.lastTarget;
-
-		for (const key in archetype.attributes) {
-			this.status.attributes[key as keyof CharacterStatus["attributes"]].base = 
-				archetype.attributes[key as keyof CharacterStatus["attributes"]].base;
-			this.status.attributes[key as keyof CharacterStatus["attributes"]].exp = 
-				archetype.attributes[key as keyof CharacterStatus["attributes"]].exp;
-		}
-
-		for (const key in archetype.proficiencies) {
-			this.status.proficiencies[key as keyof CharacterStatus["proficiencies"]].base = 
-				archetype.proficiencies[ key as keyof CharacterStatus["proficiencies"]].base;
-			this.status.proficiencies[key as keyof CharacterStatus["proficiencies"]].exp = 
-				archetype.proficiencies[ key as keyof CharacterStatus["proficiencies"]].exp
-		}
-
-		for (const key in archetype.battlers) {
-			this.status.battlers[key as keyof CharacterStatus["battlers"]].base = 
-				archetype.battlers[key as keyof CharacterStatus["battlers"]].base;
-			this.status.battlers[key as keyof CharacterStatus["battlers"]].exp = 
-				archetype.battlers[key as keyof CharacterStatus["battlers"]].exp;
-		}
-		for (const key in archetype.elements) {
-			this.status.elements[key as keyof CharacterStatus["elements"]].base =
-				archetype.elements[key as keyof CharacterStatus["elements"]].base;
-			this.status.elements[key as keyof CharacterStatus["elements"]].exp =
-				archetype.elements[key as keyof CharacterStatus["elements"]].exp;
-		}
-		for (const key in archetype.artisans) {
-			this.status.artisans[key as keyof CharacterStatus["artisans"]].base =
-				archetype.artisans[key as keyof CharacterStatus["artisans"]].base;
-			this.status.artisans[key as keyof CharacterStatus["artisans"]].exp =
-				archetype.artisans[key as keyof CharacterStatus["artisans"]].exp;
-		}
-		//TODO: create get itemFromID method to fetch the item from database.
-		this.equipments.constructFromDB(
-			archetype.equipments.mainHand,
-			archetype.equipments.offHand,
-			archetype.equipments.armor,
-			archetype.equipments.cloth,
-			archetype.equipments.headWear,
-			archetype.equipments.necklace,
-			archetype.equipments.ring
-		);
-
-		if (archetype.internals.length > 0) {
-			for (const internal of archetype.internals) {
-				const internalObj = await db.getInternal(internal.internalID);
-				this.internals.push({
-					internal: internalObj,
-					level: internal.level,
-					exp: internal.exp,
-				});
-			}
-		}
-
-		if (archetype.activeInternal != null) {
-			const internalObj = await db.getInternal(archetype.activeInternal);
-			this.activeInternal = internalObj;
-		}
-
-		for (const trait in archetype.traits) {
-			const traitObj =
-				TraitRepository[
-					archetype.traits[trait] as keyof typeof TraitRepository
-				];
-			this.gainTrait(traitObj);
-		}
-
-		if (archetype.skills.length > 0) {
-			for (const skill of archetype.skills) {
-				const skillObj = await db.getSkill(skill.skillID);
-				this.skills.push({
-					skill: skillObj,
-					level: skill.level,
-					exp: skill.exp,
-				});
-			}
-		}
-
-		if (archetype.activeSkills.length > 0) {
-			for (const skill of archetype.activeSkills) {
-				const skillObj = await db.getSkill(skill.skillID);
-				this.activeSkills.push({
-					skill: skillObj,
-					level: skill.level,
-					exp: skill.exp,
-				});
-			}
-		}
-
-		this.position = archetype.position ? archetype.position : 0;
-		this.itemsBag.items = archetype.itemsBag;
-		this.baseAC = archetype.baseAC;
-		this.location = archetype.location;
-		this.isSummoned = archetype.isSummoned;
-		this.arcaneAptitude.aptitude = archetype.arcaneAptitude;
-		this.setBodyValue();
-		this.currentHP = archetype.currentHP ? archetype.currentHP : this.maxHP();
-		this.currentMP = archetype.currentMP ? archetype.currentMP : this.maxMP();
-		this.currentSP = archetype.currentSP ? archetype.currentSP : this.maxSP();
+		this.itemsBag = new ItemBag();
+		this.baseAC = 7;
+		this.location = "none";
+		this.isSummoned = false;
+		this.arcaneAptitude = new CharacterArcaneAptitude();
+		this.bagSize = 15;
+		this.storyFlags = new StoryFlags();
 	}
 
 	setBodyValue(): Character {
@@ -980,7 +855,7 @@ export class Character {
 		level: number;
 		exp: number;
 	}) {
-		const isActiveInternal = this.activeInternal === internal.internal;
+		const isActiveInternal = this.activeInternal?.internal === internal.internal;
 		if (isActiveInternal) {
 			this.removeActiveInternalBonus(internal.internal, internal.level);
 		}
@@ -1021,8 +896,8 @@ export class Character {
 		}
 		if (this.activeInternal) {
 			this.removeActiveInternalBonus(
-				this.activeInternal,
-				this.internals.find((i) => i.internal === this.activeInternal)?.level ||
+				this.activeInternal.internal,
+				this.internals.find((i) => i.internal === this.activeInternal?.internal)?.level ||
 					1
 			);
 		}
@@ -1035,7 +910,7 @@ export class Character {
 					learnedInternal.internal,
 					learnedInternal.level
 				);
-				this.activeInternal = learnedInternal.internal;
+				this.activeInternal = learnedInternal;
 			}
 		}
 
@@ -1049,8 +924,8 @@ export class Character {
 			throw new Error("No active internal, shouldn't be able to call this");
 		}
 		this.removeActiveInternalBonus(
-			this.activeInternal,
-			this.internals.find((i) => i.internal === this.activeInternal)?.level || 1
+			this.activeInternal.internal,
+			this.internals.find((i) => i.internal === this.activeInternal?.internal)?.level || 1
 		);
 		this.activeInternal = null;
 	}
@@ -1065,7 +940,7 @@ export class Character {
 	}
 
 	removeActiveInternalBonus(internal: Internal, level: number) {
-		if (this.activeInternal != internal) {
+		if (this.activeInternal?.internal != internal) {
 			throw new Error(
 				`Intermal with id ${internal.id} is not an active internal of ${this.id}`
 			);
@@ -3028,33 +2903,98 @@ export class Character {
 			arcaneAptitude: this.arcaneAptitude,
 		});
 	}
-}
 
-export class PlayerCharacter extends Character {
-	bagSize: number;
-	storyFlags: StoryFlags;
-	constructor(
-		name: string,
-		gender: "MALE" | "FEMALE",
-		race: RaceEnum,
-		className: ClassEnum,
-		background: BackgroundEnum,
-		userID: string
-	) {
-		super(
-			userID, 
-			name, 
-			gender,
-		);
-		this.type = CharacterType.humanoid;
-		this.bagSize = 15;
-		this.storyFlags = new StoryFlags();
-		this.gold = 50;
-
-		setCharacterStatus(this, className, race, background);
-		this.setBodyValue();
+	intoInterface(): CharacterInterface {
+		return {
+			id: this.id,
+			partyID: this.partyID,
+			name: this.name,
+			type: this.type,
+			gender: this.gender,
+			portrait: this.portrait,
+			background: this.background,
+			race: this.race,
+			alignment: this.alignment.intoInterface(),
+			mood: this.mood,
+			energy: this.energy,
+			fame: this.fame,
+			level: this.level,
+			gold: this.gold,
+			isDead: this.isDead,
+			status: this.status.intoInterface(),
+			equipment: this.equipments.intoInterface(),
+			internals: this.internals.map(internal => ({
+				id: internal.internal.id,
+				name: internal.internal.name,
+				level: internal.level,
+				description: internal.internal.description,
+				tier: internal.internal.tier,
+			})),
+			activeInternal: {
+				id: this.activeInternal?.internal.id || "none",
+				name: this.activeInternal?.internal.name || "none",
+				level: this.activeInternal?.level || 0,
+				description: this.activeInternal?.internal.description || "none",
+				tier: this.activeInternal?.internal.tier || "none",
+			},
+			traits: this.traits.map(trait =>({
+				id: trait.id,
+				name: trait.name,
+				description: trait.description,
+			})),
+			skills: this.skills.map(skill => ({
+				id: skill.skill.id,
+				name: skill.skill.name,
+				level: skill.level,
+				description: skill.skill.baseDescription,
+				tier: skill.skill.tier,
+			})),
+			activeSkills: this.activeSkills.map(skill => ({
+				id: skill.skill.id,
+				name: skill.skill.name,
+				level: skill.level,
+				description: skill.skill.baseDescription,
+				tier: skill.skill.tier,
+			})),
+			position: this.position,
+			itemsBag: this.itemsBag.intoInterface(),
+			arcaneAptitude: this.arcaneAptitude.intoInterface(),
+			bagSize: this.bagSize,
+		};
 	}
+
+	
 }
+
+// export class PlayerCharacter extends Character {
+// 	bagSize: number;
+// 	storyFlags: StoryFlags;
+// 	constructor(
+// 		name: string,
+// 		gender: "MALE" | "FEMALE",
+// 		race: RaceEnum,
+// 		className: ClassEnum,
+// 		background: BackgroundEnum,
+// 		userID: string,
+// 		portrait: string
+// 	) {
+// 		super(
+// 			{
+// 				id: userID, 
+// 				name: name, 
+// 				gender: gender,
+// 				portrait: portrait,
+// 			}
+// 		);
+// 		this.type = CharacterType.humanoid;
+// 		this.bagSize = 15;
+// 		this.storyFlags = new StoryFlags();
+// 		this.gold = 50;
+
+// 		setCharacterStatus(this, className, race, background);
+// 		this.setBodyValue();
+// 	}
+// }
 
 
 function switchClass(selectedClass?: ClassEnum): CharacterClass | null {
@@ -3186,8 +3126,6 @@ function switchBackground(selectedBackground?: BackgroundEnum) {
 			break;
 	}
 }
-
-
 
 export async function setCharacterStatus(
 	character: Character,

@@ -30,6 +30,10 @@ export class CharacterAlignment {
         
         return `${lawChaos}_${goodEvil}` as CharacterAlignmentEnum;
     }
+
+    intoInterface(): string{
+        return this.alignment();
+    }
 }
 
 export enum CharacterAlignmentEnum {

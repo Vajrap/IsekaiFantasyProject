@@ -1,6 +1,3 @@
-import { PlayerCharacter } from "../Entities/Character/Character";
-import { game } from "../server";
-import { Database } from "sqlite3";
 import { v4 as uuidv4 } from 'uuid';
 
 interface LoggedInWithCharacterResponse {
@@ -35,42 +32,6 @@ export class UserID {
         this.userID = uuidv4();
         this.username = username;
         this.password = password;
-    }
-    
-    async validateInputPassword(inputPassword: string): Promise<boolean> {
-        return inputPassword === this.password;
-    }
-
-    async getCharacterFromCharacterID(): Promise<PlayerCharacter | undefined> {
-        let character = game.characterManager.getPlayerCharacterByCharacterID(this.characterID);
-        if (character) {
-            return character;
-        } else {
-            return undefined;
-        }
-    }
-
-    static createFromDBRow(row: UserDBRow): UserID {
-        const user = new UserID(row.username, row.password);
-        user.userID = row.userID;
-        user.characterID = row.characterID;
-        return user;
-    }
-
-    insertIntoDB(db: Database): Promise<void> {
-        return new Promise((resolve, reject) => {
-            db.run(
-                "INSERT INTO users (id, username, password, userID, characterID) VALUES (?, ?, ?, ?)",
-                [this.username, this.password, this.userID, this.characterID],
-                (err) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        resolve();
-                    }
-                }
-            );
-        });
     }
 }
 

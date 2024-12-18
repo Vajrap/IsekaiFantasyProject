@@ -2,6 +2,7 @@ import { Dice } from "../../../Utility/Dice";
 import { CharacterStatusEnum } from "../../../Utility/Enum/CharacterStatusTypes";
 import { DiceEnum } from "../../../Utility/Enum/DamageDIce";
 import { ElementTypes, FundamentalElementTypes } from "../../../Utility/Enum/ElementTypes";
+import { CharacterStatusInterface } from "../../../../Common/RequestResponse/characterWS";
 
 export class CharacterStatus {
 	attributes: {
@@ -452,4 +453,52 @@ export class CharacterStatus {
         };
     }
 
+    intoInterface(): CharacterStatusInterface {
+        return {
+            charisma: this.charisma(),
+            luck: this.luck(),
+            intelligence: this.intelligence(),
+            leadership: this.leadership(),
+            vitality: this.vitality(),
+            willpower: this.willpower(),
+            breath: this.breath(),
+            planar: this.planar(),
+            dexterity: this.dexterity(),
+            agility: this.agility(),
+            strength: this.strength(),
+            endurance: this.endurance(),
+            bareHand: this.bareHand(),
+            sword: this.sword(),
+            blade: this.blade(),
+            dagger: this.dagger(),
+            spear: this.spear(),
+            axe: this.axe(),
+            mace: this.mace(),
+            shield: this.shield(),
+            bow: this.bow(),
+            magicWand: this.magicWand(),
+            staff: this.staff(),
+            tome: this.tome(),
+            orb: this.orb(),
+            dodge: this.dodge(),
+            order: this.order(),
+            chaos: this.chaos(),
+            geo: this.geo(),
+            water: this.water(),
+            air: this.air(),
+            fire: this.fire(),
+            mining: this.mining(),
+            smithing: this.smithing(),
+            woodCutting: this.woodcutting(),
+            carpentry: this.carpentry(),
+            foraging: this.foraging(),
+            weaving: this.weaving(),
+            skinning: this.skinning(),
+            tanning: this.tanning(),
+            jewelry: this.jewelry(),
+            cooking: this.cooking(),
+            alchemy: this.alchemy(),
+            enchanting: this.enchanting()
+        }
+    }
 }

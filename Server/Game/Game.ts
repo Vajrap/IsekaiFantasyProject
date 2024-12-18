@@ -14,7 +14,7 @@ import { createGearTableIfNotExists } from "../Database/Item/Gear/createGearTabl
 import { createSkillTableIfNotExists } from "../Database/Skill/skill";
 import { createUsersTableIfNotExist } from "../Database/User/CreateUsersTableIfNotExist";
 import { createPartyTableIfNotExist } from "../Database/Party/Party";
-import { createPlayerCharacterTableIfNotExists } from "../Database/Character/PlayerCharacter";
+import { Party } from "../Entities/Party/Party";
 
 export class Game {
     characterManager: CharacterManager = new CharacterManager();
@@ -51,7 +51,6 @@ export class Game {
                 createItemConsumableTableIfNotExists(),
                 createSkillTableIfNotExists(),
                 createGearTableIfNotExists(),
-                createPlayerCharacterTableIfNotExists(),
                 createPartyTableIfNotExist(),
             ]);
 
@@ -103,16 +102,16 @@ export class Game {
             await createGameTimeTableIfNotExists();
 
             // Attempt to read the game time from the database
-            const result = await db.read('GameTime', 'id', 1); // Always read the first (and only) row with id=1
+            const result = await db.read<GameTime>('GameTime', 'id', 1); // Always read the first (and only) row with id=1
     
             if (result) {
                 // If the game time exists in the database, initialize GameTime with the stored values
-                const { dayPassed, day, hour, month, year } = result;
+                const { dayPassed, gameDateDay, gameDateHour, gameDateMonth, gameDateYear } = result;
                 this.gameTime = new GameTime(dayPassed);
-                this.gameTime.gameDateDay = day;
-                this.gameTime.gameDateHour = hour;
-                this.gameTime.gameDateMonth = month;
-                this.gameTime.gameDateYear = year;
+                this.gameTime.gameDateDay = gameDateDay;
+                this.gameTime.gameDateHour = gameDateHour;
+                this.gameTime.gameDateMonth = gameDateMonth;
+                this.gameTime.gameDateYear = gameDateYear;
             } else {
                 // If no game time is found in the database, initialize it with default values (1, 1, 1, 0)
                 console.log('No game time found in the database, initializing with default value (1-1-1-0).');
@@ -140,10 +139,10 @@ export class Game {
                 {tableName: 'GameTime', primaryKeyColumnName: 'id', primaryKeyValue: '1'},
                 [
                     {dataKey: 'dayPassed', value: dayPassed},
-                    {dataKey: 'day', value: day},
-                    {dataKey: 'hour', value: hour},
-                    {dataKey: 'month', value: month},
-                    {dataKey: 'year', value: year}
+                    {dataKey: 'gameDateDay', value: day},
+                    {dataKey: 'gameDateHour', value: hour},
+                    {dataKey: 'gameDateMonth', value: month},
+                    {dataKey: 'gameDateYear', value: year}
                 ]
             );
     
@@ -162,18 +161,18 @@ export class Game {
     
             for (const character of characters) {
                 // Parse the complex data that was stored as JSON strings in the database
-                const alignment = JSON.parse(character.alignment);
-                const attributes = JSON.parse(character.attributes);
-                const proficiencies = JSON.parse(character.proficiencies);
-                const battlers = JSON.parse(character.battlers);
-                const elements = JSON.parse(character.elements);
-                const artisans = JSON.parse(character.artisans);
-                const equipments = JSON.parse(character.equipments);
-                const internals = JSON.parse(character.internals);
-                const traits = JSON.parse(character.traits);
-                const skills = JSON.parse(character.skills);
-                const activeSkills = JSON.parse(character.activeSkills);
-                const itemsBag = JSON.parse(character.itemsBag);
+                const alignment = character.alignment;
+                const attributes = character.attributes;
+                const proficiencies = character.proficiencies;
+                const battlers = character.battlers;
+                const elements = character.elements;
+                const artisans = character.artisans;
+                const equipments = character.equipments;
+                const internals = character.internals;
+                const traits = character.traits;
+                const skills = character.skills;
+                const activeSkills = character.activeSkills;
+                const itemsBag = character.itemsBag;
     
                 // Create the CharacterArchetype instance
                 const archeType = new CharacterArchetype({
@@ -217,10 +216,12 @@ export class Game {
     
                 // Create a Character object from CharacterArchetype
                 const newCharacter = new Character(
-                    character.id,
-                    character.name,
-                    character.gender,
-                    archeType
+                    {
+                        id: character.id,
+                        name: character.name,
+                        gender: character.gender,
+                        portrait: character.portrait,
+                    }
                 );
     
                 // Add the new character to the character manager
@@ -263,22 +264,106 @@ export class Game {
 
     private async loadPartiesFromDB() {
         // Load parties from database
+        try {
+            await createPartyTableIfNotExist();
+
+            const parties = await db.readAll('Parties');
+            /*
+            what we got are rows of
+            {
+                partyID: string, <- primary key, same as the character id of the party's leader
+                character_1_id: string, <- id of character at position 1
+                character_2_id: string, <- id of character at position 2
+                character_3_id: string, <- id of character at position 3
+                character_4_id: string, <- id of character at position 4
+                character_5_id: string, <- id of character at position 5
+                character_6_id: string, <- id of character at position 6
+                actionsSequence: string, <- JSON string of actions sequence
+                actions_1: string, action on time 1
+                actions_2: string, action on time 2
+                actions_3: string, action on time 3
+                actions_4: string, action on time 4
+                isTraveling: boolean, <- is the party traveling
+            }
+
+            step to reproduce a party and push it into the party manager
+            1. create a party object: this needed to be done by locate the party leader and then new Party(partyLeader)
+            2. move party leader to his position in the party; this means we need to remember his position
+            3. add the rest of the party members to the party at their position
+
+
+                
+                PS.1 The actions is still not implemented, I think it still needs tweaking since we let player decided the action for a whole week and each day will have 4 time slots, that's 28 actions per week.
+                so we might need to collect them as 
+                day_1: [action_1, action_2, action_3, action_4] <--- still not what we need here
+                PS. 2 isTraveling didn't give us location, so we might need to add location to the party table.
+            */
+            for (const party of parties) {
+                const partyLeader = this.characterManager.getCharacterByID(party.partyID);
+                if (!partyLeader) {
+                    console.error(`Party leader with ID ${party.partyID} not found.`);
+                    continue;
+                }
+                const newParty = new Party([partyLeader]);
+                if (party.character_1_id) {
+                    const character = this.characterManager.getCharacterByID(party.character_1_id);
+                    newParty.characters[0] = character;
+                }
+                if (party.character_2_id) {
+                    const character = this.characterManager.getCharacterByID(party.character_2_id);
+                    newParty.characters[1] = character;
+                }
+                if (party.character_3_id) {
+                    const character = this.characterManager.getCharacterByID(party.character_3_id);
+                    newParty.characters[2] = character;
+                }
+                if (party.character_4_id) {
+                    const character = this.characterManager.getCharacterByID(party.character_4_id);
+                    newParty.characters[3] = character;
+                }
+                if (party.character_5_id) {
+                    const character = this.characterManager.getCharacterByID(party.character_5_id);
+                    newParty.characters[4] = character;
+                }
+                if (party.character_6_id) {
+                    const character = this.characterManager.getCharacterByID(party.character_6_id);
+                    newParty.characters[5] = character;
+                }
+                newParty.isTraveling = party.isTraveling;
+                newParty.actionsList = {
+                    day1: JSON.parse(party.day_1),
+                    day2: JSON.parse(party.day_2),
+                    day3: JSON.parse(party.day_3),
+                    day4: JSON.parse(party.day_4),
+                    day5: JSON.parse(party.day_5),
+                    day6: JSON.parse(party.day_6),
+                    day7: JSON.parse(party.day_7)
+                };
+                
+                this.partyManager.parties.push(newParty);
+            }
+        } catch (error) {
+            console.error('Error loading parties from database:', error);
+        }
     }
 
     private async loadPlayerCharactersFromDB() {
         // Load player characters from database
+        try {
+            const playerCharacters = await db.readAll('PlayerCharacters');
+            
+            for (const playerCharacter of playerCharacters) {
+                // Parse the complex data that was stored as JSON strings in the database
+                
+
+            }
+        } catch (error) {
+            console.error('Error loading player characters from database:', error);
+        }
     }
 
 
     //MARK: GAME METHODS
-    getPlayerCharacterByUserID(userID: string) {
-        return this.characterManager.getPlayerCharacterByUserID(userID);
-    }
-
-    getPlayerCharacterByCharacterID(characterID: string) {
-        return this.characterManager.getPlayerCharacterByCharacterID(characterID);
-    }
-
     getCharacterByID(characterID: string) {
         return this.characterManager.getCharacterByID(characterID);
     }
@@ -290,10 +375,6 @@ export class Game {
             // Save characters
             for (const character of this.characterManager.characters) {
                 // await db.writeOver('characters', 'characterID', character.characterID, 'data', JSON.stringify(character, db.circularReplacer()));
-            }
-            // Save players
-            for (const player of this.characterManager.players) {
-                // await db.writeOver('players', 'characterID', player.characterID, 'data', JSON.stringify(player, db.circularReplacer()));
             }
             // Save parties
             for (const party of this.partyManager.parties) {

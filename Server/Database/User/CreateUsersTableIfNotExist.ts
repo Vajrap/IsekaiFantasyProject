@@ -6,7 +6,6 @@ export async function createUsersTableIfNotExist() {
         username TEXT PRIMARY KEY,
         password TEXT,
         userID TEXT,
-        characterID TEXT,
         token TEXT,
         tokenExpiresAt TIMESTAMP
     `;

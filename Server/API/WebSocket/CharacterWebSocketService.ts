@@ -1,207 +1,180 @@
-// import WebSocket from 'ws';
-// import { EventEmitter } from 'events';
-// import { db } from '../Database';
-// import { ErrorResponse, SuccessResponse } from './ResponseType';
+import WebSocket from 'ws';
+import { EventEmitter } from 'events';
+import { db } from '../../Database';
+import { game } from '../../server';
+import { GetCharacterRequest, GetCharacterResponse, UpdateSkillListRequest, UpdateSkillListResponse, GetPartyRequest, GetPartyResponse } from '../../../Common/RequestResponse/characterWS';
+import { failure, Result, success } from '../../../Common/Lib/Result';
 
-// // Define types for messages
-// type Message = GetCharacterRequest | MoveSkillToBattleCardsRequest | MoveBattleCardToSkillsRequest;
-// type Response = CharacterResponse | MoveSkillSuccessResponse;
+export class CharacterWebSocketService extends EventEmitter {
+    private userSessions: Map<string, CharacterSession> = new Map();
+    private wsConnections: Map<string, WebSocket> = new Map();
+    wss: WebSocket.Server;
 
-// type GetCharacterRequest = {
-//     type: 'GET_CHARACTER';
-//     userID: string;
-// };
+    constructor(wss: WebSocket.Server) {
+        super();
+        this.wss = wss;
 
-// type CharacterResponse = {
-//     type: 'CHARACTER_RESPONSE';
-//     character: PlayerCharacter | null;
-// };
+        this.wss.on('connection', (ws: WebSocket, request: GetCharacterRequest | UpdateSkillListRequest) => {
+            ws.on('message', async (message: Buffer) => {
+                try {
+                    // const parsedMessage = JSON.parse(message.toString()) as Message;
+                    // const userID = (parsedMessage as any).userID;
+                    const userID = request.userID;
 
-// type MoveSkillToBattleCardsRequest = {
-//     type: 'MOVE_SKILL_TO_BATTLE_CARDS';
-//     characterID: string;
-//     skillID: string;
-// };
+                    if (!userID) {
+                        ws.send(JSON.stringify({ type: 'ERROR', message: 'User ID not found' }));
+                        return;
+                    }
 
-// type MoveBattleCardToSkillsRequest = {
-//     type: 'MOVE_BATTLE_CARD_TO_SKILLS';
-//     characterID: string;
-//     skillID: string;
-// };
+                    this.wsConnections.set(userID, ws);
 
-// type MoveSkillSuccessResponse = {
-//     type: 'MOVE_SKILL_SUCCESS';
-//     character: PlayerCharacter;
-// };
+                    if (!this.userSessions.has(userID)) {
+                        const session = new CharacterSession(this, userID);
+                        this.userSessions.set(userID, session);
+                    }
 
-// export class CharacterWebSocketService extends EventEmitter {
-//     private userSessions: Map<string, CharacterSession> = new Map();
-//     private wsConnections: Map<string, WebSocket> = new Map();
-//     wss: WebSocket.Server;
+                    const session = this.userSessions.get(userID);
+                    if (session) {
+                        session.handleMessage(ws, request);
+                    } else {
+                        ws.send(JSON.stringify({ type: 'ERROR', message: 'User session not found' }));
+                    }
+                } catch (error) {
+                    console.error('Error parsing message:', error);
+                    ws.close();
+                }
+            });
 
-//     constructor(wss: WebSocket.Server) {
-//         super();
-//         this.wss = wss;
+            ws.on('close', () => {
+                this.wsConnections.forEach((wsConn, userID) => {
+                    if (wsConn === ws) {
+                        this.userSessions.delete(userID);
+                        this.wsConnections.delete(userID);
+                    }
+                });
+            });
 
-//         this.wss.on('connection', (ws: WebSocket, request: any) => {
-//             ws.on('message', async (message: Buffer) => {
-//                 try {
-//                     const parsedMessage = JSON.parse(message.toString()) as Message;
-//                     const userID = (parsedMessage as any).userID;
+            ws.on('error', (error: Error) => {
+                console.error('WebSocket error:', error.message);
+            });
+        });
+    }
 
-//                     if (!userID) {
-//                         ws.send(JSON.stringify({ type: 'ERROR', message: 'User ID not found' }));
-//                         return;
-//                     }
+    public sendUpdate(
+        updateData: GetCharacterResponse | UpdateSkillListResponse, 
+        userID: string
+    ) {
+        const ws = this.wsConnections.get(userID);
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(updateData));
+        } else {
+            console.error('Error sending update: WebSocket not open');
+        }
+    }
+}
 
-//                     this.wsConnections.set(userID, ws);
+class CharacterSession {
+    private service: CharacterWebSocketService;
+    private userID: string;
 
-//                     if (!this.userSessions.has(userID)) {
-//                         const session = new CharacterSession(this, userID);
-//                         this.userSessions.set(userID, session);
-//                         session.handleGetCharacter(ws, parsedMessage as GetCharacterRequest);
-//                     }
+    constructor(service: CharacterWebSocketService, userID: string) {
+        this.service = service;
+        this.userID = userID;
+    }
 
-//                     const session = this.userSessions.get(userID);
-//                     if (session) {
-//                         session.handleMessage(ws, parsedMessage);
-//                     } else {
-//                         ws.send(JSON.stringify({ type: 'ERROR', message: 'User session not found' }));
-//                     }
-//                 } catch (error) {
-//                     console.error('Error parsing message:', error);
-//                     ws.close();
-//                 }
-//             });
+    handleMessage(ws: WebSocket, data: GetCharacterRequest | UpdateSkillListRequest) {
+        switch (data.type) {
+            case 'GET_CHARACTER':
+                this.handleGetCharacter(ws, data);
+                break;
+            case 'UPDATE_SKILL_LIST':
+                this.handleUpdateSkillList(ws, data);
+                break;
+        }
+    }
 
-//             ws.on('close', () => {
-//                 this.wsConnections.forEach((wsConn, userID) => {
-//                     if (wsConn === ws) {
-//                         this.userSessions.delete(userID);
-//                         this.wsConnections.delete(userID);
-//                     }
-//                 });
-//             });
+    async handleGetCharacter(ws: WebSocket, data: GetCharacterRequest) {
+        try {
+            if (this.userID !== data.userID) {
+                throw new Error('Fatal Error: Unauthorized, user ID does not match; should not happen');
+            }
 
-//             ws.on('error', (error: Error) => {
-//                 console.error('WebSocket error:', error.message);
-//             });
+            const character = game.getPlayerCharacterByUserID(this.userID);
+            
+            const response: GetCharacterResponse = {
+                type: 'GET_CHARACTER_RESPONSE',
+                status: 'SUCCESS',
+                message: 'Success',
+                character: character.intoInterface(),
+            };
+
+            this.service.sendUpdate(response, this.userID);
+        } catch (error) {
+            const response: GetCharacterResponse = {
+                type: 'GET_CHARACTER_RESPONSE',
+                status: 'FAILURE',
+                message: 'Unknown Error',
+            };
+            this.service.sendUpdate(response, this.userID);
+        }
+    }
+
+    private async handleUpdateSkillList(ws: WebSocket, data: UpdateSkillListRequest): Promise<Result<UpdateSkillListResponse>> {
+        try {
+            let actor = game.getPlayerCharacterByCharacterID(data.userID);
+            if (!actor) {
+                // Fatal Error?
+                throw new Error('Character not found');
+            }
+            // The hard part is here, we need to update the skill list of the character
+            // First we might need to remove all skills from the character activeSkills, then add the new ones back, this is the easiest way to deal with, else we need to compare the old list with the new list and update the difference
+            for (const skill of actor.activeSkills) {
+                actor.moveCardToSkills(skill.skill.id);
+            }
+            for (const skillID of data.skills) {
+                actor.moveCardToBattle(skillID);
+            }
+            
+            await db.writeOver(
+                {
+                    tableName: 'playerCharacters', 
+                    primaryKeyColumnName: 'id', 
+                    primaryKeyValue: actor.id, 
+                },
+                [
+                    {dataKey: 'activeSkills', value: JSON.stringify(actor.activeSkills)},
+                    {dataKey: 'skills', value: JSON.stringify(actor.skills)}
+                ]
+            );
+
+            return success({
+                type: 'UPDATE_SKILL_LIST_RESPONSE',
+                status: 'SUCCESS',
+                message: 'Success',
+                character: actor.intoInterface(),
+            });
+
+        } catch (error) {
+            return failure('Fail', 'Unknown Error');
+        }
+    }
+}
+
+// async function getParty(data: GetPartyRequest): Promise<Result<GetPartyResponse>> {
+//     try {
+//         const party = game.getParty(data.partyID);
+//         if (!party) {
+//             return failure('Fail', 'Party not found');
+//         }
+
+//         return success({
+//             type: 'GET_PARTY',
+//             status: 'SUCCESS',
+//             message: 'Success',
+//             party: party.intoInterface(),
 //         });
-//     }
 
-//     public sendUpdate(updateData: Response | ErrorResponse | SuccessResponse, userID: string) {
-//         const ws = this.wsConnections.get(userID);
-//         if (ws && ws.readyState === WebSocket.OPEN) {
-//             ws.send(JSON.stringify(updateData));
-//         } else {
-//             console.error('Error sending update: WebSocket not open');
-//         }
-//     }
-// }
-
-// class CharacterSession {
-//     private service: CharacterWebSocketService;
-//     private userID: string;
-
-//     constructor(service: CharacterWebSocketService, userID: string) {
-//         this.service = service;
-//         this.userID = userID;
-//     }
-
-//     handleMessage(ws: WebSocket, data: Message) {
-//         switch (data.type) {
-//             case 'GET_CHARACTER':
-//                 this.handleGetCharacter(ws, data);
-//                 break;
-//             case 'MOVE_BATTLE_CARD_TO_SKILLS':
-//                 this.handleMoveBattleCardToSkills(ws, data);
-//                 break;
-//             case 'MOVE_SKILL_TO_BATTLE_CARDS':
-//                 this.handleMoveSkillToBattleCards(ws, data);
-//                 break;
-//             default:
-//                 this.handleUnknownMessage(ws);
-//                 break;
-//         }
-//     }
-
-//     async handleGetCharacter(ws: WebSocket, data: GetCharacterRequest) {
-//         try {
-//             const character = game.getPlayerCharacterByUserID(this.userID);
-//             console.log(`Got character: ${character?.name}`);
-//             console.log(`userID: ${this.userID}`);
-//             const response: CharacterResponse = {
-//                 type: 'CHARACTER_RESPONSE',
-//                 character: character || null,
-//             };
-//             console.log(`Sending character: ${response}`);
-//             this.service.sendUpdate(response, this.userID);
-//         } catch (error) {
-//             const response: ErrorResponse = {
-//                 type: 'ERROR',
-//                 message: 'Unknown Error',
-//             };
-//             this.service.sendUpdate(response, this.userID);
-//         }
-//     }
-
-//     private async handleMoveBattleCardToSkills(ws: WebSocket, data: MoveBattleCardToSkillsRequest) {
-//         try {
-//             let actor = game.getPlayerCharacterByCharacterID(data.characterID);
-//             if (!actor) {
-//                 throw new Error('Character not found');
-//             }
-//             const skill = actor?.activeSkills.find((skill) => skill.skillID === data.skillID);
-//             if (!skill) {
-//                 throw new Error('Skill not found');
-//             }
-
-//             let res = actor.moveCardToSkills(skill.skillID).response;
-
-//             if (res.type === 'ERROR') {
-//                 this.service.sendUpdate(res, this.userID);
-//             } else {
-//                 await db.writeOver('players', 'characterID', actor.characterID, 'data', JSON.stringify(actor));
-//                 this.service.sendUpdate(res, this.userID);
-//             }
-//         } catch (error) {
-//             const response: ErrorResponse = {
-//                 type: 'ERROR',
-//                 message: 'Unknown Error',
-//             };
-//             this.service.sendUpdate(response, this.userID);
-//         }
-//     }
-
-//     private async handleMoveSkillToBattleCards(ws: WebSocket, data: MoveSkillToBattleCardsRequest) {
-//         try {
-//             let actor = game.getPlayerCharacterByCharacterID(data.characterID);
-//             if (!actor) {
-//                 throw new Error('Character not found');
-//             }
-//             const skill = actor?.skills.find((skill) => skill.skillID === data.skillID);
-//             if (!skill) {
-//                 throw new Error('Skill not found');
-//             }
-
-//             let res = actor.moveCardToBattle(skill.skillID).response;
-
-//             await db.writeOver('players', 'characterID', actor.characterID, 'data', JSON.stringify(actor));
-//             this.service.sendUpdate(res, this.userID);
-//         } catch (error) {
-//             const response: ErrorResponse = {
-//                 type: 'ERROR',
-//                 message: 'Unknown Error',
-//             };
-//             this.service.sendUpdate(response, this.userID);
-//         }
-//     }
-
-//     private handleUnknownMessage(ws: WebSocket) {
-//         const unknownMessage: ErrorResponse = {
-//             type: 'ERROR',
-//             message: 'Unknown message type',
-//         };
-//         this.service.sendUpdate(unknownMessage, this.userID);
+//     } catch (error) {
+//         return failure('Fail', 'Unknown Error');
 //     }
 // }

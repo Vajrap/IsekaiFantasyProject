@@ -1,3 +1,4 @@
+import { CharacterItemInBag } from "../../../Common/RequestResponse/characterWS";
 import { ItemType } from "../../Utility/Enum/EquipmentTypes";
 
 export class ItemCost {
@@ -27,5 +28,18 @@ export class Item {
 }
 
 export class ItemBag {
-	items: string[] = [];
+	items: {item: Item, quantity: number}[] = [];
+
+    constructor(){
+        this.items = [];
+    }
+    
+    intoInterface(): CharacterItemInBag[] {
+        return this.items.map(item => ({
+            id: item.item.id,
+            name: item.item.name,
+            description: item.item.description,
+            quantity: item.quantity,
+        }));
+    }
 }

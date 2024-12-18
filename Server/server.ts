@@ -66,36 +66,36 @@ export const webSocketService = new WebSocketService(wssCore);
 //Game initialize
 export const game = new Game();
 
-// const websocketHandlers: { [key: string]: WebSocketService } = {
-//     '/ws': webSocketService,
+const websocketHandlers: { [key: string]: WebSocketService } = {
+    '/ws': webSocketService,
 //     // '/character-ws': characterWebSocketService,
 //     // '/travel-ws': travelWebSocketService,
 //     // '/battle-ws': battleWebSocketService,
 //     // '/game-ws': gameWebSocketService,
 //     // '/character-creation-ws': new CharacterCreationWebsocketService(wssCore)
-// };
+};
 
-// server.on('upgrade', (request: any, socket: any, head: any) => {
-//     const url = new URL(request.url, `http://${request.headers.host}`);
+server.on('upgrade', (request: any, socket: any, head: any) => {
+    const url = new URL(request.url, `http://${request.headers.host}`);
 
-//     if (socket.upgradeHandled) {
-//         console.warn('Upgrade already handled for this socket, skipping.');
-//         return;
-//     }
+    if (socket.upgradeHandled) {
+        console.warn('Upgrade already handled for this socket, skipping.');
+        return;
+    }
 
-//     const handler = websocketHandlers[url.pathname];
-//     if (handler) {
-//         handler.wss.handleUpgrade(request, socket, head, (ws) => {
-//             console.log(`WebSocket connection established for ${url.pathname}`);
-//             handler.wss.emit('connection', ws, request);
-//         });
-//     } else {
-//         console.log(`Unknown WebSocket path: ${url.pathname}. Destroying socket.`);
-//         socket.destroy();
-//     }
+    const handler = websocketHandlers[url.pathname];
+    if (handler) {
+        handler.wss.handleUpgrade(request, socket, head, (ws) => {
+            console.log(`WebSocket connection established for ${url.pathname}`);
+            handler.wss.emit('connection', ws, request);
+        });
+    } else {
+        console.log(`Unknown WebSocket path: ${url.pathname}. Destroying socket.`);
+        socket.destroy();
+    }
 
-//     socket.upgradeHandled = true;
-// });
+    socket.upgradeHandled = true;
+});
 
 // Command Line Interface Setup for Server Control
 const rl = readline.createInterface({
@@ -109,7 +109,7 @@ function handleCommand(command: string) {
     switch (action) {
         case 'players':
             if (args[0] === 'status') {
-                console.log('Game status:', game.characterManager.players);
+                console.log('Game status:', game.characterManager.characters);
             }
             break;
         case 'exit':
