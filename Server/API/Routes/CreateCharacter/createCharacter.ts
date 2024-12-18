@@ -9,7 +9,8 @@ import { UserID } from '../../../Authenticate/UserID';
 import { db } from '../../../Database';
 import { Party } from '../../../Entities/Party/Party';
 import { Result, success, failure } from '../../../../Common/Lib/Result'
-import { Character } from '../../../Entities/Character/Character';
+import { Character, setCharacterStatus } from '../../../Entities/Character/Character';
+import { CharacterDB } from '../../../Database/Character/Characters';
 
 export async function createCharacterHandler(    
     characterName: string,
@@ -51,7 +52,7 @@ async function validateCharacterName(name: string): Promise<Result<true>> {
     if (name.length < 3) {
         return failure('INVALID_NAME', 'Name must be at least 3 characters long.');
     }
-    const existingCharacter = await db.read('PlayerCharacters', 'name', name);
+    const existingCharacter = await db.read('Characters', 'name', name);
     if (existingCharacter) {
         return failure('NAME_TAKEN', 'Name is already taken.');
     }
@@ -76,52 +77,93 @@ async function createAndSaveCharacter(
         }
     );
 
+    await setCharacterStatus(character, className, race, background);
+
+    const characterData:CharacterDB = {
+        id: character.id,
+        partyID: character.partyID,
+        name: character.name,
+        type: character.type,
+        gender: character.gender,
+        portrait: character.portrait,
+        background: character.background,
+        race: character.race,
+        alignment: character.alignment,
+        mood: character.mood,
+        energy: character.energy,
+        fame: character.fame,
+        level: character.level,
+        gold: character.gold,
+        exp: character.exp,
+        isDead: character.isDead,
+        lastTarget: character.lastTarget,
+        raceHP: character.raceHP,
+        raceMP: character.raceMP,
+        raceSP: character.raceSP,
+        baseHP: character.baseHP,
+        baseMP: character.baseMP,
+        baseSP: character.baseSP,
+        bonusHP: character.bonusHP,
+        bonusMP: character.bonusMP,
+        bonusSP: character.bonusSP,
+        currentHP: character.currentHP,
+        currentMP: character.currentMP,
+        currentSP: character.currentSP,
+        status: character.status, // Assuming this matches CharacterStatusDB
+        equipments:{
+            mainHand: character.equipments.mainHand? character.equipments.mainHand.id : null,
+            offHand: character.equipments.offHand? character.equipments.offHand.id : null,
+            armor: character.equipments.armor? character.equipments.armor.id : null,
+            cloth: character.equipments.cloth? character.equipments.cloth.id : null,
+            headWear: character.equipments.headWear? character.equipments.headWear.id : null,
+            necklace: character.equipments.necklace? character.equipments.necklace.id : null,
+            ring: character.equipments.ring? character.equipments.ring.id : null,
+        }, // Assuming this matches CharacterEquipmentDB
+        internals: character.internals.map((internal) => ({
+            internal: internal.internal.id,
+            level: internal.level,
+            exp: internal.exp,
+        })),
+        activeInternal: character.activeInternal
+            ? {
+                  internal: character.activeInternal.internal.id,
+                  level: character.activeInternal.level,
+                  exp: character.activeInternal.exp,
+              }
+            : null,
+        traits: character.traits.map((trait) => trait.id),
+        skills: character.skills.map((skill) => ({
+            skill: skill.skill.id,
+            level: skill.level,
+            exp: skill.exp,
+        })),
+        activeSkills: character.activeSkills.map((skill) => ({
+            skill: skill.skill.id,
+            level: skill.level,
+            exp: skill.exp,
+        })),
+        internalBuffs: character.internalBuffs,
+        position: character.position,
+        itemsBag: {}, // Assuming `itemsBag` is an object with `items`
+        baseAC: character.baseAC,
+        location: character.location,
+        isSummoned: character.isSummoned,
+        arcaneAptitude: 0,
+        bagSize: character.bagSize,
+        storyFlags: character.storyFlags,
+        relation: {},
+    }
+
     await db.writeNew(
         {
-            tableName: 'PlayerCharacters',
+            tableName: 'characters',
             primaryKeyColumnName: 'id',
             primaryKeyValue: userID,
         },
-        [
-            {dataKey: 'id', value: character.id},
-            {dataKey: 'name', value: character.name},
-            {dataKey: 'gender', value: character.gender},
-            {dataKey: 'type', value: character.type},
-            {dataKey: 'level', value: character.level},
-            {dataKey: 'portrait', value: character.portrait},
-            {dataKey: 'race', value: character.race},
-            {dataKey: 'background', value: character.background},
-            {dataKey: 'alignment', value: character.alignment},
-            {dataKey: 'mood', value: character.mood},
-            {dataKey: 'energy', value: character.energy},
-            {dataKey: 'fame', value: character.fame},
-            {dataKey: 'gold', value: character.gold},
-            {dataKey: 'exp', value: character.exp},
-            {dataKey: 'isDead', value: character.isDead},
-            {dataKey: 'lastTarget', value: character.lastTarget},
-            {dataKey: 'currentHP', value: character.currentHP},
-            {dataKey: 'currentMP', value: character.currentMP},
-            {dataKey: 'currentSP', value: character.currentSP},
-            {dataKey: 'attributes', value: character.status.attributes},
-            {dataKey: 'proficiencies', value: character.status.proficiencies},
-            {dataKey: 'battlers', value: character.status.battlers},
-            {dataKey: 'elements', value: character.status.elements},
-            {dataKey: 'artisans', value: character.status.artisans},
-            {dataKey: 'equipments', value: character.equipments},
-            {dataKey: 'internals', value: character.internals},
-            {dataKey: 'activeInternal', value: character.activeInternal},
-            {dataKey: 'traits', value: character.traits},
-            {dataKey: 'skills', value: character.skills},
-            {dataKey: 'activeSkills', value: character.activeSkills},
-            {dataKey: 'position', value: character.position},
-            {dataKey: 'itemsBag', value: character.itemsBag},
-            {dataKey: 'baseAC', value: character.baseAC},
-            {dataKey: 'location', value: character.location},
-            {dataKey: 'isSummoned', value: character.isSummoned},
-            {dataKey: 'arcaneAptitude', value: character.arcaneAptitude},
-            {dataKey: 'bagSize', value: character.bagSize},
-            {dataKey: 'storyFlags', value: character.storyFlags}
-        ]
+        Object.entries(characterData).map(([key, value]) => ({
+            dataKey: key,
+            value,
+        }))
     );
 
     return success(character);
@@ -167,7 +209,7 @@ async function createCharacterAndParty(
     background: BackgroundEnum
 ): Promise<Result<true>> {
     // Check if a character or party already exists
-    const characterExists = await db.read('PlayerCharacters', 'id', userID);
+    const characterExists = await db.read('Characters', 'id', userID);
     if (characterExists) {
         return failure('CHARACTER_ALREADY_EXISTS', 'A character for this user already exists.');
     }

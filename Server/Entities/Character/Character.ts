@@ -1632,6 +1632,8 @@ export class Character {
 			}
 		}
 
+		// isSpell? this is damage penalty if wearing armor
+
 
 		return baseDamage;
 	}

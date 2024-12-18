@@ -1,65 +1,78 @@
 import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
-import { CharacterActiveInternalBonus } from "../../Entities/Character/Subclasses/CharacterActiveInternalBonus";
 import { CharacterArchetype } from "../../Entities/Character/Subclasses/CharacterArchetype";
 import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType";
 import { createTableIfNotExists } from "../Seeding";
 import { GoblinSeed } from "./Goblin";
 import { NPCCharacterSeed } from "./NPC";
 import { OrcSeed } from "./Orc";
+import { RelationEnum } from "../../../Common/Enums/RelationEnums";
 
-export const CharacterSeed: CharacterArchetype[] = [
+export const CharacterSeed: CharacterDB[] = [
     ...NPCCharacterSeed,
-    ...GoblinSeed,
-    ...OrcSeed
+    // ...GoblinSeed,
+    // ...OrcSeed
 ]
 
 export async function createCharacterTableIfNotExists() {
     const tableName = 'Characters';
-    const tableStructure = `
-        id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        gender TEXT,
-        type TEXT,
-        level INTEGER,
-        portrait TEXT,
-        race TEXT,
-        background TEXT,
-        alignment TEXT,
-        mood INTEGER,
-        energy INTEGER,
-        fame INTEGER,
-        gold INTEGER,
-        exp INTEGER,
-        isDead BOOLEAN,
-        lastTarget TEXT,
-        currentHP INTEGER,
-        currentMP INTEGER,
-        currentSP INTEGER,
-        attributes TEXT,
-        proficiencies TEXT,
-        battlers TEXT,
-        elements TEXT,
-        artisans TEXT,
-        equipments TEXT,
-        internals TEXT,
-        activeInternal TEXT,
-        traits TEXT,
-        skills TEXT,
-        activeSkills TEXT,
-        position INTEGER,
-        itemsBag TEXT,
-        baseAC INTEGER,
-        location TEXT,
-        isSummoned BOOLEAN,
-        arcaneAptitude INTEGER,
-        bagSize INTEGER,
-        storyFlags TEXT
-    `;
+    // Map CharacterDB fields to database column types
+    const fieldTypes: Record<keyof CharacterDB, string> = {
+        id: 'TEXT PRIMARY KEY',
+        partyID: 'TEXT',
+        name: 'TEXT NOT NULL',
+        type: 'TEXT',
+        gender: 'TEXT',
+        portrait: 'TEXT',
+        background: 'TEXT',
+        race: 'TEXT',
+        alignment: 'TEXT',
+        mood: 'INTEGER',
+        energy: 'INTEGER',
+        fame: 'INTEGER',
+        level: 'INTEGER',
+        gold: 'INTEGER',
+        exp: 'INTEGER',
+        isDead: 'BOOLEAN',
+        lastTarget: 'TEXT',
+        raceHP: 'INTEGER',
+        raceMP: 'INTEGER',
+        raceSP: 'INTEGER',
+        baseHP: 'INTEGER',
+        baseMP: 'INTEGER',
+        baseSP: 'INTEGER',
+        bonusHP: 'INTEGER',
+        bonusMP: 'INTEGER',
+        bonusSP: 'INTEGER',
+        currentHP: 'INTEGER',
+        currentMP: 'INTEGER',
+        currentSP: 'INTEGER',
+        status: 'TEXT',
+        equipments: 'TEXT',
+        internals: 'TEXT',
+        activeInternal: 'TEXT',
+        traits: 'TEXT',
+        skills: 'TEXT',
+        activeSkills: 'TEXT',
+        internalBuffs: 'TEXT',
+        position: 'INTEGER',
+        itemsBag: 'TEXT',
+        baseAC: 'INTEGER',
+        location: 'TEXT',
+        isSummoned: 'BOOLEAN',
+        arcaneAptitude: 'INTEGER',
+        bagSize: 'INTEGER',
+        storyFlags: 'TEXT',
+        relation: 'TEXT',
+    };
 
-    await createTableIfNotExists(tableName, tableStructure, CharacterSeed, 'id', true);
+    const tableStructure = Object.entries(fieldTypes)
+        .map(([field, type]) => `${field} ${type}`)
+        .join(',\n');
+
+    await createTableIfNotExists(tableName, tableStructure, CharacterSeed, 'id');
 }
 
-type CharacterDB = {
+export type CharacterDB = {
 	id: string;
 	partyID: string | "none";
 	name: string;
@@ -81,7 +94,6 @@ type CharacterDB = {
 	gold: number;
 	exp: number;
 	isDead: boolean;
-	abGauge: number;
 	lastTarget: string | null;
 	raceHP: number;
 	raceMP: number;
@@ -99,7 +111,6 @@ type CharacterDB = {
 	equipments: CharacterEquipmentDB; // Serialized or nested
 	internals: { internal: string; level: number; exp: number }[]; //user id instead of the whole internal object
 	activeInternal: { internal: string; level: number; exp: number } | null;
-	activeInternalBonus: CharacterActiveInternalBonusDB; // Placeholder
 	traits: string[]; // List of trait ids
 	skills: { skill: string; level: number; exp: number }[]; //use id instead of the whole skill object
 	activeSkills: { skill: string; level: number; exp: number }[];
@@ -112,7 +123,7 @@ type CharacterDB = {
 	arcaneAptitude: number;
 	bagSize: number;
 	storyFlags: StoryFlagsDB; // Flags for story progression
-	relation: { [key: string]: { value: number; status: number } }; // Relationship map
+	relation: { [key: string]: { value: number; status: RelationEnum } }; // Relationship map
 };
 
 type CharacterStatusDB = {
@@ -297,3 +308,4 @@ type ItemBagDB = {
 type StoryFlagsDB = {
     finishedStartingEvent: boolean;
 };
+

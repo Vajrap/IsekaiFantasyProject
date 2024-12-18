@@ -91,7 +91,6 @@ export class Game {
         await this.loadQuestsFromDB();
         await this.loadDialoguesFromDB();
         await this.loadPartiesFromDB();
-        await this.loadPlayerCharactersFromDB();
         this.gameTime.startTiming();
     }
 
@@ -346,22 +345,6 @@ export class Game {
             console.error('Error loading parties from database:', error);
         }
     }
-
-    private async loadPlayerCharactersFromDB() {
-        // Load player characters from database
-        try {
-            const playerCharacters = await db.readAll('PlayerCharacters');
-            
-            for (const playerCharacter of playerCharacters) {
-                // Parse the complex data that was stored as JSON strings in the database
-                
-
-            }
-        } catch (error) {
-            console.error('Error loading player characters from database:', error);
-        }
-    }
-
 
     //MARK: GAME METHODS
     getCharacterByID(characterID: string) {

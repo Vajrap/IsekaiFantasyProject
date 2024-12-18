@@ -99,7 +99,7 @@ class CharacterSession {
                 throw new Error('Fatal Error: Unauthorized, user ID does not match; should not happen');
             }
 
-            const character = game.getPlayerCharacterByUserID(this.userID);
+            const character = game.getCharacterByID(this.userID);
             
             const response: GetCharacterResponse = {
                 type: 'GET_CHARACTER_RESPONSE',
@@ -121,7 +121,7 @@ class CharacterSession {
 
     private async handleUpdateSkillList(ws: WebSocket, data: UpdateSkillListRequest): Promise<Result<UpdateSkillListResponse>> {
         try {
-            let actor = game.getPlayerCharacterByCharacterID(data.userID);
+            let actor = game.getCharacterByID(data.userID);
             if (!actor) {
                 // Fatal Error?
                 throw new Error('Character not found');
@@ -137,7 +137,7 @@ class CharacterSession {
             
             await db.writeOver(
                 {
-                    tableName: 'playerCharacters', 
+                    tableName: 'Characters', 
                     primaryKeyColumnName: 'id', 
                     primaryKeyValue: actor.id, 
                 },

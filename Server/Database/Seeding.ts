@@ -6,7 +6,6 @@ export async function createTableIfNotExists(
     tableStructure: string,
     tableData: any[],
     primaryKeyColumn: string,
-    isCharacterTable: boolean = false,
 ) {
     try {
         const tableExists = await db.tableExists(tableName);
@@ -19,7 +18,7 @@ export async function createTableIfNotExists(
         await db.createTable(tableName, tableStructure);
 
         // Insert initial data into the newly created table
-        await insertInitialData(tableName, tableData, primaryKeyColumn, isCharacterTable);
+        await insertInitialData(tableName, tableData, primaryKeyColumn);
 
         // Validate the data to ensure everything is there
         await checkDatabaseValidity(tableName, tableData, primaryKeyColumn);
@@ -32,7 +31,6 @@ async function insertInitialData(
     tableName: string,
     tableData: any[],
     primaryKeyColumn: string,
-    isCharacterTable: boolean,
 ) {
     for (const item of tableData) {
         const data = Object.keys(item).map(key => ({
@@ -42,20 +40,6 @@ async function insertInitialData(
 
         // Apply class modifier if provided
         // Here we need to make it that if isCharacterTable = true, we need to look for classModifier from, I think inside the data.value
-        if (isCharacterTable && item.classModifier) {
-            const classModifier: ClassModifier = item.classModifier;
-
-            // Apply attributes, proficiencies, etc., based on the provided class modifier
-            for (const [category, modifiers] of Object.entries(classModifier)) {
-                if (item[category]) {
-                    for (const [modifierKey, modifierValue] of Object.entries(modifiers)) {
-                        if (item[category][modifierKey] !== undefined) {
-                            item[category][modifierKey] += modifierValue;
-                        }
-                    }
-                }
-            }
-        }
 
         try {
             await db.writeNew(

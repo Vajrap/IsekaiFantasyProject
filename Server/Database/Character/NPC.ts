@@ -1,5 +1,5 @@
+import { RelationEnum } from "../../../Common/Enums/RelationEnums";
 import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
-import { CharacterArchetype } from "../../Entities/Character/Subclasses/CharacterArchetype";
 import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType";
 import { GearSeedArmorEnum } from "../Item/Gear/Seeds/Armor";
 import { ClothSeedEnum } from "../Item/Gear/Seeds/Cloth";
@@ -7,6 +7,7 @@ import { GearSeedHeadwearEnum } from "../Item/Gear/Seeds/HeadWear";
 import { NecklaceSeedEnum } from "../Item/Gear/Seeds/Necklace";
 import { RingSeedEnum } from "../Item/Gear/Seeds/Ring";
 import { GearSeedWeaponEnum } from "../Item/Gear/Seeds/Weapon";
+import { CharacterDB } from "./Characters";
 
 export const NPCID = {
     npc_king_edmund_azure: "npc_king_edmund_azure",
@@ -19,145 +20,157 @@ export const NPCID = {
     npc_karin_farsee: "npc_karin_farsee",
 }
 
-export const NPCCharacterSeed: CharacterArchetype[] = [
+export const NPCCharacterSeed: CharacterDB[] = [
     //MARK::NPC
     //MARK: EDMUND AZURE
-    new CharacterArchetype({
-        name: "King Edmund Azure",
-        gender: "MALE",
+    {
         id: NPCID.npc_king_edmund_azure,
+        partyID: NPCID.npc_king_edmund_azure,
+        name: "King Edmund Azure",
         type: CharacterType.humanoid,
-        level: 20,
+        gender: "MALE",
         portrait: "king_edmund.png",
-        race: RaceEnum.HUMAN,
         background: "King of Ocean Tide, a great warrior and leader",
+        race: RaceEnum.HUMAN,
         alignment: { good: 60, evil: 10, law: 100, chaos: 20 },
         mood: 100,
         energy: 100,
         fame: 10000,
+        level: 12,
         gold: 0,
         exp: 0,
         isDead: false,
         lastTarget: "",
-        attributes: {
-            charisma: { base: 18, exp: 0 },
-            luck: { base: 12, exp: 0 },
-            intelligence: { base: 14, exp: 0 },
-            leadership: { base: 20, exp: 0 },
-            vitality: { base: 22, exp: 0 },
-            willpower: { base: 16, exp: 0 },
-            breath: { base: 15, exp: 0 },
-            planar: { base: 10, exp: 0 },
-            dexterity: { base: 14, exp: 0 },
-            agility: { base: 16, exp: 0 },
-            strength: { base: 25, exp: 0 },
-            endurance: { base: 20, exp: 0 },
-        },
-        proficiencies: {
-            bareHand: { base: 5, exp: 0 },
-            sword: { base: 18, exp: 0 },
-            blade: { base: 15, exp: 0 },
-            dagger: { base: 10, exp: 0 },
-            spear: { base: 12, exp: 0 },
-            axe: { base: 16, exp: 0 },
-            mace: { base: 14, exp: 0 },
-            shield: { base: 20, exp: 0 },
-            bow: { base: 8, exp: 0 },
-            magicWand: { base: 0, exp: 0 },
-            staff: { base: 0, exp: 0 },
-            tome: { base: 0, exp: 0 },
-            orb: { base: 0, exp: 0 },
-        },
-        battlers: {
-            pATK: { base: 20, exp: 0 },
-            pHIT: { base: 18, exp: 0 },
-            pCRT: { base: 15, exp: 0 },
-            pDEF: { base: 22, exp: 0 },
-            mATK: { base: 10, exp: 0 },
-            mHIT: { base: 9, exp: 0 },
-            mCRT: { base: 8, exp: 0 },
-            mDEF: { base: 14, exp: 0 },
-            chiWarmATK: { base: 0, exp: 0 },
-            chiColdATK: { base: 0, exp: 0 },
-            chiWarmDEF: { base: 0, exp: 0 },
-            chiColdDEF: { base: 0, exp: 0 },
-            slash: { base: 18, exp: 0 },
-            pierce: { base: 15, exp: 0 },
-            blunt: { base: 17, exp: 0 },
-            slashDEF: { base: 18, exp: 0 },
-            pierceDEF: { base: 15, exp: 0 },
-            bluntDEF: { base: 17, exp: 0 },
-            dodge: { base: 12, exp: 0 },
-            orderATK: {
-                base: 0,
-                exp: 0
+        raceHP: 6,
+        raceMP: 6,
+        raceSP: 6,
+        baseHP: 72,
+        baseMP: 60,
+        baseSP: 60,
+        currentHP: 72,
+        currentMP: 60,
+        currentSP: 60,
+        status: {
+            attributes: {
+                charisma: { base: 18, exp: 0 },
+                luck: { base: 12, exp: 0 },
+                intelligence: { base: 14, exp: 0 },
+                leadership: { base: 20, exp: 0 },
+                vitality: { base: 22, exp: 0 },
+                willpower: { base: 16, exp: 0 },
+                breath: { base: 15, exp: 0 },
+                planar: { base: 10, exp: 0 },
+                dexterity: { base: 14, exp: 0 },
+                agility: { base: 16, exp: 0 },
+                strength: { base: 25, exp: 0 },
+                endurance: { base: 20, exp: 0 },
             },
-            chaosATK: {
-                base: 0,
-                exp: 0
+            proficiencies: {
+                bareHand: { base: 5, exp: 0 },
+                sword: { base: 18, exp: 0 },
+                blade: { base: 15, exp: 0 },
+                dagger: { base: 10, exp: 0 },
+                spear: { base: 12, exp: 0 },
+                axe: { base: 16, exp: 0 },
+                mace: { base: 14, exp: 0 },
+                shield: { base: 20, exp: 0 },
+                bow: { base: 8, exp: 0 },
+                magicWand: { base: 0, exp: 0 },
+                staff: { base: 0, exp: 0 },
+                tome: { base: 0, exp: 0 },
+                orb: { base: 0, exp: 0 },
             },
-            geoATK: {
-                base: 0,
-                exp: 0
+            battlers: {
+                pATK: { base: 20, exp: 0 },
+                pHIT: { base: 18, exp: 0 },
+                pCRT: { base: 15, exp: 0 },
+                pDEF: { base: 22, exp: 0 },
+                mATK: { base: 10, exp: 0 },
+                mHIT: { base: 9, exp: 0 },
+                mCRT: { base: 8, exp: 0 },
+                mDEF: { base: 14, exp: 0 },
+                chiWarmATK: { base: 0, exp: 0 },
+                chiColdATK: { base: 0, exp: 0 },
+                chiWarmDEF: { base: 0, exp: 0 },
+                chiColdDEF: { base: 0, exp: 0 },
+                slash: { base: 18, exp: 0 },
+                pierce: { base: 15, exp: 0 },
+                blunt: { base: 17, exp: 0 },
+                slashDEF: { base: 18, exp: 0 },
+                pierceDEF: { base: 15, exp: 0 },
+                bluntDEF: { base: 17, exp: 0 },
+                dodge: { base: 12, exp: 0 },
+                orderATK: {
+                    base: 0,
+                    exp: 0
+                },
+                chaosATK: {
+                    base: 0,
+                    exp: 0
+                },
+                geoATK: {
+                    base: 0,
+                    exp: 0
+                },
+                waterATK: {
+                    base: 0,
+                    exp: 0
+                },
+                airATK: {
+                    base: 0,
+                    exp: 0
+                },
+                fireATK: {
+                    base: 0,
+                    exp: 0
+                },
+                orderDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                chaosDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                geoDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                waterDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                airDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                fireDEF: {
+                    base: 0,
+                    exp: 0
+                }
             },
-            waterATK: {
-                base: 0,
-                exp: 0
+            elements: {
+                order: { base: 10, exp: 0 },
+                chaos: { base: 0, exp: 0 },
+                geo: { base: 8, exp: 0 },
+                water: { base: 12, exp: 0 },
+                air: { base: 0, exp: 0 },
+                fire: { base: 15, exp: 0 },
             },
-            airATK: {
-                base: 0,
-                exp: 0
-            },
-            fireATK: {
-                base: 0,
-                exp: 0
-            },
-            orderDEF: {
-                base: 0,
-                exp: 0
-            },
-            chaosDEF: {
-                base: 0,
-                exp: 0
-            },
-            geoDEF: {
-                base: 0,
-                exp: 0
-            },
-            waterDEF: {
-                base: 0,
-                exp: 0
-            },
-            airDEF: {
-                base: 0,
-                exp: 0
-            },
-            fireDEF: {
-                base: 0,
-                exp: 0
+            artisans: {
+                mining: { base: 0, exp: 0 },
+                smithing: { base: 10, exp: 0 },
+                woodcutting: { base: 7, exp: 0 },
+                carpentry: { base: 5, exp: 0 },
+                foraging: { base: 0, exp: 0 },
+                weaving: { base: 0, exp: 0 },
+                skinning: { base: 0, exp: 0 },
+                tanning: { base: 0, exp: 0 },
+                jewelry: { base: 0, exp: 0 },
+                alchemy: { base: 3, exp: 0 },
+                cooking: { base: 0, exp: 0 },
+                enchanting: { base: 0, exp: 0 },
             }
-        },
-        elements: {
-            order: { base: 10, exp: 0 },
-            chaos: { base: 0, exp: 0 },
-            geo: { base: 8, exp: 0 },
-            water: { base: 12, exp: 0 },
-            air: { base: 0, exp: 0 },
-            fire: { base: 15, exp: 0 },
-        },
-        artisans: {
-            mining: { base: 0, exp: 0 },
-            smithing: { base: 10, exp: 0 },
-            woodcutting: { base: 7, exp: 0 },
-            carpentry: { base: 5, exp: 0 },
-            foraging: { base: 0, exp: 0 },
-            weaving: { base: 0, exp: 0 },
-            skinning: { base: 0, exp: 0 },
-            tanning: { base: 0, exp: 0 },
-            jewelry: { base: 0, exp: 0 },
-            alchemy: { base: 3, exp: 0 },
-            cooking: { base: 0, exp: 0 },
-            enchanting: { base: 0, exp: 0 },
         },
         equipments: {
             mainHand: GearSeedWeaponEnum.AzureScepter,
@@ -178,31 +191,43 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
         activeSkills: [
             // { skillID: "shield_bash", level: 3, exp: 0 }
         ],
-        itemsBag: ["Health Potion", "Mana Potion"],
-        baseAC: 18,
+        internalBuffs: {},
+        position: 1,
+        itemsBag: [],
+        baseAC: 8,
         location: "Ocean Tide Castle",
         isSummoned: false,
         arcaneAptitude: 70,
-    }),
+        bagSize: 20,
+        relation: {
+            [NPCID.npc_queen_elara_azure]: { value: 100, status: RelationEnum.Spouse },
+            [NPCID.npc_princess_lysandra_azure]: { value: 100, status: RelationEnum.Family },
+        },
+    },
 
     //MARK: ELARA AZURE
-    new CharacterArchetype({
-        name: "Queen Elara Azure",
-        gender: 'FEMALE',
+    {
         id: NPCID.npc_queen_elara_azure,
+        partyID: NPCID.npc_queen_elara_azure,
+        name: "Queen Elara Azure",
         type: CharacterType.humanoid,
-        level: 18,
+        gender: 'FEMALE',
         portrait: "queen_elara.png",
-        race: RaceEnum.HUMAN,
         background: "Queen of Ocean Tide, a great mage and leader",
+        race: RaceEnum.HUMAN,
         alignment: { good: 80, evil: 0, law: 50, chaos: 30 },
         mood: 100,
         energy: 100,
         fame: 10000,
+        level: 18,
         gold: 100000,
         exp: 0,
         isDead: false,
         lastTarget: "",
+        raceHP: 6,
+        raceMP: 6,
+        raceSP: 6,
+        
         attributes: {
             charisma: { base: 20, exp: 0 },
             luck: { base: 14, exp: 0 },
@@ -347,10 +372,10 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
         location: "Ocean Tide Castle",
         isSummoned: false,
         arcaneAptitude: 70,
-    }),
+    },
 
     //MARK: LYSANDRA AZURE
-    new CharacterArchetype({
+    {
         name: "Princess Lysandra Azure",
         gender: "FEMALE",
         id: NPCID.npc_princess_lysandra_azure,
@@ -511,7 +536,7 @@ export const NPCCharacterSeed: CharacterArchetype[] = [
         location: "Ocean Tide Castle",
         isSummoned: false,
         arcaneAptitude: 70,
-    }),
+    },
 
     //MARK: VAELIN
     new CharacterArchetype({
