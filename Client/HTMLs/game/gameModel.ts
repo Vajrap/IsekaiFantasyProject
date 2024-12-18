@@ -3,22 +3,26 @@ import { WebSocketManager } from "Client/classes/WS/WS";
 import { Result, success } from "Common/Lib/Result";
 import { CharacterInterface } from "Common/RequestResponse/characterWS";
 
-class GameModel {
+export class GameModel {
     playerCharacter: CharacterInterface | null;
     companionCharacters: CharacterInterface[];
     // battleReports: BattlerReport[];
     eventManager: EventManager | null;
     webSocketManager: WebSocketManager;
 
-    constructor() {
+    private constructor() {
         this.playerCharacter = null;
         this.companionCharacters = [];
         // this.battleReports = [];
         this.eventManager = null;
         // this.battleManager = null;
         this.webSocketManager = new WebSocketManager();
+    }
 
-        this.initiate();
+    static async create(): Promise<GameModel> {
+        const model = new GameModel();
+        await model.initiate();
+        return model;
     }
 
     async initiate() {
@@ -110,5 +114,4 @@ class GameModel {
     }
 }
 
-const gameModel = new GameModel();
-
+export const gameModel = GameModel.create();

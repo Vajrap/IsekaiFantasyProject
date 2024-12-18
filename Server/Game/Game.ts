@@ -14,7 +14,6 @@ import { createGearTableIfNotExists } from "../Database/Item/Gear/createGearTabl
 import { createSkillTableIfNotExists } from "../Database/Skill/skill";
 import { createUsersTableIfNotExist } from "../Database/User/CreateUsersTableIfNotExist";
 import { createPartyTableIfNotExist } from "../Database/Party/Party";
-import { createPlayerCharacterTableIfNotExists } from "../Database/Character/PlayerCharacter";
 import { Party } from "../Entities/Party/Party";
 
 export class Game {
@@ -52,7 +51,6 @@ export class Game {
                 createItemConsumableTableIfNotExists(),
                 createSkillTableIfNotExists(),
                 createGearTableIfNotExists(),
-                createPlayerCharacterTableIfNotExists(),
                 createPartyTableIfNotExist(),
             ]);
 

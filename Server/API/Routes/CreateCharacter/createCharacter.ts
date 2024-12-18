@@ -7,9 +7,9 @@ import {
 } from '../../../../Common/RequestResponse/characterCreation';
 import { UserID } from '../../../Authenticate/UserID';
 import { db } from '../../../Database';
-import { PlayerCharacter } from '../../../Entities/Character/Character';
 import { Party } from '../../../Entities/Party/Party';
 import { Result, success, failure } from '../../../../Common/Lib/Result'
+import { Character } from '../../../Entities/Character/Character';
 
 export async function createCharacterHandler(    
     characterName: string,
@@ -66,15 +66,14 @@ async function createAndSaveCharacter(
     race: RaceEnum,
     className: ClassEnum,
     background: BackgroundEnum
-): Promise<Result<PlayerCharacter>> {
-    const character = new PlayerCharacter(
-        characterName,
-        gender,
-        race,
-        className,
-        background,
-        userID,
-        portrait
+): Promise<Result<Character>> {
+    const character = new Character(
+        {
+            id: userID,
+            name: characterName,
+            gender,
+            portrait,
+        }
     );
 
     await db.writeNew(
@@ -128,7 +127,7 @@ async function createAndSaveCharacter(
     return success(character);
 }
 
-async function createAndSaveParty(character: PlayerCharacter): Promise<Result<true>> {
+async function createAndSaveParty(character: Character): Promise<Result<true>> {
     const party = new Party([character]);
     await db.writeNew(
         {

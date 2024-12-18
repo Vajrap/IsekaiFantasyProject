@@ -1,5 +1,5 @@
 import { Dice } from "../../Utility/Dice";
-import { Character, PlayerCharacter } from "../Character/Character";
+import { Character } from "../Character/Character";
 import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../Utility/Enum/TargetTypes";
 import { CharacterStatusEnum } from "../../Utility/Enum/CharacterStatusTypes";
 import { LocationActionEnum } from "../../Utility/Enum/LocationActions+Events";
@@ -65,10 +65,11 @@ export class Party {
 		// this.travelManager = new TravelManager(this.partyID, this.currentLocation)
 	}
 
-	getPlayerCharacter(): PlayerCharacter {
+	leader(): Character {
+		// leader is the character with the same id
 		return this.characters.find(
-			(character): character is PlayerCharacter => character !== "none"
-		) as PlayerCharacter;
+			character => character != "none" && character.id === this.partyID
+		) as Character;
 	}
 
 	//this only used for temporarily battle scene party for targeting

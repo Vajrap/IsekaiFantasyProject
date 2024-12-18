@@ -107,7 +107,7 @@ function handleCommand(command: string) {
     switch (action) {
         case 'players':
             if (args[0] === 'status') {
-                console.log('Game status:', game.characterManager.players);
+                console.log('Game status:', game.characterManager.characters);
             }
             break;
         case 'exit':
