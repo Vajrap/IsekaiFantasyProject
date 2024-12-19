@@ -194,7 +194,7 @@ export const NPCCharacterSeed: CharacterDB[] = [
         internalBuffs: {},
         position: 1,
         itemsBag: [],
-        baseAC: 8,
+        baseAC: 7,
         location: "Ocean Tide Castle",
         isSummoned: false,
         arcaneAptitude: 70,
@@ -219,7 +219,7 @@ export const NPCCharacterSeed: CharacterDB[] = [
         mood: 100,
         energy: 100,
         fame: 10000,
-        level: 18,
+        level: 10,
         gold: 100000,
         exp: 0,
         isDead: false,
@@ -227,126 +227,133 @@ export const NPCCharacterSeed: CharacterDB[] = [
         raceHP: 6,
         raceMP: 6,
         raceSP: 6,
-        
-        attributes: {
-            charisma: { base: 20, exp: 0 },
-            luck: { base: 14, exp: 0 },
-            intelligence: { base: 22, exp: 0 },
-            leadership: { base: 18, exp: 0 },
-            vitality: { base: 16, exp: 0 },
-            willpower: { base: 20, exp: 0 },
-            breath: { base: 18, exp: 0 },
-            planar: { base: 15, exp: 0 },
-            dexterity: { base: 16, exp: 0 },
-            agility: { base: 14, exp: 0 },
-            strength: { base: 10, exp: 0 },
-            endurance: { base: 12, exp: 0 },
-        },
-        proficiencies: {
-            bareHand: { base: 5, exp: 0 },
-            sword: { base: 0, exp: 0 },
-            blade: { base: 0, exp: 0 },
-            dagger: { base: 0, exp: 0 },
-            spear: { base: 0, exp: 0 },
-            axe: { base: 0, exp: 0 },
-            mace: { base: 0, exp: 0 },
-            shield: { base: 0, exp: 0 },
-            bow: { base: 0, exp: 0 },
-            magicWand: { base: 18, exp: 0 },
-            staff: { base: 15, exp: 0 },
-            tome: { base: 20, exp: 0 },
-            orb: { base: 16, exp: 0 },
-        },
-        battlers: {
-            pATK: { base: 10, exp: 0 },
-            pHIT: { base: 9, exp: 0 },
-            pCRT: { base: 8, exp: 0 },
-            pDEF: { base: 14, exp: 0 },
-            mATK: { base: 20, exp: 0 },
-            mHIT: { base: 18, exp: 0 },
-            mCRT: { base: 15, exp: 0 },
-            mDEF: { base: 22, exp: 0 },
-            chiWarmATK: { base: 0, exp: 0 },
-            chiColdATK: { base: 0, exp: 0 },
-            chiWarmDEF: { base: 0, exp: 0 },
-            chiColdDEF: { base: 0, exp: 0 },
-            slash: { base: 0, exp: 0 },
-            pierce: { base: 0, exp: 0 },
-            blunt: { base: 0, exp: 0 },
-            slashDEF: { base: 18, exp: 0 },
-            pierceDEF: { base: 15, exp: 0 },
-            bluntDEF: { base: 17, exp: 0 },
-            dodge: { base: 0, exp: 0 },
-            orderATK: {
-                base: 0,
-                exp: 0
+        baseHP: 60,
+        baseMP: 72,
+        baseSP: 60,
+        currentHP: 60,
+        currentMP: 72,
+        currentSP: 60,
+        status: {
+            attributes: {
+                charisma: { base: 20, exp: 0 },
+                luck: { base: 14, exp: 0 },
+                intelligence: { base: 22, exp: 0 },
+                leadership: { base: 18, exp: 0 },
+                vitality: { base: 16, exp: 0 },
+                willpower: { base: 20, exp: 0 },
+                breath: { base: 18, exp: 0 },
+                planar: { base: 15, exp: 0 },
+                dexterity: { base: 16, exp: 0 },
+                agility: { base: 14, exp: 0 },
+                strength: { base: 10, exp: 0 },
+                endurance: { base: 12, exp: 0 },
             },
-            chaosATK: {
-                base: 0,
-                exp: 0
+            proficiencies: {
+                bareHand: { base: 5, exp: 0 },
+                sword: { base: 0, exp: 0 },
+                blade: { base: 0, exp: 0 },
+                dagger: { base: 0, exp: 0 },
+                spear: { base: 0, exp: 0 },
+                axe: { base: 0, exp: 0 },
+                mace: { base: 0, exp: 0 },
+                shield: { base: 0, exp: 0 },
+                bow: { base: 0, exp: 0 },
+                magicWand: { base: 18, exp: 0 },
+                staff: { base: 15, exp: 0 },
+                tome: { base: 20, exp: 0 },
+                orb: { base: 16, exp: 0 },
             },
-            geoATK: {
-                base: 0,
-                exp: 0
+            battlers: {
+                pATK: { base: 10, exp: 0 },
+                pHIT: { base: 9, exp: 0 },
+                pCRT: { base: 8, exp: 0 },
+                pDEF: { base: 14, exp: 0 },
+                mATK: { base: 20, exp: 0 },
+                mHIT: { base: 18, exp: 0 },
+                mCRT: { base: 15, exp: 0 },
+                mDEF: { base: 22, exp: 0 },
+                chiWarmATK: { base: 0, exp: 0 },
+                chiColdATK: { base: 0, exp: 0 },
+                chiWarmDEF: { base: 0, exp: 0 },
+                chiColdDEF: { base: 0, exp: 0 },
+                slash: { base: 0, exp: 0 },
+                pierce: { base: 0, exp: 0 },
+                blunt: { base: 0, exp: 0 },
+                slashDEF: { base: 18, exp: 0 },
+                pierceDEF: { base: 15, exp: 0 },
+                bluntDEF: { base: 17, exp: 0 },
+                dodge: { base: 0, exp: 0 },
+                orderATK: {
+                    base: 0,
+                    exp: 0
+                },
+                chaosATK: {
+                    base: 0,
+                    exp: 0
+                },
+                geoATK: {
+                    base: 0,
+                    exp: 0
+                },
+                waterATK: {
+                    base: 0,
+                    exp: 0
+                },
+                airATK: {
+                    base: 0,
+                    exp: 0
+                },
+                fireATK: {
+                    base: 0,
+                    exp: 0
+                },
+                orderDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                chaosDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                geoDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                waterDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                airDEF: {
+                    base: 0,
+                    exp: 0
+                },
+                fireDEF: {
+                    base: 0,
+                    exp: 0
+                }
             },
-            waterATK: {
-                base: 0,
-                exp: 0
+            elements: {
+                order: { base: 10, exp: 0 },
+                chaos: { base: 0, exp: 0 },
+                geo: { base: 8, exp: 0 },
+                water: { base: 12, exp: 0 },
+                air: { base: 0, exp: 0 },
+                fire: { base: 15, exp: 0 },
             },
-            airATK: {
-                base: 0,
-                exp: 0
+            artisans: {
+                mining: { base: 0, exp: 0 },
+                smithing: { base: 0, exp: 0 },
+                woodcutting: { base: 7, exp: 0 },
+                carpentry: { base: 5, exp: 0 },
+                foraging: { base: 0, exp: 0 },
+                weaving: { base: 0, exp: 0 },
+                skinning: { base: 0, exp: 0 },
+                tanning: { base: 0, exp: 0 },
+                jewelry: { base: 0, exp: 0 },
+                alchemy: { base: 3, exp: 0 },
+                cooking: { base: 6, exp: 0 },
+                enchanting: { base: 10, exp: 0 },
             },
-            fireATK: {
-                base: 0,
-                exp: 0
-            },
-            orderDEF: {
-                base: 0,
-                exp: 0
-            },
-            chaosDEF: {
-                base: 0,
-                exp: 0
-            },
-            geoDEF: {
-                base: 0,
-                exp: 0
-            },
-            waterDEF: {
-                base: 0,
-                exp: 0
-            },
-            airDEF: {
-                base: 0,
-                exp: 0
-            },
-            fireDEF: {
-                base: 0,
-                exp: 0
-            }
-        },
-        elements: {
-            order: { base: 10, exp: 0 },
-            chaos: { base: 0, exp: 0 },
-            geo: { base: 8, exp: 0 },
-            water: { base: 12, exp: 0 },
-            air: { base: 0, exp: 0 },
-            fire: { base: 15, exp: 0 },
-        },
-        artisans: {
-            mining: { base: 0, exp: 0 },
-            smithing: { base: 0, exp: 0 },
-            woodcutting: { base: 7, exp: 0 },
-            carpentry: { base: 5, exp: 0 },
-            foraging: { base: 0, exp: 0 },
-            weaving: { base: 0, exp: 0 },
-            skinning: { base: 0, exp: 0 },
-            tanning: { base: 0, exp: 0 },
-            jewelry: { base: 0, exp: 0 },
-            alchemy: { base: 3, exp: 0 },
-            cooking: { base: 6, exp: 0 },
-            enchanting: { base: 10, exp: 0 },
         },
         equipments: {
             mainHand: GearSeedWeaponEnum.AzureJewel,
@@ -359,7 +366,7 @@ export const NPCCharacterSeed: CharacterDB[] = [
         },
         internals: [],
         activeInternal: null,
-        traits: ["Leader", "Mage", "Queen"],
+        traits: [],
         skills: [
             // { skillID: "fireball", level: 5, exp: 0 },
             // { skillID: "heal", level: 3, exp: 0 }
@@ -367,11 +374,18 @@ export const NPCCharacterSeed: CharacterDB[] = [
         activeSkills: [
             // { skillID: "heal", level: 3, exp: 0 }
         ],
-        itemsBag: ["Health Potion", "Mana Potion"],
-        baseAC: 14,
-        location: "Ocean Tide Castle",
+        internalBuffs: {},
+        position: 2, // Position 2 is front row in the middle, default for party leader
+        itemsBag: [],
+        baseAC: 7,
+        location: "",
         isSummoned: false,
         arcaneAptitude: 70,
+        bagSize: 20,
+        relation: {
+            [NPCID.npc_king_edmund_azure]: { value: 100, status: RelationEnum.Spouse },
+            [NPCID.npc_princess_lysandra_azure]: { value: 100, status: RelationEnum.Family },
+        },
     },
 
     //MARK: LYSANDRA AZURE
@@ -539,7 +553,7 @@ export const NPCCharacterSeed: CharacterDB[] = [
     },
 
     //MARK: VAELIN
-    new CharacterArchetype({
+    {
         //Supreme Mage, mage class level 70
         name: "Archmagus Vaelin",
         gender: "MALE",
@@ -701,7 +715,7 @@ export const NPCCharacterSeed: CharacterDB[] = [
         location: "Ocean Tide Castle",
         isSummoned: false,
         arcaneAptitude: 100,
-    }),
+    },
 
     //MARK: GRAND ABBOT ZHENWU
     new CharacterArchetype({
