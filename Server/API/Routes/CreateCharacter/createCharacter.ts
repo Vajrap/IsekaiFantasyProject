@@ -14,7 +14,7 @@ import { CharacterDB } from '../../../Database/Character/Characters';
 
 export async function createCharacterHandler(    
     characterName: string,
-    portrait: string,
+    portrait: string,beautiful 
     race: RaceEnum,
     className: ClassEnum,
     background: BackgroundEnum,

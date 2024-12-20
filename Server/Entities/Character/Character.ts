@@ -210,15 +210,15 @@ export class Character {
 	}
 
 	setBaseHP(): Character {
-		this.baseHP = calculateBaseStat(this.attribute("vitality"));
+		this.baseHP = calculateBaseStat(this.baseHP, this.level, this.attribute("vitality"))
 		return this;
 	}
 	setBaseMP(): Character {
-		this.baseMP = calculateBaseStat(this.attribute("planar"));
+		this.baseMP = calculateBaseStat(this.baseMP, this.level, this.attribute("planar"));
 		return this;
 	}
 	setBaseSP(): Character {
-		this.baseSP = calculateBaseStat(this.attribute("endurance"));
+		this.baseSP = calculateBaseStat(this.baseSP, this.level, this.attribute("endurance"));
 		return this;
 	}
 
