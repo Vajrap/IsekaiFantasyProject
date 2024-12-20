@@ -13,7 +13,8 @@
     "baseUrl": ".",
     "paths": {
       "*": ["*", "*.js"]
-    }
+    },
+    "lib": ["ES2015", "DOM"]
   },
   "include": [
     "Client/**/*",
