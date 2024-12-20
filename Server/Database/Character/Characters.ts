@@ -1,10 +1,7 @@
 import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
-import { CharacterArchetype } from "../../Entities/Character/Subclasses/CharacterArchetype";
 import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType";
 import { createTableIfNotExists } from "../Seeding";
-import { GoblinSeed } from "./Goblin";
 import { NPCCharacterSeed } from "./NPC";
-import { OrcSeed } from "./Orc";
 import { RelationEnum } from "../../../Common/Enums/RelationEnums";
 
 export const CharacterSeed: CharacterDB[] = [
