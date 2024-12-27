@@ -1,29 +1,35 @@
 import { CharacterItemInBag } from "../../../Common/RequestResponse/characterWS";
 import { ItemType } from "../../Utility/Enum/EquipmentTypes";
-
-export class ItemCost {
-    baseCost: number;
-    bonusCost: number;
-    cost: number;
-    constructor(baseCost: number, bonusCost: number) {
-        this.baseCost = baseCost;
-        this.bonusCost = bonusCost;
-        this.cost = baseCost + bonusCost;
-    }
-}
+import { Tier } from "../../Utility/Tier";
+import { ItemCost, ItemCostInterface } from "./ItemCost";
 
 export class Item {
     id: string;
     itemType: ItemType;
     name: string;
     description: string;
-    itemCost: ItemCost;
-    constructor(id: string, itemType: ItemType, name: string, description: string, itemCost: ItemCost) {
+    image: string;
+    weight: number;
+    tier:Tier;
+    cost: ItemCost;
+    constructor(
+        id: string, 
+        itemType: ItemType, 
+        name: string, 
+        description: string,
+        image: string,
+        weight: number,
+        tier: Tier,
+        cost: ItemCostInterface
+    ) {
         this.id = id;
         this.itemType = itemType;
         this.name = name;
         this.description = description;
-        this.itemCost = itemCost;
+        this.image = image;
+        this.weight = weight;
+        this.tier = tier;
+        this.cost = new ItemCost(cost.baseCost, cost.bonusCost);
     }
 }
 

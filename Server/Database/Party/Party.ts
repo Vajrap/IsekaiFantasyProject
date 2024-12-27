@@ -18,5 +18,5 @@ export async function createPartyTableIfNotExist() {
         isTraveling BOOLEAN DEFAULT FALSE
     `;
 
-    await createTableIfNotExists(tableName, tableStructure, [], 'partyID', false);
+    await createTableIfNotExists(tableName, tableStructure, [], 'partyID');
 }

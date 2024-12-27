@@ -3,8 +3,6 @@ import { CharacterManager } from "./CharacterManager";
 import { PartyManager } from "./PartyManager";
 import { db } from "../Database";
 import { LocationManager } from "./LocationManager";
-import { CharacterArchetype } from "../Entities/Character/Subclasses/CharacterArchetype";
-import { Character } from "../Entities/Character/Character";
 import { BattleManager } from "./Battle/BattleManager";
 import { createCharacterTableIfNotExists } from "../Database/Character/Characters";
 import { createItemResourceTableIfNotExists } from "../Database/Item/Resource/resource";
@@ -15,6 +13,8 @@ import { createSkillTableIfNotExists } from "../Database/Skill/skill";
 import { createUsersTableIfNotExist } from "../Database/User/CreateUsersTableIfNotExist";
 import { createPartyTableIfNotExist } from "../Database/Party/Party";
 import { Party } from "../Entities/Party/Party";
+import { createCharacterFromDB } from "../Entities/Character/createCharacterFromDB";
+import { CharacterDB } from "../Database/Character/CharacterDB";
 
 export class Game {
     characterManager: CharacterManager = new CharacterManager();
@@ -85,13 +85,17 @@ export class Game {
         */
         await this.loadGameTimeFromDB();
         await this.loadItemsFromDB();
-        await this.loadNPCFromDB();
-        await this.loadMOBFromDB();
+        await this.loadCharactersFromDB();
         await this.loadLocationsFromDB();
         await this.loadQuestsFromDB();
         await this.loadDialoguesFromDB();
         await this.loadPartiesFromDB();
         this.gameTime.startTiming();
+
+        console.log(`Server is up and running at ${new Date().toLocaleString()}`);
+        console.log(`In game characters loaded: ${this.characterManager.characters.length} characters`);
+        console.log(`In game parties loaded: ${this.partyManager.parties.length} parties`);
+        
     }
 
     //MARK: DATABASE METHODS
@@ -152,87 +156,21 @@ export class Game {
     }
 
     //TODO: Implement the following methods
-    private async loadNPCFromDB() {
+    private async loadCharactersFromDB() {
         try {
             await createCharacterTableIfNotExists();
     
-            const characters = await db.readAll('Characters');
+            const characterDBs: CharacterDB[] = await db.readAll('Characters');
     
-            for (const character of characters) {
+            for (const characterDB of characterDBs) {
                 // Parse the complex data that was stored as JSON strings in the database
-                const alignment = character.alignment;
-                const attributes = character.attributes;
-                const proficiencies = character.proficiencies;
-                const battlers = character.battlers;
-                const elements = character.elements;
-                const artisans = character.artisans;
-                const equipments = character.equipments;
-                const internals = character.internals;
-                const traits = character.traits;
-                const skills = character.skills;
-                const activeSkills = character.activeSkills;
-                const itemsBag = character.itemsBag;
-    
-                // Create the CharacterArchetype instance
-                const archeType = new CharacterArchetype({
-                    name: character.name,
-                    gender: character.gender,
-                    id: character.id,
-                    type: character.type,
-                    level: character.level,
-                    portrait: character.portrait,
-                    race: character.race,
-                    background: character.background,
-                    alignment: alignment, // parsed JSON data
-                    mood: character.mood,
-                    energy: character.energy,
-                    fame: character.fame,
-                    gold: character.gold,
-                    exp: character.exp,
-                    isDead: character.isDead === 1 ? true : false,
-                    lastTarget: character.lastTarget,
-                    currentHP: character.currentHP,
-                    currentMP: character.currentMP,
-                    currentSP: character.currentSP,
-                    attributes: attributes, // parsed JSON data
-                    proficiencies: proficiencies, // parsed JSON data
-                    battlers: battlers, // parsed JSON data
-                    elements: elements, // parsed JSON data
-                    artisans: artisans, // parsed JSON data
-                    equipments: equipments, // parsed JSON data
-                    internals: internals, // parsed JSON data
-                    activeInternal: character.activeInternal ? character.activeInternal : null,
-                    traits: traits, // parsed JSON data
-                    skills: skills, // parsed JSON data
-                    activeSkills: activeSkills, // parsed JSON data
-                    position: character.position ? character.position : 0,
-                    itemsBag: itemsBag, // parsed JSON data
-                    baseAC: character.baseAC,
-                    location: character.location,
-                    isSummoned: character.isSummoned === 1 ? true : false,
-                    arcaneAptitude: character.arcaneAptitude
-                });
-    
-                // Create a Character object from CharacterArchetype
-                const newCharacter = new Character(
-                    {
-                        id: character.id,
-                        name: character.name,
-                        gender: character.gender,
-                        portrait: character.portrait,
-                    }
-                );
-    
+                const character = await createCharacterFromDB(characterDB);
                 // Add the new character to the character manager
-                this.characterManager.addCharacter(newCharacter);
+                this.characterManager.addCharacter(character);
             }
         } catch (error) {
             console.error('Error loading NPC from database:', error);
         }
-    }
-    
-    private async loadMOBFromDB() {
-        // Load MOB from database
     }
 
     private async loadItemsFromDB() {

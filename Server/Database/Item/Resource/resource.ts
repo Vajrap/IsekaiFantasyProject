@@ -1,6 +1,7 @@
 import { Tier } from "../../../Utility/Tier";
 import { createTableIfNotExists } from "../../Seeding";
-import { ConsumableEffect } from "../Consumable/consumable";
+// import { ConsumableEffect } from "../Consumable/consumable";
+import { ConsumableEffect } from "../../../Entities/Items/Consumable/ConsumableEffect";
 
 export class ItemResourceInstance {
 	id: string;
@@ -3438,8 +3439,8 @@ export const ItemResourceSeed: ItemResourceInstance[] = [
 		tier: Tier.common,
 		resourceTraits: [],
 		consumable: true,
-		effects: [ConsumableEffect.restoreHealth],
-		baseEffectMagnitude: 10,
+		effects: [],
+		baseEffectMagnitude: 0,
 		baseEffectDuration: 0,
 		consumedAfterUse: true
 	}),
@@ -3455,8 +3456,8 @@ export const ItemResourceSeed: ItemResourceInstance[] = [
 		tier: Tier.common,
 		resourceTraits: [],
 		consumable: true,
-		effects: [ConsumableEffect.regenerateStamina],
-		baseEffectMagnitude: 10,
+		effects: [],
+		baseEffectMagnitude: 0,
 		baseEffectDuration: 0,
 		consumedAfterUse: true
 	}),
@@ -3472,8 +3473,8 @@ export const ItemResourceSeed: ItemResourceInstance[] = [
 		tier: Tier.common,
 		resourceTraits: [],
 		consumable: true,
-		effects: [ConsumableEffect.regenerateStamina],
-		baseEffectMagnitude: 10,
+		effects: [],
+		baseEffectMagnitude: 0,
 		baseEffectDuration: 0,
 		consumedAfterUse: true
 	}),
@@ -3540,8 +3541,8 @@ export const ItemResourceSeed: ItemResourceInstance[] = [
 		tier: Tier.common,
 		resourceTraits: [],
 		consumable: true,
-		effects: [ConsumableEffect.regenerateHealth],
-		baseEffectMagnitude: 10,
+		effects: [],
+		baseEffectMagnitude: 0,
 		baseEffectDuration: 0,
 		consumedAfterUse: true
 	}),
@@ -3643,8 +3644,8 @@ export const ItemResourceSeed: ItemResourceInstance[] = [
 		tier: Tier.uncommon,
 		resourceTraits: [],
 		consumable: true,
-		effects: [ConsumableEffect.regenerateStamina],
-		baseEffectMagnitude: 10,
+		effects: [],
+		baseEffectMagnitude: 0,
 		baseEffectDuration: 0,
 		consumedAfterUse: true
 	}),
@@ -3786,8 +3787,8 @@ export const ItemResourceSeed: ItemResourceInstance[] = [
 		tier: Tier.unique,
 		resourceTraits: [ResourceTrait.alchemy_rejuvenating, ResourceTrait.body_strength],
 		consumable: true,
-		effects: [ConsumableEffect.permanent_strength],
-		baseEffectMagnitude: 1,
+		effects: [],
+		baseEffectMagnitude: 0,
 		baseEffectDuration: 0,
 		consumedAfterUse: true
 	}),
@@ -3804,8 +3805,8 @@ export const ItemResourceSeed: ItemResourceInstance[] = [
 		tier: Tier.divine,
 		resourceTraits: [ResourceTrait.alchemy_burning, ResourceTrait.alchemy_rejuvenating],
 		consumable: true,
-		effects: [ConsumableEffect.arcaneaptitude_plus],
-		baseEffectMagnitude: 5,
+		effects: [],
+		baseEffectMagnitude: 0,
 		baseEffectDuration: 0,
 		consumedAfterUse: true
 	}),

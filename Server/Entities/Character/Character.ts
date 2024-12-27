@@ -16,7 +16,7 @@ import { CharacterAlignment } from "./Subclasses/CharacterAlignment";
 import { CharacterType } from "./Subclasses/CharacterType";
 import { Trait, TraitRepository } from "../Traits/Trait";
 import { TraitEnum } from "../Traits/TraitEnums";
-import { ArmorDefense } from "../Items/Equipments/ArmorDefense";
+import { ArmorDefense } from "../Items/Equipments/InterfacesAndEnums/ArmorDefense";
 import { SkillRepository } from "../Skills/SkillRepository";
 import { CharacterArcaneAptitude } from "./Subclasses/CharacterArcaneAptitude";
 import {
@@ -2528,7 +2528,7 @@ export class Character {
 	}
 
 	//MARK: EQUIPMENTS
-	equip(
+	async equip(
 		position:
 			| "mainHand"
 			| "offHand"
@@ -2537,8 +2537,37 @@ export class Character {
 			| "headWear"
 			| "necklace"
 			| "ring",
-		equipment: GearInstance
-	): Character {
+		equipment: string
+	): Promise<Character> {
+
+		let equipmentInstance;
+
+		switch (position) {
+			case "mainHand":
+				equipmentInstance = await db.getWeapon(equipment);
+				break;
+			case "offHand":
+				equipmentInstance = await db.getWeapon(equipment);
+				break;
+			case "armor":
+				equipmentInstance = await db.getArmor(equipment);
+				break;
+			case "cloth":
+				equipmentInstance = await db.getArmor(equipment);
+				break;
+			case "headWear":
+				equipmentInstance = await db.getArmor(equipment);
+				break;
+			case "necklace":
+				equipmentInstance = await db.getAccessory(equipment);
+				break;
+			case "ring":
+				equipmentInstance = await db.getAccessory(equipment);
+				break;
+		}
+		
+		if (equipmentInstance === undefined || equipmentInstance === null) { throw new Error(`Equipment ${equipment} not found in database!`) }
+
 		if (this.equipments[position] !== null) {
 			this.unequip(position);
 		}
@@ -2551,7 +2580,7 @@ export class Character {
 					return this;
 				}
 				if (
-					equipment.attackStats?.handle === 2 &&
+					equipmentInstance.attackStats?.handle === 2 &&
 					this.equipments.offHand !== null
 				) {
 					//can't equip this
@@ -2564,7 +2593,7 @@ export class Character {
 					return this;
 				}
 				if (
-					equipment.attackStats?.handle === 2 &&
+					equipmentInstance.attackStats?.handle === 2 &&
 					this.equipments.mainHand !== null
 				) {
 					//can't equip this
@@ -2574,16 +2603,16 @@ export class Character {
 		}
 
 		// Apply ArcaneAptitude
-		if (equipment.arcaneAptitude > 0) {
-			this.arcaneAptitude.increaseAptitude(equipment.arcaneAptitude)
-		} else if (equipment.arcaneAptitude < 0) {
-			this.arcaneAptitude.decreaseAptitude(-(equipment.arcaneAptitude))
+		if (equipmentInstance.arcaneAptitude > 0) {
+			this.arcaneAptitude.increaseAptitude(equipmentInstance.arcaneAptitude)
+		} else if (equipmentInstance.arcaneAptitude < 0) {
+			this.arcaneAptitude.decreaseAptitude(-(equipmentInstance.arcaneAptitude))
 		}
 
 		// Apply Attack Bonuses
-		if (equipment.attackStats?.bonus != null) {
-			for (const stat in equipment.attackStats.bonus) {
-				const bonusValue = equipment.attackStats.bonus[stat as keyof typeof equipment.attackStats.bonus];
+		if (equipmentInstance.attackStats?.bonus != null) {
+			for (const stat in equipmentInstance.attackStats.bonus) {
+				const bonusValue = equipmentInstance.attackStats.bonus[stat as keyof typeof equipmentInstance.attackStats.bonus];
 				if (bonusValue && this.status.battlers.hasOwnProperty(stat)) {
 					this.status.battlers[stat as keyof typeof this.status.battlers].bonus += bonusValue;
 				}
@@ -2591,9 +2620,9 @@ export class Character {
 		}
 
 		// Applying Attack Stats
-		if (equipment.attackStats?.bonus != null) {
-			for (const stat in equipment.attackStats.bonus) {
-				const bonusValue = equipment.attackStats.bonus[stat as keyof typeof equipment.attackStats.bonus];
+		if (equipmentInstance.attackStats?.bonus != null) {
+			for (const stat in equipmentInstance.attackStats.bonus) {
+				const bonusValue = equipmentInstance.attackStats.bonus[stat as keyof typeof equipmentInstance.attackStats.bonus];
 				if (bonusValue != null) {
 					if (
 						stat === "order" ||
@@ -2616,9 +2645,9 @@ export class Character {
 		}
 
 		// Apply defense stats
-		if (equipment.defenseStats != null) {
-			for (const stat in equipment.defenseStats) {
-				const defenseValue = equipment.defenseStats[stat as keyof typeof equipment.defenseStats];
+		if (equipmentInstance.defenseStats != null) {
+			for (const stat in equipmentInstance.defenseStats) {
+				const defenseValue = equipmentInstance.defenseStats[stat as keyof typeof equipmentInstance.defenseStats];
 
 				if (defenseValue != null){
 					if (this.status.battlers.hasOwnProperty(stat)) {
@@ -2630,7 +2659,7 @@ export class Character {
 			}
 		}
 
-		this.equipments[position] = equipment;
+		this.equipments[position] = equipmentInstance;
 
 		return this;
 	}
@@ -2968,37 +2997,6 @@ export class Character {
 	
 }
 
-// export class PlayerCharacter extends Character {
-// 	bagSize: number;
-// 	storyFlags: StoryFlags;
-// 	constructor(
-// 		name: string,
-// 		gender: "MALE" | "FEMALE",
-// 		race: RaceEnum,
-// 		className: ClassEnum,
-// 		background: BackgroundEnum,
-// 		userID: string,
-// 		portrait: string
-// 	) {
-// 		super(
-// 			{
-// 				id: userID, 
-// 				name: name, 
-// 				gender: gender,
-// 				portrait: portrait,
-// 			}
-// 		);
-// 		this.type = CharacterType.humanoid;
-// 		this.bagSize = 15;
-// 		this.storyFlags = new StoryFlags();
-// 		this.gold = 50;
-
-// 		setCharacterStatus(this, className, race, background);
-// 		this.setBodyValue();
-// 	}
-// }
-
-
 function switchClass(selectedClass?: ClassEnum): CharacterClass | null {
 		switch (selectedClass) {
 			case ClassEnum.CLERIC:
@@ -3176,20 +3174,16 @@ export async function setCharacterStatus(
 				character.moveCardToBattle(skill.skill.id);
 			}
 			if (characterClass.gears.mainHand != null) {
-				let mainHand = await db.getWeapon(characterClass.gears.mainHand);
-				character.equip("mainHand", mainHand);
+				character.equip("mainHand", characterClass.gears.mainHand);
 			}
 			if (characterClass.gears.offHand != null) {
-				let offHand = await db.getWeapon(characterClass.gears.offHand);
-				character.equip("offHand", offHand);
+				character.equip("offHand", characterClass.gears.offHand);
 			}
 			if (characterClass.gears.armor != null) {
-				let armor = await db.getArmor(characterClass.gears.armor);
-				character.equip("armor", armor);
+				character.equip("armor", characterClass.gears.armor);
 			}
 			if (characterClass.gears.cloth != null) {
-				let cloth = await db.getArmor(characterClass.gears.cloth);
-				character.equip("cloth", cloth);
+				character.equip("cloth", characterClass.gears.cloth);
 			}
 			if (characterClass.traits.length > 0) {
 				for (const traitID of characterClass.traits) {
@@ -3231,4 +3225,3 @@ export async function setCharacterStatus(
 
 	return character;
 }
-

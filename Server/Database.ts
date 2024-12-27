@@ -203,6 +203,7 @@ export class DB {
 
     //MARK: Equipments
     async getWeapon(weapon: string): Promise<GearInstance> {
+        console.log(`getting weapon with id ${weapon}`);
         const weaponObj = await this.read<{
             defenseStats?: any;
             attackStats?: any;
@@ -210,6 +211,7 @@ export class DB {
             [key: string]: any;
         }>('Gears', 'id', weapon);
         if (weaponObj) {
+            console.log(`weapon get with name ${weaponObj.name}`);
             // Instantiate and return a GearInstance object
             return new GearInstance({
                 id: weaponObj.id,

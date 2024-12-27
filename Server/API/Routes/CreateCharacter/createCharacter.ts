@@ -10,11 +10,11 @@ import { db } from '../../../Database';
 import { Party } from '../../../Entities/Party/Party';
 import { Result, success, failure } from '../../../../Common/Lib/Result'
 import { Character, setCharacterStatus } from '../../../Entities/Character/Character';
-import { CharacterDB } from '../../../Database/Character/Characters';
+import { CharacterDB } from '../../../Database/Character/CharacterDB';
 
 export async function createCharacterHandler(    
     characterName: string,
-    portrait: string,beautiful 
+    portrait: string, 
     race: RaceEnum,
     className: ClassEnum,
     background: BackgroundEnum,
@@ -142,7 +142,6 @@ async function createAndSaveCharacter(
             level: skill.level,
             exp: skill.exp,
         })),
-        internalBuffs: character.internalBuffs,
         position: character.position,
         itemsBag: {}, // Assuming `itemsBag` is an object with `items`
         baseAC: character.baseAC,

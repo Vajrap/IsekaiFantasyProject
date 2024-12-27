@@ -10,5 +10,5 @@ export async function createUsersTableIfNotExist() {
         tokenExpiresAt TIMESTAMP
     `;
 
-    await createTableIfNotExists(tableName, tableStructure, [], 'username', false);
+    await createTableIfNotExists(tableName, tableStructure, [], 'username');
 }
