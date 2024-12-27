@@ -1,4 +1,4 @@
-import { WeaponType } from "../../../Utility/Enum/EquipmentTypes";
+import { WeaponType } from "../../../../Common/Enums/Item/EquipmentTypes";
 
 export class SkillEquipmentRequirement {
     weapon?: string[];

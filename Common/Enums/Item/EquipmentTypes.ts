@@ -11,14 +11,6 @@ export enum ArmorType {
     heavy = 'heavy'
 }
 
-export enum AccessoryType {
-    ring = 'ring',
-    necklace = 'necklace',
-    earring = 'earring',
-    bracelet = 'bracelet'
-}
-
-
 export enum GearType {
     weapon = 'weapon',
     armor = 'armor',

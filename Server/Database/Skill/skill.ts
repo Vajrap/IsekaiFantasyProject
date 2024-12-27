@@ -3,13 +3,13 @@ import { SkillEquipmentRequirement } from "../../Entities/Skills/SubClasses/Skil
 import { SkillLearningRequirement } from "../../Entities/Skills/SubClasses/SkillLearningRequirement";
 import { Tier } from "../../Utility/Tier";
 import { PreferredPositionEnum, SkillActionObject, SkillActionSubType, SkillActionType, SkillActiveEffect, SkillApplyEffect } from "../../Entities/Skills/SubClasses/SkillActiveEffect";
-import { FundamentalElementTypes } from "../../Utility/Enum/ElementTypes";
-import { BuffsAndDebuffsEnum, TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../Utility/Enum/TargetTypes";
-import { DamageTypes } from "../../Utility/Enum/DamageTypes";
-import { CharacterStatusEnum } from "../../Utility/Enum/CharacterStatusTypes";
+import { FundamentalElementTypes } from "../../../Common/Enums/ElementTypes";
+import { BuffsAndDebuffsEnum, TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../Common/Enums/TargetTypes";
+import { DamageTypes } from "../../../Common/Enums/DamageTypes";
+import { CharacterStatusEnum } from "../../../Common/Enums/Character/CharacterStatusTypes";
 import { createTableIfNotExists } from "../Seeding";
-import { DiceEnum } from "../../Utility/Enum/DamageDIce";
-import { WeaponType } from "../../Utility/Enum/EquipmentTypes";
+import { DiceEnum } from "../../../Common/DamageDIce";
+import { WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
 import { TraitEnum } from "../../Entities/Traits/TraitEnums";
 import { SkillInternalType } from "../../Entities/Skills/SubClasses/SkillInternalType";
 

@@ -4,7 +4,7 @@ import { ItemResourceInstance} from "../../Database/Item/Resource/resource";
 import { AttributeEnum } from "../../Entities/Character/Subclasses/CharacterDataEnum";
 import { CharacterStatus } from "../../Entities/Character/Subclasses/CharacterStatus";
 import { Dice } from "../../Utility/Dice";
-import { GearType, WeaponType } from "../../Utility/Enum/EquipmentTypes";
+import { GearType, WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
 import { Tier } from "../../Utility/Tier";
 import { GearArchetype } from "./GearArcheType";
 import { calculateFinalTier, calculateSuccessRate, generateUniqueId } from "./helper";

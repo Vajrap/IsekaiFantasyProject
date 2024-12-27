@@ -1,7 +1,7 @@
 import { Dice } from "../../../Utility/Dice";
-import { CharacterStatusEnum } from "../../../Utility/Enum/CharacterStatusTypes";
-import { DiceEnum } from "../../../Utility/Enum/DamageDIce";
-import { ElementTypes, FundamentalElementTypes } from "../../../Utility/Enum/ElementTypes";
+import { CharacterStatusEnum } from "../../../../Common/Enums/Character/CharacterStatusTypes";
+import { DiceEnum } from "../../../../Common/DamageDIce";
+import { ElementTypes, FundamentalElementTypes } from "../../../../Common/Enums/ElementTypes";
 import { CharacterStatusInterface } from "../../../../Common/RequestResponse/characterWS";
 
 export class CharacterStatus {

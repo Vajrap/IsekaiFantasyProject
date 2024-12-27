@@ -1,9 +1,9 @@
 import { Dice } from "../../Utility/Dice";
 import { Character } from "../Character/Character";
-import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../Utility/Enum/TargetTypes";
-import { CharacterStatusEnum } from "../../Utility/Enum/CharacterStatusTypes";
-import { LocationActionEnum } from "../../Utility/Enum/LocationActions+Events";
-import { DiceEnum } from "../../Utility/Enum/DamageDIce";
+import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../Common/Enums/TargetTypes";
+import { CharacterStatusEnum } from "../../../Common/Enums/Character/CharacterStatusTypes";
+import { LocationActionEnum } from "../../../Common/Enums/Map/LocationActions+Events";
+import { DiceEnum } from "../../../Common/DamageDIce";
 
 export class Party {
 	partyID: string;

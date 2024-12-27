@@ -13,7 +13,7 @@ import { Dice } from "../../../Utility/Dice"
 import { K } from "../../../Utility/Constants"
 import { ActionDetails, TargetSkillEffect, ActorSkillEffect } from "../../../API/BattleReportDTO"
 import { Tier } from "../../../Utility/Tier"
-import { DamageTypes } from "../../../Utility/Enum/DamageTypes"
+import { DamageTypes } from "../../../../Common/Enums/DamageTypes"
 
 //MARK: Fighter skills
 /*

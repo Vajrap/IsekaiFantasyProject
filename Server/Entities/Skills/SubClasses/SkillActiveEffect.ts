@@ -1,7 +1,7 @@
-import { CharacterStatusEnum } from "../../../Utility/Enum/CharacterStatusTypes";
-import { DiceEnum } from "../../../Utility/Enum/DamageDIce";
-import { DamageTypes } from "../../../Utility/Enum/DamageTypes";
-import { BuffsAndDebuffsEnum, TargetType } from "../../../Utility/Enum/TargetTypes";
+import { CharacterStatusEnum } from "../../../../Common/Enums/Character/CharacterStatusTypes";
+import { DiceEnum } from "../../../../Common/DamageDIce";
+import { DamageTypes } from "../../../../Common/Enums/DamageTypes";
+import { BuffsAndDebuffsEnum, TargetType } from "../../../../Common/Enums/TargetTypes";
 import { TraitEnum } from "../../Traits/TraitEnums";
 
 export class SkillActiveEffect {

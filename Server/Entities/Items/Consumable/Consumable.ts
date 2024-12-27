@@ -1,5 +1,5 @@
 import { Item } from "../Items";
-import { ItemType } from "../../../Utility/Enum/EquipmentTypes";
+import { ItemType } from "../../../../Common/Enums/Item/EquipmentTypes";
 import { ConsumableEffect } from "./ConsumableEffect";
 import { ConsumableType } from "../../../Database/Item/Consumable/consumable";
 import { Tier } from "../../../Utility/Tier";

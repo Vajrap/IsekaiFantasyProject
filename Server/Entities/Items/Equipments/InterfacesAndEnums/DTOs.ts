@@ -1,4 +1,4 @@
-import { EquipmentType, WeaponType } from "../../../../Utility/Enum/EquipmentTypes";
+import { EquipmentType, WeaponType } from "../../../../../Common/Enums/Item/EquipmentTypes";
 import { Tier } from "../../../../Utility/Tier";
 import { TraitEnum } from "../../../Traits/TraitEnums";
 import { ItemCostInterface } from "../../ItemCost";
@@ -42,4 +42,17 @@ export interface ClothDTO {
     arcaneAptitude: number,
     specialTrait: TraitEnum[],
     defenseStats: Partial<typeof defaultDefenseStats>
+}
+
+export interface AccessoryDTO {
+    id: string,
+    name: string,
+    description: string,
+    image: string,
+    cost: ItemCostInterface,
+    weight: number,
+    tier: Tier,
+    material: string,
+    specialTrait: TraitEnum[],
+
 }

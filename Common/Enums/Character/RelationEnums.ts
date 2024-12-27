@@ -21,17 +21,6 @@ export enum RelationEnum {
     ExLover = 'ExLover',                  // Past romantic partner
     ForbiddenLove = 'ForbiddenLove',      // Taboo or risky relationship
     
-    // Sensual/Adult relationships
-    Fling = 'Fling',                      // Brief sexual encounter
-    OneNightStand = 'OneNightStand',      // Single intimate encounter
-    FriendsWithBenefits = 'FriendsWithBenefits', // Casual, ongoing arrangement
-    Mistress = 'Mistress',                // Secret extramarital partner
-    Courtesan = 'Courtesan',              // Professional or transactional intimacy
-    Dominant = 'Dominant',                // BDSM dynamic (dom role)
-    Submissive = 'Submissive',            // BDSM dynamic (sub role)
-    KinkPartner = 'KinkPartner',          // Mutual exploration of desires
-    LustInterest = 'LustInterest',        // Physical attraction without emotional depth
-
     // Complex dynamics
     Betrayer = 'Betrayer',
     Nemesis = 'Nemesis',

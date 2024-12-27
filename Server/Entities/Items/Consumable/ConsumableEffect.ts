@@ -1,5 +1,4 @@
-import { CharacterStatusEnum } from "../../../Utility/Enum/CharacterStatusTypes";
-
+import { CharacterStatusEnum } from "../../../../Common/Enums/Character/CharacterStatusTypes";
 
 export interface ConsumableEffect {
     effectType: "permanent" | "temporary";

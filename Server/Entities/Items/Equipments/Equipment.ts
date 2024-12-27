@@ -1,6 +1,6 @@
-import { DiceEnum } from "../../../Utility/Enum/DamageDIce";
-import { DamageTypes } from "../../../Utility/Enum/DamageTypes";
-import { EquipmentType, GearType, ItemType, WeaponType } from "../../../Utility/Enum/EquipmentTypes";
+import { DiceEnum } from "../../../../Common/DamageDIce";
+import { DamageTypes } from "../../../../Common/Enums/DamageTypes";
+import { EquipmentType, GearType, ItemType, WeaponType } from "../../../../Common/Enums/Item/EquipmentTypes";
 import { Tier } from "../../../Utility/Tier";
 import { AttributeEnum } from "../../Character/Subclasses/CharacterDataEnum";
 import { TraitEnum } from "../../Traits/TraitEnums";

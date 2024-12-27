@@ -1,5 +1,5 @@
-import { DiceEnum } from "../../../../Utility/Enum/DamageDIce";
-import { DamageTypes } from "../../../../Utility/Enum/DamageTypes";
+import { DiceEnum } from "../../../../../Common/DamageDIce";
+import { DamageTypes } from "../../../../../Common/Enums/DamageTypes";
 import { AttributeEnum } from "../../../Character/Subclasses/CharacterDataEnum";
 import { PreferredPosition } from "./PreferredPosition";
 

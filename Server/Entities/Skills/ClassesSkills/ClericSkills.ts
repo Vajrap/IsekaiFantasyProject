@@ -6,10 +6,10 @@ import { SkillConsume, SkillProduce } from "../SubClasses/SkillConsume"
 import { ElementConsume, ElementProduce } from "../SubClasses/SkillConsume"
 import { TraitEnum } from "../../Traits/TraitEnums"
 import { Tier } from "../../../Utility/Tier"
-import { DamageTypes } from "../../../Utility/Enum/DamageTypes"
-import { FundamentalElementTypes } from "../../../Utility/Enum/ElementTypes"
-import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../Utility/Enum/TargetTypes"
-import { CharacterStatusEnum } from "../../../Utility/Enum/CharacterStatusTypes"
+import { DamageTypes } from "../../../../Common/Enums/DamageTypes"
+import { FundamentalElementTypes } from "../../../../Common/Enums/ElementTypes"
+import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../../Common/Enums/TargetTypes"
+import { CharacterStatusEnum } from "../../../../Common/Enums/Character/CharacterStatusTypes"
 
 //MARK: Cleric Skills
 /*

@@ -1,5 +1,5 @@
 import { TraitEnum } from "../../../../Entities/Traits/TraitEnums";
-import { EquipmentType, GearType } from "../../../../Utility/Enum/EquipmentTypes";
+import { EquipmentType, GearType } from "../../../../../Common/Enums/Item/EquipmentTypes";
 import { Tier } from "../../../../Utility/Tier";
 import { GearInstance } from "../../../../Entities/Items/GearInstance/GearInstance";
 

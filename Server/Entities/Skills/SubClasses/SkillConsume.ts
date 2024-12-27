@@ -1,4 +1,4 @@
-import { FundamentalElementTypes } from "../../../Utility/Enum/ElementTypes";
+import { FundamentalElementTypes } from "../../../../Common/Enums/ElementTypes";
 
 export class SkillConsume {
     hp: number[];

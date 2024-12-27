@@ -4,12 +4,12 @@ import { SkillEquipmentRequirement } from "../SubClasses/SkillEquipmentRequireme
 import { ElementConsume, SkillConsume, SkillProduce } from "../SubClasses/SkillConsume";
 import { ElementProduce } from "../SubClasses/SkillConsume";
 import { Tier } from "../../../Utility/Tier";
-import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../Utility/Enum/TargetTypes";
-import { DamageTypes } from "../../../Utility/Enum/DamageTypes";
-import { FundamentalElementTypes } from "../../../Utility/Enum/ElementTypes";
-import { CharacterStatusEnum } from "../../../Utility/Enum/CharacterStatusTypes";
+import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../../Common/Enums/TargetTypes";
+import { DamageTypes } from "../../../../Common/Enums/DamageTypes";
+import { FundamentalElementTypes } from "../../../../Common/Enums/ElementTypes";
+import { CharacterStatusEnum } from "../../../../Common/Enums/Character/CharacterStatusTypes";
 import { SkillActiveEffect, SkillActionObject, SkillActionSubType, SkillActionType } from "../SubClasses/SkillActiveEffect";
-import { DiceEnum } from "../../../Utility/Enum/DamageDIce";
+import { DiceEnum } from "../../../../Common/DamageDIce";
 import { TraitEnum } from "../../Traits/TraitEnums";
 import { SkillInternalType } from "../SubClasses/SkillInternalType";
 

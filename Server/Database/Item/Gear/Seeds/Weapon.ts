@@ -1,10 +1,10 @@
 import { AttributeEnum } from "../../../../Entities/Character/Subclasses/CharacterDataEnum";
-import { GearType, WeaponType } from "../../../../Utility/Enum/EquipmentTypes";
+import { GearType, WeaponType } from "../../../../../Common/Enums/Item/EquipmentTypes";
 import { Tier } from "../../../../Utility/Tier";
 import { GearInstance } from "../../../../Entities/Items/GearInstance/GearInstance";
 import { TraitEnum } from "../../../../Entities/Traits/TraitEnums";
-import { DiceEnum } from "../../../../Utility/Enum/DamageDIce";
-import { DamageTypes } from "../../../../Utility/Enum/DamageTypes";
+import { DiceEnum } from "../../../../../Common/DamageDIce";
+import { DamageTypes } from "../../../../../Common/Enums/DamageTypes";
 
 export enum GearSeedWeaponEnum {
 	//Common

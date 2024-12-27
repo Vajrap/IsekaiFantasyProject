@@ -1,4 +1,4 @@
-import { GearType } from "../../../../Utility/Enum/EquipmentTypes";
+import { GearType } from "../../../../../Common/Enums/Item/EquipmentTypes";
 import { Equipment } from "../Equipment";
 import { defaultDefenseStats } from "../InterfacesAndEnums/ArmorDefense";
 import { ArmorDTO } from "../InterfacesAndEnums/DTOs";

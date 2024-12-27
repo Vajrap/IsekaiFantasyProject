@@ -1,7 +1,7 @@
 import { Character } from "../../Entities/Character/Character";
-import { LocationName } from "../../Utility/Enum/LocationNames";
-import { LocationActionEnum } from "../../Utility/Enum/LocationActions+Events";
-import { RegionNameEnum } from "../../Utility/Enum/RegionNameEnum";
+import { LocationName } from "../../../Common/Enums/Map/LocationNames";
+import { LocationActionEnum } from "../../../Common/Enums/Map/LocationActions+Events";
+import { RegionNameEnum } from "../../../Common/Enums/Map/RegionNameEnum";
 import { Party } from "../Party/Party";
 
 export class GameLocation {

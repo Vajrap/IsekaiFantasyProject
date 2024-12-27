@@ -1,5 +1,5 @@
 import { CharacterItemInBag } from "../../../Common/RequestResponse/characterWS";
-import { ItemType } from "../../Utility/Enum/EquipmentTypes";
+import { ItemType } from "../../../Common/Enums/Item/EquipmentTypes";
 import { Tier } from "../../Utility/Tier";
 import { ItemCost, ItemCostInterface } from "./ItemCost";
 

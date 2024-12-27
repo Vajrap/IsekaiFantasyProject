@@ -7,7 +7,7 @@ import { db } from "../../Database";
 import { SkillArchetype } from "../../Database/Skill/skill";
 import { CharacterStatus } from "../Character/Subclasses/CharacterStatus";
 import { SkillInternalType } from "./SubClasses/SkillInternalType";
-import { WeaponType } from "../../Utility/Enum/EquipmentTypes";
+import { WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
 
 export class Skill {
     id: string;

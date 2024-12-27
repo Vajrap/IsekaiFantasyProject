@@ -1,6 +1,6 @@
-import { CharacterStatusEnum } from "../../Utility/Enum/CharacterStatusTypes";
-import { EquipmentType, WeaponType } from "../../Utility/Enum/EquipmentTypes";
-import { BuffsAndDebuffsEnum } from "../../Utility/Enum/TargetTypes";
+import { CharacterStatusEnum } from "../../../Common/Enums/Character/CharacterStatusTypes";
+import { EquipmentType, WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
+import { BuffsAndDebuffsEnum } from "../../../Common/Enums/TargetTypes";
 import { TraitEnum } from "../Traits/TraitEnums";
 
 

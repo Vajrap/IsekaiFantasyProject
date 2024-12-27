@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3';
 import { GearInstance } from './Entities/Items/GearInstance/GearInstance';
-import { GearType } from './Utility/Enum/EquipmentTypes';
+import { GearType } from '../Common/Enums/Item/EquipmentTypes';
 
 export class DB {
     private db: sqlite3.Database;

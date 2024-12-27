@@ -1,6 +1,6 @@
 import { ResourceType } from "../../../../Database/Item/Resource/resource";
 import { AttributeEnum } from "../../../../Entities/Character/Subclasses/CharacterDataEnum";
-import { GearType, WeaponType } from "../../../../Utility/Enum/EquipmentTypes";
+import { GearType, WeaponType } from "../../../../../Common/Enums/Item/EquipmentTypes";
 import { Tier } from "../../../../Utility/Tier";
 import { GearArchetype } from "../../GearArcheType";
 

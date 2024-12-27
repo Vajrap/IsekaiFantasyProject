@@ -28,7 +28,7 @@ import {
 	EffectResolverSendObject,
 	EffectReturnObject,
 } from "../../Game/Battle/EffectResolverAndAppender/EffectSend + Receive Objects";
-import { CharacterStatusEnum } from "../../Utility/Enum/CharacterStatusTypes";
+import { CharacterStatusEnum } from "../../../Common/Enums/Character/CharacterStatusTypes";
 import {
 	ArtisanMap,
 	AttributeMap,
@@ -36,12 +36,12 @@ import {
 	CoreElementMap,
 	ProficiencyMap,
 } from "./Subclasses/CharacterDataEnum";
-import { DamageTypes } from "../../Utility/Enum/DamageTypes";
+import { DamageTypes } from "../../../Common/Enums/DamageTypes";
 // import { InternalResponseType } from "../../../Common/ResponseTypes/Internal";
 // import { SkillResponseType } from "../../../Common/ResponseTypes/Skill";
 import { StoryFlags } from "../../Game/StoryEvent/StoryFlags";
 import { getSkillFromDB, Skill } from "../Skills/Skill";
-import { EquipmentType, WeaponType } from "../../Utility/Enum/EquipmentTypes";
+import { EquipmentType, WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
 import { db } from "../../Database";
 import { GearInstance } from "../Items/GearInstance/GearInstance";
 import {
@@ -51,9 +51,9 @@ import {
 	SkillActionSubType,
 	SpecialEffectResult,
 } from "../Skills/SubClasses/SkillActiveEffect";
-import { BuffsAndDebuffsEnum } from "../../Utility/Enum/TargetTypes";
+import { BuffsAndDebuffsEnum } from "../../../Common/Enums/TargetTypes";
 import { CharacterBattleContext } from "./CharacterBattleContext";
-import { DiceEnum } from "../../Utility/Enum/DamageDIce";
+import { DiceEnum } from "../../../Common/DamageDIce";
 import { SkillConsume } from "../Skills/SubClasses/SkillConsume";
 import { calculateBaseStat } from "./CalculateHPMPSP";
 import { CharacterClass, class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden } from "../../API/Routes/CreateCharacter/ClassEnum";

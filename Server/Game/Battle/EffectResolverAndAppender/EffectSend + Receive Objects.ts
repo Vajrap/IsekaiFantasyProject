@@ -1,6 +1,6 @@
 import { BuffsAndDebuffs } from "../../../Entities/Character/Subclasses/BuffsAndDebuffs";
 import { CharacterStatus } from "../../../Entities/Character/Subclasses/CharacterStatus";
-import { DamageTypes } from "../../../Utility/Enum/DamageTypes";
+import { DamageTypes } from "../../../../Common/Enums/DamageTypes";
 
 export class EffectAppenderSendObject {
     status: CharacterStatus;

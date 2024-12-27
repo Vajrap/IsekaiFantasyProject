@@ -1,4 +1,4 @@
-import { EquipmentType } from "../../../../Utility/Enum/EquipmentTypes";
+import { EquipmentType } from "../../../../../Common/Enums/Item/EquipmentTypes";
 import { ArmorDTO } from "../InterfacesAndEnums/DTOs";
 import { EquipmentClass } from "../InterfacesAndEnums/EquipmentClass";
 import { Armor } from "./Armor";

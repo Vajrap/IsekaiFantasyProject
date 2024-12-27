@@ -1,6 +1,6 @@
 import { GameLocation } from './GameLocation'
-import { LocationName } from '../../Utility/Enum/LocationNames'
-import { RegionNameEnum } from '../../Utility/Enum/RegionNameEnum'
+import { LocationName } from '../../../Common/Enums/Map/LocationNames'
+import { RegionNameEnum } from '../../../Common/Enums/Map/RegionNameEnum'
 
 export const location_OceanTide = new GameLocation(
     LocationName.OceanTide,

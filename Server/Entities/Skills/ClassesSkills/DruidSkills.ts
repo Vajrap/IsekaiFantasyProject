@@ -12,7 +12,7 @@ import { K } from "../../../Utility/Constants"
 import { Dice } from "../../../Utility/Dice"
 import { ActionDetails, ActorSkillEffect, TargetSkillEffect } from "../../../API/BattleReportDTO"
 import { Tier } from "../../../Utility/Tier"
-import { DamageTypes } from "../../../Utility/Enum/DamageTypes"
+import { DamageTypes } from "../../../../Common/Enums/DamageTypes"
 import { CharacterBattleContext } from "../../Character/CharacterBattleContext"
 import { SkillRepository } from "../SkillRepository"
 

@@ -1,4 +1,3 @@
-// enum for damage dice that already included the number of dice like 1d4, but we can't start eum with number, how should we handle this?
 export enum DiceEnum {
     Weapon_Physical = "weapon_physical", // for skill that depends on weapon's damage dice
     Weapon_Magical = "weapon_magical", // for skill that depends on weapon's magical damage dice
@@ -57,7 +56,7 @@ export enum DiceEnum {
     FourD18 = "4d18",
     FourD20 = "4d20",
 
-    //Special rolls for leveling up
+    //Special rolls
     EightD6 = "8d6",
     TwelveD6 = "12d6",
     ThirteenD6 = "13d6",
