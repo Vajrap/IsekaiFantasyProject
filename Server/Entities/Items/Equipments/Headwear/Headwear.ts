@@ -3,16 +3,16 @@ import { Equipment } from "../Equipment";
 import { defaultDefenseStats } from "../InterfacesAndEnums/ArmorDefense";
 import { ArmorDTO } from "../InterfacesAndEnums/DTOs";
 
-export class Armor extends Equipment {
+export class HeadWear extends Equipment {
     constructor(dto: ArmorDTO) {
         const updatedDto = {
             ...dto,
-            equipmentType: EquipmentType.armor,
+            equipmentType: EquipmentType.headWear,
             defenseStats: { ...defaultDefenseStats, ...dto.defenseStats },
             accessoryType: null,
             weaponType: null,
             weaponSpecificType: null,
-        };
+        };    
         super(updatedDto);
     }
 }

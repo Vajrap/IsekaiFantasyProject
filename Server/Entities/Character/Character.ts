@@ -41,9 +41,8 @@ import { DamageTypes } from "../../../Common/Enums/DamageTypes";
 // import { SkillResponseType } from "../../../Common/ResponseTypes/Skill";
 import { StoryFlags } from "../../Game/StoryEvent/StoryFlags";
 import { getSkillFromDB, Skill } from "../Skills/Skill";
-import { EquipmentType, WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
+import { AccessoryType, ArmorType, EquipmentType, WeaponSpecificType, WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
 import { db } from "../../Database";
-import { GearInstance } from "../Items/GearInstance/GearInstance";
 import {
 	SkillActionObject,
 	SkillApplyEffect,
@@ -84,6 +83,8 @@ import {
     backgroundWanderingMusician 
 } from '../../../Common/Entity/raceClassBackground';
 import { CharacterInterface } from "../../../Common/RequestResponse/characterWS";
+import { Weapon } from "../Items/Equipments/Weapon/Weapon";
+import { Armor } from "../Items/Equipments/Armors/Armor";
 
 export class Character {
 	id: string;
@@ -629,10 +630,10 @@ export class Character {
 	private getArmorPentaltyForSpellCastingDamage(): number {
 		let spellDamageMultiPlier = this.equipments.armor?.spellCastingDamageMultiplier || 1;
 
-		let armorClass = this.equipments.armor?.class;
+		let armotType = this.equipments.armor?.armorType;
 
-		if (armorClass != undefined) {
-			switch (armorClass) {
+		if (armotType != undefined) {
+			switch (armotType) {
 				case "light":
 					if (this.traits.includes(
 						TraitRepository.trait_hexbinder_01 || 
@@ -692,10 +693,10 @@ export class Character {
 
 	getArmorPenaltyForSpellCastingHit(): number {
 		let armorPenalty = this.equipments.armor?.spellCastingPenaltyHit || 0; // Default penalty from the armor
-		let armorClass = this.equipments.armor?.class; // 'light', 'medium', or 'heavy'
+		let armorType = this.equipments.armor?.armorType; // 'light', 'medium', or 'heavy'
 	
-		if (armorClass != undefined) {
-			switch (armorClass) {
+		if (armorType != undefined) {
+			switch (armorType) {
 				case "light":
 					if (this.traits.includes(TraitRepository.trait_hexbinder_01 || TraitRepository.trait_hexbinder_02 || TraitRepository.trait_hexbinder_03)) {
 						armorPenalty = Math.max(armorPenalty + 1, 0); // Warlock improves light armor hit up to 0
@@ -1244,22 +1245,20 @@ export class Character {
 			actorID: this.id,
 			actorPosition: this.position,
 			actorEquipment: {
-				mainHand:
-					(this.equipments.mainHand?.specificType as WeaponType) || null,
-				offHand: (this.equipments.offHand?.specificType as WeaponType) || null,
-				cloth: (this.equipments.cloth?.specificType as EquipmentType) || null,
-				armor: (this.equipments.armor?.specificType as EquipmentType) || null,
-				headWear:
-					(this.equipments.headWear?.specificType as EquipmentType) || null,
-				necklace:
-					(this.equipments.necklace?.specificType as EquipmentType) || null,
-				ring: (this.equipments.ring?.specificType as EquipmentType) || null,
+				mainHand: this.equipments.mainHand?.weaponSpecificType ?? null,
+				offHand: this.equipments.offHand?.weaponSpecificType ?? null,
+				cloth: this.equipments.cloth ? ArmorType.cloth : null,
+				armor: this.equipments.armor?.armorType ?? null,
+				headWear: this.equipments.headWear ? EquipmentType.headWear : null,
+				necklace: this.equipments.necklace ? AccessoryType.necklace : null,
+				ring: this.equipments.ring ? AccessoryType.ring : null,
 			},
 			actorStats: this.status.getStats(),
 			actorBuffs: this.buffsAndDebuffs.getBuffsAndDebuffs(),
 			actorTraits: this.getTraits(),
 		};
 	}
+	
 
 	addResourcesFromElementsModifier(): Character {
 		const coreElement: (keyof typeof this.status.elements)[] = [
@@ -1592,37 +1591,37 @@ export class Character {
 		//Additional Damage from proficiency
 		if (isWeaponAttack === true) {
 			switch (this.equipments.mainHand?.specificType) {
-				case WeaponType.axe_broad || WeaponType.axe_great || WeaponType.axe_shepherd || WeaponType.axe_spliitingMaul || WeaponType.axe_war:
+				case WeaponType.axe:
 					baseDamage += this.getModifier(CharacterStatusEnum.axe);
 					break;
-				case WeaponType.sword_bastard || WeaponType.sword_broad || WeaponType.sword_claymore || WeaponType.sword_flamberge || WeaponType.sword_great || WeaponType.sword_jian || WeaponType.sword_long || WeaponType.sword_rapier || WeaponType.sword_short || WeaponType.sword_zweihander:
+				case WeaponType.sword:
 					baseDamage += this.getModifier(CharacterStatusEnum.sword);
 					break;
-				case WeaponType.blade_broadblade || WeaponType.blade_cutlass || WeaponType.blade_dao || WeaponType.blade_falchion || WeaponType.blade_katana || WeaponType.blade_khopesh || WeaponType.blade_machete || WeaponType.blade_randao || WeaponType.blade_saber || WeaponType.blade_scimitar || WeaponType.blade_zhanmadao:
+				case WeaponType.blade:
 					baseDamage += this.getModifier(CharacterStatusEnum.blade);
 					break;
-				case WeaponType.bow_compound || WeaponType.bow_cross || WeaponType.bow_long || WeaponType.bow_compound || WeaponType.bow_short:
+				case WeaponType.bow:
 					baseDamage += this.getModifier(CharacterStatusEnum.bow);
 					break;
-				case WeaponType.dagger_dirk || WeaponType.dagger_khukuri || WeaponType.dagger_knife || WeaponType.dagger_kris || WeaponType.dagger_rondel || WeaponType.dagger_stiletto:
+				case WeaponType.dagger:
 					baseDamage += this.getModifier(CharacterStatusEnum.dagger);
 					break;
-				case WeaponType.mace_club || WeaponType.mace_flail || WeaponType.mace_morningStar || WeaponType.mace_warHammer:
+				case WeaponType.mace:
 					baseDamage += this.getModifier(CharacterStatusEnum.mace);
 					break;
 				case WeaponType.orb:
 					baseDamage += this.getModifier(CharacterStatusEnum.orb);
 					break;
-				case WeaponType.spear_Brandistock || WeaponType.spear_dory || WeaponType.spear_glaive || WeaponType.spear_guisarme || WeaponType.spear_halberd || WeaponType.spear_javelin || WeaponType.spear_ji || WeaponType.spear_partisan || WeaponType.spear_trident:
+				case WeaponType.spear:
 					baseDamage += this.getModifier(CharacterStatusEnum.spear);
 					break;
-				case WeaponType.staff_long || WeaponType.staff_quarter || WeaponType.staff_magic:
+				case WeaponType.staff:
 					baseDamage += this.getModifier(CharacterStatusEnum.staff);
 					break;
-				case WeaponType.tome_bible || WeaponType.tome_grimoire || WeaponType.tome_codex:
+				case WeaponType.tome:
 					baseDamage += this.getModifier(CharacterStatusEnum.tome);
 					break;
-				case WeaponType.wand_magic || WeaponType.wand_scepter:
+				case WeaponType.wand:
 					baseDamage += this.getModifier(CharacterStatusEnum.magicWand);
 					break;
 				// Will this automatically means BareHand?
@@ -2738,7 +2737,7 @@ export class Character {
 
 		// Reduce Defense Stats
 		if (position === "armor") {
-			if (equipment instanceof GearInstance) {
+			if (equipment instanceof Armor ) {
 				for (const defenseType in equipment.defenseStats) {
 					if (defenseType !== null && defenseType !== undefined) {
 						if (this.status.battlers.hasOwnProperty(defenseType)) {
@@ -2758,7 +2757,7 @@ export class Character {
 		return this;
 	}
 
-	getWeapon(): GearInstance | "none" {
+	getWeapon(): Weapon | "none" {
 		return this.equipments.mainHand || this.equipments.offHand || "none";
 	}
 

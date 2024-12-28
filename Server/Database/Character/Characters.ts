@@ -1,13 +1,13 @@
 import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
 import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType";
 import { createTableIfNotExists } from "../Seeding";
-import { NPCCharacterSeed } from "./NPC";
+// import { NPCCharacterSeed } from "./NPC";
 import { RelationEnum } from "../../../Common/Enums/Character/RelationEnums";
 import { CharacterDB } from "./CharacterDB";
 
-export const CharacterSeed: CharacterDB[] = [
-    ...NPCCharacterSeed,
-]
+// export const CharacterSeed: CharacterDB[] = [
+//     ...NPCCharacterSeed,
+// ]
 
 export async function createCharacterTableIfNotExists() {
     const tableName = 'Characters';
@@ -64,5 +64,7 @@ export async function createCharacterTableIfNotExists() {
         .map(([field, type]) => `${field} ${type}`)
         .join(',\n');
 
-    await createTableIfNotExists(tableName, tableStructure, CharacterSeed, 'id');
+    // await createTableIfNotExists(tableName, tableStructure, CharacterSeed, 'id');
+    await createTableIfNotExists(tableName, tableStructure, [], 'id');
+
 }

@@ -1,11 +1,11 @@
-import { WeaponType } from "../../../../Common/Enums/Item/EquipmentTypes";
+import { WeaponSpecificType, WeaponType } from "../../../../Common/Enums/Item/EquipmentTypes";
 
 export class SkillEquipmentRequirement {
     weapon?: string[];
     constructor({
         weapon, 
     }: {
-        weapon?: WeaponType[], 
+        weapon?: WeaponSpecificType[], 
     }) {
         this.weapon = weapon;
     }

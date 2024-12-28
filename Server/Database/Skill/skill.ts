@@ -9,7 +9,7 @@ import { DamageTypes } from "../../../Common/Enums/DamageTypes";
 import { CharacterStatusEnum } from "../../../Common/Enums/Character/CharacterStatusTypes";
 import { createTableIfNotExists } from "../Seeding";
 import { DiceEnum } from "../../../Common/DamageDIce";
-import { WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
+import { WeaponSpecificType } from "../../../Common/Enums/Item/EquipmentTypes";
 import { TraitEnum } from "../../Entities/Traits/TraitEnums";
 import { SkillInternalType } from "../../Entities/Skills/SubClasses/SkillInternalType";
 
@@ -495,27 +495,14 @@ const skillSeed: SkillArchetype[] = [
         requirement: new SkillLearningRequirement({}),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.sword_bastard,
-                WeaponType.sword_broad,
-                WeaponType.sword_claymore,
-                WeaponType.sword_flamberge,
-                WeaponType.sword_great,
-                WeaponType.sword_jian,
-                WeaponType.sword_long,
-                WeaponType.sword_rapier,
-                WeaponType.sword_short,
-                WeaponType.sword_zweihander,
-                WeaponType.blade_broadblade,
-                WeaponType.blade_cutlass,
-                WeaponType.blade_dao,
-                WeaponType.blade_falchion,
-                WeaponType.blade_katana,
-                WeaponType.blade_khopesh,
-                WeaponType.blade_machete,
-                WeaponType.blade_randao,
-                WeaponType.blade_saber,
-                WeaponType.blade_scimitar,
-                WeaponType.blade_zhanmadao,
+                WeaponSpecificType.sword_great,
+                WeaponSpecificType.sword_long,
+                WeaponSpecificType.sword_rapier,
+                WeaponSpecificType.sword_short,
+                WeaponSpecificType.blade_cutlass,
+                WeaponSpecificType.blade_falchion,
+                WeaponSpecificType.blade_katana,
+                WeaponSpecificType.blade_scimitar,
             ]
         }),
         activeEffect: [
@@ -946,10 +933,10 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.shield_buckler, 
-                WeaponType.shield_kite, 
-                WeaponType.shield_round,
-                WeaponType.shield_tower
+                WeaponSpecificType.shield_buckler, 
+                WeaponSpecificType.shield_kite, 
+                WeaponSpecificType.shield_round,
+                WeaponSpecificType.shield_tower
             ]
         }),
         activeEffect: [
@@ -1023,36 +1010,15 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.sword_bastard,
-                WeaponType.sword_broad,
-                WeaponType.sword_claymore,
-                WeaponType.sword_flamberge,
-                WeaponType.sword_great,
-                WeaponType.sword_long,
-                WeaponType.sword_zweihander,
-                WeaponType.axe_broad,
-                WeaponType.axe_great,
-                WeaponType.axe_shepherd,
-                WeaponType.axe_spliitingMaul,
-                WeaponType.axe_war,
-                WeaponType.mace_club,
-                WeaponType.mace_warHammer,
-                WeaponType.blade_broadblade,
-                WeaponType.blade_cutlass,
-                WeaponType.blade_dao,
-                WeaponType.blade_khopesh,
-                WeaponType.blade_khopesh,
-                WeaponType.blade_randao,
-                WeaponType.blade_zhanmadao,
-                WeaponType.spear_Brandistock,
-                WeaponType.spear_dory,
-                WeaponType.spear_glaive,
-                WeaponType.spear_guisarme,
-                WeaponType.spear_halberd,
-                WeaponType.spear_partisan,
-                WeaponType.spear_trident,
-                WeaponType.staff_long,
-                WeaponType.staff_quarter
+                WeaponSpecificType.sword_great,
+                WeaponSpecificType.sword_long,
+                WeaponSpecificType.axe_broad,
+                WeaponSpecificType.axe_great,
+                WeaponSpecificType.blade_cutlass,
+                WeaponSpecificType.spear_dory,
+                WeaponSpecificType.spear_halberd,
+                WeaponSpecificType.staff_long,
+                WeaponSpecificType.staff_quarter
             ]
         }),
         activeEffect: [
@@ -1116,12 +1082,8 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.dagger_dirk,
-                WeaponType.dagger_knife,
-                WeaponType.dagger_khukuri,
-                WeaponType.dagger_kris,
-                WeaponType.dagger_stiletto,
-                WeaponType.dagger_rondel,
+                WeaponSpecificType.dagger_knife,
+                WeaponSpecificType.dagger_stiletto,
             ]
         }),
         activeEffect: [
@@ -1185,12 +1147,8 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.dagger_dirk,
-                WeaponType.dagger_knife,
-                WeaponType.dagger_khukuri,
-                WeaponType.dagger_kris,
-                WeaponType.dagger_stiletto,
-                WeaponType.dagger_rondel,
+                WeaponSpecificType.dagger_knife,
+                WeaponSpecificType.dagger_stiletto,
             ]
         }),
         activeEffect: [
@@ -1327,20 +1285,10 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.sword_broad,
-                WeaponType.sword_long,
-                WeaponType.axe_shepherd,
-                WeaponType.mace_club,
-                WeaponType.blade_broadblade,
-                WeaponType.blade_cutlass,
-                WeaponType.blade_dao,
-                WeaponType.blade_khopesh,
-                WeaponType.dagger_dirk,
-                WeaponType.dagger_knife,
-                WeaponType.dagger_khukuri,
-                WeaponType.dagger_kris,
-                WeaponType.dagger_stiletto,
-                WeaponType.dagger_rondel,
+                WeaponSpecificType.sword_long,
+                WeaponSpecificType.blade_cutlass,
+                WeaponSpecificType.dagger_knife,
+                WeaponSpecificType.dagger_stiletto,
             ]
         }),
         activeEffect: [
@@ -1493,10 +1441,8 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.spear_Brandistock,
-                WeaponType.spear_dory,
-                WeaponType.spear_partisan,
-                WeaponType.spear_trident,
+                WeaponSpecificType.spear_dory,
+                WeaponSpecificType.spear_javelin,
             ]
         }),
         activeEffect: [
@@ -1572,16 +1518,10 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.sword_claymore,
-                WeaponType.sword_great,
-                WeaponType.sword_zweihander,
-                WeaponType.axe_great,
-                WeaponType.axe_spliitingMaul,
-                WeaponType.axe_war,
-                WeaponType.blade_randao,
-                WeaponType.blade_zhanmadao,
-                WeaponType.spear_glaive,
-                WeaponType.spear_halberd
+                WeaponSpecificType.sword_great,
+                WeaponSpecificType.axe_great,
+                WeaponSpecificType.blade_falchion,
+                WeaponSpecificType.spear_halberd,
             ]
         }),
         activeEffect: [
@@ -1722,11 +1662,9 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.bow_long,
-                WeaponType.bow_short,
-                WeaponType.bow_compound,
-                WeaponType.bow_recurve,
-                WeaponType.bow_cross
+                WeaponSpecificType.bow_long,
+                WeaponSpecificType.bow_short,
+                WeaponSpecificType.bow_cross
             ]
         }),
         activeEffect: [
@@ -1790,11 +1728,9 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.bow_long,
-                WeaponType.bow_short,
-                WeaponType.bow_compound,
-                WeaponType.bow_recurve,
-                WeaponType.bow_cross
+                WeaponSpecificType.bow_long,
+                WeaponSpecificType.bow_short,
+                WeaponSpecificType.bow_cross
             ]
         }),
         activeEffect: [
@@ -1873,11 +1809,9 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.bow_long,
-                WeaponType.bow_short,
-                WeaponType.bow_compound,
-                WeaponType.bow_recurve,
-                WeaponType.bow_cross
+                WeaponSpecificType.bow_long,
+                WeaponSpecificType.bow_short,
+                WeaponSpecificType.bow_cross
             ]
         }),
         activeEffect: [
@@ -2896,20 +2830,10 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.sword_broad,
-                WeaponType.sword_long,
-                WeaponType.axe_shepherd,
-                WeaponType.mace_club,
-                WeaponType.blade_broadblade,
-                WeaponType.blade_cutlass,
-                WeaponType.blade_dao,
-                WeaponType.blade_khopesh,
-                WeaponType.dagger_dirk,
-                WeaponType.dagger_knife,
-                WeaponType.dagger_khukuri,
-                WeaponType.dagger_kris,
-                WeaponType.dagger_stiletto,
-                WeaponType.dagger_rondel,
+                WeaponSpecificType.sword_long,
+                WeaponSpecificType.blade_cutlass,
+                WeaponSpecificType.dagger_knife,
+                WeaponSpecificType.dagger_stiletto,
             ]
         }),
         activeEffect: [
@@ -3553,12 +3477,8 @@ const skillSeed: SkillArchetype[] = [
         requirement: new SkillLearningRequirement({ }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.dagger_dirk,
-                WeaponType.dagger_knife,
-                WeaponType.dagger_khukuri,
-                WeaponType.dagger_kris,
-                WeaponType.dagger_stiletto,
-                WeaponType.dagger_rondel,
+                WeaponSpecificType.dagger_knife,
+                WeaponSpecificType.dagger_stiletto,
             ]
         }),
         activeEffect: [
@@ -3628,20 +3548,10 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.sword_broad,
-                WeaponType.sword_long,
-                WeaponType.axe_shepherd,
-                WeaponType.mace_club,
-                WeaponType.blade_broadblade,
-                WeaponType.blade_cutlass,
-                WeaponType.blade_dao,
-                WeaponType.blade_khopesh,
-                WeaponType.dagger_dirk,
-                WeaponType.dagger_knife,
-                WeaponType.dagger_khukuri,
-                WeaponType.dagger_kris,
-                WeaponType.dagger_stiletto,
-                WeaponType.dagger_rondel,
+                WeaponSpecificType.sword_long,
+                WeaponSpecificType.blade_cutlass,
+                WeaponSpecificType.dagger_knife,
+                WeaponSpecificType.dagger_stiletto,
             ]
         }),
         activeEffect: [
@@ -4398,16 +4308,9 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.sword_bastard,
-                WeaponType.sword_broad,
-                WeaponType.sword_claymore,
-                WeaponType.sword_flamberge,
-                WeaponType.sword_great,
-                WeaponType.sword_long,
-                WeaponType.sword_zweihander,
-                WeaponType.sword_jian,
-                WeaponType.sword_rapier,
-                WeaponType.sword_short
+                WeaponSpecificType.sword_great,
+                WeaponSpecificType.sword_long,
+                WeaponSpecificType.sword_short
             ]
         }),
         activeEffect: [
@@ -5294,7 +5197,7 @@ const skillSeed: SkillArchetype[] = [
         }),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
-                WeaponType.blade_katana
+                WeaponSpecificType.blade_katana
             ]
         }),
         activeEffect: [
@@ -5374,7 +5277,7 @@ const skillSeed: SkillArchetype[] = [
     //         preRequireCharacterLevel: 3
     //     }),
     //     equipmentNeeded: new SkillEquipmentRequirement({
-    //         weapon: [WeaponType.bare_hand]
+    //         weapon: [WeaponSpecificType.bare_hand]
     //     }),
     //     activeEffect: [
     //         new SkillActiveEffect(
@@ -5504,7 +5407,7 @@ const skillSeed: SkillArchetype[] = [
     //         preRequireCharacterLevel: 3
     //     }),
     //     equipmentNeeded: new SkillEquipmentRequirement({
-    //         weapon: [WeaponType.staff_magic, WeaponType.wand_magic, WeaponType.orb, WeaponType.tome_codex, WeaponType.tome_bible, WeaponType.tome_grimoire]
+    //         weapon: [WeaponSpecificType.staff_magic, WeaponSpecificType.wand_magic, WeaponSpecificType.orb, WeaponSpecificType.tome_codex, WeaponSpecificType.tome_bible, WeaponSpecificType.tome_grimoire]
     //     }),
     //     activeEffect: [
     //         new SkillActiveEffect(

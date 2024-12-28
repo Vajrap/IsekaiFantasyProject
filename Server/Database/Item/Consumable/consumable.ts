@@ -1,4 +1,4 @@
-import { ConsumableEffect } from "../../../Entities/Items/Consumable/ConsumableEffect";
+import { ConsumableEffect } from "../../../../Common/Enums/Item/ConsumableEffect";
 import { Tier } from "../../../Utility/Tier";
 import { createTableIfNotExists } from "../../Seeding";
 

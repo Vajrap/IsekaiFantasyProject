@@ -1,42 +1,31 @@
 import { Item } from "../Items";
 import { ItemType } from "../../../../Common/Enums/Item/EquipmentTypes";
-import { ConsumableEffect } from "./ConsumableEffect";
+import { ConsumableEffect } from "../../../../Common/Enums/Item/ConsumableEffect";
 import { ConsumableType } from "../../../Database/Item/Consumable/consumable";
-import { Tier } from "../../../Utility/Tier";
-import { ItemCostInterface } from "../ItemCost";
+import { ConsumableDTO } from "../Equipments/InterfacesAndEnums/DTOs";
 
 export class Consumable extends Item {
     consumeType: ConsumableType;
     effects: ConsumableEffect[];
     consumeAfterUse: boolean;
 
-    constructor(
-        id: string, 
-        name: string, 
-        description: string, 
-        consumeType: ConsumableType,
-        image: string,
-        cost: ItemCostInterface,
-        weight: number,
-        tier: Tier,
-        effects: ConsumableEffect[], 
-        consumedAfterUse: boolean
-    ) {
-
+    constructor(dto: ConsumableDTO) {
+        const updatedDto = {
+            ...dto,
+            itemType: ItemType.consumable,
+        }
         super(
-            id, 
-            ItemType.consumable, 
-            name, 
-            description,
-            image, 
-            weight,
-            tier,
-            cost
+            updatedDto.id,
+            updatedDto.itemType,
+            updatedDto.name,
+            updatedDto.description,
+            updatedDto.image,
+            updatedDto.weight,
+            updatedDto.tier,
+            updatedDto.cost
         );
-
-        this.consumeType = consumeType;
-        this.effects = effects;
-        this.consumeAfterUse = consumedAfterUse;
-    
+        this.consumeType = dto.consumeType;
+        this.effects = dto.effects;
+        this.consumeAfterUse = dto.consumeAfterUse;
     }
 }

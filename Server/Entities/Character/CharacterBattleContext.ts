@@ -1,5 +1,5 @@
 import { CharacterStatusEnum } from "../../../Common/Enums/Character/CharacterStatusTypes";
-import { EquipmentType, WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
+import { AccessoryType, ArmorType, EquipmentType, WeaponSpecificType, WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
 import { BuffsAndDebuffsEnum } from "../../../Common/Enums/TargetTypes";
 import { TraitEnum } from "../Traits/TraitEnums";
 
@@ -116,13 +116,13 @@ export interface CharacterBattleContext {
     actorID: string;
     actorPosition: number;
     actorEquipment: {
-        mainHand: WeaponType | null,
-        offHand: WeaponType | null,
-        cloth: EquipmentType | null,
-        armor: EquipmentType | null,
-        headWear: EquipmentType | null,
-        necklace: EquipmentType | null,
-        ring: EquipmentType | null,
+        mainHand: WeaponSpecificType | null,
+        offHand: WeaponSpecificType | null,
+        cloth: ArmorType.cloth | null,
+        armor: ArmorType | null,
+        headWear: EquipmentType.headWear | null,
+        necklace: AccessoryType.necklace | null,
+        ring: AccessoryType.ring | null,
     };
     actorStats: Record<CharacterStatusEnum, number>;
     actorBuffs: Record<BuffsAndDebuffsEnum, number>;

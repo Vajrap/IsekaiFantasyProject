@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3';
-import { GearInstance } from './Entities/Items/GearInstance/GearInstance';
-import { GearType } from '../Common/Enums/Item/EquipmentTypes';
+import { Weapon } from './Entities/Items/Equipments/Weapon/Weapon';
+import { Armor } from './Entities/Items/Equipments/Armors/Armor';
 
 export class DB {
     private db: sqlite3.Database;
@@ -202,7 +202,7 @@ export class DB {
     }
 
     //MARK: Equipments
-    async getWeapon(weapon: string): Promise<GearInstance> {
+    async getWeapon(weapon: string): Promise<Weapon> {
         console.log(`getting weapon with id ${weapon}`);
         const weaponObj = await this.read<{
             defenseStats?: any;
@@ -213,34 +213,30 @@ export class DB {
         if (weaponObj) {
             console.log(`weapon get with name ${weaponObj.name}`);
             // Instantiate and return a GearInstance object
-            return new GearInstance({
+            return new Weapon({
                 id: weaponObj.id,
                 name: weaponObj.name,
-                crafter: weaponObj.crafter,
                 description: weaponObj.description,
                 image: weaponObj.image,
                 cost: weaponObj.cost,
                 weight: weaponObj.weight,
                 tier: weaponObj.tier,
-                gearType: GearType.weapon,
-                specificType: weaponObj.specificType,
                 jewelSlots: weaponObj.jewelSlots,
+                slottedJewels: weaponObj.slottedJewels,
                 maxJewelGrade: weaponObj.maxJewelGrade,
-                defenseStats: weaponObj.defenseStats,
-                attackStats: weaponObj.attackStats,
                 material: weaponObj.material,
-                spellCastingDamageMultiplier: weaponObj.spellCastingDamageMultiplier,
-                spellCastingPenaltyHit: weaponObj.spellCastingPenaltyHit,
-                arcaneAptitude: weaponObj.arcaneAptitude,
                 specialTrait: weaponObj.specialTrait,
-                class: weaponObj.class,
+                attackStats: weaponObj.attackStats,
+                defenseStats: weaponObj.defenseStats,
+                weaponType: weaponObj.weaponType,
+                weaponSpecificType: weaponObj.weaponSpecificType,
             });
         } else {
             throw new Error(`Weapon ${weapon} not found in database`);
         }
     }
     
-    async getArmor(armor: string): Promise<GearInstance> {
+    async getArmor(armor: string): Promise<Armor> {
         const armorObj = await this.read<{
             defenseStats?: any;
             slottedJewels?: any;
@@ -248,26 +244,24 @@ export class DB {
         }>('Gears', 'id', armor);
         if (armorObj) {
             // Instantiate and return a GearInstance object
-            return new GearInstance({
+            return new Armor({
                 id: armorObj.id,
                 name: armorObj.name,
-                crafter: armorObj.crafter,
                 description: armorObj.description,
                 image: armorObj.image,
                 cost: armorObj.cost,
                 weight: armorObj.weight,
                 tier: armorObj.tier,
-                gearType: GearType.armor,
-                specificType: armorObj.specificType,
+                armorType: armorObj.armorType,
                 jewelSlots: armorObj.jewelSlots,
+                slottedJewels: armorObj.slottedJewels,
                 maxJewelGrade: armorObj.maxJewelGrade,
-                defenseStats: armorObj.defenseStats,
                 material: armorObj.material,
                 spellCastingDamageMultiplier: armorObj.spellCastingDamageMultiplier,
                 spellCastingPenaltyHit: armorObj.spellCastingPenaltyHit,
                 arcaneAptitude: armorObj.arcaneAptitude,
                 specialTrait: armorObj.specialTrait,
-                class: armorObj.class,
+                defenseStats: armorObj.defenseStats,
             });
         } else {
             throw new Error(`Armor ${armor} not found in database`);

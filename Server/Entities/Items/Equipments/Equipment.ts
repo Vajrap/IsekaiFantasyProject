@@ -1,20 +1,21 @@
 import { DiceEnum } from "../../../../Common/DamageDIce";
 import { DamageTypes } from "../../../../Common/Enums/DamageTypes";
-import { EquipmentType, GearType, ItemType, WeaponType } from "../../../../Common/Enums/Item/EquipmentTypes";
+import { AccessoryType, ArmorType, EquipmentType, ItemType, WeaponSpecificType, WeaponType } from "../../../../Common/Enums/Item/EquipmentTypes";
 import { Tier } from "../../../Utility/Tier";
 import { AttributeEnum } from "../../Character/Subclasses/CharacterDataEnum";
 import { TraitEnum } from "../../Traits/TraitEnums";
 import { ItemCostInterface } from "../ItemCost";
 import { Item } from "../Items";
-import { defaultDefenseStats } from "./InterfacesAndEnums/ArmorDefense";
-import { ArmorDTO } from "./InterfacesAndEnums/DTOs";
 import { EquipmentClass } from "./InterfacesAndEnums/EquipmentClass";
 import { JewelGrade } from "./InterfacesAndEnums/JewelGrade";
 import { PreferredPosition } from "./InterfacesAndEnums/PreferredPosition";
 
 export class Equipment extends Item {
-    gearType: GearType;
-    specificType: EquipmentType | WeaponType | null;
+    equipmentType: EquipmentType;
+    armorType: ArmorType | null;
+    accessoryType: AccessoryType | null;
+    weaponType: WeaponType | null;
+    weaponSpecificType: WeaponSpecificType | null;
     jewelSlots: number;
     slottedJewels: [];
     maxJewelGrade: JewelGrade | null;
@@ -23,7 +24,6 @@ export class Equipment extends Item {
     spellCastingPenaltyHit: number;
     arcaneAptitude: number;
     specialTrait: TraitEnum[];
-    class: EquipmentClass;
     defenseStats?: {
         pDEF: number,
         slashDEF: number,
@@ -73,8 +73,11 @@ export class Equipment extends Item {
         cost: ItemCostInterface,
         weight: number,
         tier: Tier,
-        gearType: GearType,
-        specificType: EquipmentType | WeaponType | null,
+        equipmentType: EquipmentType;        
+        armorType: ArmorType | null;
+        accessoryType: AccessoryType | null;
+        weaponType: WeaponType | null;
+        weaponSpecificType: WeaponSpecificType | null;        
         jewelSlots: number,
         slottedJewels: [],
         maxJewelGrade: JewelGrade | null,
@@ -83,7 +86,6 @@ export class Equipment extends Item {
         spellCastingPenaltyHit: number,
         arcaneAptitude: number,
         specialTrait: TraitEnum[],
-        class: EquipmentClass,
         defenseStats?: {
             pDEF: number,
             slashDEF: number,
@@ -137,8 +139,11 @@ export class Equipment extends Item {
             dto.tier,
             dto.cost
         );
-        this.gearType = dto.gearType;
-        this.specificType = dto.specificType;
+        this.equipmentType = dto.equipmentType;
+        this.armorType = dto.armorType;
+        this.accessoryType = dto.accessoryType;
+        this.weaponType = dto.weaponType;
+        this.weaponSpecificType = dto.weaponSpecificType;
         this.jewelSlots = dto.jewelSlots;
         this.slottedJewels = dto.slottedJewels;
         this.maxJewelGrade = dto.maxJewelGrade;
@@ -147,7 +152,6 @@ export class Equipment extends Item {
         this.spellCastingPenaltyHit = dto.spellCastingPenaltyHit;
         this.arcaneAptitude = dto.arcaneAptitude;
         this.specialTrait = dto.specialTrait;
-        this.class = dto.class;
         this.defenseStats = dto.defenseStats;
         this.attackStats = dto.attackStats;
     }

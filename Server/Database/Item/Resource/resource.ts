@@ -1,7 +1,7 @@
 import { Tier } from "../../../Utility/Tier";
 import { createTableIfNotExists } from "../../Seeding";
 // import { ConsumableEffect } from "../Consumable/consumable";
-import { ConsumableEffect } from "../../../Entities/Items/Consumable/ConsumableEffect";
+import { ConsumableEffect } from "../../../../Common/Enums/Item/ConsumableEffect";
 
 export class ItemResourceInstance {
 	id: string;

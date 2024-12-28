@@ -1,14 +1,19 @@
 import { db } from "../../../Database";
-import { GearInstance } from "../../Items/GearInstance/GearInstance";
 import { CharacterEquipmentInterface } from "../../../../Common/RequestResponse/characterWS";
+import { Weapon } from "../../Items/Equipments/Weapon/Weapon";
+import { Armor } from "../../Items/Equipments/Armors/Armor";
+import { Cloth } from "../../Items/Equipments/Clothes/Cloth";
+import { HeadWear } from "../../Items/Equipments/Headwear/Headwear";
+import { Necklace } from "../../Items/Equipments/Accessories/Necklace";
+import { Ring } from "../../Items/Equipments/Accessories/Ring";
 export class CharacterEquipments {
-	mainHand: GearInstance | null = null;
-	offHand: GearInstance |  null = null;
-	armor: GearInstance | null = null;
-	cloth: GearInstance | null = null;
-	headWear: GearInstance | null = null;
-	necklace: GearInstance | null = null;
-	ring: GearInstance | null = null;
+	mainHand: Weapon | null = null;
+	offHand: Weapon |  null = null;
+	armor: Armor | null = null;
+	cloth: Cloth | null = null;
+	headWear: HeadWear | null = null;
+	necklace: Necklace | null = null;
+	ring: Ring | null = null;
 
 	async constructFromDB(
 		mainHand: string | null, 
