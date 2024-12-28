@@ -12,7 +12,7 @@ import { BuffsAndDebuffs } from "../../../Entities/Character/Subclasses/BuffsAnd
 import { Dice } from "../../../Utility/Dice";
 import { StatMod } from "../../../Utility/StatMod";
 import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
-import { DiceEnum } from "../../../../Common/DIceEnum";
+import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 
 
 

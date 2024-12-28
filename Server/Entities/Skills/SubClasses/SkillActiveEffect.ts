@@ -1,5 +1,5 @@
 import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
-import { DiceEnum } from "../../../../Common/DIceEnum";
+import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { BuffsAndDebuffsEnum, TargetType } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";

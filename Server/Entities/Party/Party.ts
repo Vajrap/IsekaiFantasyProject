@@ -3,7 +3,7 @@ import { Character } from "../Character/Character";
 import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
-import { DiceEnum } from "../../../Common/DIceEnum";
+import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 
 export class Party {
 	partyID: string;

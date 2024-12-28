@@ -1,4 +1,4 @@
-import { DiceEnum } from "../../Common/DIceEnum";
+import { DiceEnum } from "../../Common/DTOsEnumsInterfaces/DiceEnum";
 
 export class Dice {
     static roll(dice: DiceEnum): DiceRollResult {

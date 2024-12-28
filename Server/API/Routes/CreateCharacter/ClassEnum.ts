@@ -1,6 +1,6 @@
-import { GearSeedArmorEnum } from "../../../Database/Item/Gear/Seeds/Armor";
-import { ClothSeedEnum } from "../../../Database/Item/Gear/Seeds/Cloth";
-import { GearSeedWeaponEnum } from "../../../Database/Item/Gear/Seeds/Weapon";
+// import { GearSeedArmorEnum } from "../../../Database/Item/Gear/Seeds/Armor";
+// import { ClothSeedEnum } from "../../../Database/Item/Gear/Seeds/Cloth";
+// import { GearSeedWeaponEnum } from "../../../Database/Item/Gear/Seeds/Weapon";
 import { SkillEnum } from "../../../Database/Skill/skill";
 import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { ClassEnum } from '../../../../Common/RequestResponse/characterCreation';
@@ -82,15 +82,16 @@ Gear: armor_light_leather, BronzeClub, WoodenBuckler
 
 */
 
+//TODO: starting gears is not yet deal with, need to create weapon instances
 export class CharacterClass {
     name: ClassEnum;
     description: string;
     skills: SkillEnum[];
     gears: {
-        mainHand: GearSeedWeaponEnum | null;
-        offHand: GearSeedWeaponEnum | null;
-        armor: GearSeedArmorEnum | null;
-        cloth: ClothSeedEnum | null;
+        mainHand: any | null;
+        offHand: any | null;
+        armor: any | null;
+        cloth: any | null;
     };
     traits: TraitEnum[];
     bonusStats: {

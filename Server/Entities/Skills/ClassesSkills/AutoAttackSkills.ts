@@ -9,7 +9,7 @@ import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes"
 import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes";
 import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { SkillActiveEffect, SkillActionObject, SkillActionSubType, SkillActionType } from "../SubClasses/SkillActiveEffect";
-import { DiceEnum } from "../../../../Common/DIceEnum";
+import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { SkillInternalType } from "../SubClasses/SkillInternalType";
 

@@ -5,8 +5,6 @@ import { db } from "../Database";
 import { LocationManager } from "./LocationManager";
 import { BattleManager } from "./Battle/BattleManager";
 import { createCharacterTableIfNotExists } from "../Database/Character/Characters";
-import { createItemResourceTableIfNotExists } from "../Database/Item/Resource/resource";
-import { createItemConsumableTableIfNotExists } from "../Database/Item/Consumable/consumable";
 import { createGameTimeTableIfNotExists } from "../Database/GameTime/GameTime";
 import { createGearTableIfNotExists } from "../Database/Item/Gear/createGearTableIfNotExists";
 import { createSkillTableIfNotExists } from "../Database/Skill/skill";
@@ -47,8 +45,6 @@ export class Game {
                 createCharacterTableIfNotExists(),
                 createUsersTableIfNotExist(),
                 createGameTimeTableIfNotExists(),
-                createItemResourceTableIfNotExists(),
-                createItemConsumableTableIfNotExists(),
                 createSkillTableIfNotExists(),
                 createGearTableIfNotExists(),
                 createPartyTableIfNotExist(),
@@ -176,11 +172,7 @@ export class Game {
     private async loadItemsFromDB() {
         // Load items from database
         try {
-            await createItemResourceTableIfNotExists();
-            await createItemConsumableTableIfNotExists();
     
-            // const resources = await db.readAll('ItemResources');
-            // const consumables = await db.readAll('ItemConsumable');
         } catch (error) {
             console.error('Error loading items from database:', error);
         }

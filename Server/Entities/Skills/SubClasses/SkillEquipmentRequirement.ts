@@ -1,4 +1,4 @@
-import { WeaponSpecificType, WeaponType } from "../../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
+import { WeaponSpecificType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 
 export class SkillEquipmentRequirement {
     weapon?: string[];

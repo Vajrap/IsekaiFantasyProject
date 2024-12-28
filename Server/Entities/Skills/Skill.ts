@@ -7,7 +7,7 @@ import { db } from "../../Database";
 import { SkillArchetype } from "../../Database/Skill/skill";
 import { CharacterStatus } from "../Character/Subclasses/CharacterStatus";
 import { SkillInternalType } from "./SubClasses/SkillInternalType";
-import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
+import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 
 export class Skill {
     id: string;

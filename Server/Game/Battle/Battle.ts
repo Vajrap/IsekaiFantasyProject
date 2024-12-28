@@ -10,7 +10,7 @@ import { EventEmitter } from "ws";
 import { GameTime } from "../TimeAndDate/GameTime";
 import { SkillActionType } from "../../Entities/Skills/SubClasses/SkillActiveEffect";
 import { Dice } from "../../Utility/Dice";
-import { DiceEnum } from "../../../Common/DIceEnum";
+import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 
 export class Battle {
     isOngoing: boolean;
@@ -336,8 +336,8 @@ export class Battle {
         actionDetails: ActionDetails | null,
     }> {
         let weapons = [];
-        if (actor.equipments.mainHand && actor.equipments.mainHand.specificType != null) { weapons.push(actor.equipments.mainHand.specificType) };
-        if (actor.equipments.offHand && actor.equipments.offHand.specificType != null) { weapons.push(actor.equipments.offHand.specificType) };
+        if (actor.equipments.mainHand && actor.equipments.mainHand.weaponSpecificType != null) { weapons.push(actor.equipments.mainHand.weaponSpecificType) };
+        if (actor.equipments.offHand && actor.equipments.offHand.weaponSpecificType != null) { weapons.push(actor.equipments.offHand.weaponSpecificType) };
     
         const weaponValidated = skill.validateEquipment({weapon: weapons});
         if (weaponValidated === false) {

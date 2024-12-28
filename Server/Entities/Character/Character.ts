@@ -16,7 +16,7 @@ import { CharacterAlignment } from "./Subclasses/CharacterAlignment";
 import { CharacterType } from "./Subclasses/CharacterType";
 import { Trait, TraitRepository } from "../Traits/Trait";
 import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
-import { ArmorDefense } from "../Items/Equipments/InterfacesAndEnums/ArmorDefense";
+import { ArmorDefense } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/interfaces";
 import { SkillRepository } from "../Skills/SkillRepository";
 import { CharacterArcaneAptitude } from "./Subclasses/CharacterArcaneAptitude";
 import {
@@ -37,11 +37,12 @@ import {
 	ProficiencyMap,
 } from "./Subclasses/CharacterDataEnum";
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
-// import { InternalResponseType } from "../../../Common/ResponseTypes/Internal";
-// import { SkillResponseType } from "../../../Common/ResponseTypes/Skill";
 import { StoryFlags } from "../../Game/StoryEvent/StoryFlags";
 import { getSkillFromDB, Skill } from "../Skills/Skill";
-import { AccessoryType, ArmorType, EquipmentType, WeaponSpecificType, WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
+import { AccessoryType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
+import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
+import { EquipmentType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
+import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { db } from "../../Database";
 import {
 	SkillActionObject,
@@ -52,7 +53,7 @@ import {
 } from "../Skills/SubClasses/SkillActiveEffect";
 import { BuffsAndDebuffsEnum } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { CharacterBattleContext } from "./CharacterBattleContext";
-import { DiceEnum } from "../../../Common/DIceEnum";
+import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { SkillConsume } from "../Skills/SubClasses/SkillConsume";
 import { calculateBaseStat } from "./CalculateHPMPSP";
 import { CharacterClass, class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden } from "../../API/Routes/CreateCharacter/ClassEnum";
@@ -1305,8 +1306,8 @@ export class Character {
 		if (
 			!skillInSuspect.validateEquipment({
 				weapon: [
-					this.equipments.mainHand?.specificType || "none",
-					this.equipments.offHand?.specificType || "none",
+					this.equipments.mainHand?.weaponSpecificType || "none",
+					this.equipments.offHand?.weaponSpecificType || "none",
 				],
 			})
 		) {
@@ -1590,7 +1591,7 @@ export class Character {
 
 		//Additional Damage from proficiency
 		if (isWeaponAttack === true) {
-			switch (this.equipments.mainHand?.specificType) {
+			switch (this.equipments.mainHand?.weaponType) {
 				case WeaponType.axe:
 					baseDamage += this.getModifier(CharacterStatusEnum.axe);
 					break;

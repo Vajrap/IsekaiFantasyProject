@@ -8,8 +8,8 @@ import { BuffsAndDebuffsEnum, TargetConditionFilters, TargetPartyType, TargetSel
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { createTableIfNotExists } from "../Seeding";
-import { DiceEnum } from "../../../Common/DIceEnum";
-import { WeaponSpecificType } from "../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
+import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
+import { WeaponSpecificType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { SkillInternalType } from "../../Entities/Skills/SubClasses/SkillInternalType";
 

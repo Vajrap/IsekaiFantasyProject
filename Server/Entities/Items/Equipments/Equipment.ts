@@ -1,4 +1,4 @@
-import { DiceEnum } from "../../../../Common/DIceEnum";
+import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
 import { AttributeEnum } from "../../Character/Subclasses/CharacterDataEnum";
