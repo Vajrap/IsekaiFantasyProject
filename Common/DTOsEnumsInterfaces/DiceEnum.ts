@@ -1,3 +1,4 @@
+
 export enum DiceEnum {
     Weapon_Physical = "weapon_physical", // for skill that depends on weapon's damage dice
     Weapon_Magical = "weapon_magical", // for skill that depends on weapon's magical damage dice

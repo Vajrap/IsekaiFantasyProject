@@ -1,8 +1,9 @@
-import { DiceEnum } from "Common/DIceEnum";
 import { DamageTypes } from "../../DamageTypes";
+import { DiceEnum } from "../../DiceEnum";
 import { WeaponAttack } from "./Weapon/interfaces";
 import { AttributeEnum } from "../../Character/AttributeEnum";
 import { PreferredPosition } from "./Weapon/Enums";
+// import { DiceEnum } from "Common//DiceEnum.ts";
 
 export const defaultAttackStats: WeaponAttack = {
     physicalType: DamageTypes.physical,

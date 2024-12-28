@@ -1,6 +1,6 @@
 import { AttributeEnum } from "Common/DTOsEnumsInterfaces/Character/AttributeEnum"
 import { PreferredPosition } from "./Enums"
-import { DiceEnum } from "Common/DIceEnum"
+import { DiceEnum } from "Common/DTOsEnumsInterfaces/DiceEnum"
 import { DamageTypes } from "Common/DTOsEnumsInterfaces/DamageTypes"
 
 export interface WeaponAttack {
