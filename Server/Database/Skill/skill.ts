@@ -1,16 +1,16 @@
 import { ElementConsume, ElementProduce, SkillConsume, SkillProduce } from "../../Entities/Skills/SubClasses/SkillConsume";
 import { SkillEquipmentRequirement } from "../../Entities/Skills/SubClasses/SkillEquipmentRequirement";
 import { SkillLearningRequirement } from "../../Entities/Skills/SubClasses/SkillLearningRequirement";
-import { Tier } from "../../Utility/Tier";
+import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
 import { PreferredPositionEnum, SkillActionObject, SkillActionSubType, SkillActionType, SkillActiveEffect, SkillApplyEffect } from "../../Entities/Skills/SubClasses/SkillActiveEffect";
-import { FundamentalElementTypes } from "../../../Common/Enums/ElementTypes";
-import { BuffsAndDebuffsEnum, TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../Common/Enums/TargetTypes";
-import { DamageTypes } from "../../../Common/Enums/DamageTypes";
-import { CharacterStatusEnum } from "../../../Common/Enums/Character/CharacterStatusTypes";
+import { FundamentalElementTypes } from "../../../Common/DTOsEnumsInterfaces/ElementTypes";
+import { BuffsAndDebuffsEnum, TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
+import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
+import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { createTableIfNotExists } from "../Seeding";
-import { DiceEnum } from "../../../Common/DamageDIce";
-import { WeaponSpecificType } from "../../../Common/Enums/Item/EquipmentTypes";
-import { TraitEnum } from "../../Entities/Traits/TraitEnums";
+import { DiceEnum } from "../../../Common/DIceEnum";
+import { WeaponSpecificType } from "../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
+import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { SkillInternalType } from "../../Entities/Skills/SubClasses/SkillInternalType";
 
 export class SkillArchetype {

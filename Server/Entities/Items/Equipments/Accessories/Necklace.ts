@@ -1,6 +1,6 @@
 import { Accessory } from "./Accessory";
-import { AccessoryDTO } from "../InterfacesAndEnums/DTOs";
-import { AccessoryType } from "../../../../../Common/Enums/Item/EquipmentTypes";
+import { AccessoryDTO } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/DTOs";
+import { AccessoryType } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
 
 export class Necklace extends Accessory {
     constructor(dto: AccessoryDTO) {

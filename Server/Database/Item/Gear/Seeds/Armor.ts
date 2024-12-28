@@ -1,6 +1,6 @@
-import { EquipmentType } from "../../../../../Common/Enums/Item/EquipmentTypes";
-import { Tier } from "../../../../Utility/Tier";
-import { TraitEnum } from "../../../../Entities/Traits/TraitEnums";
+import { EquipmentType } from "../../../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
+import { Tier } from "../../../../../Common/DTOsEnumsInterfaces/Tier";
+import { TraitEnum } from "../../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 
 // Armor would have specific type of at least light, medium, heavy: Cloth is just for shirt, pants
 export enum GearSeedArmorEnum {

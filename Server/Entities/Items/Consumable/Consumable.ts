@@ -1,8 +1,8 @@
 import { Item } from "../Items";
-import { ItemType } from "../../../../Common/Enums/Item/EquipmentTypes";
-import { ConsumableEffect } from "../../../../Common/Enums/Item/ConsumableEffect";
-import { ConsumableType } from "../../../Database/Item/Consumable/consumable";
-import { ConsumableDTO } from "../Equipments/InterfacesAndEnums/DTOs";
+import { ItemType } from "../../../../Common/DTOsEnumsInterfaces/Item/Enums";
+import { ConsumableEffect } from "../../../../Common/DTOsEnumsInterfaces/Item/Consumable/Interfaces";
+import { ConsumableType } from "../../../../Common/DTOsEnumsInterfaces/Item/Consumable/Enums";
+import { ConsumableDTO } from "../../../../Common/DTOsEnumsInterfaces/Item/Consumable/DTOs";
 
 export class Consumable extends Item {
     consumeType: ConsumableType;

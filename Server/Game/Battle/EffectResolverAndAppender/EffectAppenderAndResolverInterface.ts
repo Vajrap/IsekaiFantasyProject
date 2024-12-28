@@ -1,5 +1,5 @@
 import { K } from "../../../Utility/Constants"
-import { BuffsAndDebuffsEnum } from "../../../../Common/Enums/TargetTypes"
+import { BuffsAndDebuffsEnum } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes"
 import { EffectAppenderSendObject, EffectResolverSendObject, EffectReturnObject } from "./EffectSend + Receive Objects"
 
 

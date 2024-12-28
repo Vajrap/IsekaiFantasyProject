@@ -1,29 +1,3 @@
-export enum ItemType {
-    equipment = 'equipment',
-    consumable = 'consumable',
-    resource = 'resource'
-}
-
-export enum EquipmentType {
-    weapon = 'weapon',
-    armor = 'armor',
-    cloth = 'cloth',
-    headWear = 'headWear',
-    accessory = 'accessory',
-}
-
-export enum ArmorType {
-    cloth = 'cloth',
-    light = 'light',
-    medium = 'medium',
-    heavy = 'heavy'
-}
-
-export enum AccessoryType {
-    ring = 'ring',
-    necklace = 'necklace',
-}
-
 export enum WeaponType {
     sword = 'sword',
     blade = 'blade',
@@ -92,4 +66,10 @@ export enum WeaponSpecificType {
     bare_hand = 'bare_hand',
 
     none = 'none'
+}
+
+export enum PreferredPosition {
+    melee = 'melee',
+    ranged = 'ranged',
+    both = 'both'
 }

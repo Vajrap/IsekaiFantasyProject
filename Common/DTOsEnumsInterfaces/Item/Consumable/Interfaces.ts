@@ -1,4 +1,4 @@
-import { CharacterStatusEnum } from "../Character/CharacterStatusTypes";
+import { CharacterStatusEnum } from "Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 
 export interface ConsumableEffect {
     effectType: "permanent" | "temporary";

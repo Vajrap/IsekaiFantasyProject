@@ -12,8 +12,8 @@ import { TraitRepository } from "../../Traits/Trait"
 import { Dice } from "../../../Utility/Dice"
 import { K } from "../../../Utility/Constants"
 import { ActionDetails, TargetSkillEffect, ActorSkillEffect } from "../../../API/BattleReportDTO"
-import { Tier } from "../../../Utility/Tier"
-import { DamageTypes } from "../../../../Common/Enums/DamageTypes"
+import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier"
+import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes"
 
 //MARK: Fighter skills
 /*

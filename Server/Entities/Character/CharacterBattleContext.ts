@@ -1,7 +1,7 @@
-import { CharacterStatusEnum } from "../../../Common/Enums/Character/CharacterStatusTypes";
-import { AccessoryType, ArmorType, EquipmentType, WeaponSpecificType, WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
-import { BuffsAndDebuffsEnum } from "../../../Common/Enums/TargetTypes";
-import { TraitEnum } from "../Traits/TraitEnums";
+import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
+import { AccessoryType, ArmorType, EquipmentType, WeaponSpecificType, WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
+import { BuffsAndDebuffsEnum } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
+import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 
 
 // export class CharacterBattleContext {

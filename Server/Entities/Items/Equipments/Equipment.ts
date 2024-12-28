@@ -1,14 +1,18 @@
-import { DiceEnum } from "../../../../Common/DamageDIce";
-import { DamageTypes } from "../../../../Common/Enums/DamageTypes";
-import { AccessoryType, ArmorType, EquipmentType, ItemType, WeaponSpecificType, WeaponType } from "../../../../Common/Enums/Item/EquipmentTypes";
-import { Tier } from "../../../Utility/Tier";
+import { DiceEnum } from "../../../../Common/DIceEnum";
+import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
+import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
 import { AttributeEnum } from "../../Character/Subclasses/CharacterDataEnum";
-import { TraitEnum } from "../../Traits/TraitEnums";
-import { ItemCostInterface } from "../ItemCost";
+import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
+import { ItemCostInterface } from "../../../../Common/DTOsEnumsInterfaces/Item/ItemCost";
 import { Item } from "../Items";
-import { EquipmentClass } from "./InterfacesAndEnums/EquipmentClass";
-import { JewelGrade } from "./InterfacesAndEnums/JewelGrade";
-import { PreferredPosition } from "./InterfacesAndEnums/PreferredPosition";
+import { JewelGrade } from "../../../../Common/DTOsEnumsInterfaces/Item/Jewel/Enums";
+import { PreferredPosition, WeaponSpecificType, WeaponType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
+import { ArmorType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
+import { AccessoryType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
+import { EquipmentType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
+import { ItemType } from "../../../../Common/DTOsEnumsInterfaces/Item/Enums";
+
+
 
 export class Equipment extends Item {
     equipmentType: EquipmentType;

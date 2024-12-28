@@ -4,12 +4,12 @@ import { SkillEquipmentRequirement } from "../SubClasses/SkillEquipmentRequireme
 import { SkillActionObject, SkillActionSubType, SkillActionType, SkillActiveEffect, SkillApplyEffect, SpecialEffectResult } from "../SubClasses/SkillActiveEffect"
 import { SkillConsume, SkillProduce } from "../SubClasses/SkillConsume"
 import { ElementConsume, ElementProduce } from "../SubClasses/SkillConsume"
-import { TraitEnum } from "../../Traits/TraitEnums"
-import { Tier } from "../../../Utility/Tier"
-import { DamageTypes } from "../../../../Common/Enums/DamageTypes"
-import { FundamentalElementTypes } from "../../../../Common/Enums/ElementTypes"
-import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../../Common/Enums/TargetTypes"
-import { CharacterStatusEnum } from "../../../../Common/Enums/Character/CharacterStatusTypes"
+import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums"
+import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier"
+import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes"
+import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes"
+import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes"
+import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes"
 
 //MARK: Cleric Skills
 /*

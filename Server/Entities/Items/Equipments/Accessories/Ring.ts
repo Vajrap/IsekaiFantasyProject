@@ -1,6 +1,6 @@
 import { Accessory } from "./Accessory";
-import { AccessoryDTO } from "../InterfacesAndEnums/DTOs";
-import { AccessoryType } from "../../../../../Common/Enums/Item/EquipmentTypes";
+import { AccessoryType } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
+import { AccessoryDTO } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/DTOs";
 
 export class Ring extends Accessory {
     constructor(dto: AccessoryDTO) {

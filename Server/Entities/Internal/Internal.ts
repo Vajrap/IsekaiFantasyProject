@@ -1,6 +1,6 @@
 import { PassiveStatusBonus } from '../BonusEffect/PassiveStatusBonus';
 import { InternalLearningRequirement } from './InternalLearningRequirement';
-import { Tier } from '../../Utility/Tier';
+import { Tier } from '../../../Common/DTOsEnumsInterfaces/Tier';
 import { TraitRepository } from '../Traits/Trait';
 
 export class Internal {

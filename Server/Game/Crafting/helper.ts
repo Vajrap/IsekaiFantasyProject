@@ -2,7 +2,7 @@ import { ItemResourceInstance, ResourceTrait, ResourceType } from "../../Databas
 import { CharacterStatus } from "../../Entities/Character/Subclasses/CharacterStatus";
 import { Dice } from "../../Utility/Dice";
 import { StatMod } from "../../Utility/StatMod";
-import { Tier } from "../../Utility/Tier";
+import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
 import { GearArchetype } from "./GearArcheType";
 
 

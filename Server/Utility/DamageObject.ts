@@ -1,6 +1,6 @@
 import { CharacterStatus } from '../Entities/Character/Subclasses/CharacterStatus';
 import { CharacterStatusModifier } from '../Entities/Character/Subclasses/CharacterStatusModifier';
-import { CharacterStatusEnum } from '../../Common/Enums/Character/CharacterStatusTypes';
+import { CharacterStatusEnum } from '../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes';
 import { StatMod } from './StatMod';
 
 export class DamageObject {

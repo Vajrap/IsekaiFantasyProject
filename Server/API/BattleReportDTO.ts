@@ -3,7 +3,7 @@ import { BuffsAndDebuffs } from "../Entities/Character/Subclasses/BuffsAndDebuff
 import { Skill } from "../Entities/Skills/Skill";
 import { SkillEquipmentRequirement } from "../Entities/Skills/SubClasses/SkillEquipmentRequirement";
 import { CharacterType } from "../Entities/Character/Subclasses/CharacterType";
-import { CharacterStatusEnum } from "../../Common/Enums/Character/CharacterStatusTypes";
+import { CharacterStatusEnum } from "../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 
 export class CharacterData {
     characterID: string;

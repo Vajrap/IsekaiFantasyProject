@@ -1,4 +1,4 @@
-import { RelationEnum } from "../../../Common/Enums/Character/RelationEnums";
+import { RelationEnum } from "../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
 import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
 import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType";
 

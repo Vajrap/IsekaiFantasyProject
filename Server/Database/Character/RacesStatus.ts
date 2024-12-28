@@ -1,4 +1,4 @@
-import { TraitEnum } from "../../Entities/Traits/TraitEnums";
+import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 
 export class RaceStatus {
     hp: number;

@@ -1,4 +1,4 @@
-import { BuffsAndDebuffsEnum } from "../../../../Common/Enums/TargetTypes";
+import { BuffsAndDebuffsEnum } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
 
 export class BuffsAndDebuffs {
     //debuffs

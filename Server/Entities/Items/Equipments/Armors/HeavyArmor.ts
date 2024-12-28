@@ -1,6 +1,6 @@
-import { ArmorType } from "../../../../../Common/Enums/Item/EquipmentTypes";
-import { ArmorDTO } from "../InterfacesAndEnums/DTOs";
 import { Armor } from "./Armor";
+import { ArmorType } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
+import { ArmorDTO } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/DTOs";
 
 class HeavyArmor extends Armor {
     constructor(dto: ArmorDTO) {

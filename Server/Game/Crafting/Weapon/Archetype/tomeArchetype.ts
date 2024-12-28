@@ -1,6 +1,6 @@
 import { ResourceType } from "../../../../Database/Item/Resource/resource";
-import { GearType, WeaponType } from "../../../../../Common/Enums/Item/EquipmentTypes";
-import { Tier } from "../../../../Utility/Tier";
+import { GearType, WeaponType } from "../../../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
+import { Tier } from "../../../../../Common/DTOsEnumsInterfaces/Tier";
 import { GearArchetype } from "../../GearArcheType";
 
 // Bible

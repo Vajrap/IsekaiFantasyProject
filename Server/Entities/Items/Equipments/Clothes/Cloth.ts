@@ -1,8 +1,10 @@
-import { ArmorType, EquipmentType } from "../../../../../Common/Enums/Item/EquipmentTypes";
+import { ArmorType } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
 import { Equipment } from "../Equipment";
-import { defaultDefenseStats } from "../InterfacesAndEnums/ArmorDefense";
-import { ClothDTO } from "../InterfacesAndEnums/DTOs";
-import { EquipmentClass } from "../InterfacesAndEnums/EquipmentClass";
+import { EquipmentType } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
+import { defaultDefenseStats } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/defaultDefenseStats";
+import { ClothDTO } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/DTOs";
+import { EquipmentClass } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
+
 
 export class Cloth extends Equipment {
     constructor(dto: ClothDTO) {

@@ -2,7 +2,7 @@ import { GearSeedArmorEnum } from "../../../Database/Item/Gear/Seeds/Armor";
 import { ClothSeedEnum } from "../../../Database/Item/Gear/Seeds/Cloth";
 import { GearSeedWeaponEnum } from "../../../Database/Item/Gear/Seeds/Weapon";
 import { SkillEnum } from "../../../Database/Skill/skill";
-import { TraitEnum } from "../../../Entities/Traits/TraitEnums";
+import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { ClassEnum } from '../../../../Common/RequestResponse/characterCreation';
 
 /*

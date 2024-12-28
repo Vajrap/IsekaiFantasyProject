@@ -1,4 +1,4 @@
-import { TraitEnum } from "../../../Entities/Traits/TraitEnums";
+import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { BackgroundEnum } from '../../../../Common/RequestResponse/characterCreation';
 
 class Background {

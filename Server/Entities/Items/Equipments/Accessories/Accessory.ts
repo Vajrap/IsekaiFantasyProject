@@ -1,8 +1,8 @@
-import { EquipmentType } from "../../../../../Common/Enums/Item/EquipmentTypes";
 import { Equipment } from "../Equipment";
-import { defaultDefenseStats } from "../InterfacesAndEnums/ArmorDefense";
-import { AccessoryDTO } from "../InterfacesAndEnums/DTOs";
-import { defaultAttackStats } from "../InterfacesAndEnums/WeaponAttack";
+import { AccessoryDTO } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/DTOs";
+import { defaultDefenseStats } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/defaultDefenseStats";
+import { defaultAttackStats } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/defaultAttackStats";
+import { EquipmentType } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
 
 export class Accessory extends Equipment {
     constructor(dto: AccessoryDTO) {

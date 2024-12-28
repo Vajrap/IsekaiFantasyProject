@@ -3,14 +3,14 @@ import { SkillLearningRequirement } from "../SubClasses/SkillLearningRequirement
 import { SkillEquipmentRequirement } from "../SubClasses/SkillEquipmentRequirement";
 import { ElementConsume, SkillConsume, SkillProduce } from "../SubClasses/SkillConsume";
 import { ElementProduce } from "../SubClasses/SkillConsume";
-import { Tier } from "../../../Utility/Tier";
-import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../../Common/Enums/TargetTypes";
-import { DamageTypes } from "../../../../Common/Enums/DamageTypes";
-import { FundamentalElementTypes } from "../../../../Common/Enums/ElementTypes";
-import { CharacterStatusEnum } from "../../../../Common/Enums/Character/CharacterStatusTypes";
+import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
+import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
+import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
+import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes";
+import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { SkillActiveEffect, SkillActionObject, SkillActionSubType, SkillActionType } from "../SubClasses/SkillActiveEffect";
-import { DiceEnum } from "../../../../Common/DamageDIce";
-import { TraitEnum } from "../../Traits/TraitEnums";
+import { DiceEnum } from "../../../../Common/DIceEnum";
+import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { SkillInternalType } from "../SubClasses/SkillInternalType";
 
 export function createAutoAttackSkill(

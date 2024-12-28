@@ -1,6 +1,6 @@
 import { ItemResourceInstance, ResourceType } from "../../../Database/Item/Resource/resource";
 import { CharacterStatus } from "../../../Entities/Character/Subclasses/CharacterStatus";
-import { Tier } from "../../../Utility/Tier";
+import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
 import { getTierForCharacterStatus, tierToNumber } from "../helper";
 
 export function createHilt(

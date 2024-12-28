@@ -3,14 +3,14 @@ import { BattleReport } from "./BattleReport";
 import { ActionDetails, ActorSkillEffect, TargetSkillEffect } from "../../API/BattleReportDTO";
 import { SkillRepository } from "../../Entities/Skills/SkillRepository";
 import { Skill } from "../../Entities/Skills/Skill";
-import { DamageTypes } from "../../../Common/Enums/DamageTypes";
+import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { Character } from "../../Entities/Character/Character";
-import { TargetPartyType, TargetType } from "../../../Common/Enums/TargetTypes";
+import { TargetPartyType, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { EventEmitter } from "ws";
 import { GameTime } from "../TimeAndDate/GameTime";
 import { SkillActionType } from "../../Entities/Skills/SubClasses/SkillActiveEffect";
 import { Dice } from "../../Utility/Dice";
-import { DiceEnum } from "../../../Common/DamageDIce";
+import { DiceEnum } from "../../../Common/DIceEnum";
 
 export class Battle {
     isOngoing: boolean;

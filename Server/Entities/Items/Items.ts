@@ -1,7 +1,7 @@
 import { CharacterItemInBag } from "../../../Common/RequestResponse/characterWS";
-import { ItemType } from "../../../Common/Enums/Item/EquipmentTypes";
-import { Tier } from "../../Utility/Tier";
-import { ItemCost, ItemCostInterface } from "./ItemCost";
+import { ItemType } from "../../../Common/DTOsEnumsInterfaces/Item/Enums";
+import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
+import { ItemCost, ItemCostInterface } from "../../../Common/DTOsEnumsInterfaces/Item/ItemCost";
 
 export class Item {
     id: string;

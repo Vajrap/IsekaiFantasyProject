@@ -1,7 +1,7 @@
 import { ItemResourceInstance, ResourceTrait, ResourceType } from "../../../Database/Item/Resource/resource";
 import { CharacterStatus } from "../../../Entities/Character/Subclasses/CharacterStatus";
 import { Dice } from "../../../Utility/Dice";
-import { Tier } from "../../../Utility/Tier";
+import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
 import { getTierForCharacterStatus, tierToNumber } from "../helper";
 
 export function createRazor(

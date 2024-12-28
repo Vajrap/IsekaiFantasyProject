@@ -1,7 +1,7 @@
 import { Weapon } from "./Weapon";
-import { WeaponDTO } from "../InterfacesAndEnums/DTOs";
-import { WeaponType } from "../../../../../Common/Enums/Item/EquipmentTypes";
-import { WeaponSpecificType } from "../../../../../Common/Enums/Item/EquipmentTypes";
+import { WeaponType } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
+import { WeaponSpecificType } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
+import { WeaponDTO } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/DTOs";
 
 export class Spear extends Weapon {
     constructor(dto: WeaponDTO) {

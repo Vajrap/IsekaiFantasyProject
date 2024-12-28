@@ -1,4 +1,4 @@
-import { DiceEnum } from "../../Common/DamageDIce";
+import { DiceEnum } from "../../Common/DIceEnum";
 
 export class Dice {
     static roll(dice: DiceEnum): DiceRollResult {

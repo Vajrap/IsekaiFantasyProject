@@ -1,13 +1,13 @@
 import { SkillConsume, SkillProduce } from "./SubClasses/SkillConsume";
 import { SkillEquipmentRequirement } from "./SubClasses/SkillEquipmentRequirement";
 import { SkillLearningRequirement } from "./SubClasses/SkillLearningRequirement";
-import { Tier } from "../../Utility/Tier";
+import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
 import { SkillActiveEffect } from "./SubClasses/SkillActiveEffect";
 import { db } from "../../Database";
 import { SkillArchetype } from "../../Database/Skill/skill";
 import { CharacterStatus } from "../Character/Subclasses/CharacterStatus";
 import { SkillInternalType } from "./SubClasses/SkillInternalType";
-import { WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
+import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
 
 export class Skill {
     id: string;

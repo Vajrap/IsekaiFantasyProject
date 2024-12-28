@@ -1,248 +1,237 @@
-import { ConsumableEffect } from "../../../../Common/Enums/Item/ConsumableEffect";
-import { Tier } from "../../../Utility/Tier";
-import { createTableIfNotExists } from "../../Seeding";
+// import { ConsumableEffect } from "../../../../Common/Enums/Item/ConsumableEffect";
+// import { Tier } from "../../../Utility/Tier";
+// import { createTableIfNotExists } from "../../Seeding";
 
-export class ItemConsumableArchetype {
-    id!: string;
-    name!: string;
-    description!: string;
-	type!: ConsumableType;
-    image!: string;
-    cost!: number;
-    weight!: number;
-    tier!: Tier;
-    effects!: ConsumableEffect[];
-    consumedAfterUse!: boolean;
-    constructor(dto: {
-        id: string;
-        name: string;
-        description: string;
-	    type: ConsumableType;
-        image: string;
-        cost: number;
-        weight: number;
-        tier: Tier;
-        effects: ConsumableEffect[];
-        consumedAfterUse: boolean;
-    }) {
-        Object.assign(this, dto);
-    }
-}
-
-export enum ConsumableType {
-    food = "food",
-    drink = "drink",
-    potion = "potion",
-    salve = "salve",
-    oil = "oil",
-    coatingSolution = "coatingSolution",
-    rune = "rune",
-    incense = "incense", //mostly use in internal skill training
-    powder = "powder",
-}
-
-export enum ItemConsumableEnum {
-    // Common
-    // food
-    breadLoaf = "itemConsumable_breadLoaf",
-    heartyStew = "itemConsumable_heartyStew",
-    roastedMushrooms = "itemConsumable_roastedMushrooms",
-    appleTart = "itemConsumable_appleTart",
-    smokedFish = "itemConsumable_smokedFish",
-    grilledVegetables = "itemConsumable_grilledVegetables",
-    cheeseWheel = "itemConsumable_cheeseWheel",
-    sausageLinks = "itemConsumable_sausageLinks",
-    roastedChicken = "itemConsumable_roastedChicken",
-    fruitPlatter = "itemConsumable_fruitPlatter",
-    meatPie = "itemConsumable_meatPie",
-    honeyBread = "itemConsumable_honeyBread",
-    berryPastry = "itemConsumable_berryPastry",
-    vegetableSoup = "itemConsumable_vegetableSoup",
-    spicedPotatoes = "itemConsumable_spicedPotatoes",
-    // drink
-    herbalTea = "itemConsumable_herbalTea",
-    freshSpringWater = "itemConsumable_freshSpringWater",
-    sweetBerryJuice = "itemConsumable_sweetBerryJuice",
-    spicedAle = "itemConsumable_spicedAle",
-    milk = "itemConsumable_milk",
-    // potion
-    basicHealingPotion = "itemConsumable_basicHealingPotion",
-    energyTonic = "itemConsumable_energyTonic",
-    calmingDraught = "itemConsumable_calmingDraught",
-    minorManaPotion = "itemConsumable_minorManaPotion",
-    basicAntidote = "itemConsumable_basicAntidote",
-    // salve
-    soothingBalm = "itemConsumable_soothingBalm",
-    herbalWoundSalve = "itemConsumable_herbalWoundSalve",
-
-    // Uncommon
-    // food
-    spicedLambChops = "itemConsumable_spicedLambChops",
-    glazedPheasant = "itemConsumable_glazedPheasant",
-    dragonfruitSalad = "itemConsumable_dragonfruitSalad",
-    caramelizedOnionTart = "itemConsumable_caramelizedOnionTart",
-    grilledSalmon = "itemConsumable_grilledSalmon",
-    butteredCrabClaws = "itemConsumable_butteredCrabClaws",
-    mushroomRisotto = "itemConsumable_mushroomRisotto",
-    smokedVenison = "itemConsumable_smokedVenison",
-    wildBoarSteak = "itemConsumable_wildBoarSteak",
-    stuffedBellPeppers = "itemConsumable_stuffedBellPeppers",
-    goldenBerryTart = "itemConsumable_goldenBerryTart",
-    candiedNuts = "itemConsumable_candiedNuts",
-    roastedHerbPotatoes = "itemConsumable_roastedHerbPotatoes",
-    honeyGlazedDuck = "itemConsumable_honeyGlazedDuck",
-    citrusCuredHam = "itemConsumable_citrusCuredHam",
-    // drink
-    elvenWine = "itemConsumable_elvenWine",
-    dwarvenStout = "itemConsumable_dwarvenStout",
-    spicedMulledWine = "itemConsumable_spicedMulledWine",
-    enchantedSpringWater = "itemConsumable_enchantedSpringWater",
-    sparklingCitrusJuice = "itemConsumable_sparklingCitrusJuice",
-    // potion
-    strongHealingPotion = "itemConsumable_strongHealingPotion",
-    energyElixir = "itemConsumable_energyElixir",
-    focusTonic = "itemConsumable_focusTonic",
-    manaElixir = "itemConsumable_manaElixir",
-    antidoteBrew = "itemConsumable_antidoteBrew",
-    // salve
-    rejuvenatingSalve = "itemConsumable_rejuvenatingSalve",
-    fireResistantOintment = "itemConsumable_fireResistantOintment",
-
-    // Rare
-    // food
-    phoenixEggOmelette = "itemConsumable_phoenixEggOmelette",
-    truffleSteak = "itemConsumable_truffleSteak",
-    starfruitSorbet = "itemConsumable_starfruitSorbet",
-    enchantedPumpkinPie = "itemConsumable_enchantedPumpkinPie",
-    celestialLambRoast = "itemConsumable_celestialLambRoast",
-    emberGrilledEel = "itemConsumable_emberGrilledEel",
-    frostLotusSalad = "itemConsumable_frostLotusSalad",
-    dragonTailStew = "itemConsumable_dragonTailStew",
-    lavaSpiceCrab = "itemConsumable_lavaSpiceCrab",
-    silverleafSalmon = "itemConsumable_silverleafSalmon",
-    // drink
-    sunfireAle = "itemConsumable_sunfireAle",
-    moonlightTea = "itemConsumable_moonlightTea",
-    frozenWine = "itemConsumable_frozenWine",
-    mysticElixir = "itemConsumable_mysticElixir",
-    arcaneBrew = "itemConsumable_arcaneBrew",
-    // potion
-    elixirOfThePhoenix = "itemConsumable_elixirOfThePhoenix",
-    manaRegenerationPotion = "itemConsumable_manaRegenerationPotion",
-    giantStrengthPotion = "itemConsumable_giantStrengthPotion",
-    stormEssencePotion = "itemConsumable_stormEssencePotion",
-    shadowVeilPotion = "itemConsumable_shadowVeilPotion",
-    // salve
-    ethericHealingSalve = "itemConsumable_ethericHealingSalve",
-    shadowGuardSalve = "itemConsumable_shadowGuardSalve",
-    // oil
-    dragonOil = "itemConsumable_dragonOil",
-    frostbiteOil = "itemConsumable_frostbiteOil",
-    // coatingSolution
-    arcaneResonanceCoating = "itemConsumable_arcaneResonanceCoating",
-    solarflareCoating = "itemConsumable_solarflareCoating",
-    // rune
-    runeOfFortitude = "itemConsumable_runeOfFortitude",
-    runeOfTheStorm = "itemConsumable_runeOfTheStorm",
-    // powder
-    elementalPowder = "itemConsumable_elementalPowder",
-    astralDust = "itemConsumable_astralDust",
-
-    // Epic
-    // food
-    celestialFruitSalad = "itemConsumable_celestialFruitSalad",
-    leviathanSteak = "itemConsumable_leviathanSteak",
-    draconicSpicePlatter = "itemConsumable_draconicSpicePlatter",
-    // drink
-    etherealElixir = "itemConsumable_etherealElixir",
-    voidwine = "itemConsumable_voidwine",
-    // potion
-    soulfirePotion = "itemConsumable_soulfirePotion",
-    starryNightDraught = "itemConsumable_starryNightDraught",
-    chiHarmonyElixir = "itemConsumable_chiHarmonyElixir",
-    grandArcanePotion = "itemConsumable_grandArcanePotion",
-    // salve
-    divineHealingBalm = "itemConsumable_divineHealingBalm",
-    abyssalSalve = "itemConsumable_abyssalSalve",
-    // oil
-    celestialBladeOil = "itemConsumable_celestialBladeOil",
-    infernoOil = "itemConsumable_infernoOil",
-    // coatingSolution
-    phoenixWingCoating = "itemConsumable_phoenixWingCoating",
-    froststormCoating = "itemConsumable_froststormCoating",
-    // rune
-    runeOfTranscendence = "itemConsumable_runeOfTranscendence",
-    runeOfTheVoid = "itemConsumable_runeOfTheVoid",
-    // powder
-    essenceOfDragonscale = "itemConsumable_essenceOfDragonscale",
-    celestialGlowPowder = "itemConsumable_celestialGlowPowder",
-
-    // Legendary
-    // food
-    ambrosiaFeast = "itemConsumable_ambrosiaFeast",
-    worldTreeFruit = "itemConsumable_worldTreeFruit",
-    // drink
-    draughtOfImmortality = "itemConsumable_draughtOfImmortality",
-    elixirOfTheSun = "itemConsumable_elixirOfTheSun",
-    // potion
-    dragonHeartElixir = "itemConsumable_dragonHeartElixir",
-    essenceOfLight = "itemConsumable_essenceOfLight",
-    celestialManaElixir = "itemConsumable_celestialManaElixir",
-    // salve
-    phoenixAshSalve = "itemConsumable_phoenixAshSalve",
-    eternalBloomBalm = "itemConsumable_eternalBloomBalm",
-    // oil
-    orichalcumWeaponOil = "itemConsumable_orichalcumWeaponOil",
-    starlightOil = "itemConsumable_starlightOil",
-    // coatingSolution
-    netherVoidCoating = "itemConsumable_netherVoidCoating",
-    lightweaverCoating = "itemConsumable_lightweaverCoating",
-    // rune
-    runeOfAscension = "itemConsumable_runeOfAscension",
-    runeOfTheEternalFlame = "itemConsumable_runeOfTheEternalFlame",
-    // powder
-    powderedDragonBone = "itemConsumable_powderedDragonBone",
-    essenceOfTheStars = "itemConsumable_essenceOfTheStars",
-
-    // Unique
-    // potion
-    voidEssenceElixir = "itemConsumable_voidEssenceElixir",
-    oracleGemPotion = "itemConsumable_oracleGemPotion",
-    abyssalShardBrew = "itemConsumable_abyssalShardBrew",
-    titanstoneTonic = "itemConsumable_titanstoneTonic",
-    // salve
-    soulBindingSalve = "itemConsumable_soulBindingSalve",
-    // oil
-    titanstoneOil = "itemConsumable_titanstoneOil",
-    spiritwoodOil = "itemConsumable_spiritwoodOil",
-    // coatingSolution
-    heartwoodCoating = "itemConsumable_heartwoodCoating",
-    timeweaverSilkCoating = "itemConsumable_timeweaverSilkCoating",
-    // rune
-    runeOfEternalHarmony = "itemConsumable_runeOfEternalHarmony",
-    // powder
-    abyssWeavePowder = "itemConsumable_abyssWeavePowder",
-    oracleGemDust = "itemConsumable_oracleGemDust",
-
-    // Divine
-    // food
-    ambrosiaSoup = "itemConsumable_ambrosiaSoup",
-    // potion
-    godsbloodPotion = "itemConsumable_godsbloodPotion",
-    essenceOfEternity = "itemConsumable_essenceOfEternity",
-    celestialTearsPotion = "itemConsumable_celestialTearsPotion",
-    // salve
-    galaxyDustSalve = "itemConsumable_galaxyDustSalve",
-    // coatingSolution
-    aetheriumCoating = "itemConsumable_aetheriumCoating",
-    // rune
-    runeOfAether = "itemConsumable_runeOfAether",
-    // powder
-    stardustPowder = "itemConsumable_stardustPowder",
-}
+// export class ItemConsumableArchetype {
+//     id!: string;
+//     name!: string;
+//     description!: string;
+// 	type!: ConsumableType;
+//     image!: string;
+//     cost!: number;
+//     weight!: number;
+//     tier!: Tier;
+//     effects!: ConsumableEffect[];
+//     consumedAfterUse!: boolean;
+//     constructor(dto: {
+//         id: string;
+//         name: string;
+//         description: string;
+// 	    type: ConsumableType;
+//         image: string;
+//         cost: number;
+//         weight: number;
+//         tier: Tier;
+//         effects: ConsumableEffect[];
+//         consumedAfterUse: boolean;
+//     }) {
+//         Object.assign(this, dto);
+//     }
+// }
 
 
-export const ItemConsumableSeed: ItemConsumableArchetype[] = [
+// export enum ItemConsumableEnum {
+//     // Common
+//     // food
+//     breadLoaf = "itemConsumable_breadLoaf",
+//     heartyStew = "itemConsumable_heartyStew",
+//     roastedMushrooms = "itemConsumable_roastedMushrooms",
+//     appleTart = "itemConsumable_appleTart",
+//     smokedFish = "itemConsumable_smokedFish",
+//     grilledVegetables = "itemConsumable_grilledVegetables",
+//     cheeseWheel = "itemConsumable_cheeseWheel",
+//     sausageLinks = "itemConsumable_sausageLinks",
+//     roastedChicken = "itemConsumable_roastedChicken",
+//     fruitPlatter = "itemConsumable_fruitPlatter",
+//     meatPie = "itemConsumable_meatPie",
+//     honeyBread = "itemConsumable_honeyBread",
+//     berryPastry = "itemConsumable_berryPastry",
+//     vegetableSoup = "itemConsumable_vegetableSoup",
+//     spicedPotatoes = "itemConsumable_spicedPotatoes",
+//     // drink
+//     herbalTea = "itemConsumable_herbalTea",
+//     freshSpringWater = "itemConsumable_freshSpringWater",
+//     sweetBerryJuice = "itemConsumable_sweetBerryJuice",
+//     spicedAle = "itemConsumable_spicedAle",
+//     milk = "itemConsumable_milk",
+//     // potion
+//     basicHealingPotion = "itemConsumable_basicHealingPotion",
+//     energyTonic = "itemConsumable_energyTonic",
+//     calmingDraught = "itemConsumable_calmingDraught",
+//     minorManaPotion = "itemConsumable_minorManaPotion",
+//     basicAntidote = "itemConsumable_basicAntidote",
+//     // salve
+//     soothingBalm = "itemConsumable_soothingBalm",
+//     herbalWoundSalve = "itemConsumable_herbalWoundSalve",
+
+//     // Uncommon
+//     // food
+//     spicedLambChops = "itemConsumable_spicedLambChops",
+//     glazedPheasant = "itemConsumable_glazedPheasant",
+//     dragonfruitSalad = "itemConsumable_dragonfruitSalad",
+//     caramelizedOnionTart = "itemConsumable_caramelizedOnionTart",
+//     grilledSalmon = "itemConsumable_grilledSalmon",
+//     butteredCrabClaws = "itemConsumable_butteredCrabClaws",
+//     mushroomRisotto = "itemConsumable_mushroomRisotto",
+//     smokedVenison = "itemConsumable_smokedVenison",
+//     wildBoarSteak = "itemConsumable_wildBoarSteak",
+//     stuffedBellPeppers = "itemConsumable_stuffedBellPeppers",
+//     goldenBerryTart = "itemConsumable_goldenBerryTart",
+//     candiedNuts = "itemConsumable_candiedNuts",
+//     roastedHerbPotatoes = "itemConsumable_roastedHerbPotatoes",
+//     honeyGlazedDuck = "itemConsumable_honeyGlazedDuck",
+//     citrusCuredHam = "itemConsumable_citrusCuredHam",
+//     // drink
+//     elvenWine = "itemConsumable_elvenWine",
+//     dwarvenStout = "itemConsumable_dwarvenStout",
+//     spicedMulledWine = "itemConsumable_spicedMulledWine",
+//     enchantedSpringWater = "itemConsumable_enchantedSpringWater",
+//     sparklingCitrusJuice = "itemConsumable_sparklingCitrusJuice",
+//     // potion
+//     strongHealingPotion = "itemConsumable_strongHealingPotion",
+//     energyElixir = "itemConsumable_energyElixir",
+//     focusTonic = "itemConsumable_focusTonic",
+//     manaElixir = "itemConsumable_manaElixir",
+//     antidoteBrew = "itemConsumable_antidoteBrew",
+//     // salve
+//     rejuvenatingSalve = "itemConsumable_rejuvenatingSalve",
+//     fireResistantOintment = "itemConsumable_fireResistantOintment",
+
+//     // Rare
+//     // food
+//     phoenixEggOmelette = "itemConsumable_phoenixEggOmelette",
+//     truffleSteak = "itemConsumable_truffleSteak",
+//     starfruitSorbet = "itemConsumable_starfruitSorbet",
+//     enchantedPumpkinPie = "itemConsumable_enchantedPumpkinPie",
+//     celestialLambRoast = "itemConsumable_celestialLambRoast",
+//     emberGrilledEel = "itemConsumable_emberGrilledEel",
+//     frostLotusSalad = "itemConsumable_frostLotusSalad",
+//     dragonTailStew = "itemConsumable_dragonTailStew",
+//     lavaSpiceCrab = "itemConsumable_lavaSpiceCrab",
+//     silverleafSalmon = "itemConsumable_silverleafSalmon",
+//     // drink
+//     sunfireAle = "itemConsumable_sunfireAle",
+//     moonlightTea = "itemConsumable_moonlightTea",
+//     frozenWine = "itemConsumable_frozenWine",
+//     mysticElixir = "itemConsumable_mysticElixir",
+//     arcaneBrew = "itemConsumable_arcaneBrew",
+//     // potion
+//     elixirOfThePhoenix = "itemConsumable_elixirOfThePhoenix",
+//     manaRegenerationPotion = "itemConsumable_manaRegenerationPotion",
+//     giantStrengthPotion = "itemConsumable_giantStrengthPotion",
+//     stormEssencePotion = "itemConsumable_stormEssencePotion",
+//     shadowVeilPotion = "itemConsumable_shadowVeilPotion",
+//     // salve
+//     ethericHealingSalve = "itemConsumable_ethericHealingSalve",
+//     shadowGuardSalve = "itemConsumable_shadowGuardSalve",
+//     // oil
+//     dragonOil = "itemConsumable_dragonOil",
+//     frostbiteOil = "itemConsumable_frostbiteOil",
+//     // coatingSolution
+//     arcaneResonanceCoating = "itemConsumable_arcaneResonanceCoating",
+//     solarflareCoating = "itemConsumable_solarflareCoating",
+//     // rune
+//     runeOfFortitude = "itemConsumable_runeOfFortitude",
+//     runeOfTheStorm = "itemConsumable_runeOfTheStorm",
+//     // powder
+//     elementalPowder = "itemConsumable_elementalPowder",
+//     astralDust = "itemConsumable_astralDust",
+
+//     // Epic
+//     // food
+//     celestialFruitSalad = "itemConsumable_celestialFruitSalad",
+//     leviathanSteak = "itemConsumable_leviathanSteak",
+//     draconicSpicePlatter = "itemConsumable_draconicSpicePlatter",
+//     // drink
+//     etherealElixir = "itemConsumable_etherealElixir",
+//     voidwine = "itemConsumable_voidwine",
+//     // potion
+//     soulfirePotion = "itemConsumable_soulfirePotion",
+//     starryNightDraught = "itemConsumable_starryNightDraught",
+//     chiHarmonyElixir = "itemConsumable_chiHarmonyElixir",
+//     grandArcanePotion = "itemConsumable_grandArcanePotion",
+//     // salve
+//     divineHealingBalm = "itemConsumable_divineHealingBalm",
+//     abyssalSalve = "itemConsumable_abyssalSalve",
+//     // oil
+//     celestialBladeOil = "itemConsumable_celestialBladeOil",
+//     infernoOil = "itemConsumable_infernoOil",
+//     // coatingSolution
+//     phoenixWingCoating = "itemConsumable_phoenixWingCoating",
+//     froststormCoating = "itemConsumable_froststormCoating",
+//     // rune
+//     runeOfTranscendence = "itemConsumable_runeOfTranscendence",
+//     runeOfTheVoid = "itemConsumable_runeOfTheVoid",
+//     // powder
+//     essenceOfDragonscale = "itemConsumable_essenceOfDragonscale",
+//     celestialGlowPowder = "itemConsumable_celestialGlowPowder",
+
+//     // Legendary
+//     // food
+//     ambrosiaFeast = "itemConsumable_ambrosiaFeast",
+//     worldTreeFruit = "itemConsumable_worldTreeFruit",
+//     // drink
+//     draughtOfImmortality = "itemConsumable_draughtOfImmortality",
+//     elixirOfTheSun = "itemConsumable_elixirOfTheSun",
+//     // potion
+//     dragonHeartElixir = "itemConsumable_dragonHeartElixir",
+//     essenceOfLight = "itemConsumable_essenceOfLight",
+//     celestialManaElixir = "itemConsumable_celestialManaElixir",
+//     // salve
+//     phoenixAshSalve = "itemConsumable_phoenixAshSalve",
+//     eternalBloomBalm = "itemConsumable_eternalBloomBalm",
+//     // oil
+//     orichalcumWeaponOil = "itemConsumable_orichalcumWeaponOil",
+//     starlightOil = "itemConsumable_starlightOil",
+//     // coatingSolution
+//     netherVoidCoating = "itemConsumable_netherVoidCoating",
+//     lightweaverCoating = "itemConsumable_lightweaverCoating",
+//     // rune
+//     runeOfAscension = "itemConsumable_runeOfAscension",
+//     runeOfTheEternalFlame = "itemConsumable_runeOfTheEternalFlame",
+//     // powder
+//     powderedDragonBone = "itemConsumable_powderedDragonBone",
+//     essenceOfTheStars = "itemConsumable_essenceOfTheStars",
+
+//     // Unique
+//     // potion
+//     voidEssenceElixir = "itemConsumable_voidEssenceElixir",
+//     oracleGemPotion = "itemConsumable_oracleGemPotion",
+//     abyssalShardBrew = "itemConsumable_abyssalShardBrew",
+//     titanstoneTonic = "itemConsumable_titanstoneTonic",
+//     // salve
+//     soulBindingSalve = "itemConsumable_soulBindingSalve",
+//     // oil
+//     titanstoneOil = "itemConsumable_titanstoneOil",
+//     spiritwoodOil = "itemConsumable_spiritwoodOil",
+//     // coatingSolution
+//     heartwoodCoating = "itemConsumable_heartwoodCoating",
+//     timeweaverSilkCoating = "itemConsumable_timeweaverSilkCoating",
+//     // rune
+//     runeOfEternalHarmony = "itemConsumable_runeOfEternalHarmony",
+//     // powder
+//     abyssWeavePowder = "itemConsumable_abyssWeavePowder",
+//     oracleGemDust = "itemConsumable_oracleGemDust",
+
+//     // Divine
+//     // food
+//     ambrosiaSoup = "itemConsumable_ambrosiaSoup",
+//     // potion
+//     godsbloodPotion = "itemConsumable_godsbloodPotion",
+//     essenceOfEternity = "itemConsumable_essenceOfEternity",
+//     celestialTearsPotion = "itemConsumable_celestialTearsPotion",
+//     // salve
+//     galaxyDustSalve = "itemConsumable_galaxyDustSalve",
+//     // coatingSolution
+//     aetheriumCoating = "itemConsumable_aetheriumCoating",
+//     // rune
+//     runeOfAether = "itemConsumable_runeOfAether",
+//     // powder
+//     stardustPowder = "itemConsumable_stardustPowder",
+// }
+
+
+// export const ItemConsumableSeed: ItemConsumableArchetype[] = [
 //     // MARK: Common
 // 	// Common Food
 // 	new ItemConsumableArchetype({
@@ -2296,24 +2285,24 @@ export const ItemConsumableSeed: ItemConsumableArchetype[] = [
 //         baseEffectDuration: 19,
 //         consumedAfterUse: true,
 //     }),
-];
+// ];
 
-export async function createItemConsumableTableIfNotExists() {
-    const tableName = 'ItemConsumables';
-    const tableStructure = `
-         id TEXT PRIMARY KEY,
-        name TEXT NOT NULL,
-        description TEXT,
-        type TEXT,
-        image TEXT,
-        cost INTEGER,
-        weight INTEGER,
-        tier TEXT,
-        effects TEXT,
-        baseEffectMagnitude INTEGER,
-        baseEffectDuration INTEGER,
-        consumedAfterUse BOOLEAN
-    `;
+// export async function createItemConsumableTableIfNotExists() {
+//     const tableName = 'ItemConsumables';
+//     const tableStructure = `
+//          id TEXT PRIMARY KEY,
+//         name TEXT NOT NULL,
+//         description TEXT,
+//         type TEXT,
+//         image TEXT,
+//         cost INTEGER,
+//         weight INTEGER,
+//         tier TEXT,
+//         effects TEXT,
+//         baseEffectMagnitude INTEGER,
+//         baseEffectDuration INTEGER,
+//         consumedAfterUse BOOLEAN
+//     `;
     
-    await createTableIfNotExists(tableName, tableStructure, ItemConsumableSeed, 'id')
-}
+//     await createTableIfNotExists(tableName, tableStructure, ItemConsumableSeed, 'id')
+// }

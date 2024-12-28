@@ -1,6 +1,6 @@
-import { ItemType } from "../../../../Common/Enums/Item/EquipmentTypes";
-import { ResourceDTO } from "../Equipments/InterfacesAndEnums/DTOs";
 import { Item } from "../Items";
+import { ItemType } from "../../../../Common/DTOsEnumsInterfaces/Item/Enums";
+import { ResourceDTO } from "../../../../Common/DTOsEnumsInterfaces/Item/Resource/DTOs";
 
 export class Resource extends Item {
     constructor(dto: ResourceDTO) {

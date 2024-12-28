@@ -1,7 +1,7 @@
 import { AttributeEnum } from "../../Entities/Character/Subclasses/CharacterDataEnum";
 import { TraitEnum } from "../../Entities/Traits/Trait";
-import { EquipmentType, GearType, WeaponType } from "../../../Common/Enums/Item/EquipmentTypes";
-import { Tier } from "../../Utility/Tier";
+import { EquipmentType, GearType, WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
+import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
 import { ResourceRequirement } from "./enums";
 
 export class GearArchetype {
