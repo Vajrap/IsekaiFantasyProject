@@ -4,6 +4,9 @@
 import { SkillEnum } from "../../../Database/Skill/skill";
 import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { ClassEnum } from '../../../../Common/RequestResponse/characterCreation';
+import { WeaponEnum } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
+import { ArmorEnum, BootsEnum, GlovesEnum, HeadwearEnum } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
+import { NecklaceEnum, RingEnum } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
 
 /*
 Cleric:
@@ -91,7 +94,12 @@ export class CharacterClass {
         mainHand: any | null;
         offHand: any | null;
         armor: any | null;
-        cloth: any | null;
+        Headwear: any | null;
+        necklace: any | null;
+        gloves: any | null;
+        boots: any | null;
+        ring_R: any | null;
+        ring_L: any | null;
     };
     traits: TraitEnum[];
     bonusStats: {
@@ -144,10 +152,15 @@ export class CharacterClass {
         description: string, 
         skills: SkillEnum[], 
         gear: {
-            mainHand: GearSeedWeaponEnum | null;
-            offHand: GearSeedWeaponEnum | null;
-            armor: GearSeedArmorEnum | null;
-            cloth: ClothSeedEnum | null;
+            mainHand: WeaponEnum | null;
+            offHand: WeaponEnum | null;
+            armor: ArmorEnum | null;
+            Headwear: HeadwearEnum | null;
+            boots: BootsEnum | null;
+            gloves: GlovesEnum | null;
+            necklace: NecklaceEnum | null;
+            ring_R: RingEnum | null;
+            ring_L: RingEnum | null;
         },
         traits: TraitEnum[],
         bonusStats: {
@@ -195,10 +208,15 @@ export class CharacterClass {
                 enchanting?: number;
             },
             gears?: {
-                mainHand?: GearSeedWeaponEnum | null;
-                offHand?: GearSeedWeaponEnum | null;
-                armor?: GearSeedArmorEnum | null;
-                cloth?: ClothSeedEnum | null;
+                mainHand?: WeaponEnum | null;
+                offHand?: WeaponEnum | null;
+                armor?: ArmorEnum | null;
+                Headwear?: HeadwearEnum | null;
+                boots?: BootsEnum | null;
+                gloves?: GlovesEnum | null;
+                necklace?: NecklaceEnum | null;
+                ring_R?: RingEnum | null;
+                ring_L?: RingEnum | null;
             },
         }
     )
@@ -210,7 +228,12 @@ export class CharacterClass {
             mainHand: gear.mainHand,
             offHand: gear.offHand,
             armor: gear.armor,
-            cloth: gear.cloth,
+            Headwear: gear.Headwear,
+            boots: gear.boots,
+            gloves: gear.gloves,
+            necklace: gear.necklace,
+            ring_R: gear.ring_R,
+            ring_L: gear.ring_L,
         };
         this.traits = traits;
         this.bonusStats = {
@@ -266,10 +289,15 @@ export const class_cleric = new CharacterClass(
     'นักบวชผู้เชี่ยวชาญในการรักษาและสนับสนุนเพื่อนร่วมทีมในยามสงคราม พวกเขาเป็นแสงสว่างในความมืดที่ปกป้องและชุบชีวิต',
     [SkillEnum.skill_divine_flame, SkillEnum.skill_bless, SkillEnum.skill_heal],
     {
-        mainHand: GearSeedWeaponEnum.quarterStaff,
+        mainHand: WeaponEnum.staff_quarter,
         offHand: null,
-        armor: GearSeedArmorEnum.armor_light_leather,
-        cloth: null,
+        armor: ArmorEnum.light_leather,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_cleric_01],
     {
@@ -284,10 +312,15 @@ export const class_mage = new CharacterClass(
     'จอมเวทที่ควบคุมพลังแห่งธาตุเพื่อโจมตีและควบคุมศัตรูในสนามรบ พวกเขาเป็นตัวแทนของความรู้และพลังอันไร้ขีดจำกัด',
     [SkillEnum.skill_arcane_bolt, SkillEnum.skill_fire_ball],
     {
-        mainHand: GearSeedWeaponEnum.MagicWand,
+        mainHand: WeaponEnum.wand_magic,
         offHand: null,
         armor: null,
-        cloth: ClothSeedEnum.cloth_silk,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_mage_01],
     {
@@ -302,10 +335,15 @@ export const class_scout = new CharacterClass(
     'นักสอดแนมผู้คล่องตัวและมีไหวพริบสูง เชี่ยวชาญการต่อสู้จากระยะไกลและการสำรวจพื้นที่',
     [SkillEnum.skill_aimed_attack],
     {
-        mainHand: GearSeedWeaponEnum.shortBow,
+        mainHand: WeaponEnum.bow_short,
         offHand: null,
-        armor: GearSeedArmorEnum.armor_light_leather,
-        cloth: null,
+        armor: ArmorEnum.light_leather,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_scout_01],
     {
@@ -320,10 +358,15 @@ export const class_hexbinder = new CharacterClass(
     'นักผูกคำสาปที่ใช้พลังมืดเพื่อควบคุมศัตรูและเสริมสร้างพลังของตัวเอง',
     [SkillEnum.skill_eldritch_blast, SkillEnum.skill_curse, SkillEnum.skill_chill_touch],
     {
-        mainHand: GearSeedWeaponEnum.Orb,
+        mainHand: WeaponEnum.orb_crystal,
         offHand: null,
-        armor: GearSeedArmorEnum.armor_light_leather,
-        cloth: null,
+        armor: ArmorEnum.light_leather,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_hexbinder_01],
     {
@@ -338,10 +381,15 @@ export const class_fighter = new CharacterClass(
     'นักสู้ที่มีความสมดุลในพลังและการป้องกัน เหมาะสำหรับการต่อสู้ระยะประชิด',
     [SkillEnum.skill_power_strike],
     {
-        mainHand: GearSeedWeaponEnum.BronzeLongSword,
+        mainHand: WeaponEnum.sword_long,
         offHand: null,
-        armor: GearSeedArmorEnum.armor_light_leather,
-        cloth: null,
+        armor: ArmorEnum.medium_hide,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_fighter_01],
     {
@@ -356,10 +404,15 @@ export const class_warden = new CharacterClass(
     'ผู้พิทักษ์ธรรมชาติที่สามารถควบคุมพลังของโลกและสัตว์ป่าเพื่อปกป้องตนเองและผู้อื่น',
     [SkillEnum.skill_starry_wisp, SkillEnum.skill_entangle, SkillEnum.skill_rejuvenate],
     {
-        mainHand: GearSeedWeaponEnum.BronzeDory,
+        mainHand: WeaponEnum.spear_dory,
         offHand: null,
         armor: null,
-        cloth: ClothSeedEnum.cloth_silk,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_warden_01],
     {
@@ -374,10 +427,15 @@ export const class_guardian = new CharacterClass(
     'ผู้พิทักษ์ผู้ยืนหยัดปกป้องทีมและทนต่อการโจมตีอย่างหนัก',
     [SkillEnum.skill_taunt, SkillEnum.skill_counter_attack],
     {
-        mainHand: GearSeedWeaponEnum.BronzeShortSword,
-        offHand: GearSeedWeaponEnum.WoodenRoundShield,
-        armor: GearSeedArmorEnum.armor_light_leather,
-        cloth: null,
+        mainHand: WeaponEnum.sword_short,
+        offHand: WeaponEnum.shield_buckler,
+        armor: ArmorEnum.medium_hide,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_guardian_01],
     {
@@ -392,11 +450,15 @@ export const class_spellblade = new CharacterClass(
     'นักดาบเวทที่รวมพลังของเวทมนตร์และดาบเพื่อสร้างการโจมตีที่ทรงพลังและหลากหลาย',
     [SkillEnum.skill_arcane_sword, SkillEnum.skill_mage_reflex, SkillEnum.skill_shocking_grasp],
     {
-        mainHand: GearSeedWeaponEnum.BronzeShortSword,
+        mainHand: WeaponEnum.sword_short,
         offHand: null,
-        
-        armor: GearSeedArmorEnum.armor_light_leather,
-        cloth: null
+        armor: ArmorEnum.light_leather,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_spellblade_01],
     {
@@ -411,10 +473,15 @@ export const class_skirmisher = new CharacterClass(
     'นักลอบโจมตีที่คล่องแคล่วและร้ายกาจ เหมาะสำหรับการโจมตีศัตรูในจุดที่ไม่ทันตั้งตัว',
     [SkillEnum.skill_stealth, SkillEnum.skill_backstab],
     {
-        mainHand: GearSeedWeaponEnum.BronzeDirk,
+        mainHand: WeaponEnum.dagger_stiletto,
         offHand: null,
-        armor: GearSeedArmorEnum.armor_light_leather,
-        cloth: null
+        armor: ArmorEnum.light_padded,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_skirmisher_01],
     {
@@ -429,10 +496,15 @@ export const class_occultist = new CharacterClass(
     'นักอาคมผู้ศึกษาพลังลึกลับเพื่อควบคุมและเสริมสร้างพลังของตัวเอง',
     [SkillEnum.skill_demonic_fire, SkillEnum.skill_demonic_empowerment],
     {
-        mainHand: GearSeedWeaponEnum.Grimoire,
+        mainHand: WeaponEnum.tome_grimoire,
         offHand: null,
         armor: null,
-        cloth: ClothSeedEnum.cloth_silk
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_occultist_01],
     {
@@ -447,10 +519,15 @@ export const class_soldier = new CharacterClass(
     'นักรบผู้มีความแข็งแกร่งและวินัยในสนามรบ เชี่ยวชาญการใช้อาวุธหลากหลายประเภท',
     [SkillEnum.skill_shield_bash, SkillEnum.skill_defensive_stance],
     {
-        mainHand: GearSeedWeaponEnum.BronzeShortSword,
-        offHand: GearSeedWeaponEnum.WoodenBuckler,
-        armor: GearSeedArmorEnum.armor_light_leather,
-        cloth: null
+        mainHand: WeaponEnum.sword_short,
+        offHand: WeaponEnum.shield_buckler,
+        armor: ArmorEnum.medium_hide,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_soldier_01],
     {
@@ -465,10 +542,15 @@ export const class_templar = new CharacterClass(
     'นักรบศักดิ์สิทธิ์ผู้ใช้พลังแห่งแสงเพื่อปกป้องและเสริมสร้างพลังของทีม',
     [SkillEnum.skill_smite, SkillEnum.skill_bless, SkillEnum.skill_heal],
     {
-        mainHand: GearSeedWeaponEnum.BronzeClub,
-        offHand: GearSeedWeaponEnum.WoodenBuckler,
-        armor: GearSeedArmorEnum.armor_light_leather,
-        cloth: null
+        mainHand: WeaponEnum.mace_hammer,
+        offHand: WeaponEnum.shield_buckler,
+        armor: ArmorEnum.medium_hide,
+        Headwear: null,
+        boots: null,
+        gloves: null,
+        necklace: null,
+        ring_R: null,
+        ring_L: null,
     },
     [TraitEnum.trait_templar_01],
     {

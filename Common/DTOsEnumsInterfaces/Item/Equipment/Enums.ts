@@ -11,6 +11,8 @@ export enum EquipmentType {
     weapon = 'weapon',
     armor = 'armor',
     cloth = 'cloth',
-    headWear = 'headWear',
+    Headwear = 'Headwear',
     accessory = 'accessory',
+    gloves = 'gloves',
+    boots = 'boots',
 }

@@ -114,10 +114,12 @@ async function createAndSaveCharacter(
             mainHand: character.equipments.mainHand? character.equipments.mainHand.id : null,
             offHand: character.equipments.offHand? character.equipments.offHand.id : null,
             armor: character.equipments.armor? character.equipments.armor.id : null,
-            cloth: character.equipments.cloth? character.equipments.cloth.id : null,
-            headWear: character.equipments.headWear? character.equipments.headWear.id : null,
+            headwear: character.equipments.headwear? character.equipments.headwear.id : null,
+            boots: character.equipments.boots? character.equipments.boots.id : null,
+            gloves: character.equipments.gloves? character.equipments.gloves.id : null,
             necklace: character.equipments.necklace? character.equipments.necklace.id : null,
-            ring: character.equipments.ring? character.equipments.ring.id : null,
+            ring_R: character.equipments.ring_R? character.equipments.ring_R.id : null,
+            ring_L: character.equipments.ring_L? character.equipments.ring_L.id : null,
         }, // Assuming this matches CharacterEquipmentDB
         internals: character.internals.map((internal) => ({
             internal: internal.internal.id,

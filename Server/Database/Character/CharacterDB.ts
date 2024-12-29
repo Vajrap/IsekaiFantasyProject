@@ -150,10 +150,12 @@ export type CharacterEquipmentDB = {
     mainHand: string | null;
     offHand: string | null;
     armor: string | null;
-    cloth: string | null;
-    headWear: string | null;
+    headwear: string | null;
+    gloves: string | null;
+    boots: string | null;
     necklace: string | null;
-    ring: string | null;
+    ring_R: string | null;
+    ring_L: string | null;
 };
 
 export type CharacterActiveInternalBonusDB = {

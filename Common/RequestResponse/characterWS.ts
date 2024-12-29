@@ -154,10 +154,12 @@ export interface CharacterEquipmentInterface {
     mainHand: {id: string, name: string, cost: number, weight: number, description: string};
     offHand: {id: string, name: string, cost: number, weight: number, description: string};
     armor: {id: string, name: string, cost: number, weight: number, description: string};
-    cloth: {id: string, name: string, cost: number, weight: number, description: string};
-    headWear: {id: string, name: string, cost: number, weight: number, description: string};
+    headwear: {id: string, name: string, cost: number, weight: number, description: string};
+    gloves: {id: string, name: string, cost: number, weight: number, description: string};
+    boots: {id: string, name: string, cost: number, weight: number, description: string};
     necklace: {id: string, name: string, cost: number, weight: number, description: string};
-    ring: {id: string, name: string, cost: number, weight: number, description: string};
+    ring_R: {id: string, name: string, cost: number, weight: number, description: string};
+    ring_L: {id: string, name: string, cost: number, weight: number, description: string};
 };
 
 export interface CharacterInternalInterface {

@@ -56,10 +56,12 @@ export async function createCharacterFromDB(dbCharacter: CharacterDB): Promise<C
     if (dbCharacter.equipments.mainHand) { await character.equip("mainHand", dbCharacter.equipments.mainHand) }
     if (dbCharacter.equipments.offHand) { await character.equip("offHand", dbCharacter.equipments.offHand) }
     if (dbCharacter.equipments.armor) { await character.equip("armor", dbCharacter.equipments.armor) }
-    if (dbCharacter.equipments.cloth) { await character.equip("cloth", dbCharacter.equipments.cloth) }
-    if (dbCharacter.equipments.headWear) { await character.equip("headWear", dbCharacter.equipments.headWear) }
+    if (dbCharacter.equipments.headwear) { await character.equip("headwear", dbCharacter.equipments.headwear) }
+    if (dbCharacter.equipments.gloves) { await character.equip("gloves", dbCharacter.equipments.gloves) }
+    if (dbCharacter.equipments.boots) { await character.equip("boots", dbCharacter.equipments.boots) }
     if (dbCharacter.equipments.necklace) { await character.equip("necklace", dbCharacter.equipments.necklace) }
-    if (dbCharacter.equipments.ring) { await character.equip("ring", dbCharacter.equipments.ring) }
+    if (dbCharacter.equipments.ring_R) { await character.equip("ring_R", dbCharacter.equipments.ring_R) }
+    if (dbCharacter.equipments.ring_L) { await character.equip("ring_L", dbCharacter.equipments.ring_L) }
 
     if (dbCharacter.traits.length > 0) { 
         for (const trait of dbCharacter.traits) {

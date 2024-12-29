@@ -1248,11 +1248,13 @@ export class Character {
 			actorEquipment: {
 				mainHand: this.equipments.mainHand?.weaponSpecificType ?? null,
 				offHand: this.equipments.offHand?.weaponSpecificType ?? null,
-				cloth: this.equipments.cloth ? ArmorType.cloth : null,
 				armor: this.equipments.armor?.armorType ?? null,
-				headWear: this.equipments.headWear ? EquipmentType.headWear : null,
+				Headwear: this.equipments.headwear ? EquipmentType.Headwear : null,
+				gloves: this.equipments.gloves ? EquipmentType.gloves : null,
+				boots: this.equipments.boots ? EquipmentType.boots : null,
 				necklace: this.equipments.necklace ? AccessoryType.necklace : null,
-				ring: this.equipments.ring ? AccessoryType.ring : null,
+				ring_R: this.equipments.ring_R ? AccessoryType.ring : null,
+				ring_L: this.equipments.ring_L ? AccessoryType.ring : null,
 			},
 			actorStats: this.status.getStats(),
 			actorBuffs: this.buffsAndDebuffs.getBuffsAndDebuffs(),
@@ -2533,15 +2535,18 @@ export class Character {
 			| "mainHand"
 			| "offHand"
 			| "armor"
-			| "cloth"
-			| "headWear"
+			| "headwear"
+			| "gloves"
+			| "boots"
 			| "necklace"
-			| "ring",
+			| "ring_R"
+			| "ring_L",
 		equipment: string
 	): Promise<Character> {
 
 		let equipmentInstance;
 
+		// TODO: NOT GOING TO DB ANYMORE, USE IN_MEMORY EQUIPMENT
 		switch (position) {
 			case "mainHand":
 				equipmentInstance = await db.getWeapon(equipment);
@@ -2552,16 +2557,22 @@ export class Character {
 			case "armor":
 				equipmentInstance = await db.getArmor(equipment);
 				break;
-			case "cloth":
+			case "headwear":
 				equipmentInstance = await db.getArmor(equipment);
 				break;
-			case "headWear":
+			case "gloves":
+				equipmentInstance = await db.getArmor(equipment);
+				break;
+			case "boots":
 				equipmentInstance = await db.getArmor(equipment);
 				break;
 			case "necklace":
 				equipmentInstance = await db.getAccessory(equipment);
 				break;
-			case "ring":
+			case "ring_R":
+				equipmentInstance = await db.getAccessory(equipment);
+				break;
+			case "ring_L":
 				equipmentInstance = await db.getAccessory(equipment);
 				break;
 		}
@@ -2669,10 +2680,12 @@ export class Character {
 			| "mainHand"
 			| "offHand"
 			| "armor"
-			| "cloth"
-			| "headWear"
+			| "headwear"
+			| "gloves"
+			| "boots"
 			| "necklace"
-			| "ring"
+			| "ring_R"
+			| "ring_L",
 	): Character {
 		if (this.equipments[position] === null) {
 			throw new Error("No equipment to unequip");
@@ -3182,8 +3195,23 @@ export async function setCharacterStatus(
 			if (characterClass.gears.armor != null) {
 				character.equip("armor", characterClass.gears.armor);
 			}
-			if (characterClass.gears.cloth != null) {
-				character.equip("cloth", characterClass.gears.cloth);
+			if (characterClass.gears.Headwear != null) {
+				character.equip("headwear", characterClass.gears.Headwear);
+			}
+			if (characterClass.gears.gloves != null) {
+				character.equip("gloves", characterClass.gears.gloves);
+			}
+			if (characterClass.gears.boots != null) {
+				character.equip("boots", characterClass.gears.boots);
+			}
+			if (characterClass.gears.necklace != null) {
+				character.equip("necklace", characterClass.gears.necklace);
+			}
+			if (characterClass.gears.ring_R != null) {
+				character.equip("ring_R", characterClass.gears.ring_R);
+			}
+			if (characterClass.gears.ring_L != null) {
+				character.equip("ring_L", characterClass.gears.ring_L);
 			}
 			if (characterClass.traits.length > 0) {
 				for (const traitID of characterClass.traits) {
