@@ -51,3 +51,30 @@ export class Sword_Rapier extends Sword {
         super(updatedDto);
     };
 }
+
+
+// const swordBastard = new Sword_Bastard({
+//     id: 'sword_bastard',
+//     name: 'Bastard Sword',
+//     description: 'A sword that is a bastard.',
+//     image: 'sword_bastard.jpg',
+//     cost: new ItemCost(10, 0),
+//     weight: 10,
+//     tier: Tier.common,
+//     jewelSlots: 0,
+//     slottedJewels: [],
+//     maxJewelGrade: null,
+//     material: 'steel',
+//     specialTrait: [],
+//     attackStats: {
+//         physicalType: DamageTypes.slash,
+//         magicalType: DamageTypes.arcane,
+//         physicalDiceEnum: DiceEnum.OneD8,
+//         physicalDamageStat: AttributeEnum.STRENGTH,
+//         magicalDiceEnum: DiceEnum.OneD4,
+//         magicalDamageStat: AttributeEnum.PLANAR,
+//         preferredPosition: PreferredPosition.melee,
+//         handle: 1
+//     },
+//     defenseStats: {}
+// })
