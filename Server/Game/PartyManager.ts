@@ -12,4 +12,8 @@ export class PartyManager {
         if (!party) { throw new Error(`Party with ID ${partyID} not found`); }
         return party;
     }
+
+    addParty(party: Party): void {
+        this.parties.push(party);
+    }
 }

@@ -1,0 +1,71 @@
+export var CharacterStatusEnum;
+(function (CharacterStatusEnum) {
+    CharacterStatusEnum["none"] = "none";
+    // Attributes
+    CharacterStatusEnum["charisma"] = "charisma";
+    CharacterStatusEnum["luck"] = "luck";
+    CharacterStatusEnum["intelligence"] = "intelligence";
+    CharacterStatusEnum["leadership"] = "leadership";
+    CharacterStatusEnum["vitality"] = "vitality";
+    CharacterStatusEnum["willpower"] = "willpower";
+    CharacterStatusEnum["breath"] = "breath";
+    CharacterStatusEnum["planar"] = "planar";
+    CharacterStatusEnum["dexterity"] = "dexterity";
+    CharacterStatusEnum["agility"] = "agility";
+    CharacterStatusEnum["strength"] = "strength";
+    CharacterStatusEnum["endurance"] = "endurance";
+    // Proficiencies
+    CharacterStatusEnum["bareHand"] = "bareHand";
+    CharacterStatusEnum["sword"] = "sword";
+    CharacterStatusEnum["blade"] = "blade";
+    CharacterStatusEnum["dagger"] = "dagger";
+    CharacterStatusEnum["spear"] = "spear";
+    CharacterStatusEnum["mace"] = "mace";
+    CharacterStatusEnum["axe"] = "axe";
+    CharacterStatusEnum["shield"] = "shield";
+    CharacterStatusEnum["bow"] = "bow";
+    CharacterStatusEnum["magicWand"] = "magicWand";
+    CharacterStatusEnum["staff"] = "staff";
+    CharacterStatusEnum["tome"] = "tome";
+    CharacterStatusEnum["orb"] = "orb";
+    // Battlers
+    CharacterStatusEnum["pATK"] = "pATK";
+    CharacterStatusEnum["pHIT"] = "pHIT";
+    CharacterStatusEnum["pCRT"] = "pCRT";
+    CharacterStatusEnum["pDEF"] = "pDEF";
+    CharacterStatusEnum["slash"] = "slash";
+    CharacterStatusEnum["pierce"] = "pierce";
+    CharacterStatusEnum["blunt"] = "blunt";
+    CharacterStatusEnum["slashDEF"] = "slashDEF";
+    CharacterStatusEnum["pierceDEF"] = "pierceDEF";
+    CharacterStatusEnum["bluntDEF"] = "bluntDEF";
+    CharacterStatusEnum["mATK"] = "mATK";
+    CharacterStatusEnum["mHIT"] = "mHIT";
+    CharacterStatusEnum["mCRT"] = "mCRT";
+    CharacterStatusEnum["mDEF"] = "mDEF";
+    CharacterStatusEnum["chiWarmATK"] = "chiWarmATK";
+    CharacterStatusEnum["chiColdATK"] = "chiColdATK";
+    CharacterStatusEnum["chiWarmDEF"] = "chiWarmDEF";
+    CharacterStatusEnum["chiColdDEF"] = "chiColdDEF";
+    CharacterStatusEnum["dodge"] = "dodge";
+    // Elements
+    CharacterStatusEnum["order"] = "order";
+    CharacterStatusEnum["chaos"] = "chaos";
+    CharacterStatusEnum["geo"] = "geo";
+    CharacterStatusEnum["water"] = "water";
+    CharacterStatusEnum["air"] = "air";
+    CharacterStatusEnum["fire"] = "fire";
+    // New Artisans fields
+    CharacterStatusEnum["mining"] = "mining";
+    CharacterStatusEnum["smithing"] = "smithing";
+    CharacterStatusEnum["woodcutting"] = "woodcutting";
+    CharacterStatusEnum["carpentry"] = "carpentry";
+    CharacterStatusEnum["foraging"] = "foraging";
+    CharacterStatusEnum["weaving"] = "weaving";
+    CharacterStatusEnum["skinning"] = "skinning";
+    CharacterStatusEnum["tanning"] = "tanning";
+    CharacterStatusEnum["jewelry"] = "jewelry";
+    CharacterStatusEnum["cooking"] = "cooking";
+    CharacterStatusEnum["alchemy"] = "alchemy";
+    CharacterStatusEnum["enchanting"] = "enchanting";
+})(CharacterStatusEnum || (CharacterStatusEnum = {}));

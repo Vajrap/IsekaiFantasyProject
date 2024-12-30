@@ -197,36 +197,7 @@ export class Game {
             await createPartyTableIfNotExist();
 
             const parties = await db.readAll('Parties');
-            /*
-            what we got are rows of
-            {
-                partyID: string, <- primary key, same as the character id of the party's leader
-                character_1_id: string, <- id of character at position 1
-                character_2_id: string, <- id of character at position 2
-                character_3_id: string, <- id of character at position 3
-                character_4_id: string, <- id of character at position 4
-                character_5_id: string, <- id of character at position 5
-                character_6_id: string, <- id of character at position 6
-                actionsSequence: string, <- JSON string of actions sequence
-                actions_1: string, action on time 1
-                actions_2: string, action on time 2
-                actions_3: string, action on time 3
-                actions_4: string, action on time 4
-                isTraveling: boolean, <- is the party traveling
-            }
-
-            step to reproduce a party and push it into the party manager
-            1. create a party object: this needed to be done by locate the party leader and then new Party(partyLeader)
-            2. move party leader to his position in the party; this means we need to remember his position
-            3. add the rest of the party members to the party at their position
-
-
-                
-                PS.1 The actions is still not implemented, I think it still needs tweaking since we let player decided the action for a whole week and each day will have 4 time slots, that's 28 actions per week.
-                so we might need to collect them as 
-                day_1: [action_1, action_2, action_3, action_4] <--- still not what we need here
-                PS. 2 isTraveling didn't give us location, so we might need to add location to the party table.
-            */
+    
             for (const party of parties) {
                 const partyLeader = this.characterManager.getCharacterByID(party.partyID);
                 if (!partyLeader) {
@@ -234,42 +205,34 @@ export class Game {
                     continue;
                 }
                 const newParty = new Party([partyLeader]);
-                if (party.character_1_id) {
+                if (party.character_1_id != "none" && party.character_1_id != undefined) {
                     const character = this.characterManager.getCharacterByID(party.character_1_id);
                     newParty.characters[0] = character;
                 }
-                if (party.character_2_id) {
+                if (party.character_2_id != "none" && party.character_2_id != undefined) {
                     const character = this.characterManager.getCharacterByID(party.character_2_id);
                     newParty.characters[1] = character;
                 }
-                if (party.character_3_id) {
+                if (party.character_3_id != "none" && party.character_3_id != undefined) {
                     const character = this.characterManager.getCharacterByID(party.character_3_id);
                     newParty.characters[2] = character;
                 }
-                if (party.character_4_id) {
+                if (party.character_4_id != "none" && party.character_4_id != undefined) {
                     const character = this.characterManager.getCharacterByID(party.character_4_id);
                     newParty.characters[3] = character;
                 }
-                if (party.character_5_id) {
+                if (party.character_5_id != "none" && party.character_5_id != undefined) {
                     const character = this.characterManager.getCharacterByID(party.character_5_id);
                     newParty.characters[4] = character;
                 }
-                if (party.character_6_id) {
+                if (party.character_6_id != "none" && party.character_6_id != undefined) {
                     const character = this.characterManager.getCharacterByID(party.character_6_id);
                     newParty.characters[5] = character;
                 }
                 newParty.isTraveling = party.isTraveling;
-                newParty.actionsList = {
-                    day1: JSON.parse(party.day_1),
-                    day2: JSON.parse(party.day_2),
-                    day3: JSON.parse(party.day_3),
-                    day4: JSON.parse(party.day_4),
-                    day5: JSON.parse(party.day_5),
-                    day6: JSON.parse(party.day_6),
-                    day7: JSON.parse(party.day_7)
-                };
+                newParty.actionsList = party.actionsList;
                 
-                this.partyManager.parties.push(newParty);
+                this.partyManager.addParty(newParty);
             }
         } catch (error) {
             console.error('Error loading parties from database:', error);

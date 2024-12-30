@@ -7,11 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { env } from "./../../env.js";
-import { characterHandler } from "./characterHandler.js";
-import { battleHandler } from "./battlerHandler.js";
-import { gameHandler } from "./gameHandler.js";
-import { success, failure } from "./../../../Common/Lib/Result.js";
+import { env } from "Client/env";
+import { characterHandler } from "./characterHandler";
+import { battleHandler } from "./battlerHandler";
+import { gameHandler } from "./gameHandler";
+import { success, failure } from "Common/Lib/Result";
 export class WebSocketManager {
     constructor() {
         this.ws = null;
@@ -20,7 +20,6 @@ export class WebSocketManager {
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(`Connecting to WebSocket at ${env.ws()}`);
             return new Promise((resolve, reject) => {
                 this.ws = new WebSocket(env.ws());
                 this.ws.addEventListener('open', () => {
@@ -45,7 +44,6 @@ export class WebSocketManager {
             });
         });
     }
-
     send(message) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify(message));
@@ -54,20 +52,17 @@ export class WebSocketManager {
             console.error('WebSocket is not open');
         }
     }
-
     on(type, callback) {
         if (!this.eventListeners[type]) {
             this.eventListeners[type] = [];
         }
         this.eventListeners[type].push(callback);
     }
-
     trigger(type, data) {
         if (this.eventListeners[type]) {
             this.eventListeners[type].forEach((callback) => callback(data));
         }
     }
-
     startHeartbeat(interval = 30000) {
         this.stopHeartbeat();
         this.heartbeatInterval = setInterval(() => {
@@ -76,14 +71,12 @@ export class WebSocketManager {
             }
         }, interval);
     }
-
     stopHeartbeat() {
         if (this.heartbeatInterval) {
             clearInterval(this.heartbeatInterval);
             this.heartbeatInterval = null;
         }
     }
-
     handleMessage(message) {
         const [category, subType] = message.type.split('_'); // Example: "CHARACTER_CREATE"
         switch (category) {

@@ -7,9 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { popup } from "./../../classes/popup/popup.js";
-import { WebSocketManager } from "./../../classes/WS/WS.js";
-import { success } from "./../../../Common/Lib/Result.js";
+import { popup } from "Client/classes/popup/popup";
+import { WebSocketManager } from "Client/classes/WS/WS";
+import { success } from "Common/Lib/Result";
 export class GameModel {
     constructor() {
         this.playerCharacter = null;
@@ -30,13 +30,11 @@ export class GameModel {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const userID = this.getUserID();
-                console.log('User ID:', userID);
                 if (!userID.success) {
                     return;
                 }
                 // Connect WebSocket
                 const webSocketConnection = yield this.webSocketManager.connect();
-                console.log('WebSocket Connection:', webSocketConnection);
                 if (!webSocketConnection.success) {
                     popup.show('อุ๊ปส์! ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้งในภายหลัง', [
                         { label: 'ลองอีกครั้ง', action: () => window.location.reload() },

@@ -1,0 +1,65 @@
+export var ArmorType;
+(function (ArmorType) {
+    ArmorType["cloth"] = "cloth";
+    ArmorType["light"] = "light";
+    ArmorType["medium"] = "medium";
+    ArmorType["heavy"] = "heavy";
+})(ArmorType || (ArmorType = {}));
+export var ArmorEnum;
+(function (ArmorEnum) {
+    ArmorEnum["cloth_robe"] = "cloth_robe";
+    ArmorEnum["cloth_tattered"] = "cloth_tattered";
+    ArmorEnum["cloth_silk"] = "cloth_silk";
+    ArmorEnum["cloth_common"] = "cloth_common";
+    ArmorEnum["cloth_fine"] = "cloth_fine";
+    ArmorEnum["cloth_plain"] = "cloth_plain";
+    ArmorEnum["cloth_decorated"] = "cloth_decorated";
+    ArmorEnum["cloth_rugged"] = "cloth_rugged";
+    ArmorEnum["cloth_simple"] = "cloth_simple";
+    ArmorEnum["light_padded"] = "light_padded";
+    ArmorEnum["light_leather"] = "light_leather";
+    ArmorEnum["light_hide"] = "light_hide";
+    ArmorEnum["medium_studded"] = "medium_studded";
+    ArmorEnum["medium_chain"] = "medium_chain";
+    ArmorEnum["medium_scale"] = "medium_scale";
+    ArmorEnum["medium_breastplate"] = "medium_breastplate";
+    ArmorEnum["medium_half_plate"] = "medium_half_plate";
+    ArmorEnum["heavy_ring"] = "heavy_ring";
+    ArmorEnum["heavy_chain"] = "heavy_chain";
+    ArmorEnum["heavy_splint"] = "heavy_splint";
+    ArmorEnum["heavy_plate"] = "heavy_plate";
+})(ArmorEnum || (ArmorEnum = {}));
+export var HeadwearEnum;
+(function (HeadwearEnum) {
+    HeadwearEnum["cloth_cap"] = "cloth_cap";
+    HeadwearEnum["cloth_hood"] = "cloth_hood";
+    HeadwearEnum["cloth_hat"] = "cloth_hat";
+    HeadwearEnum["light_helm"] = "light_helm";
+    HeadwearEnum["light_leather_cap"] = "light_leather_cap";
+    HeadwearEnum["medium_helm"] = "medium_helm";
+    HeadwearEnum["medium_chain_coif"] = "medium_chain_coif";
+    HeadwearEnum["heavy_helm"] = "heavy_helm";
+    HeadwearEnum["heavy_full_helm"] = "heavy_full_helm";
+})(HeadwearEnum || (HeadwearEnum = {}));
+export var GlovesEnum;
+(function (GlovesEnum) {
+    GlovesEnum["cloth_gloves"] = "cloth_gloves";
+    GlovesEnum["cloth_bracers"] = "cloth_bracers";
+    GlovesEnum["light_gloves"] = "light_gloves";
+    GlovesEnum["light_leather_bracers"] = "light_leather_bracers";
+    GlovesEnum["medium_gloves"] = "medium_gloves";
+    GlovesEnum["medium_chain_bracers"] = "medium_chain_bracers";
+    GlovesEnum["heavy_gauntlets"] = "heavy_gauntlets";
+    GlovesEnum["heavy_plate_bracers"] = "heavy_plate_bracers";
+})(GlovesEnum || (GlovesEnum = {}));
+export var BootsEnum;
+(function (BootsEnum) {
+    BootsEnum["cloth_boots"] = "cloth_boots";
+    BootsEnum["cloth_slippers"] = "cloth_slippers";
+    BootsEnum["light_boots"] = "light_boots";
+    BootsEnum["light_leather_boots"] = "light_leather_boots";
+    BootsEnum["medium_boots"] = "medium_boots";
+    BootsEnum["medium_chain_boots"] = "medium_chain_boots";
+    BootsEnum["heavy_greaves"] = "heavy_greaves";
+    BootsEnum["heavy_plate_boots"] = "heavy_plate_boots";
+})(BootsEnum || (BootsEnum = {}));

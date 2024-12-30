@@ -1,3 +1,5 @@
+import { AttributeEnum } from "./AttributeEnum";
+
 export class StatusTypeEnum {
 	static readonly ATTRIBUTE = "attribute" as const;
 	static readonly PROFICIENCY = "proficiency" as const;
@@ -15,18 +17,18 @@ export interface StatusTypeMap {
 }
 
 export interface AttributeMap {
-	[AttributeEnum.CHARISMA]: number;
-	[AttributeEnum.LUCK]: number;
-	[AttributeEnum.BREATH]: number;
-	[AttributeEnum.PLANAR]: number;
-	[AttributeEnum.DEXTERITY]: number;
-	[AttributeEnum.AGILITY]: number;
-	[AttributeEnum.INTELLIGENCE]: number;
-	[AttributeEnum.LEADERSHIP]: number;
-	[AttributeEnum.STRENGTH]: number;
-	[AttributeEnum.ENDURANCE]: number;
-	[AttributeEnum.VITALITY]: number;
-	[AttributeEnum.WILLPOWER]: number;
+	[AttributeEnum.charisma]: number;
+	[AttributeEnum.luck]: number;
+	[AttributeEnum.breath]: number;
+	[AttributeEnum.planar]: number;
+	[AttributeEnum.dexterity]: number;
+	[AttributeEnum.agility]: number;
+	[AttributeEnum.intelligence]: number;
+	[AttributeEnum.leadership]: number;
+	[AttributeEnum.strength]: number;
+	[AttributeEnum.endurance]: number;
+	[AttributeEnum.vitality]: number;
+	[AttributeEnum.willpower]: number;
 }
 
 export class CoreElementEnum {

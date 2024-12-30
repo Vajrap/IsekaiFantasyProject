@@ -1178,4 +1178,20 @@ export class Party {
 			(character): character is Character => character !== "none"
 		);
 	}
+
+	toDatabase(): {
+        partyID: string;
+        characters: string[];
+        actionsList: string;
+        isTraveling: boolean;
+        location: string;
+    } {
+        return {
+            partyID: this.partyID,
+			characters: this.characters.map(character =>  character === "none" ? "none" : character.id),            
+			actionsList: JSON.stringify(this.actionsList),
+            isTraveling: this.isTraveling,
+            location: this.location,
+        };
+    }
 }

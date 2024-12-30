@@ -383,7 +383,7 @@ export const class_fighter = new CharacterClass(
     {
         mainHand: WeaponEnum.sword_long,
         offHand: null,
-        armor: ArmorEnum.medium_hide,
+        armor: ArmorEnum.medium_studded,
         Headwear: null,
         boots: null,
         gloves: null,
@@ -429,7 +429,7 @@ export const class_guardian = new CharacterClass(
     {
         mainHand: WeaponEnum.sword_short,
         offHand: WeaponEnum.shield_buckler,
-        armor: ArmorEnum.medium_hide,
+        armor: ArmorEnum.medium_studded,
         Headwear: null,
         boots: null,
         gloves: null,
@@ -521,7 +521,7 @@ export const class_soldier = new CharacterClass(
     {
         mainHand: WeaponEnum.sword_short,
         offHand: WeaponEnum.shield_buckler,
-        armor: ArmorEnum.medium_hide,
+        armor: ArmorEnum.medium_studded,
         Headwear: null,
         boots: null,
         gloves: null,
@@ -544,7 +544,7 @@ export const class_templar = new CharacterClass(
     {
         mainHand: WeaponEnum.mace_hammer,
         offHand: WeaponEnum.shield_buckler,
-        armor: ArmorEnum.medium_hide,
+        armor: ArmorEnum.medium_studded,
         Headwear: null,
         boots: null,
         gloves: null,

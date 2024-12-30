@@ -11,6 +11,7 @@ import { Party } from '../../../Entities/Party/Party';
 import { Result, success, failure } from '../../../../Common/Lib/Result'
 import { Character, setCharacterStatus } from '../../../Entities/Character/Character';
 import { CharacterDB } from '../../../Database/Character/CharacterDB';
+import { game } from '../../../server';
 
 export async function createCharacterHandler(    
     characterName: string,
@@ -170,34 +171,26 @@ async function createAndSaveCharacter(
     return success(character);
 }
 
-async function createAndSaveParty(character: Character): Promise<Result<true>> {
+async function createAndSaveParty(character: Character): Promise<Result<Party>> {
     const party = new Party([character]);
+    const dbObject = party.toDatabase();
+
     await db.writeNew(
         {
             tableName: 'Parties',
             primaryKeyColumnName: 'partyID',
-            primaryKeyValue: party.partyID,
+            primaryKeyValue: dbObject.partyID,
         },
         [
-            {dataKey: 'partyID', value: party.partyID},
-            {dataKey: 'character_1_id', value: party.characters[0] === "none" ? "none" : party.characters[0].id},
-            {dataKey: 'character_2_id', value: party.characters[1] === "none" ? "none" : party.characters[1].id},
-            {dataKey: 'character_3_id', value: party.characters[2] === "none" ? "none" : party.characters[2].id},
-            {dataKey: 'character_4_id', value: party.characters[3] === "none" ? "none" : party.characters[3].id},
-            {dataKey: 'character_5_id', value: party.characters[4] === "none" ? "none" : party.characters[4].id},
-            {dataKey: 'character_6_id', value: party.characters[5] === "none" ? "none" : party.characters[5].id},
-            {dataKey: 'day_1', value: party.actionsList.day1},
-            {dataKey: 'day_2', value: party.actionsList.day2},
-            {dataKey: 'day_3', value: party.actionsList.day3},
-            {dataKey: 'day_4', value: party.actionsList.day4},
-            {dataKey: 'day_5', value: party.actionsList.day5},
-            {dataKey: 'day_6', value: party.actionsList.day6},
-            {dataKey: 'day_7', value: party.actionsList.day7},
-            {dataKey: 'isTraveling', value: party.isTraveling},
+            { dataKey: 'partyID', value: dbObject.partyID },
+            { dataKey: 'characters', value: dbObject.characters },
+            { dataKey: 'actionsList', value: dbObject.actionsList },
+            { dataKey: 'isTraveling', value: dbObject.isTraveling },
+            { dataKey: 'location', value: dbObject.location },
         ]
     );
 
-    return success(true);
+    return success(party);
 }
 
 async function createCharacterAndParty(
@@ -228,5 +221,8 @@ async function createCharacterAndParty(
     const partyCreationProcess = await createAndSaveParty(characterCreationProcess.data);
     if (partyCreationProcess.success === false) { return failure('PARTY_CREATION_FAILED', 'Failed to create party.'); }
 
+    game.characterManager.addCharacter(characterCreationProcess.data);
+    game.partyManager.addParty(partyCreationProcess.data);
+    
     return success(true);
 }

@@ -86,6 +86,8 @@ import {
 import { CharacterInterface } from "../../../Common/RequestResponse/characterWS";
 import { Weapon } from "../Items/Equipments/Weapon/Weapon";
 import { Armor } from "../Items/Equipments/Armors/Armor";
+import { getItem, itemRepository } from "../Items/Repository";
+import { Equipment } from "../Items/Equipments/Equipment";
 
 export class Character {
 	id: string;
@@ -2544,39 +2546,41 @@ export class Character {
 		equipment: string
 	): Promise<Character> {
 
-		let equipmentInstance;
+		let equipmentInstance = getItem(equipment) as Equipment;
 
-		// TODO: NOT GOING TO DB ANYMORE, USE IN_MEMORY EQUIPMENT
-		switch (position) {
-			case "mainHand":
-				equipmentInstance = await db.getWeapon(equipment);
-				break;
-			case "offHand":
-				equipmentInstance = await db.getWeapon(equipment);
-				break;
-			case "armor":
-				equipmentInstance = await db.getArmor(equipment);
-				break;
-			case "headwear":
-				equipmentInstance = await db.getArmor(equipment);
-				break;
-			case "gloves":
-				equipmentInstance = await db.getArmor(equipment);
-				break;
-			case "boots":
-				equipmentInstance = await db.getArmor(equipment);
-				break;
-			case "necklace":
-				equipmentInstance = await db.getAccessory(equipment);
-				break;
-			case "ring_R":
-				equipmentInstance = await db.getAccessory(equipment);
-				break;
-			case "ring_L":
-				equipmentInstance = await db.getAccessory(equipment);
-				break;
+		if (equipmentInstance === undefined || equipmentInstance === null) {
+			switch (position) {
+				case "mainHand":
+					equipmentInstance = await db.getWeapon(equipment);
+					break;
+				case "offHand":
+					equipmentInstance = await db.getWeapon(equipment);
+					break;
+				case "armor":
+					equipmentInstance = await db.getArmor(equipment);
+					break;
+				case "headwear":
+					equipmentInstance = await db.getArmor(equipment);
+					break;
+				case "gloves":
+					equipmentInstance = await db.getArmor(equipment);
+					break;
+				case "boots":
+					equipmentInstance = await db.getArmor(equipment);
+					break;
+				case "necklace":
+					equipmentInstance = await db.getAccessory(equipment);
+					break;
+				case "ring_R":
+					equipmentInstance = await db.getAccessory(equipment);
+					break;
+				case "ring_L":
+					equipmentInstance = await db.getAccessory(equipment);
+					break;
+			}	
 		}
-		
+
+		// If equipment is still undefined, throw an error		
 		if (equipmentInstance === undefined || equipmentInstance === null) { throw new Error(`Equipment ${equipment} not found in database!`) }
 
 		if (this.equipments[position] !== null) {
@@ -3250,6 +3254,8 @@ export async function setCharacterStatus(
 			}
 		}
 	}
+
+	character.setBodyValue();
 
 	return character;
 }
