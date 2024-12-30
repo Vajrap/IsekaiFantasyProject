@@ -15,6 +15,8 @@ export class Accessory extends Equipment {
             spellCastingPenaltyHit: 0,
             maxJewelGrade: null,
             arcaneAptitude: 0,
+            accessoryType: dto.accessoryType ?? null,
+            specialTrait: dto.specialTrait ?? [],
             defenseStats: { ...defaultDefenseStats, ...dto.defenseStats },
             attackStats: { ...defaultAttackStats, ...dto.attackStats },
             weaponType: null,

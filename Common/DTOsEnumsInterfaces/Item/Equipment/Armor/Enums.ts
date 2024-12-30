@@ -17,43 +17,19 @@ export enum ArmorEnum {
     cloth_simple = 'cloth_simple',
     
     light_padded = 'light_padded',
-    light_padded_one = 'light_padded_one',
-    light_padded_two = 'light_padded_two',
     light_leather = 'light_leather',
-    light_leather_one = 'light_leather_one',
-    light_leather_two = 'light_leather_two',
-    light_studded = 'light_studded',
-    light_studded_one = 'light_studded_one',
-    light_studded_two = 'light_studded_two',
-
-    medium_hide = 'medium_hide',
-    medium_hide_one = 'medium_hide_one',
-    medium_hide_two = 'medium_hide_two',
+    light_hide = 'light_hide',
+    
+    medium_studded = 'medium_studded',
     medium_chain = 'medium_chain',
-    medium_chain_one = 'medium_chain_one',
-    medium_chain_two = 'medium_chain_two',
     medium_scale = 'medium_scale',
-    medium_scale_one = 'medium_scale_one',
-    medium_scale_two = 'medium_scale_two',
     medium_breastplate = 'medium_breastplate',
-    medium_breastplate_one = 'medium_breastplate_one',
-    medium_breastplate_two = 'medium_breastplate_two',
     medium_half_plate = 'medium_half_plate',
-    medium_half_plate_one = 'medium_half_plate_one',
-    medium_half_plate_two = 'medium_half_plate_two',
 
     heavy_ring = 'heavy_ring',
-    heavy_ring_one = 'heavy_ring_one',
-    heavy_ring_two = 'heavy_ring_two',
     heavy_chain = 'heavy_chain',
-    heavy_chain_one = 'heavy_chain_one',
-    heavy_chain_two = 'heavy_chain_two',
     heavy_splint = 'heavy_splint',
-    heavy_splint_one = 'heavy_splint_one',
-    heavy_splint_two = 'heavy_splint_two',
     heavy_plate = 'heavy_plate',
-    heavy_plate_one = 'heavy_plate_one',
-    heavy_plate_two = 'heavy_plate_two'
 }
 
 export enum HeadwearEnum {

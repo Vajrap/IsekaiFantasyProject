@@ -3,8 +3,8 @@ import { CharacterEquipmentInterface } from "../../../../Common/RequestResponse/
 import { Weapon } from "../../Items/Equipments/Weapon/Weapon";
 import { Armor } from "../../Items/Equipments/Armors/Armor";
 import { Headwear } from "../../Items/Equipments/Headwear/Headwear";
-import { Necklace } from "../../Items/Equipments/Accessories/Necklace";
-import { Ring } from "../../Items/Equipments/Accessories/Ring";
+import { Necklace } from "../../Items/Equipments/Accessories/Necklace/Necklace";
+import { Ring } from "../../Items/Equipments/Accessories/Ring/Ring";
 import { Gloves } from "../../Items/Equipments/Gloves/Gloves";
 import { Boots } from "../../Items/Equipments/Boots/Boots";
 export class CharacterEquipments {

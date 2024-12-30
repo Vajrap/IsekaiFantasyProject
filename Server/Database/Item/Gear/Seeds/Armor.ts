@@ -1,4 +1,3 @@
-import { EquipmentType } from "../../../../../Common/DTOsEnumsInterfaces/Item/EquipmentTypes";
 import { Tier } from "../../../../../Common/DTOsEnumsInterfaces/Tier";
 import { TraitEnum } from "../../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 

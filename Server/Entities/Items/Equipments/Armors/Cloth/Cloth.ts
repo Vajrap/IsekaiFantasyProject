@@ -1,6 +1,6 @@
-import { ArmorType } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
-import { ArmorDTO } from "../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/DTOs";
-import { Armor } from "./Armor";
+import { ArmorType } from "../../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
+import { ArmorDTO } from "../../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/DTOs";
+import { Armor } from "../Armor";
 
 export class Cloth extends Armor {
     constructor(dto: ArmorDTO) {

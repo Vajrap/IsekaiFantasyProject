@@ -5,7 +5,7 @@ import { AttributeEnum } from "../../Character/Subclasses/CharacterDataEnum";
 import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { ItemCostInterface } from "../../../../Common/DTOsEnumsInterfaces/Item/ItemCost";
 import { Item } from "../Items";
-import { JewelGrade } from "../../../../Common/DTOsEnumsInterfaces/Item/Jewel/Enums";
+import { JewelEnum, JewelGrade } from "../../../../Common/DTOsEnumsInterfaces/Item/Jewel/Enums";
 import { PreferredPosition, WeaponSpecificType, WeaponType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { ArmorType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
 import { AccessoryType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
@@ -21,7 +21,7 @@ export class Equipment extends Item {
     weaponType: WeaponType | null;
     weaponSpecificType: WeaponSpecificType | null;
     jewelSlots: number;
-    slottedJewels: [];
+    slottedJewels: JewelEnum[];
     maxJewelGrade: JewelGrade | null;
     material: string;
     spellCastingDamageMultiplier: number;
@@ -83,7 +83,7 @@ export class Equipment extends Item {
         weaponType: WeaponType | null;
         weaponSpecificType: WeaponSpecificType | null;        
         jewelSlots: number,
-        slottedJewels: [],
+        slottedJewels: JewelEnum[],
         maxJewelGrade: JewelGrade | null,
         material: string,
         spellCastingDamageMultiplier: number,
