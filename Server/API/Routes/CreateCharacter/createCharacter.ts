@@ -11,7 +11,7 @@ import { Party } from '../../../Entities/Party/Party';
 import { Result, success, failure } from '../../../../Common/Lib/Result'
 import { Character, setCharacterStatus } from '../../../Entities/Character/Character';
 import { CharacterDB } from '../../../Database/Character/CharacterDB';
-import { game } from '../../../server';
+import { game } from '../../../Game/Game';
 
 export async function createCharacterHandler(    
     characterName: string,
@@ -77,7 +77,6 @@ async function createAndSaveCharacter(
             portrait,
         }
     );
-
     await setCharacterStatus(character, className, race, background);
 
     const characterData:CharacterDB = {
@@ -223,6 +222,6 @@ async function createCharacterAndParty(
 
     game.characterManager.addCharacter(characterCreationProcess.data);
     game.partyManager.addParty(partyCreationProcess.data);
-    
+
     return success(true);
 }

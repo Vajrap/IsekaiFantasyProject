@@ -117,7 +117,7 @@ export class CharacterCreationModel {
                 characterName: characterName,
                 portrait: portrait,
                 race: this.selectedRace,
-                class: this.selectedClass,
+                className: this.selectedClass,
                 background: this.selectedBackground,
                 gender: this.selectedGender,
                 // token: localStorage.getItem('isekaiFantasy_token') || ''

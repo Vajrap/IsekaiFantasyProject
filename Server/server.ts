@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { loggerMiddleware } from './Middleware/logger';
 import { errorHandlerMiddleware } from './Middleware/errorHandler';
-import { Game } from './Game/Game';
+import { game, Game } from './Game/Game';
 import WebSocket from 'ws';
 import { WebSocketService } from './API/WebSocket/WebSocketService';
 import readline from 'readline';
@@ -64,7 +64,7 @@ const wssCore = new WebSocket.Server({ noServer: true });
 export const webSocketService = new WebSocketService(wssCore);
 
 //Game initialize
-export const game = new Game();
+// export const game = new Game();
 
 const websocketHandlers: { [key: string]: WebSocketService } = {
     '/ws': webSocketService,

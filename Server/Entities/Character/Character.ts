@@ -2545,7 +2545,6 @@ export class Character {
 			| "ring_L",
 		equipment: string
 	): Promise<Character> {
-
 		let equipmentInstance = getItem(equipment) as Equipment;
 
 		if (equipmentInstance === undefined || equipmentInstance === null) {
@@ -3150,7 +3149,6 @@ export async function setCharacterStatus(
 	raceSelected?: RaceEnum,
 	backGroundSelected?: BackgroundEnum
 ): Promise<Character> {
-
 	if (raceSelected != null && raceSelected != undefined) {
 		let characterRace = switchRace(raceSelected);
 		if (characterRace != null) {

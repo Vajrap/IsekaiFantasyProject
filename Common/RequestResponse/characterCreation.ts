@@ -2,7 +2,7 @@ export interface CreateCharacterRequest {
     characterName: string;
     portrait: string;
     race: string;
-    class: string;
+    className: string;
     background: string;
     gender: 'MALE' | 'FEMALE';
     userID: string;
