@@ -72,35 +72,23 @@ class LoginModel {
     }
     submitLogin() {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c;
+            var _a;
             try {
                 const url = `${env.ip()}/login`;
                 const jsonData = {
                     username: this.getUsernameInput(),
                     password: this.getPasswordInput()
                 };
-                const response = yield fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(jsonData)
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const raw = yield response.json();
+                const raw = yield this.fetchWithJson(url, jsonData);
                 const responseData = raw.result;
                 localStorage.setItem('isekaiFantasy_userID', (_a = responseData.userID) !== null && _a !== void 0 ? _a : '');
                 if (responseData.status === LoginResponseStatus.LoggedInWithCharacter ||
                     responseData.status === LoginResponseStatus.LoggedInWithNoCharacter) {
-                    if (responseData.token && responseData.tokenExpiredAt) {
-                        localStorage.setItem('isekaiFantasy_token', responseData.token);
-                        localStorage.setItem('isekaiFantasy_tokenExpiredAt', responseData.tokenExpiredAt);
-                    }
+                    this.saveToken(responseData);
                     this.redirectToAppropriatePage(responseData.status);
                 }
                 else {
+                    // Case: Expected Login failed. (e.g. Wrong password, user not found)
                     popup.show(responseData.status, responseData.message, [{
                             label: "ตกลง",
                             action: popup.hide.bind(popup)
@@ -108,29 +96,52 @@ class LoginModel {
                 }
             }
             catch (error) {
-                if (error instanceof TypeError) {
-                    console.log('เกิดข้อผิดพลาดเกี่ยวกับเครือข่าย:', error);
-                    popup.show('ข้อผิดพลาดทางเครือข่าย', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณหรือทดลองใหม่อีกครั้ง', [{
-                            label: 'ตกลง',
-                            action: popup.hide.bind(popup)
-                        }]);
-                }
-                else if (error instanceof Error && error.message.includes('HTTP error')) {
-                    const statusCode = error.message ? parseInt((_c = (_b = error.message.split(':').pop()) === null || _b === void 0 ? void 0 : _b.trim()) !== null && _c !== void 0 ? _c : '0') : 0;
-                    console.log(`ข้อผิดพลาด HTTP: ${statusCode}`);
-                    popup.show('ข้อผิดพลาดจากเซิร์ฟเวอร์', `เซิร์ฟเวอร์ส่งข้อผิดพลาดกลับมา (HTTP ${statusCode}) กรุณาลองใหม่อีกครั้ง`, [{
-                            label: 'ตกลง',
-                            action: popup.hide.bind(popup)
-                        }]);
-                }
-                else {
-                    console.error('ข้อผิดพลาดที่ไม่คาดคิด:', error);
-                    popup.show('ข้อผิดพลาดที่ไม่คาดคิด', 'เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง', [{
-                            label: 'ตกลง',
-                            action: popup.hide.bind(popup)
-                        }]);
-                }
+                // Case: Unexpected error
+                this._loginErrorHandler(error);
             }
+        });
+    }
+    _loginErrorHandler(error) {
+        var _a, _b;
+        if (error instanceof TypeError) {
+            console.log('เกิดข้อผิดพลาดเกี่ยวกับเครือข่าย:', error);
+            popup.show('ข้อผิดพลาดทางเครือข่าย', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณหรือทดลองใหม่อีกครั้ง', [{
+                    label: 'ตกลง',
+                    action: popup.hide.bind(popup)
+                }]);
+        }
+        else if (error instanceof Error && error.message.includes('HTTP error')) {
+            const statusCode = error.message ? parseInt((_b = (_a = error.message.split(':').pop()) === null || _a === void 0 ? void 0 : _a.trim()) !== null && _b !== void 0 ? _b : '0') : 0;
+            console.log(`ข้อผิดพลาด HTTP: ${statusCode}`);
+            popup.show('ข้อผิดพลาดจากเซิร์ฟเวอร์', `เซิร์ฟเวอร์ส่งข้อผิดพลาดกลับมา (HTTP ${statusCode}) กรุณาลองใหม่อีกครั้ง`, [{
+                    label: 'ตกลง',
+                    action: popup.hide.bind(popup)
+                }]);
+        }
+        else {
+            console.error('ข้อผิดพลาดที่ไม่คาดคิด:', error);
+            popup.show('ข้อผิดพลาดที่ไม่คาดคิด', 'เกิดข้อผิดพลาดที่ไม่คาดคิด กรุณาลองใหม่อีกครั้ง', [{
+                    label: 'ตกลง',
+                    action: popup.hide.bind(popup)
+                }]);
+        }
+    }
+    saveToken(responseData) {
+        if (responseData.token && responseData.tokenExpiredAt) {
+            localStorage.setItem('isekaiFantasy_token', responseData.token);
+            localStorage.setItem('isekaiFantasy_tokenExpiredAt', responseData.tokenExpiredAt);
+        }
+    }
+    fetchWithJson(url, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (!response.ok)
+                throw new Error(`HTTP error! status: ${response.status}`);
+            return yield response.json();
         });
     }
 }

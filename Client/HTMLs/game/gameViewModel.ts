@@ -1,5 +1,5 @@
-import { CharacterInterface } from "Common/RequestResponse/characterWS";
-import { GameModel, gameModel } from "./gameModel";
+import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
+import { GameModel, gameModel } from "../../../Client/HTMLs/game/gameModel.js";
 
 class GameViewModel {
     // Model

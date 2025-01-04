@@ -28,6 +28,7 @@ export async function createCharacterHandler(
     const nameResult = await validateCharacterName(characterName);
     if (!nameResult.success) return nameResult;
 
+
     const creationResult = await createCharacterAndParty(userID, characterName, portrait, gender, race, className, background);
     if (!creationResult.success) return creationResult;
 
@@ -77,6 +78,7 @@ async function createAndSaveCharacter(
             portrait,
         }
     );
+
     await setCharacterStatus(character, className, race, background);
 
     const characterData:CharacterDB = {
@@ -149,7 +151,7 @@ async function createAndSaveCharacter(
         baseAC: character.baseAC,
         location: character.location,
         isSummoned: character.isSummoned,
-        arcaneAptitude: 0,
+        arcaneAptitude: 100,
         bagSize: character.bagSize,
         storyFlags: character.storyFlags,
         relation: {},
@@ -184,7 +186,7 @@ async function createAndSaveParty(character: Character): Promise<Result<Party>> 
             { dataKey: 'partyID', value: dbObject.partyID },
             { dataKey: 'characters', value: dbObject.characters },
             { dataKey: 'actionsList', value: dbObject.actionsList },
-            { dataKey: 'isTraveling', value: dbObject.isTraveling },
+            { dataKey: 'isTravelling', value: dbObject.isTravelling },
             { dataKey: 'location', value: dbObject.location },
         ]
     );

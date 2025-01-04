@@ -1,8 +1,9 @@
-import { env } from "Client/env";
-import { characterHandler } from "./characterHandler";
-import { battleHandler } from "./battlerHandler";
-import { gameHandler } from "./gameHandler";
-import { Result, success, failure } from "Common/Lib/Result";
+import { env } from "../../env.js";
+import { characterHandler } from "./characterHandler.js";
+import { battleHandler } from "./battlerHandler.js";
+import { gameHandler } from "./gameHandler.js";
+import { Result, success, failure } from "../../../Common/Lib/Result.js";
+import { WebSocketMessageType } from "../../../Common/RequestResponse/webSocket.js";
 
 export class WebSocketManager {
     ws: WebSocket | null;
@@ -44,6 +45,7 @@ export class WebSocketManager {
         });
     }
 
+    // TODO: Add returning type?
     send(message: { type: string; [key: string]: any }) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify(message));
@@ -69,7 +71,8 @@ export class WebSocketManager {
         this.stopHeartbeat();
         this.heartbeatInterval = setInterval(() => {
             if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                this.send({ type: 'PING' });
+                const message = { type: WebSocketMessageType.PING };
+                this.send(message);
             }
         }, interval);
     }
@@ -84,6 +87,8 @@ export class WebSocketManager {
     handleMessage(message: { type: string; [key: string]: any }) {
         const [category, subType] = message.type.split('_'); // Example: "CHARACTER_CREATE"
         switch (category) {
+            case 'PONG':
+                break;
             case 'CHARACTER':
                 characterHandler.process(subType, message);
                 break;
@@ -92,6 +97,9 @@ export class WebSocketManager {
                 break;
             case 'GAME':
                 gameHandler.process(subType, message);
+                break;
+            case 'PARTY':
+                console.log('Party data:', message.data);
                 break;
             default:
                 console.warn(`Unhandled message type: ${message.type}`);

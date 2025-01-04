@@ -16,19 +16,28 @@ export class CharacterAlignment {
     }
 
     alignment(): CharacterAlignmentEnum {
-        let lawChaos, goodEvil = 'NEUTRAL';
+        let lawChaos: 'LAWFUL' | 'NEUTRAL' | 'CHAOTIC' = 'NEUTRAL';
+        let goodEvil: 'GOOD' | 'NEUTRAL' | 'EVIL' = 'NEUTRAL';
+
         if (this.law - this.chaos > 10) {
             lawChaos = 'LAWFUL';
         } else if (this.chaos - this.law > 10) {
             lawChaos = 'CHAOTIC';
         }
+
         if (this.good - this.evil > 10) {
             goodEvil = 'GOOD';
         } else if (this.evil - this.good > 10) {
             goodEvil = 'EVIL';
         }
-        
-        return `${lawChaos}_${goodEvil}` as CharacterAlignmentEnum;
+
+        const alignmentKey = `${lawChaos}_${goodEvil}` as keyof typeof CharacterAlignmentEnum;
+
+        if (!(alignmentKey in CharacterAlignmentEnum)) {
+            throw new Error(`Invalid alignment: ${alignmentKey}`);
+        }
+
+        return CharacterAlignmentEnum[alignmentKey];
     }
 
     intoInterface(): string{
@@ -37,13 +46,13 @@ export class CharacterAlignment {
 }
 
 export enum CharacterAlignmentEnum {
-    LAWFUL_GOOD = 'LAWFUL_GOOD',
-    LAWFUL_NEUTRAL = 'LAWFUL_NEUTRAL',
-    LAWFUL_EVIL = 'LAWFUL_EVIL',
-    NEUTRAL_GOOD = 'NEUTRAL_GOOD',
-    NEUTRAL = 'NEUTRAL',
-    NEUTRAL_EVIL = 'NEUTRAL_EVIL',
-    CHAOTIC_GOOD = 'CHAOTIC_GOOD',
-    CHAOTIC_NEUTRAL = 'CHAOTIC_NEUTRAL',
-    CHAOTIC_EVIL = 'CHAOTIC_EVIL'
+    LAWFUL_GOOD = 'คนดี มีกฎเกณฑ์',
+    LAWFUL_NEUTRAL = 'คนมีกฎเกณฑ์',
+    LAWFUL_EVIL = 'คนชั่ว มีกฎเกณฑ์',
+    NEUTRAL_GOOD = 'คนดี',
+    NEUTRAL_NEUTRAL = 'คนปกติ',
+    NEUTRAL_EVIL = 'คนชั่ว',
+    CHAOTIC_GOOD = 'คนดี ไม่มีกฎเกณฑ์',
+    CHAOTIC_NEUTRAL = 'คนไม่มีกฎเกณฑ์',
+    CHAOTIC_EVIL = 'คนชั่ว ไม่มีกฎเกณฑ์'
 }

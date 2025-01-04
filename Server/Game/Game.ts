@@ -13,6 +13,9 @@ import { createPartyTableIfNotExist } from "../Database/Party/Party";
 import { Party } from "../Entities/Party/Party";
 import { createCharacterFromDB } from "../Entities/Character/createCharacterFromDB";
 import { CharacterDB } from "../Database/Character/CharacterDB";
+import { WebSocketServer } from "ws";
+import { webSocketEvents, wss } from "../API/WebSocket/WebSocketServer";
+import { WebSocketMessageType, WebSocketPartyData } from "../../Common/RequestResponse/webSocket";
 
 export class Game {
     characterManager: CharacterManager = new CharacterManager();
@@ -21,7 +24,11 @@ export class Game {
     battles: BattleManager = new BattleManager();
     gameTime: GameTime = new GameTime(0);
     db = db;
-    constructor() {}
+    webSocketServer: WebSocketServer = wss;
+
+    constructor() {
+        this.initializeWebSocketListeners();
+    }
 
     public async start() {
         try {
@@ -86,12 +93,150 @@ export class Game {
         await this.loadQuestsFromDB();
         await this.loadDialoguesFromDB();
         await this.loadPartiesFromDB();
-        this.gameTime.startTiming();
+        
+        this.startTiming();
 
         console.log(`Server is up and running at ${new Date().toLocaleString()}`);
         console.log(`In game characters loaded: ${this.characterManager.characters.length} characters`);
         console.log(`In game parties loaded: ${this.partyManager.parties.length} parties`);
+    }
+
+    private startTiming() {
+        console.log('Game Time Started');
+        this._scheduleNextGameLoop();
+        // For testing purposes, we can use the following mock method to run the game loop every 10 seconds
+        // this.mockScheduleNextGameLoop();
+    }
+    
+    private async _scheduleNextGameLoop() {
+        await this.runGameLoop();
+
+        const now = new Date();
+        const minuteNow = now.getMinutes();
+        const hourNow = now.getHours();
+
+        console.log(`Current time: ${now.toLocaleTimeString()}`);
+        // Schedule the next game loop to run at the next quarter hour, should be 15 minutes from now        
+        let nextQuarterMinute = 0;
+        let nextQuarterHour = hourNow;
+
+        if (minuteNow >= 0 && minuteNow < 14) { nextQuarterMinute = 15};
+        if (minuteNow >= 15 && minuteNow < 29) { nextQuarterMinute = 30};
+        if (minuteNow >= 30 && minuteNow < 44) { nextQuarterMinute = 45};
+        if (minuteNow >= 45) { nextQuarterMinute = 0; nextQuarterHour += 1};
+
+        const nextScheduledTime = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            nextQuarterHour,
+            nextQuarterMinute,
+            0
+        );
+
+        const timeUntilNextQuarter = nextScheduledTime.getTime() - now.getTime();
+        console.log(`Next game loop scheduled for ${nextScheduledTime.toLocaleTimeString()}`);
+
+        setTimeout(async () => {
+            // await this.runGameLoop();
+            await this._scheduleNextGameLoop();
+        }, timeUntilNextQuarter);
+    }
+    
+    private async runGameLoop() {
+        try {
+            this.incrementGameTime();
+            this.handleGameMilestones();
+            this.processEvents();
+            this.webSocketServer.clients.forEach(client => {
+                // TODO: Implement this
+                //broadcast game state to all clients
+                // const clientParty = this.partyManager.getPartyByID(client.id); //How do we have this?
+                // if (clientParty) {
+                    // Might be somehting like
+                    // const partyData = clientParty.getPartyData();
+                    // const worldData = this.locationManager.getWorldData();
+                    // const gameData = { partyData, worldData };
+                    // broadcastGameStatus(client, gameData);
+                // }
+            })
+            // broadcastGameStatus();
+            // await this.saveGameData();
+            console.log(`Game loop executed at ${new Date().toLocaleTimeString()}`);
+        } catch (error) {
+            console.error('Error during game loop:', error);
+        }
+    }
+
+    private incrementGameTime() {
+        this.gameTime.gameDateHour += 1;
+    
+        if (this.gameTime.gameDateHour > this.gameTime.inGameHoursPerDay) {
+            this.gameTime.dayPassed += 1;
+            this.gameTime.gameDateHour = 1;
+            this.gameTime.gameDateDay += 1;
+        }
+    
+        if (this.gameTime.gameDateDay > this.gameTime.inGameDaysPerMonth) {
+            this.gameTime.gameDateDay = 1;
+            this.gameTime.gameDateMonth += 1;
+        }
+    
+        if (this.gameTime.gameDateMonth > this.gameTime.inGameMonthsPerYear) {
+            this.gameTime.gameDateMonth = 1;
+            this.gameTime.gameDateYear += 1;
+        }
+    }
+
+    private handleGameMilestones() {
+        const { gameDateHour, gameDateDay, gameDateMonth } = this.gameTime;
+    
+        // Handle hourly milestones
+        switch (gameDateHour) {
+            case 1: console.log("Morning Phase"); break;
+            case 2: console.log("Afternoon Phase"); break;
+            case 3: console.log("Evening Phase"); break;
+            case 4: console.log("Night Phase"); break;
+        }
+    
+        // Handle daily, weekly, monthly, and yearly milestones
+        if (gameDateHour === 1) console.log(`Start of a new day: ${gameDateDay}/${gameDateMonth}`);
+        if (gameDateDay === 1 && 
+            gameDateHour === 1
+        ) console.log("Start of a new week");
+        if (gameDateDay === 7 && 
+            gameDateHour === this.gameTime.inGameHoursPerDay
+        ) console.log("End of the week");
+        if (gameDateDay === this.gameTime.inGameDaysPerMonth && 
+            gameDateDay === this.gameTime.inGameDaysPerMonth && 
+            gameDateHour === this.gameTime.inGameHoursPerDay
+        ) console.log("End of the month");
+        if (gameDateMonth === 1 &&
+            gameDateDay === 1 &&
+            gameDateHour === 1
+        ) console.log("Start of the new year");
+    }
+
+    private processEvents() {
+        // TODO: Add specific game events (e.g., travel updates, random encounters)
+        // TODO: Random Events according to party's location.
+        // TODO: Update Traveling Parties.
+
         
+        // Might be things like 
+        // await this.partyManager.randomEncounter();
+        // await this.partyManager.updateTravelingParties();
+    
+        // Then, broadCastGameStatus, this one would send the game state to all the websocket clients.
+
+    }
+    
+
+    private stopTiming() {
+        if (this.gameTime.timerInterval) {
+            clearInterval(this.gameTime.timerInterval);
+            this.gameTime.timerInterval = null;
+        }
     }
 
     //MARK: DATABASE METHODS
@@ -229,7 +374,7 @@ export class Game {
                     const character = this.characterManager.getCharacterByID(party.character_6_id);
                     newParty.characters[5] = character;
                 }
-                newParty.isTraveling = party.isTraveling;
+                newParty.isTravelling = party.isTravelling;
                 newParty.actionsList = party.actionsList;
                 
                 this.partyManager.addParty(newParty);
@@ -270,6 +415,67 @@ export class Game {
             fromParty.characters = fromParty.characters.filter(char => char !== characterID);
             toParty.addCharacterToParty(character);
         }
+    }
+
+
+    // MARK: WS Listener
+    initializeWebSocketListeners() {
+        webSocketEvents.on("userConnected", this.handleUserConnected.bind(this));
+    }
+
+    handleUserConnected({ userID, ws }: { userID: string, ws: WebSocket }) {
+        // send party data
+        const partyData = this.partyManager.getPartyByID(userID).intoInterface();
+        const message: WebSocketPartyData = {
+            type: WebSocketMessageType.PARTY_DATA,
+            data: partyData
+        }
+        
+        if (partyData) {
+            ws.send(JSON.stringify(message));
+        }
+
+        console.log(`User connected: ${userID}`);
+    }
+
+    // MARK: TESTING METHODS
+    private async mockScheduleNextGameLoop() {
+        const now = new Date();
+        const secondNow = now.getSeconds();
+        let minuteNow = now.getMinutes();
+        let nextIntervalSecond = 0;
+    
+        if (secondNow >= 0 && secondNow < 9) {
+            nextIntervalSecond = 10;
+        } else if (secondNow >= 10 && secondNow < 19) {
+            nextIntervalSecond = 20;
+        } else if (secondNow >= 20 && secondNow < 29) {
+            nextIntervalSecond = 30;
+        } else if (secondNow >= 30 && secondNow < 39) {
+            nextIntervalSecond = 40;
+        } else if (secondNow >= 40 && secondNow < 49) {
+            nextIntervalSecond = 50;
+        } else if (secondNow >= 50) {
+            nextIntervalSecond = 0;
+            minuteNow += 1;
+        }
+    
+        const nextScheduledTime = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            now.getHours(),
+            minuteNow,
+            nextIntervalSecond
+        );
+    
+        const timeUntilNextInterval = nextScheduledTime.getTime() - now.getTime();
+        console.log(`Next mocked game loop scheduled for ${nextScheduledTime.toLocaleTimeString()}`);
+    
+        setTimeout(async () => {
+            await this.runGameLoop();
+            await this.mockScheduleNextGameLoop();
+        }, timeUntilNextInterval);
     }
 }
 

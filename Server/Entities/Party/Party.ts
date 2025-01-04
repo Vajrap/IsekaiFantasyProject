@@ -4,6 +4,7 @@ import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, Tar
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
+import { PartyInterface } from "../../../Common/RequestResponse/characterWS";
 
 export class Party {
 	partyID: string;
@@ -34,7 +35,7 @@ export class Party {
 		day7: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
 	};
 	isTemporarilyBattleScenePartyForTargeting: boolean = false;
-	isTraveling: boolean = false;
+	isTravelling: boolean = false;
 	// Should move to LocationEnum
 	location: string = "None";
 	// travelManager: TravelManager;
@@ -1183,15 +1184,27 @@ export class Party {
         partyID: string;
         characters: string[];
         actionsList: string;
-        isTraveling: boolean;
+        isTravelling: boolean;
         location: string;
     } {
         return {
             partyID: this.partyID,
 			characters: this.characters.map(character =>  character === "none" ? "none" : character.id),            
 			actionsList: JSON.stringify(this.actionsList),
-            isTraveling: this.isTraveling,
+            isTravelling: this.isTravelling,
             location: this.location,
         };
     }
+
+	intoInterface(): PartyInterface {
+		return {
+			partyID: this.partyID,
+			location: this.location,
+			isTravelling: this.isTravelling,
+			characters: this.characters.map(character => character === "none" ? "none" : character.intoInterface()),
+			// TODO: Implement actionsSequence
+			actionsSequence: [],
+			actionsList: this.actionsList,
+		}
+	}
 }

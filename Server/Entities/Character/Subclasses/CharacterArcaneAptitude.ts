@@ -5,12 +5,12 @@ export class CharacterArcaneAptitude {
     }
 
     decreaseAptitude(amount: number) {
-        this.aptitude -= amount
+        this.aptitude = Math.max(0, this.aptitude - amount)
         return this.aptitude
     }
 
     increaseAptitude(amount: number) {
-        this.aptitude += amount
+        this.aptitude = Math.min(200, this.aptitude + amount)
         return this.aptitude
     }
 
@@ -32,14 +32,22 @@ export class CharacterArcaneAptitude {
     }
 
     getArcaneAptitudeDescription(): string {
-        if (this.aptitude < 20) return 'ไม่เป็นสื่อเวทย์มนตร์';
-        if (this.aptitude < 50) return 'เป็นสื่อเวทย์มนตร์เล็กน้อย';
-        if (this.aptitude < 80) return 'เป็นสื่อเวทย์มนตร์ปานกลาง';
-        if (this.aptitude < 100) return 'เป็นสื่อเวทย์มนตร์สูง';
+        if (this.aptitude < 40) return 'ไม่เป็นสื่อเวทย์มนตร์';
+        if (this.aptitude < 80) return 'เป็นสื่อเวทย์มนตร์เล็กน้อย';
+        if (this.aptitude < 120) return 'เป็นสื่อเวทย์มนตร์ปานกลาง';
+        if (this.aptitude < 160) return 'เป็นสื่อเวทย์มนตร์สูง';
         return 'สื่อเวทย์มนตร์สมบูรณ์แบบ';
     }
 
     intoInterface(): string {
         return this.getArcaneAptitudeDescription();
     }
+}
+
+export enum arcaneAptitudeEnum {
+    noMagic = 'ไม่เป็นสื่อเวทย์มนตร์',
+    lowMagic = 'เป็นสื่อเวทย์มนตร์เล็กน้อย',
+    mediumMagic = 'เป็นสื่อเวทย์มนตร์ปานกลาง',
+    highMagic = 'เป็นสื่อเวทย์มนตร์สูง',
+    fullMagic = 'สื่อเวทย์มนตร์สมบูรณ์แบบ'
 }

@@ -7,11 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { env } from "../../../Client/env.js";
-import { characterHandler } from "../../../Client/classes/WS/characterHandler.js";
-import { battleHandler } from "../../../Client/classes/WS/battlerHandler.js";
-import { gameHandler } from "../../../Client/classes/WS/gameHandler.js";
+import { env } from "../../env.js";
+import { characterHandler } from "./characterHandler.js";
+import { battleHandler } from "./battlerHandler.js";
+import { gameHandler } from "./gameHandler.js";
 import { success, failure } from "../../../Common/Lib/Result.js";
+import { WebSocketMessageType } from "../../../Common/RequestResponse/webSocket.js";
 export class WebSocketManager {
     constructor() {
         this.ws = null;
@@ -44,6 +45,7 @@ export class WebSocketManager {
             });
         });
     }
+    // TODO: Add returning type?
     send(message) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) {
             this.ws.send(JSON.stringify(message));
@@ -67,7 +69,8 @@ export class WebSocketManager {
         this.stopHeartbeat();
         this.heartbeatInterval = setInterval(() => {
             if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-                this.send({ type: 'PING' });
+                const message = { type: WebSocketMessageType.PING };
+                this.send(message);
             }
         }, interval);
     }
@@ -80,6 +83,8 @@ export class WebSocketManager {
     handleMessage(message) {
         const [category, subType] = message.type.split('_'); // Example: "CHARACTER_CREATE"
         switch (category) {
+            case 'PONG':
+                break;
             case 'CHARACTER':
                 characterHandler.process(subType, message);
                 break;
@@ -88,6 +93,9 @@ export class WebSocketManager {
                 break;
             case 'GAME':
                 gameHandler.process(subType, message);
+                break;
+            case 'PARTY':
+                console.log('Party data:', message.data);
                 break;
             default:
                 console.warn(`Unhandled message type: ${message.type}`);

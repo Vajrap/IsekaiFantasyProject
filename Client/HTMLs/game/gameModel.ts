@@ -1,14 +1,17 @@
-import { popup } from "Client/classes/popup/popup";
-import { WebSocketManager } from "Client/classes/WS/WS";
-import { Result, success } from "Common/Lib/Result";
-import { CharacterInterface } from "Common/RequestResponse/characterWS";
+// import { popup } from "../../classes/popup/popup.js";
+import { popup } from "../../classes/popup/popup.js";
+import { WebSocketManager } from "../../classes/WebSocket/WebSocket.js";
+// import { Result, success } from "../../../Common/Lib/Result.js";
+import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
+import { WebSocketConnectRequest, WebSocketMessageType } from "../../../Common/RequestResponse/webSocket.js";
+import { Result, success } from "../../../Common/Lib/Result.js";
 
 export class GameModel {
     playerCharacter: CharacterInterface | null;
     companionCharacters: CharacterInterface[];
     // battleReports: BattlerReport[];
     eventManager: EventManager | null;
-    webSocketManager: WebSocketManager;
+    webSocketManager: WebSocketManager = new WebSocketManager();
 
     private constructor() {
         this.playerCharacter = null;
@@ -16,7 +19,6 @@ export class GameModel {
         // this.battleReports = [];
         this.eventManager = null;
         // this.battleManager = null;
-        this.webSocketManager = new WebSocketManager();
     }
 
     static async create(): Promise<GameModel> {
@@ -26,51 +28,40 @@ export class GameModel {
     }
 
     async initiate() {
-        try {
-            const userID = this.getUserID();
-            if (!userID.success) {
-                return;
-            }
-            // Connect WebSocket
-            const webSocketConnection = await this.webSocketManager.connect();
-            if (!webSocketConnection.success) {
-                popup.show(
-                    'อุ๊ปส์! ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
-                    'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้งในภายหลัง',
-                    [
-                        { label: 'ลองอีกครั้ง', action: () => window.location.reload() },
-                        { label: 'ออกจากเกม', action: () => window.location.href = '/index.html' }
-                    ]
-                );
-                return; // Exit initialization if WebSocket fails
-            }
-            
-            // Fetch character data
-            const characterResult = await this.fetchCharacterData(userID.data);
-            if (!characterResult.success) {
-                popup.show(
-                    'อุ๊ปส์! ไม่สามารถดึงข้อมูลตัวละครได้',
-                    'เกิดข้อผิดพลาดในการดึงข้อมูลตัวละคร กรุณาลองใหม่อีกครั้ง',
-                    [
-                        { label: 'ลองอีกครั้ง', action: () => window.location.reload() },
-                        { label: 'ออกจากเกม', action: () => window.location.href = '/index.html' }
-                    ]
-                );
-                return;
-            }
+        console.log(`GameModel initiated`);
 
-            this.initializeEventManager();
-        } catch (error) {
-            console.error('Initialization failed:', error);
+        const userID = this.getUserID();
+        if (!userID.success) { 
             popup.show(
-                'เกิดข้อผิดพลาด',
-                'การเริ่มต้นระบบล้มเหลว กรุณาลองใหม่',
+                'อุ๊ปส์ เกิดปัญหาบางอย่าง',
+                'ไม่พบ User ID ในระบบ กรุณาลองเข้าสู่ระบบใหม่อีกครั้ง',
+                [
+                    { label: 'ลองอีกครั้ง', action: () => window.location.href = '/index.html' },
+                ]
+            )
+            return; 
+        }
+       
+        // Connect WebSocket
+        const webSocketConnection = await this.webSocketManager.connect();
+
+        if (!webSocketConnection.success) {
+            popup.show(
+                'อุ๊ปส์! ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+                'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้งในภายหลัง',
                 [
                     { label: 'ลองอีกครั้ง', action: () => window.location.reload() },
                     { label: 'ออกจากเกม', action: () => window.location.href = '/index.html' }
                 ]
             );
-        }        
+            return;
+        } else {
+            const connectMessage: WebSocketConnectRequest = {
+                type: WebSocketMessageType.CONNECT,
+                userID: userID.data
+            };
+            this.webSocketManager.send(connectMessage);
+        };
     }
 
     getUserID(): Result<string> {
@@ -87,30 +78,6 @@ export class GameModel {
             return fail('User ID not found');
         }
         return success(userID);
-    }
-
-    async fetchCharacterData(userID: string): Promise<Result<CharacterInterface>> {
-        return new Promise((resolve) => {
-            this.webSocketManager.send({
-                type: 'GET_CHARACTER',
-                userID: userID
-            });
-
-            this.webSocketManager.on('CHARACTER_RESPONSE', (message: any) => {
-                console.log('Character data received:', message);
-                this.playerCharacter = message.character;
-                resolve(success(message.character));
-            });
-
-            this.webSocketManager.on('ERROR', (message: any) => {
-                console.error('Server Error:', message.message);
-                resolve(fail('message.message'));
-            });
-        });
-    }
-
-    initializeEventManager() {
-        this.eventManager = new EventManager(this);
     }
 }
 

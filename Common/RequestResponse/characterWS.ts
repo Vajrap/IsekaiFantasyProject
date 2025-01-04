@@ -14,7 +14,7 @@ export interface PartyInterface {
     partyID: string;
     location: string;
     isTravelling: boolean;
-    characters: CharacterInterface[]; // Simplified character data for each party member
+    characters: (CharacterInterface | "none")[]; // Simplified character data for each party member
     actionsSequence: string[]; // List of action names or enums
     actionsList: { [time: number]: string | null }; // Action schedule
 }

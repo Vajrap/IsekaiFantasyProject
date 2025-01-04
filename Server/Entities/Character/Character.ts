@@ -40,7 +40,6 @@ import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { StoryFlags } from "../../Game/StoryEvent/StoryFlags";
 import { getSkillFromDB, Skill } from "../Skills/Skill";
 import { AccessoryType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
-import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
 import { EquipmentType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
 import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { db } from "../../Database";
@@ -2959,8 +2958,8 @@ export class Character {
 			type: this.type,
 			gender: this.gender,
 			portrait: this.portrait,
-			background: this.background,
-			race: this.race,
+			background: BackgroundEnum[this.background as keyof typeof BackgroundEnum],
+			race: RaceEnum[this.race as keyof typeof RaceEnum],
 			alignment: this.alignment.intoInterface(),
 			mood: this.mood,
 			energy: this.energy,
@@ -3164,6 +3163,7 @@ export async function setCharacterStatus(
 				character.gainTrait(trait);
 			}
 		}
+		character.race = raceSelected;
 	}
 
 	if (classSelected != null && classSelected != undefined) {
@@ -3251,6 +3251,8 @@ export async function setCharacterStatus(
 				character.gainTrait(trait);
 			}
 		}
+
+		character.background = backGroundSelected;
 	}
 
 	character.setBodyValue();
