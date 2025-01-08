@@ -1,9 +1,13 @@
+import { CharacterInterface } from "Common/RequestResponse/characterWS";
+
 class GameMenu {
+    isPopupVisible: boolean;
+
     constructor() {
         this.isPopupVisible = false;
     }
 
-    showCharacterInfo(character, type) {
+    showCharacterInfo(character: CharacterInterface, type: 'player' | 'companion') {
         const characterCard = new CharacterCard(character).card;
         const popupScreen = this.getCharacterInfoPopupScreen();
 
@@ -44,7 +48,7 @@ class GameMenu {
         return containerElement;
     }
 
-    makeCharacterInfoButton(button) {
+    makeCharacterInfoButton(button: { label: string, action: () => void }) {
         const buttonElement = document.createElement('button');
         buttonElement.classList.add('gameMenu-popup-button');
         buttonElement.textContent = button.label;
@@ -53,11 +57,11 @@ class GameMenu {
         return buttonElement;
     }
 
-    makeButtonsContainer(character, type) {
+    makeButtonsContainer(character: CharacterInterface, type) {
         const buttonsContainer = document.createElement('div');
         buttonsContainer.classList.add('gameMenu-popup-buttonsContainer');
 
-        const playerButtons = [
+        const playerButtons: { label: string, action: () => void }[] = [
             { label: 'Skills', action: () => this.showSkillsMenu(character) },
             { label: 'Equipments and Items', action: () => this.showEquipmentsAndItemsMenu(character) },
             { label: 'Internals', action: () => this.showInternalsMenu(character) },
@@ -65,7 +69,7 @@ class GameMenu {
             { label: 'Close', action: () => this.hideCharacterInfo() }
         ];
 
-        const companionButtons = [
+        const companionButtons: { label: string, action: () => void }[] = [
             { label: 'Interact', action: () => this.showInteractMenu(character) },
             { label: 'Background', action: () => this.showInteractMenu(character) },
             { label: 'Drop from Party', action: () => this.dropFromParty(character) },
@@ -76,13 +80,13 @@ class GameMenu {
         const buttons = type === 'player' ? playerButtons : companionButtons;
 
         buttons.forEach(button => {
-            buttonsContainer.appendChild(this.makeCharacterInfoButton(button));
+            buttonsContainer.appendChild(this.makeCharacterInfoButton(button: ));
         });
 
         return buttonsContainer;
     }
 
-    showSkillsMenu() {
+    showSkillsMenu(character: CharacterInterface) {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
         
@@ -91,7 +95,7 @@ class GameMenu {
         popupScreen.appendChild(skillMenuElement);
     }
 
-    showEquipmentsAndItemsMenu() {
+    showEquipmentsAndItemsMenu(character: CharacterInterface) {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
 

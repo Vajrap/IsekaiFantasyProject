@@ -1,5 +1,5 @@
-class CharacterHandler {
-    process(subType: string, message: any) {
+class GameHandler {
+    process(subType, message) {
         switch (subType) {
             case 'CREATE':
                 this.handleCharacterCreate(message);
@@ -11,14 +11,11 @@ class CharacterHandler {
                 console.warn(`Unhandled CHARACTER message subtype: ${subType}`);
         }
     }
-
-    handleCharacterCreate(message: any) {
+    handleCharacterCreate(message) {
         console.log('Character created:', message);
     }
-
-    handleCharacterUpdate(message: any) {
+    handleCharacterUpdate(message) {
         console.log('Character updated:', message);
     }
 }
-
-export const characterHandler = new CharacterHandler();
+export const gameHandler = new GameHandler();

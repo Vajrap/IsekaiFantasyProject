@@ -7,24 +7,39 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-// import { popup } from "../../classes/popup/popup.js";
 import { popup } from "../../classes/popup/popup.js";
-import { WebSocketManager } from "../../classes/WebSocket/WebSocket.js";
 import { WebSocketMessageType } from "../../../Common/RequestResponse/webSocket.js";
+import { webSocketManager } from "../../API/WebSocket/WebSocket.js";
+import { restAPI } from "../../../Client/API/Rest/RestAPI.js";
+import { screamer } from "../../../Client/Screamer/Screamer.js";
 import { success } from "../../../Common/Lib/Result.js";
 export class GameModel {
     constructor() {
-        this.webSocketManager = new WebSocketManager();
+        this.webSocketManager = webSocketManager;
+        this.restAPI = restAPI;
+        this.screamer = screamer;
         this.playerCharacter = null;
         this.companionCharacters = [];
-        // this.battleReports = [];
         this.eventManager = null;
-        // this.battleManager = null;
+        this.user_id = null;
     }
     static create() {
         return __awaiter(this, void 0, void 0, function* () {
             const model = new GameModel();
+            model.user_id = localStorage.getItem('isekaiFantasy_userID');
+            if (!model.user_id) {
+                throw new Error('User ID not found');
+            }
             yield model.initiate();
+            yield model.initializeEventListeners();
+            const partydata = yield model.restAPI.send({
+                path: 'getParty',
+                data: { user_id: model.user_id }
+            });
+            if (!partydata.success) {
+                throw new Error('Party data not found');
+            }
+            yield model.updateParty(partydata.data.result.party);
             return model;
         });
     }
@@ -57,6 +72,19 @@ export class GameModel {
             ;
         });
     }
+    initializeEventListeners() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const screamerStation = this.screamer.listenToMe();
+            screamerStation.on('PARTY_DATA', (payload) => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    yield this.updateParty(payload);
+                }
+                catch (error) {
+                    console.error('Error updating party:', error);
+                }
+            }));
+        });
+    }
     getUserID() {
         const userID = localStorage.getItem('isekaiFantasy_userID');
         if (!userID || userID === '' || userID === 'undefined' || userID === null) {
@@ -67,5 +95,24 @@ export class GameModel {
         }
         return success(userID);
     }
+    // Listeners
+    updateParty(payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (this.user_id) {
+                let userCharacter = payload.characters.find(character => character != 'none' && character.id === this.user_id);
+                if (userCharacter !== undefined && userCharacter !== "none") {
+                    this.playerCharacter = userCharacter;
+                }
+                else {
+                    throw new Error('User Character not found');
+                }
+                this.companionCharacters = payload.characters.filter(character => character !== 'none' && character.id !== this.user_id && character == null);
+                console.log(`Is going to scream GAME_MODEL_UPDATE`);
+                screamer.scream('GAME_MODEL_UPDATE', this);
+            }
+            else {
+                throw new Error('User ID not found');
+            }
+        });
+    }
 }
-export const gameModel = GameModel.create();

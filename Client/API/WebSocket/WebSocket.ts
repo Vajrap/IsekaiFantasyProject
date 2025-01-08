@@ -1,22 +1,20 @@
 import { env } from "../../env.js";
-import { characterHandler } from "./characterHandler.js";
-import { battleHandler } from "./battlerHandler.js";
-import { gameHandler } from "./gameHandler.js";
 import { Result, success, failure } from "../../../Common/Lib/Result.js";
 import { WebSocketMessageType } from "../../../Common/RequestResponse/webSocket.js";
+import { screamer } from "../../../Client/Screamer/Screamer.js";
 
-export class WebSocketManager {
+class WebSocketManager {
     ws: WebSocket | null;
-    eventListeners: { [key: string]: Function[] };
     heartbeatInterval: NodeJS.Timeout | null;
+    screamer = screamer;
 
     constructor() {
         this.ws = null;
-        this.eventListeners = {};
         this.heartbeatInterval = null;
     }
 
     async connect(): Promise<Result<true>> {
+        console.log('Connecting to WebSocket...');
         return new Promise((resolve, reject) => {
             this.ws = new WebSocket(env.ws());
     
@@ -54,19 +52,6 @@ export class WebSocketManager {
         }
     }
 
-    on(type: string, callback: Function) {
-        if (!this.eventListeners[type]) {
-            this.eventListeners[type] = [];
-        }
-        this.eventListeners[type].push(callback);
-    }
-
-    trigger(type: string, data: any) {
-        if (this.eventListeners[type]) {
-            this.eventListeners[type].forEach((callback) => callback(data));
-        }
-    }
-
     startHeartbeat(interval = 30000) {
         this.stopHeartbeat();
         this.heartbeatInterval = setInterval(() => {
@@ -83,26 +68,21 @@ export class WebSocketManager {
             this.heartbeatInterval = null;
         }
     }
-
+ 
     handleMessage(message: { type: string; [key: string]: any }) {
         const [category, subType] = message.type.split('_'); // Example: "CHARACTER_CREATE"
         switch (category) {
             case 'PONG':
                 break;
-            case 'CHARACTER':
-                characterHandler.process(subType, message);
-                break;
-            case 'BATTLE':
-                battleHandler.process(subType, message);
-                break;
-            case 'GAME':
-                gameHandler.process(subType, message);
-                break;
             case 'PARTY':
-                console.log('Party data:', message.data);
+                screamer.scream('PARTY_DATA', message.data);
                 break;
             default:
                 console.warn(`Unhandled message type: ${message.type}`);
         }
     }
+
 }
+
+export const webSocketManager = new WebSocketManager();
+    

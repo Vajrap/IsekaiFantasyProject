@@ -1,33 +1,51 @@
-// import { popup } from "../../classes/popup/popup.js";
 import { popup } from "../../classes/popup/popup.js";
-import { WebSocketManager } from "../../classes/WebSocket/WebSocket.js";
-// import { Result, success } from "../../../Common/Lib/Result.js";
-import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
+import { CharacterInterface, PartyInterface } from "../../../Common/RequestResponse/characterWS.js";
 import { WebSocketConnectRequest, WebSocketMessageType } from "../../../Common/RequestResponse/webSocket.js";
+import { webSocketManager } from "../../API/WebSocket/WebSocket.js";
+import { restAPI } from "../../../Client/API/Rest/RestAPI.js";
+import { screamer } from "../../../Client/Screamer/Screamer.js";
 import { Result, success } from "../../../Common/Lib/Result.js";
 
 export class GameModel {
     playerCharacter: CharacterInterface | null;
     companionCharacters: CharacterInterface[];
-    // battleReports: BattlerReport[];
+    user_id: string | null;
     eventManager: EventManager | null;
-    webSocketManager: WebSocketManager = new WebSocketManager();
+    webSocketManager = webSocketManager;
+    restAPI = restAPI;
+    screamer = screamer;
 
     private constructor() {
         this.playerCharacter = null;
         this.companionCharacters = [];
-        // this.battleReports = [];
         this.eventManager = null;
-        // this.battleManager = null;
+        this.user_id = null;
     }
 
     static async create(): Promise<GameModel> {
         const model = new GameModel();
+        model.user_id = localStorage.getItem('isekaiFantasy_userID');
+        if (!model.user_id) {
+            throw new Error('User ID not found');
+        }
         await model.initiate();
+        await model.initializeEventListeners();
+
+        const partydata = await model.restAPI.send({
+            path: 'getParty',
+            data: { user_id: model.user_id }
+        });
+        
+        if (!partydata.success) {
+            throw new Error('Party data not found');
+        }
+
+        await model.updateParty(partydata.data.result.party);
+
         return model;
     }
 
-    async initiate() {
+    private async initiate() {
         console.log(`GameModel initiated`);
 
         const userID = this.getUserID();
@@ -64,7 +82,19 @@ export class GameModel {
         };
     }
 
-    getUserID(): Result<string> {
+    private async initializeEventListeners() {
+        const screamerStation = this.screamer.listenToMe();
+
+        screamerStation.on('PARTY_DATA', async (payload: PartyInterface) => {
+            try {
+                await this.updateParty(payload);
+            } catch (error) {
+                console.error('Error updating party:', error);
+            }
+        })
+    } 
+
+    private getUserID(): Result<string> {
         const userID = localStorage.getItem('isekaiFantasy_userID');
         if (!userID || userID === '' || userID === 'undefined' || userID === null) {
             popup.show(
@@ -79,6 +109,23 @@ export class GameModel {
         }
         return success(userID);
     }
-}
 
-export const gameModel = GameModel.create();
+    // Listeners
+    private async updateParty(payload:PartyInterface) {
+        if (this.user_id) {
+            let userCharacter = payload.characters.find(character => character != 'none' && character.id === this.user_id);
+            if (userCharacter !== undefined && userCharacter !== "none") {
+                this.playerCharacter = userCharacter;
+            } else {
+                throw new Error('User Character not found');
+            }
+            this.companionCharacters = payload.characters.filter(
+                character => character !== 'none' && character.id !== this.user_id && character == null
+            );
+            console.log(`Is going to scream GAME_MODEL_UPDATE`);
+            screamer.scream('GAME_MODEL_UPDATE', this);
+        } else {
+            throw new Error('User ID not found');
+        }
+    }
+}

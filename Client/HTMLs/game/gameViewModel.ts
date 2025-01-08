@@ -1,5 +1,5 @@
 import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
-import { GameModel, gameModel } from "../../../Client/HTMLs/game/gameModel.js";
+import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
 
 class GameViewModel {
     // Model
@@ -28,13 +28,23 @@ class GameViewModel {
         this.dialogueBoxCharacterRight = document.querySelector('.dialogueBoxCharacter-right') as HTMLElement;
         this.battleReportBtn = document.getElementById('menu-battleReport') as HTMLElement;
         this.helpBtn = document.getElementById('menu-help') as HTMLElement;
+        
         this.initiateVM();
     }
 
     async initiateVM() {
-        this.model = await gameModel;
-        this.addEventListener();
-        this.updatePortraits();
+        try {
+            // Wait for GameModel to initialize
+            this.model = await GameModel.create();
+
+            // Setup ViewModel after model is ready
+            this.addEventListener();
+            this.updatePortraits();
+
+            console.log('GameViewModel initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize GameViewModel:', error);
+        }
     }
 
     private ensureModel(): GameModel {
@@ -62,7 +72,9 @@ class GameViewModel {
     }
 
     addEventListener() {
+        console.log('Adding Event Listeners');
         const model = this.ensureModel();
+
         const playerCharacter = model.playerCharacter;
 
         if (!playerCharacter) {
@@ -84,6 +96,7 @@ class GameViewModel {
         this.battleReportBtn.addEventListener('click', () => {
             this.showBattleReport();
         });
+
         // this.helpBtn.addEventListener('click', () => {
         //     model.battleWS.send({
         //         type: 'START_BATTLE_DEMO',

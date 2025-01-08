@@ -13,7 +13,7 @@ export interface GetPartyResponse {
 export interface PartyInterface {
     partyID: string;
     location: string;
-    isTravelling: boolean;
+    isTraveling: boolean;
     characters: (CharacterInterface | "none")[]; // Simplified character data for each party member
     actionsSequence: string[]; // List of action names or enums
     actionsList: { [time: number]: string | null }; // Action schedule

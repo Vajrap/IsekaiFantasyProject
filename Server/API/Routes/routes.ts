@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { loginHandler, autoLoginHandler } from './login/login';
 import { registerHandler } from './register/register';
 import { createCharacterHandler } from './CreateCharacter/createCharacter';
+import { getPartyHandler } from './getParty/getParty';
 
 export const router = express.Router();
 
@@ -27,5 +28,12 @@ router.post('/createCharacter', async (req: Request, res: Response) => {
     console.log('Create Character Route called');
     const { characterName, portrait, race, className, background, gender, userID } = req.body;
     const result = await createCharacterHandler(characterName, portrait, race, className, background, gender, userID);
+    res.json({ result });
+});
+
+router.post('/getParty', async (req: Request, res: Response) => {
+    console.log('Get Party Route called');
+    const { user_id } = req.body;
+    const result = await getPartyHandler(user_id);
     res.json({ result });
 });

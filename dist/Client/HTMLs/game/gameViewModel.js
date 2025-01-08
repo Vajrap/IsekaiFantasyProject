@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { gameModel } from "../../../Client/HTMLs/game/gameModel.js";
+import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
 class GameViewModel {
     // ViewModel
     constructor() {
@@ -28,9 +28,17 @@ class GameViewModel {
     }
     initiateVM() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.model = yield gameModel;
-            this.addEventListener();
-            this.updatePortraits();
+            try {
+                // Wait for GameModel to initialize
+                this.model = yield GameModel.create();
+                // Setup ViewModel after model is ready
+                this.addEventListener();
+                this.updatePortraits();
+                console.log('GameViewModel initialized successfully');
+            }
+            catch (error) {
+                console.error('Failed to initialize GameViewModel:', error);
+            }
         });
     }
     ensureModel() {
@@ -56,6 +64,7 @@ class GameViewModel {
         }
     }
     addEventListener() {
+        console.log('Adding Event Listeners');
         const model = this.ensureModel();
         const playerCharacter = model.playerCharacter;
         if (!playerCharacter) {

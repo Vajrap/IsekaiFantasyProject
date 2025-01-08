@@ -35,7 +35,7 @@ export class Party {
 		day7: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
 	};
 	isTemporarilyBattleScenePartyForTargeting: boolean = false;
-	isTravelling: boolean = false;
+	isTraveling: boolean = false;
 	// Should move to LocationEnum
 	location: string = "None";
 	// travelManager: TravelManager;
@@ -1184,14 +1184,14 @@ export class Party {
         partyID: string;
         characters: string[];
         actionsList: string;
-        isTravelling: boolean;
+        isTraveling: boolean;
         location: string;
     } {
         return {
             partyID: this.partyID,
 			characters: this.characters.map(character =>  character === "none" ? "none" : character.id),            
 			actionsList: JSON.stringify(this.actionsList),
-            isTravelling: this.isTravelling,
+            isTraveling: this.isTraveling,
             location: this.location,
         };
     }
@@ -1200,7 +1200,7 @@ export class Party {
 		return {
 			partyID: this.partyID,
 			location: this.location,
-			isTravelling: this.isTravelling,
+			isTraveling: this.isTraveling,
 			characters: this.characters.map(character => character === "none" ? "none" : character.intoInterface()),
 			// TODO: Implement actionsSequence
 			actionsSequence: [],

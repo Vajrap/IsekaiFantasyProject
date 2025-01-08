@@ -374,7 +374,7 @@ export class Game {
                     const character = this.characterManager.getCharacterByID(party.character_6_id);
                     newParty.characters[5] = character;
                 }
-                newParty.isTravelling = party.isTravelling;
+                newParty.isTraveling = party.isTraveling;
                 newParty.actionsList = party.actionsList;
                 
                 this.partyManager.addParty(newParty);

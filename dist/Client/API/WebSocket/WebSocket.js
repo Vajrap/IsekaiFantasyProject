@@ -8,20 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { env } from "../../env.js";
-import { characterHandler } from "./characterHandler.js";
-import { battleHandler } from "./battlerHandler.js";
-import { gameHandler } from "./gameHandler.js";
 import { success, failure } from "../../../Common/Lib/Result.js";
 import { WebSocketMessageType } from "../../../Common/RequestResponse/webSocket.js";
-import { EventEmitter } from "eventemitter3";
-export class WebSocketManager {
+import { screamer } from "../../../Client/Screamer/Screamer.js";
+class WebSocketManager {
     constructor() {
+        this.screamer = screamer;
         this.ws = null;
-        this.eventEmitter = new EventEmitter(); // Add EventEmitter
         this.heartbeatInterval = null;
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log('Connecting to WebSocket...');
             return new Promise((resolve, reject) => {
                 this.ws = new WebSocket(env.ws());
                 this.ws.addEventListener('open', () => {
@@ -75,27 +73,12 @@ export class WebSocketManager {
         switch (category) {
             case 'PONG':
                 break;
-            case 'CHARACTER':
-                characterHandler.process(subType, message);
-                break;
-            case 'BATTLE':
-                battleHandler.process(subType, message);
-                break;
-            case 'GAME':
-                gameHandler.process(subType, message);
-                break;
             case 'PARTY':
-                console.log('Party data:', message.data);
+                screamer.scream('PARTY_DATA', message.data);
                 break;
             default:
                 console.warn(`Unhandled message type: ${message.type}`);
         }
-    }
-    on(event, listener) {
-        this.eventEmitter.on(event, listener); // Use EventEmitter to register listeners
-    }
-    off(event, listener) {
-        this.eventEmitter.off(event, listener); // Use EventEmitter to remove listeners
     }
 }
 export const webSocketManager = new WebSocketManager();

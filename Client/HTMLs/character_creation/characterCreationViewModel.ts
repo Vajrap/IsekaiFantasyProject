@@ -217,16 +217,19 @@ class CharacterCreationViewModel {
                 [{ 
                     label:'ตกลง', 
                     // Need to redirect back to login page at this point
-                    action: popup.hide.bind(popup)
-                        // localStorage.removeItem('isekaiFantasy_token');
-                        // localStorage.removeItem('isekaiFantasy_tokenExpiredAt');
-                        // window.location.href = '../../../Client/index.html';                             
+                    action: () => {
+                        popup.hide.bind(popup)
+                        localStorage.removeItem('isekaiFantasy_token');
+                        localStorage.removeItem('isekaiFantasy_tokenExpiredAt');
+                        window.location.href = '../../../Client/index.html';  
+                    }                          
                 }]
             );
         } 
         if (result.status === CharacterCreationResponseStatus.SUCCESS) {
             // Redirect into Game
             console.log('Character created successfully');
+            window.location.href = '../../../Client/HTMLs/game/game.html';
         }
     }
 

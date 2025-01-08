@@ -26,12 +26,14 @@
     "express": "^4.21.2",
     "flatted": "^3.3.1",
     "flatter": "^0.0.0",
+    "mitt": "^3.0.1",
     "sqlite3": "^5.1.7",
     "tsc": "^2.0.4",
     "uuid": "^9.0.1",
     "ws": "^8.17.1"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "server":  "ts-node Server/server.ts"
   }
 }

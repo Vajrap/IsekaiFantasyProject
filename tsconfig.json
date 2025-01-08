@@ -18,10 +18,10 @@
   },
   "include": [
     "Client/**/*",
-    "Common/**/*"
-, "Common/DTOsEnumsInterfaces/Character/TraitEnums.ts"  ],
+    "Common/**/*", 
+    "Common/DTOsEnumsInterfaces/Character/TraitEnums.ts"  
+  ],
   "exclude": [
-    "node_modules",
     "Server/**/*"
   ]
 }

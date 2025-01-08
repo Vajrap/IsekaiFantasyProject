@@ -1,5 +1,5 @@
 class BattleHandler {
-    process(subType: string, message: any) {
+    process(subType, message) {
         switch (subType) {
             case 'START':
                 this.handleBattleStart(message);
@@ -11,14 +11,11 @@ class BattleHandler {
                 console.warn(`Unhandled BATTLE message subtype: ${subType}`);
         }
     }
-
-    handleBattleStart(message: any) {
+    handleBattleStart(message) {
         console.log('Battle started:', message);
     }
-
-    handleBattleEnd(message: any) {
+    handleBattleEnd(message) {
         console.log('Battle ended:', message);
     }
 }
-
 export const battleHandler = new BattleHandler();

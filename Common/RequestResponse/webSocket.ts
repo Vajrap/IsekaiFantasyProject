@@ -5,6 +5,7 @@ export enum WebSocketMessageType {
     PING = 'PING',
     PONG = 'PONG',
     PARTY_DATA = 'PARTY_DATA',
+    GET_PARTY_DATA = 'GET_PARTY_DATA',
 }
 
 export interface WebSocketConnectRequest {
