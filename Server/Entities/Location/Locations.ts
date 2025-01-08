@@ -1,11 +1,15 @@
 import { GameLocation } from './GameLocation'
 import { LocationName } from '../../../Common/DTOsEnumsInterfaces/Map/LocationNames'
 import { RegionNameEnum } from '../../../Common/DTOsEnumsInterfaces/Map/RegionNameEnum'
+import { LocationActionEnum } from '../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events'
 
 export const location_OceanTide = new GameLocation(
     LocationName.OceanTide,
     'Capital of Azure Whale Kingdom, OceanTide is a bustling city with a large port. Ruled by Edmund Azure, the city is known for its strong royal knights and is the main trade route with other continents.',
-    [],
+    [
+        LocationActionEnum.Rest,
+        LocationActionEnum.Inn,
+    ],
     RegionNameEnum.OceanTide,
     RegionNameEnum.GrassLand_1
 )
@@ -13,7 +17,10 @@ export const location_OceanTide = new GameLocation(
 export const location_MistGarde = new GameLocation(
     LocationName.MistGarde,
     'A small town located north of OceanTide at the crossing of the Blue River.',
-    [],
+    [
+        LocationActionEnum.Rest,
+        LocationActionEnum.Inn,
+    ],
     RegionNameEnum.MistGarde,
     RegionNameEnum.GrassLand_1
 )
@@ -22,7 +29,10 @@ export const location_MistGarde = new GameLocation(
 export const location_BerrisGrove = new GameLocation(
     LocationName.BerrisGrove,
     'A forest east of OceanTide, known for its berries and herbs, you may find some rare ingredients here, along with some alchemists and herbalists.',
-    [],
+    [
+        LocationActionEnum.Rest,
+        LocationActionEnum.Inn,
+    ],
     RegionNameEnum.BerrisGrove,
     RegionNameEnum.Forest_1
 )
@@ -30,7 +40,10 @@ export const location_BerrisGrove = new GameLocation(
 export const location_EmberFalls = new GameLocation(
     LocationName.EmberFalls,
     'A small stronghold located in the Ember Forest. A place where group of Paladin called the Ember Knights reside and trained. They are known for their strong faith in the god of fire, Pjhorn.',
-    [],
+    [
+        LocationActionEnum.Rest,
+        LocationActionEnum.Inn,
+    ],
     RegionNameEnum.EmberFalls,
     RegionNameEnum.Forest_1
 )
@@ -38,7 +51,10 @@ export const location_EmberFalls = new GameLocation(
 export const location_SmoothShore = new GameLocation(
     LocationName.SmoothShore,
     'A small fisherman village on the shore of southern sea.',
-    [],
+    [
+        LocationActionEnum.Rest,
+        LocationActionEnum.Inn,
+    ],
     RegionNameEnum.SmoothShore,
     RegionNameEnum.GrassLand_1
 )
@@ -46,7 +62,9 @@ export const location_SmoothShore = new GameLocation(
 export const location_WhiteOakEstate = new GameLocation(
     LocationName.WhiteOakEstate,
     'A large estate owned by the White Oak family, known for their strong knights and beautiful white horses.',
-    [],
+    [
+        LocationActionEnum.Rest,
+    ],
     RegionNameEnum.WhiteOakEstate,
     RegionNameEnum.GrassLand_2
 )
@@ -54,7 +72,9 @@ export const location_WhiteOakEstate = new GameLocation(
 export const location_IvoryForest = new GameLocation(
     LocationName.IvoryForest,
     'A forest known for its white trees, located east of White Oak Estate.',
-    [],
+    [
+        LocationActionEnum.Rest,
+    ],
     RegionNameEnum.IvoryForest,
     RegionNameEnum.Forest_1
 )
@@ -62,7 +82,9 @@ export const location_IvoryForest = new GameLocation(
 export const location_CelestialSwordSect = new GameLocation(
     LocationName.CelestialSwordSect,
     'A powerful martial art sect, one of the 10 great sects located near the Ivory Forest, known for their swordsmanship.',
-    [],
+    [
+        LocationActionEnum.Rest,
+    ],
     RegionNameEnum.CelestialSwordSect,
     RegionNameEnum.Forest_1
 )
@@ -70,7 +92,9 @@ export const location_CelestialSwordSect = new GameLocation(
 export const location_FairViewFarm = new GameLocation(
     LocationName.FairViewFarm,
     'A farm located between Mistgarde and WhiteOak Estate, known for its beautiful view and delicious food.',
-    [],
+    [
+        LocationActionEnum.Rest,
+    ],
     RegionNameEnum.FairViewFarm,
     RegionNameEnum.GrassLand_2
 )
@@ -78,7 +102,9 @@ export const location_FairViewFarm = new GameLocation(
 export const location_SaltyLake = new GameLocation(
     LocationName.SaltyLake,
     'A lake north of Ivory Forest, the water there is salty and there are rumors of a monster living in the lake, many bandits hide around in the caves near the lake.',
-    [],
+    [
+        LocationActionEnum.Rest,
+    ],
     RegionNameEnum.SaltyLake,
     RegionNameEnum.Forest_1
 )
@@ -87,7 +113,10 @@ export const location_SaltyLake = new GameLocation(
 export const location_Fyornar = new GameLocation(
     LocationName.Fyornar,
     `A capital city of the Fyornar Empire, located in the center of Aerolia, Fyorna's steam engine is the one that brought the industrial revolution to the continent along with stea powered trains. But the electricity advancement was at a halt due to the political struggle with the Noble Council who lean more towards arcane magic.`,
-    [],
+    [
+        LocationActionEnum.Rest,
+        LocationActionEnum.Inn,
+    ],
     RegionNameEnum.Fyornar,
     RegionNameEnum.GrassLand_1
 )

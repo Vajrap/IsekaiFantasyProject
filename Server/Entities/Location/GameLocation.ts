@@ -11,7 +11,7 @@ export class GameLocation {
     connectedLocations: { location: GameLocation, distance: number }[] = [];
     mainRegion: RegionNameEnum;
     region: RegionNameEnum;
-    characters: Character[] = [];
+    parties: Party[] = [];
 
     constructor(id: LocationName, description: string, actions: LocationActionEnum[], mainRegion: RegionNameEnum, region: RegionNameEnum) {
         this.id = id;
@@ -36,45 +36,43 @@ export class GameLocation {
         return distanceToGo
     }
 
-    characterMoveIn(character: Character) {
-        console.log(`${character.name} entered ${this.id}`);
-        character.location = this.id;
-        this.characters.push(character);
-    }
-
     partyMoveIn(party: Party) {
         const partyLeader = party.characters.find(character => character != 'none' && character.id === party.partyID);
-        if (!partyLeader || partyLeader === undefined || partyLeader === 'none') { throw new Error('Party leader not found') }
-        const isMoreThanOne = party.characters.filter(character => character !== 'none').length > 1;
-        console.log(`${partyLeader.name} ${isMoreThanOne? 'and His party': ''} entered ${this.id}`);
-        party.characters.forEach(character => {
-            if (character !== 'none') {
-                character.location = this.id;
-                this.characters.push(character);
-            }
-        });
-    }
 
-    characterMoveOut(character: Character) {
-        console.log(`${character.name} left ${this.id}`);
-        this.characters = this.characters.filter(char => char !== character);
-        character.location = LocationName.None;
+        if (!partyLeader || partyLeader === undefined || partyLeader === 'none') { 
+            throw new Error('Party leader not found') 
+        }
+
+        const isMoreThanOne = party.characters.filter(character => character !== 'none').length > 1;
+
+        // TODO: Turns from console.log to logger that can be shown in the UI
+        console.log(`${partyLeader.name} ${isMoreThanOne? 'and His party': ''} entered ${this.id}`);
+
+        this.parties.push(party);
     }
 
     partyMoveOut(party: Party) {
         const partyLeader = party.characters.find(character => character != 'none' && character.id === party.partyID);
-        if (!partyLeader || partyLeader === undefined || partyLeader === 'none') { throw new Error('Party leader not found') }
+
+        if (!partyLeader || partyLeader === undefined || partyLeader === 'none') { 
+            throw new Error('Party leader not found') 
+        }
+
         const isMoreThanOne = party.characters.filter(character => character !== 'none').length > 1;
         console.log(`${partyLeader.name} ${isMoreThanOne? 'and His party': ''} left ${this.id}`);
-        party.characters.forEach(character => {
-            if (character !== 'none') {
-                this.characters = this.characters.filter(char => char !== character);
-                character.location = LocationName.None;
-            }
-        });
+
+        this.parties = this.parties.filter(p => p !== party);
     }
 
     checkIfLocationConnected(location: GameLocation): boolean {
         return this.connectedLocations.some(loc => loc.location === location);
+    }
+
+    getAllCharactersInLocation(): Character[] {
+        return this.parties.reduce((characters: Character[], party) => characters.concat(party.characters.filter(character => character !== 'none')), []);
+    }
+
+    getAllActions(): LocationActionEnum[] {
+        return this.actions;
     }
 }
