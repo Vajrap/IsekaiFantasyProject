@@ -1,5 +1,5 @@
-"use strict";
-class GameMenu {
+import { CharacterCard } from "../../../Client/classes/Cards/CharacterCard/CharacterCard.js";
+export class GameMenu {
     constructor() {
         this.isPopupVisible = false;
     }
@@ -38,7 +38,7 @@ class GameMenu {
         const buttonElement = document.createElement('button');
         buttonElement.classList.add('gameMenu-popup-button');
         buttonElement.textContent = button.label;
-        const action = button.action || (() => { characterInfoPopup.hideCharacterInfo(); });
+        const action = button.action || (() => { this.hideCharacterInfo(); });
         buttonElement.addEventListener('click', action);
         return buttonElement;
     }
@@ -46,18 +46,17 @@ class GameMenu {
         const buttonsContainer = document.createElement('div');
         buttonsContainer.classList.add('gameMenu-popup-buttonsContainer');
         const playerButtons = [
-            { label: 'Skills', action: () => this.showSkillsMenu(character) },
-            { label: 'Equipments and Items', action: () => this.showEquipmentsAndItemsMenu(character) },
-            { label: 'Internals', action: () => this.showInternalsMenu(character) },
-            { label: 'Manage Party', action: () => this.showPartyMenu(character) },
-            { label: 'Close', action: () => this.hideCharacterInfo() }
+            { label: 'รายละเอียด', action: () => this.showCharacterInformation(character) },
+            { label: 'สกิล', action: () => this.showSkillsMenu(character) },
+            { label: 'ไอเทม', action: () => this.showEquipmentsAndItemsMenu(character) },
+            { label: 'ปาร์ตี้', action: () => this.showPartyMenu(character) },
+            { label: 'ปิด', action: () => this.hideCharacterInfo() }
         ];
         const companionButtons = [
-            { label: 'Interact', action: () => this.showInteractMenu(character) },
-            { label: 'Background', action: () => this.showInteractMenu(character) },
-            { label: 'Drop from Party', action: () => this.dropFromParty(character) },
-            { label: 'Manage Party', action: () => this.showParty(character) },
-            { label: 'Close', action: () => this.hideCharacterInfo() }
+            { label: 'รายละเอียด', action: () => this.showCharacterInformation(character) },
+            { label: 'สัมพันธ์', action: () => this.showInteractMenu(character) },
+            { label: 'ปาร์ตี้', action: () => this.showPartyMenu(character) },
+            { label: 'ปิด', action: () => this.hideCharacterInfo() }
         ];
         const buttons = type === 'player' ? playerButtons : companionButtons;
         buttons.forEach(button => {
@@ -65,14 +64,38 @@ class GameMenu {
         });
         return buttonsContainer;
     }
-    showSkillsMenu() {
+    showCharacterInformation(character) {
+        // TODO: Implement
+    }
+    ;
+    showInteractMenu(character) {
+        // TODO: Implement
+    }
+    ;
+    showBackgroundMenu(character) {
+        // TODO: Implement
+    }
+    ;
+    dropFromParty(character) {
+        // TODO: Implement
+    }
+    ;
+    showPartyMenu(character) {
+        // TODO: Implement
+    }
+    ;
+    showSkillsMenu(character) {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
         const skillMenu = new SkillMenu();
         const skillMenuElement = skillMenu.skillMenu;
         popupScreen.appendChild(skillMenuElement);
     }
-    showEquipmentsAndItemsMenu() {
+    showInternalsMenu(character) {
+        // TODO: Implement
+    }
+    ;
+    showEquipmentsAndItemsMenu(character) {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
         const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu();

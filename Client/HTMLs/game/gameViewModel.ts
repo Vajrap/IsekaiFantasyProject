@@ -1,5 +1,6 @@
 import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
 import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
+import { GameMenu } from "../../../Client/classes/GameMenu/GameMenu.js";
 
 class GameViewModel {
     // Model
@@ -12,6 +13,8 @@ class GameViewModel {
     dialogueBoxCharacterRight: HTMLElement;
     battleReportBtn: HTMLElement;
     helpBtn: HTMLElement;
+
+    _gameMenu: GameMenu;
     
     // ViewModel
     constructor() {
@@ -29,7 +32,9 @@ class GameViewModel {
         this.battleReportBtn = document.getElementById('menu-battleReport') as HTMLElement;
         this.helpBtn = document.getElementById('menu-help') as HTMLElement;
         
+        this._gameMenu = new GameMenu();
         this.initiateVM();
+
     }
 
     async initiateVM() {
@@ -110,7 +115,7 @@ class GameViewModel {
             console.error('Player Character not found');
             return;
         } else {
-            gameMenu.showCharacterInfo(character, type);
+            this._gameMenu.showCharacterInfo(character, type);
         }
     }
 

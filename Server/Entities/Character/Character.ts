@@ -3006,6 +3006,12 @@ export class Character {
 			itemsBag: this.itemsBag.intoInterface(),
 			arcaneAptitude: this.arcaneAptitude.intoInterface(),
 			bagSize: this.bagSize,
+			currentHP: this.currentHP,
+			currentMP: this.currentMP,
+			currentSP: this.currentSP,
+			maxHP: this.maxHP(),
+			maxMP: this.maxMP(),
+			maxSP: this.maxSP(),
 		};
 	}
 

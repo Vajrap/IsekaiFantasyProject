@@ -58,12 +58,17 @@
 }
 
 .characterCard-panel-Info, .characterCard-panel-Active-Internal, .characterCard-panel-Equipments, .characterCard-panel-Traits, .characterCard-panel-Skill-Sequence, .characterCard-panel-Party-Position, .characterCard-panel-Attributes, .characterCard-panel-Battlers, .characterCard-panel-Elements, .characterCard-panel-Artisans, .characterCard-panel-Learned-Skills, .characterCard-panel-Proficiencies, .characterCard-panel-Learned-Internal {
+    height: 12vh;
     margin-bottom: 0.4vh;
     margin-left: 0.5vw;
     margin-right: 0.5vw;
     background-color: darkslategrey;
     border-radius: 5px;
     overflow-y: auto;
+}
+
+.characterCard-panel-Equipments {
+    height: 20vh;
 }
 
 .characterCard-panel-Learned-Internal {

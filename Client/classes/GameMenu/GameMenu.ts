@@ -1,6 +1,6 @@
-import { CharacterInterface } from "Common/RequestResponse/characterWS";
-
-class GameMenu {
+import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
+import { CharacterCard } from "../../../Client/classes/Cards/CharacterCard/CharacterCard.js";
+export class GameMenu {
     isPopupVisible: boolean;
 
     constructor() {
@@ -48,43 +48,65 @@ class GameMenu {
         return containerElement;
     }
 
-    makeCharacterInfoButton(button: { label: string, action: () => void }) {
+    makeCharacterInfoButton(button: { 
+        label: string, 
+        action: () => void 
+    }) {
         const buttonElement = document.createElement('button');
         buttonElement.classList.add('gameMenu-popup-button');
         buttonElement.textContent = button.label;
-        const action = button.action || (() => { characterInfoPopup.hideCharacterInfo(); });
+        const action = button.action || (() => { this.hideCharacterInfo(); });
         buttonElement.addEventListener('click', action);
         return buttonElement;
     }
 
-    makeButtonsContainer(character: CharacterInterface, type) {
+    makeButtonsContainer(character: CharacterInterface, type: 'player' | 'companion') {
         const buttonsContainer = document.createElement('div');
         buttonsContainer.classList.add('gameMenu-popup-buttonsContainer');
 
         const playerButtons: { label: string, action: () => void }[] = [
-            { label: 'Skills', action: () => this.showSkillsMenu(character) },
-            { label: 'Equipments and Items', action: () => this.showEquipmentsAndItemsMenu(character) },
-            { label: 'Internals', action: () => this.showInternalsMenu(character) },
-            { label: 'Manage Party', action: () => this.showPartyMenu(character) },
-            { label: 'Close', action: () => this.hideCharacterInfo() }
+            { label: 'รายละเอียด', action: () => this.showCharacterInformation(character) },
+            { label: 'สกิล', action: () => this.showSkillsMenu(character) },
+            { label: 'ไอเทม', action: () => this.showEquipmentsAndItemsMenu(character) },
+            { label: 'ปาร์ตี้', action: () => this.showPartyMenu(character) },
+            { label: 'ปิด', action: () => this.hideCharacterInfo() }
         ];
 
         const companionButtons: { label: string, action: () => void }[] = [
-            { label: 'Interact', action: () => this.showInteractMenu(character) },
-            { label: 'Background', action: () => this.showInteractMenu(character) },
-            { label: 'Drop from Party', action: () => this.dropFromParty(character) },
-            { label: 'Manage Party', action: () => this.showParty(character) },
-            { label: 'Close', action: () => this.hideCharacterInfo() }
+            { label: 'รายละเอียด', action: () => this.showCharacterInformation(character) },
+            { label: 'สัมพันธ์', action: () => this.showInteractMenu(character) },
+            { label: 'ปาร์ตี้', action: () => this.showPartyMenu(character) },
+            { label: 'ปิด', action: () => this.hideCharacterInfo() }
         ];
         
         const buttons = type === 'player' ? playerButtons : companionButtons;
 
         buttons.forEach(button => {
-            buttonsContainer.appendChild(this.makeCharacterInfoButton(button: ));
+            buttonsContainer.appendChild(this.makeCharacterInfoButton(button));
         });
 
         return buttonsContainer;
     }
+
+    showCharacterInformation(character: CharacterInterface) {
+        // TODO: Implement
+    };
+
+    showInteractMenu(character: CharacterInterface) {
+        // TODO: Implement
+    };
+
+    showBackgroundMenu(character: CharacterInterface) {
+        // TODO: Implement
+    };
+
+    dropFromParty(character: CharacterInterface) {
+        // TODO: Implement
+    };
+
+    showPartyMenu(character: CharacterInterface) {
+        // TODO: Implement
+    };
 
     showSkillsMenu(character: CharacterInterface) {
         const popupScreen = this.getCharacterInfoPopupScreen();
@@ -94,6 +116,10 @@ class GameMenu {
         const skillMenuElement = skillMenu.skillMenu;
         popupScreen.appendChild(skillMenuElement);
     }
+
+    showInternalsMenu(character: CharacterInterface) {
+        // TODO: Implement
+    };
 
     showEquipmentsAndItemsMenu(character: CharacterInterface) {
         const popupScreen = this.getCharacterInfoPopupScreen();

@@ -86,6 +86,12 @@ export interface CharacterInterface {
     itemsBag: CharacterItemInBag[];
     arcaneAptitude: string;
     bagSize: number;
+    currentHP: number;
+    maxHP: number;
+    currentMP: number;
+    maxMP: number;
+    currentSP: number;
+    maxSP: number;
 }
 
 export interface CharacterStatusInterface {

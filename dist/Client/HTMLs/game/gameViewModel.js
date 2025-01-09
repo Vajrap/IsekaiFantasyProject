@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
+import { GameMenu } from "../../../Client/classes/GameMenu/GameMenu.js";
 class GameViewModel {
     // ViewModel
     constructor() {
@@ -24,6 +25,7 @@ class GameViewModel {
         this.dialogueBoxCharacterRight = document.querySelector('.dialogueBoxCharacter-right');
         this.battleReportBtn = document.getElementById('menu-battleReport');
         this.helpBtn = document.getElementById('menu-help');
+        this._gameMenu = new GameMenu();
         this.initiateVM();
     }
     initiateVM() {
@@ -97,7 +99,7 @@ class GameViewModel {
             return;
         }
         else {
-            gameMenu.showCharacterInfo(character, type);
+            this._gameMenu.showCharacterInfo(character, type);
         }
     }
     showBattleReport() {
