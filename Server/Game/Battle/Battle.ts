@@ -1,7 +1,7 @@
 import { Party } from "../../Entities/Party/Party";
 import { BattleReport } from "./BattleReport";
 import { ActionDetails, ActorSkillEffect, TargetSkillEffect } from "../../API/BattleReportDTO";
-import { SkillRepository } from "../../Entities/Skills/SkillRepository.ts.bak";
+import { skillRepository } from "../../Entities/Skills/SkillRepository";
 import { Skill } from "../../Entities/Skills/Skill";
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { Character } from "../../Entities/Character/Character";
@@ -252,7 +252,7 @@ export class Battle {
 
         //2. Loop through skills to get a skill that can be played this must return Skill, 
         //even if there is no valid skill in the set, this still must return auto attack skill.
-        let {skillThatCanBePlay, skillLevel, skillPosition} = actor.getSkillThatCanBePlay();
+        let {skillThatCanBePlay, skillLevel, skillPosition} = await actor.getSkillThatCanBePlay();
         
         //3. Determine consumeActionObject
         const target = this.getTargetFromTargetType(
@@ -429,8 +429,8 @@ export class Battle {
         if (skillPosition >= actor.activeSkills.length) {
             let skillObject =
                 actor.attribute("strength") > actor.attribute("planar")
-                    ? SkillRepository.skill_auto_physical
-                    : SkillRepository.skill_auto_magical
+                    ? skillRepository.getSkill('auto_physical')
+                    : skillRepository.getSkill('auto_magical')
     
             console.log(`Available target length: ${targets.length}`);
             return await this.actorPlayActiveSkill(
@@ -438,7 +438,7 @@ export class Battle {
                 targets,
                 selfParty,
                 oppositeParty,
-                skillObject,
+                await skillObject,
                 1,
                 -1
             );
