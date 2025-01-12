@@ -167,7 +167,7 @@ export class SkillGrowth {
     }
 }
 
-class SkillGrowthManager {
+export class SkillGrowthManager {
     static commonGrowth = new SkillGrowth(5, [50, 100, 150, 200, 250]);
     static unCommonGrowth = new SkillGrowth(5, [70, 140, 210, 280, 350]);
     static rareGrowth = new SkillGrowth(7, [200, 400, 600, 800, 1000, 1200, 1400]);

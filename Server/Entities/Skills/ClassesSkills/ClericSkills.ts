@@ -1,7 +1,7 @@
-import { Skill } from "../Skill"
+import { Skill, SkillGrowth, SkillGrowthManager } from "../Skill"
 import { SkillLearningRequirement } from "../SubClasses/SkillLearningRequirement"
 import { SkillEquipmentRequirement } from "../SubClasses/SkillEquipmentRequirement"
-import { SkillActionObject, SkillActionSubType, SkillActionType, SkillActiveEffect, SkillApplyEffect, SpecialEffectResult } from "../SubClasses/SkillActiveEffect"
+import { PreferredPositionEnum, SkillActionObject, SkillActionSubType, SkillActionType, SkillActiveEffect, SkillApplyEffect, SpecialEffectResult } from "../SubClasses/SkillActiveEffect"
 import { SkillConsume, SkillProduce } from "../SubClasses/SkillConsume"
 import { ElementConsume, ElementProduce } from "../SubClasses/SkillConsume"
 import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums"
@@ -10,6 +10,8 @@ import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes"
 import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes"
 import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes"
 import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes"
+import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum"
+import { WeaponSpecificType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums"
 
 //MARK: Cleric Skills
 /*
@@ -40,79 +42,76 @@ import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Char
 //     produce-SkillProduce,
 // )
 
-export const skill_cleric_01 = new Skill(
-    `skill_cleric_01`,
-    `Smite`,
-    `Smite the enemy with orderic power dealing order damage equal to weapon's 1.2 times physical damage (+0.1 per level)  plus charisma and strength modifier. If target is undead, deal double damage.
-    If the user is in the back row damage will redeuce by 50%.`,
-    new SkillLearningRequirement({
-        preRequireSkillID: [], 
-        preRequireElements: [], 
-        preRequireCharacterLevel: 1, 
-        preRequireCharacterTrait: []
-    }),
-    new SkillEquipmentRequirement({
-        weapon: ['sword', 'mace', 'tome'], 
-    }),
-    [
-        new SkillActiveEffect(
-            new TargetType(
-                TargetPartyType.Enemy,
-                TargetSelectionScope.Single,
-                TargetConditionFilters.None,
-                TargetSortingOptions.None,
-                TargetTauntConsideration.NoTauntCount
-            ),
-            [
-                new SkillActionObject({
-                    type: SkillActionType.Negative,
-                    subType: SkillActionSubType.DamageAndDebuff,
-                    damageDiceBase: (level: number) => level >= 5 ? '2d6': "3d6",
-                    damageType: (_: number) => DamageTypes.order,
-                    damageModifierStat: (_: number) => [CharacterStatusEnum.charisma, CharacterStatusEnum.strength],
-                    damageModifierBonus: (_: number) => 0,
-                    hitBase: (_: number) => 0,
-                    hitStat: (_: number) => [],
-                    critBase: (_: number) => 0,
-                    critStat: (_: number) => [],
-                    applyEffect: (_: number) => [],
-                    traitBasedModifier: (targetTraits: TraitEnum[], level: number) => { 
-                        if (targetTraits.includes(TraitEnum.trait_undead)) {return 1.2} else {return 1} 
-                    },
-                    specialEffect(actor, target, skillLevel): SpecialEffectResult {
-                        if (actor.actorBuffs.zealotsFury > 0) {
-                            return {
-                                damage: {
-                                    type: DamageTypes.order,
-                                    magnitude: 3
-                                },
-                                damageMultiplier: 1.3
-                            }
-                        }
-                        return { };
-                    },
-                })
-            ]
+// export const skill_cleric_01 = new Skill(
+//     `skill_cleric_01`,
+//     `พิพากษา`,
+//     `โจมตีศัตรูด้วยธาตุระเบียบ สร้างความเสียหายระเบียบเท่ากับ 1.2 เท่าความเสียหายกายภาพของอาวุธในมือ (+0.1 ต่อขั้น) (+สเน่ห์, +กำลัง) หากเป้าหมายเป็นอันเดตจะสร้างความเสียหายสองเท่า หากผู้ใช้อยู่ในแถวหลัง ความเสียหายจะลดลงครึ่ง`,
+//     new SkillLearningRequirement({
+//         preRequireSkillID: [], 
+//         preRequireElements: [], 
+//         preRequireCharacterLevel: 1, 
+//         preRequireCharacterTrait: []
+//     }),
+//     new SkillEquipmentRequirement({
+//         weapon: [
+//             WeaponSpecificType.sword_great, 
+//             WeaponSpecificType.sword_long,
+//             WeaponSpecificType.sword_short,
+//             WeaponSpecificType.mace_hammer,
+//             WeaponSpecificType.mace_morningstar,
+//             WeaponSpecificType.mace_warhammer,
+//             WeaponSpecificType.tome_bible,
+//         ], 
+//     }),
+//     [
+//         new SkillActiveEffect(
+//             new TargetType(
+//                 TargetPartyType.Enemy,
+//                 TargetSelectionScope.Single,
+//                 TargetConditionFilters.None,
+//                 TargetSortingOptions.None,
+//                 TargetTauntConsideration.NoTauntCount
+//             ),
+//             [
+//                 new SkillActionObject({
+//                     type: SkillActionType.Negative,
+//                     subType: SkillActionSubType.DamageAndDebuff,
+//                     damageDiceBase: [DiceEnum.TwoD6, DiceEnum.TwoD6, DiceEnum.TwoD6, DiceEnum.TwoD6, DiceEnum.ThreeD6],
+//                     damageType: [DamageTypes.order],
+//                     damageModifierStat: [CharacterStatusEnum.charisma, CharacterStatusEnum.strength],
+//                     damageModifierBonus: [1],
+//                     hitBase: [0],
+//                     hitStat: [[CharacterStatusEnum.dexterity]],
+//                     critBase: [0],
+//                     critStat: [[CharacterStatusEnum.charisma]],
+//                     applyEffect: [],
+//                     traitBasedModifier: [{trait: TraitEnum.trait_undead, modifier: 2}],
+//                     buffBasedModifier: [],
+//                     specialEffect: [],
+//                     preferredPositionDamageModifier: { position: PreferredPositionEnum.FrontToAny, penaltyModifier: 0.5 },                     
+//                 })
+//             ]
 
-        )
-    ],
-    new SkillConsume({
-        hp: [0,0,0,0,0], 
-        mp: [0,0,0,0,0], 
-        sp: [5,5,5,5,5], 
-        elements: [new ElementConsume({
-            element: FundamentalElementTypes.none, 
-            amount: [2,2,2,2,2]
-        })]
-    }),
-    new SkillProduce({
-        elements: [new ElementProduce({
-            element: FundamentalElementTypes.order, 
-            amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-        })]
-    }),
-    Tier.common
-)
+//         )
+//     ],
+//     new SkillConsume({
+//         hp: [0,0,0,0,0], 
+//         mp: [0,0,0,0,0], 
+//         sp: [5,5,5,5,5], 
+//         elements: [new ElementConsume({
+//             element: FundamentalElementTypes.none, 
+//             amount: [2,2,2,2,2]
+//         })]
+//     }),
+//     new SkillProduce({
+//         elements: [new ElementProduce({
+//             element: FundamentalElementTypes.order, 
+//             amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
+//         })]
+//     }),
+//     Tier.common,
+//     false,
+// )
 
 // const skill_cleric_02 = new Skill(
 //     `skill_cleric_02`,

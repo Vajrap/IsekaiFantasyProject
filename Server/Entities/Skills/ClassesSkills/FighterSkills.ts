@@ -1,4 +1,4 @@
-import { SkillRepository } from "../SkillRepository"
+import { SkillRepository } from "../SkillRepository.ts.bak"
 import { Skill } from "../Skill"
 import { SkillLearningRequirement } from "../SubClasses/SkillLearningRequirement"
 import { SkillEquipmentRequirement } from "../SubClasses/SkillEquipmentRequirement"

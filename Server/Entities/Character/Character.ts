@@ -17,7 +17,7 @@ import { CharacterType } from "./Subclasses/CharacterType";
 import { Trait, TraitRepository } from "../Traits/Trait";
 import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { ArmorDefense } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/interfaces";
-import { SkillRepository } from "../Skills/SkillRepository";
+// import { SkillRepository } from "../Skills/SkillRepository.ts.bak";
 import { CharacterArcaneAptitude } from "./Subclasses/CharacterArcaneAptitude";
 import {
 	SuccessResponse,
@@ -87,6 +87,7 @@ import { Weapon } from "../Items/Equipments/Weapon/Weapon";
 import { Armor } from "../Items/Equipments/Armors/Armor";
 import { getItem, itemRepository } from "../Items/Repository";
 import { Equipment } from "../Items/Equipments/Equipment";
+import { SkillRepository, skillRepository } from "../Skills/SkillRepository";
 
 export class Character {
 	id: string;
@@ -1031,19 +1032,7 @@ export class Character {
 
 	//MARK: SKILL
 	async learnSkill(skillID: string): Promise<void> {
-		let skill;
-
-		if (skillID.includes("auto")) {
-			skill = SkillRepository[skillID as keyof typeof SkillRepository];
-		} else {
-			skill = await getSkillFromDB(skillID);
-		}
-
-		if (!skill) {
-			throw new Error(
-				`Skill with id ${skillID} not found in SkillRepository or database.`
-			);
-		}
+		const skill = await skillRepository.getSkill(skillID);
 
 		if (
 			this.skills.some((s) => s.skill.id === skillID) ||
@@ -1112,8 +1101,8 @@ export class Character {
 	//Instead of Validate as a 'must' we may use this to help player see how the deck should be built
 	async validateActiveSkills(): Promise<SuccessResponse | ErrorResponse> {
 		//So This will return 'SUGGESTION'
-
 		const firstSkill = this.activeSkills[0].skill;
+
 		if (!firstSkill.isAuto) {
 			return {
 				type: "ERROR",
@@ -1123,8 +1112,8 @@ export class Character {
 
 		let autoCardCount = 0;
 		for (const skill of this.activeSkills) {
-			const skillObject =
-				SkillRepository[skill.skill.id as keyof typeof SkillRepository];
+			const skillObject = await skillRepository.getSkill(skill.skill.id);
+
 			if (skillObject.isAuto) {
 				autoCardCount++;
 			}
@@ -1138,8 +1127,7 @@ export class Character {
 
 		let elementNeededArray = [];
 		for (const skill of this.activeSkills) {
-			const skillObject =
-				SkillRepository[skill.skill.id as keyof typeof SkillRepository];
+			const skillObject = await skillRepository.getSkill(skill.skill.id);
 			for (const element of skillObject.consume.elements) {
 				if (element.amount[skill.level - 1] > 0) {
 					elementNeededArray.push(element.element);
@@ -1149,8 +1137,7 @@ export class Character {
 
 		let elementProducedArray = [];
 		for (const skill of this.activeSkills) {
-			const skillObject =
-				SkillRepository[skill.skill.id as keyof typeof SkillRepository];
+			const skillObject = await skillRepository.getSkill(skill.skill.id);
 			for (const element of skillObject.produce.elements) {
 				if (element.amountRange[skill.level - 1][1] > 0) {
 					elementProducedArray.push(element.element);
@@ -1196,17 +1183,15 @@ export class Character {
 		};
 	}
 
-	moveCardToSkills(skillID: string): {
+	async moveCardToSkills(skillID: string): Promise<{
 		character: Character;
 		response: SuccessResponse | ErrorResponse;
-	} {
-		const skillObject =
-			SkillRepository[skillID as keyof typeof SkillRepository];
+	}> {
+		const skillObject = await skillRepository.getSkill(skillID);
 		if (skillObject.isAuto) {
 			let autoCardCount = 0;
 			for (const skill of this.activeSkills) {
-				const skillObject =
-					SkillRepository[skill.skill.id as keyof typeof SkillRepository];
+				const skillObject = await skillRepository.getSkill(skill.skill.id);
 				if (skillObject.isAuto) {
 					autoCardCount++;
 				}
@@ -1285,18 +1270,19 @@ export class Character {
 		return this;
 	}
 
-	getSkillThatCanBePlay(skillPosition?: number): {
+	async getSkillThatCanBePlay(skillPosition?: number): Promise<{
 		skillThatCanBePlay: Skill;
 		skillLevel: number;
 		skillPosition: number;
-	} {
+	}> {
 		if (!skillPosition) {
 			skillPosition = 0;
 		}
 
 		//If skill position exceed the activeSkills length, we need to return normal attack
 		if (skillPosition >= this.activeSkills.length) {
-			let skill = this.status.strength > this.status.planar ? SkillRepository.skill_auto_physical : SkillRepository.skill_auto_magical;
+			// let skill = this.status.strength > this.status.planar ? SkillRepository.skill_auto_physical : SkillRepository.skill_auto_magical;
+			let skill = this.status.strength > this.status.planar ? await skillRepository.getSkill("auto_physical") : await skillRepository.getSkill("auto_magical");
 
 			return {
 				skillThatCanBePlay: skill,
@@ -1349,13 +1335,13 @@ export class Character {
 		};
 	}
 
-	private moveToNextSkill(skillPosition: number): {
+	private async moveToNextSkill(skillPosition: number): Promise<{
 		skillThatCanBePlay: Skill;
 		skillLevel: number;
 		skillPosition: number;
-	} {
+	}> {
 		skillPosition++;
-		return this.getSkillThatCanBePlay(skillPosition);
+		return await this.getSkillThatCanBePlay(skillPosition);
 	}
 
 	consumeActionObject(

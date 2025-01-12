@@ -16,6 +16,7 @@ import { CharacterDB } from "../Database/Character/CharacterDB";
 import { WebSocketServer } from "ws";
 import { webSocketEvents, wss } from "../API/WebSocket/WebSocketServer";
 import { WebSocketMessageType, WebSocketPartyData } from "../../Common/RequestResponse/webSocket";
+import { SkillRepository, skillRepository } from "../Entities/Skills/SkillRepository";
 
 export class Game {
     characterManager: CharacterManager = new CharacterManager();
@@ -25,6 +26,7 @@ export class Game {
     gameTime: GameTime = new GameTime(0);
     db = db;
     webSocketServer: WebSocketServer = wss;
+    skillRepository: SkillRepository = skillRepository;
 
     constructor() {
         this.initializeWebSocketListeners();
@@ -382,6 +384,10 @@ export class Game {
         } catch (error) {
             console.error('Error loading parties from database:', error);
         }
+    }
+
+    private async loadSkillsFromDB() {
+
     }
 
     //MARK: GAME METHODS

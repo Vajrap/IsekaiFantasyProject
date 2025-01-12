@@ -1,7 +1,7 @@
 import { Party } from "../../Entities/Party/Party";
 import { BattleReport } from "./BattleReport";
 import { ActionDetails, ActorSkillEffect, TargetSkillEffect } from "../../API/BattleReportDTO";
-import { SkillRepository } from "../../Entities/Skills/SkillRepository";
+import { SkillRepository } from "../../Entities/Skills/SkillRepository.ts.bak";
 import { Skill } from "../../Entities/Skills/Skill";
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { Character } from "../../Entities/Character/Character";
