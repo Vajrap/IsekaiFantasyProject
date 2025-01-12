@@ -67,6 +67,14 @@
     overflow-y: auto;
 }
 
+.characterCard-panel-Elements {
+    height: 8vh;
+}
+
+.characterCard-panel-Proficiencies {
+    height: 15vh;
+}
+
 .characterCard-panel-Equipments {
     height: 20vh;
 }

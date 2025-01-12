@@ -64,7 +64,7 @@ export class ArtisanEnum {
 }
 ArtisanEnum.MINING = "mining";
 ArtisanEnum.SMITHING = "smithing";
-ArtisanEnum.WOODCUTTING = "woodcutting";
+ArtisanEnum.woodcutting = "woodcutting";
 ArtisanEnum.CARPENTRY = "carpentry";
 ArtisanEnum.FORAGING = "foraging";
 ArtisanEnum.WEAVING = "weaving";

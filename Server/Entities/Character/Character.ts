@@ -1643,7 +1643,7 @@ export class Character {
 
 	private calculateWeaponDamage(diceType: DiceEnum.Weapon_Physical | DiceEnum.Weapon_Magical): number {
 		let weaponDiceEnum: DiceEnum = DiceEnum.OneD6;
-		if (this.equipments.mainHand !== null) {
+		if (this.equipments.mainHand !== undefined) {
 			switch (diceType) {
 				case DiceEnum.Weapon_Physical:
 					weaponDiceEnum =
@@ -1657,7 +1657,7 @@ export class Character {
 					break;
 			}
 			return Dice.roll(weaponDiceEnum).sum;
-		} else if (this.equipments.offHand !== null) {
+		} else if (this.equipments.offHand !== undefined) {
 			switch (diceType) {
 				case DiceEnum.Weapon_Physical:
 					weaponDiceEnum =
@@ -2579,9 +2579,9 @@ export class Character {
 		}
 
 		// If equipment is still undefined, throw an error		
-		if (equipmentInstance === undefined || equipmentInstance === null) { throw new Error(`Equipment ${equipment} not found in database!`) }
+		if (equipmentInstance === undefined) { throw new Error(`Equipment ${equipment} not found in database!`) }
 
-		if (this.equipments[position] !== null) {
+		if (this.equipments[position] !== undefined) {
 			this.unequip(position);
 		}
 
@@ -2594,7 +2594,7 @@ export class Character {
 				}
 				if (
 					equipmentInstance.attackStats?.handle === 2 &&
-					this.equipments.offHand !== null
+					this.equipments.offHand !== undefined
 				) {
 					//can't equip this
 					return this;
@@ -2607,7 +2607,7 @@ export class Character {
 				}
 				if (
 					equipmentInstance.attackStats?.handle === 2 &&
-					this.equipments.mainHand !== null
+					this.equipments.mainHand !== undefined
 				) {
 					//can't equip this
 					return this;
@@ -2689,7 +2689,7 @@ export class Character {
 			| "ring_R"
 			| "ring_L",
 	): Character {
-		if (this.equipments[position] === null) {
+		if (this.equipments[position] === undefined) {
 			throw new Error("No equipment to unequip");
 		}
 
@@ -2767,7 +2767,7 @@ export class Character {
 			}
 		}
 
-		this.equipments[position] = null;
+		this.equipments[position] = undefined;
 		//TODO: add to inventory, if equipment.materail is 'magic_summoned' then destroy
 		
 		return this;
@@ -3057,7 +3057,7 @@ function switchClass(selectedClass?: ClassEnum): CharacterClass | null {
 				return class_templar;
 			break;
 			default:
-				return null;
+				throw new Error("class: " + selectedClass + " not found in switchClass!");
 			break;
 		}
 	return null;
@@ -3099,7 +3099,7 @@ function switchRace(selectedRace?: RaceEnum) {
 			return raceTriton;
 		break;
 		default:
-			return null;
+			throw new Error("race: " + selectedRace + " not found in switchRace!");
 		break;
 	}
 }
@@ -3143,7 +3143,7 @@ function switchBackground(selectedBackground?: BackgroundEnum) {
 			return backgroundWanderingMusician;
 			break;
 		default:
-			return null;
+			throw new Error("background: " + selectedBackground + " not found in switchBackground!");
 			break;
 	}
 }

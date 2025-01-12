@@ -123,7 +123,7 @@ export interface CharacterStatusInterface {
     dodge: number;
     mining: number;
     smithing: number;
-    woodCutting: number;
+    woodcutting: number;
     carpentry: number;
     foraging: number;
     weaving: number;
@@ -157,15 +157,15 @@ export interface CharacterItemInBag {
 };
 
 export interface CharacterEquipmentInterface {
-    mainHand: {id: string, name: string, cost: number, weight: number, description: string};
-    offHand: {id: string, name: string, cost: number, weight: number, description: string};
-    armor: {id: string, name: string, cost: number, weight: number, description: string};
-    headwear: {id: string, name: string, cost: number, weight: number, description: string};
-    gloves: {id: string, name: string, cost: number, weight: number, description: string};
-    boots: {id: string, name: string, cost: number, weight: number, description: string};
-    necklace: {id: string, name: string, cost: number, weight: number, description: string};
-    ring_R: {id: string, name: string, cost: number, weight: number, description: string};
-    ring_L: {id: string, name: string, cost: number, weight: number, description: string};
+    mainHand: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
+    offHand: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
+    armor: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
+    headwear: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
+    gloves: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
+    boots: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
+    necklace: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
+    ring_R: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
+    ring_L: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
 };
 
 export interface CharacterInternalInterface {

@@ -9,30 +9,30 @@ export var CharacterCreationResponseStatus;
 ;
 export var BackgroundEnum;
 (function (BackgroundEnum) {
-    // MAGE_APPRENTICE = 'MAGE_APPRENTICE',
-    // DESERTED_MILITARY = 'DESERTED_MILITARY',
-    // TAVERN_BRAWLER = 'TAVERN_BRAWLER',
-    // FALLEN_NOBILITY = 'FALLEN_NOBILITY',
-    // MERCS_CHILD = 'MERCS_CHILD',
-    // TRAINEE_IN_CARAVAN = 'TRAINEE_IN_CARAVAN',
-    // WANDERING_MUSICIAN = 'WANDERING_MUSICIAN',
-    // APPRENTICE_SCRIBE = 'APPRENTICE_SCRIBE',
-    // ABANDONED_FARMHAND = 'ABANDONED_FARMHAND',
-    // STREET_URCHIN = 'STREET_URCHIN',
-    // FAILED_CRAFTSMAN = 'FAILED_CRAFTSMAN',
-    // INNKEEPERS_CHILD = 'INNKEEPERS_CHILD',
-    BackgroundEnum["MAGE_APPRENTICE"] = "\u0E40\u0E14\u0E47\u0E01\u0E1D\u0E36\u0E01\u0E40\u0E27\u0E17\u0E22\u0E4C";
-    BackgroundEnum["DESERTED_MILITARY"] = "\u0E17\u0E2B\u0E32\u0E23\u0E2B\u0E19\u0E35\u0E17\u0E31\u0E1E";
-    BackgroundEnum["TAVERN_BRAWLER"] = "\u0E02\u0E35\u0E49\u0E40\u0E21\u0E32";
-    BackgroundEnum["FALLEN_NOBILITY"] = "\u0E04\u0E19\u0E40\u0E04\u0E22\u0E23\u0E27\u0E22";
-    BackgroundEnum["MERCS_CHILD"] = "\u0E25\u0E39\u0E01\u0E17\u0E2B\u0E32\u0E23\u0E23\u0E31\u0E1A\u0E08\u0E49\u0E32\u0E07";
-    BackgroundEnum["TRAINEE_IN_CARAVAN"] = "\u0E40\u0E14\u0E47\u0E01\u0E43\u0E19\u0E04\u0E32\u0E23\u0E32\u0E27\u0E32\u0E19\u0E04\u0E49\u0E32\u0E02\u0E32\u0E22";
-    BackgroundEnum["WANDERING_MUSICIAN"] = "\u0E19\u0E31\u0E01\u0E14\u0E19\u0E15\u0E23\u0E35\u0E1E\u0E40\u0E19\u0E08\u0E23";
-    BackgroundEnum["APPRENTICE_SCRIBE"] = "\u0E2D\u0E32\u0E25\u0E31\u0E01\u0E29\u0E13\u0E4C\u0E1D\u0E36\u0E01\u0E2B\u0E31\u0E14";
-    BackgroundEnum["ABANDONED_FARMHAND"] = "\u0E0A\u0E32\u0E27\u0E19\u0E32\u0E17\u0E2D\u0E14\u0E17\u0E34\u0E49\u0E07\u0E2A\u0E27\u0E19";
-    BackgroundEnum["STREET_URCHIN"] = "\u0E40\u0E14\u0E47\u0E01\u0E02\u0E49\u0E48\u0E32\u0E07\u0E16\u0E19\u0E19";
-    BackgroundEnum["FAILED_CRAFTSMAN"] = "\u0E0A\u0E48\u0E32\u0E07\u0E17\u0E35\u0E48\u0E25\u0E49\u0E21\u0E40\u0E2B\u0E25\u0E27";
-    BackgroundEnum["INNKEEPERS_CHILD"] = "\u0E25\u0E39\u0E01\u0E02\u0E2D\u0E07\u0E40\u0E08\u0E49\u0E32\u0E02\u0E2D\u0E07\u0E42\u0E23\u0E07\u0E41\u0E23\u0E21";
+    BackgroundEnum["MAGE_APPRENTICE"] = "MAGE_APPRENTICE";
+    BackgroundEnum["DESERTED_MILITARY"] = "DESERTED_MILITARY";
+    BackgroundEnum["TAVERN_BRAWLER"] = "TAVERN_BRAWLER";
+    BackgroundEnum["FALLEN_NOBILITY"] = "FALLEN_NOBILITY";
+    BackgroundEnum["MERCS_CHILD"] = "MERCS_CHILD";
+    BackgroundEnum["TRAINEE_IN_CARAVAN"] = "TRAINEE_IN_CARAVAN";
+    BackgroundEnum["WANDERING_MUSICIAN"] = "WANDERING_MUSICIAN";
+    BackgroundEnum["APPRENTICE_SCRIBE"] = "APPRENTICE_SCRIBE";
+    BackgroundEnum["ABANDONED_FARMHAND"] = "ABANDONED_FARMHAND";
+    BackgroundEnum["STREET_URCHIN"] = "STREET_URCHIN";
+    BackgroundEnum["FAILED_CRAFTSMAN"] = "FAILED_CRAFTSMAN";
+    BackgroundEnum["INNKEEPERS_CHILD"] = "INNKEEPERS_CHILD";
+    // MAGE_APPRENTICE = 'เด็กฝึกเวทย์',
+    // DESERTED_MILITARY = 'ทหารหนีทัพ',
+    // TAVERN_BRAWLER = 'ขี้เมา',
+    // FALLEN_NOBILITY = 'คนเคยรวย',
+    // MERCS_CHILD = 'ลูกทหารรับจ้าง',
+    // TRAINEE_IN_CARAVAN = 'เด็กในคาราวานค้าขาย',
+    // WANDERING_MUSICIAN = 'นักดนตรีพเนจร',
+    // APPRENTICE_SCRIBE = 'อาลักษณ์ฝึกหัด',
+    // ABANDONED_FARMHAND = 'ชาวนาทอดทิ้งสวน',
+    // STREET_URCHIN = 'เด็กข้่างถนน',
+    // FAILED_CRAFTSMAN = 'ช่างที่ล้มเหลว',
+    // INNKEEPERS_CHILD = 'ลูกของเจ้าของโรงแรม',
 })(BackgroundEnum || (BackgroundEnum = {}));
 export var ClassEnum;
 (function (ClassEnum) {
@@ -51,28 +51,28 @@ export var ClassEnum;
 })(ClassEnum || (ClassEnum = {}));
 export var RaceEnum;
 (function (RaceEnum) {
-    // HUMAN = 'HUMAN',
-    // ELVEN = 'ELVEN',
-    // ORC = 'ORC',
-    // TRITON = 'TRITON',
-    // DWARF = 'DWARF',
-    // HALFLING = 'HALFLING',
-    // HALF_ELF = 'HALF_ELF',
-    // HALF_ORC = 'HALF_ORC',
-    // HALF_TRITON = 'HALF_TRITON',
-    // DWARFLING = 'DWARFLING',
-    // ELVON = 'ELVON',
-    RaceEnum["HUMAN"] = "\u0E21\u0E19\u0E38\u0E29\u0E22\u0E4C";
-    RaceEnum["ELVEN"] = "\u0E40\u0E2D\u0E25\u0E1F\u0E4C";
-    RaceEnum["ORC"] = "\u0E2D\u0E2D\u0E23\u0E4C\u0E04";
-    RaceEnum["TRITON"] = "\u0E04\u0E19\u0E40\u0E07\u0E37\u0E2D\u0E01";
-    RaceEnum["DWARF"] = "\u0E04\u0E19\u0E41\u0E04\u0E23\u0E30";
-    RaceEnum["HALFLING"] = "\u0E2E\u0E32\u0E25\u0E4C\u0E1F\u0E25\u0E34\u0E07";
-    RaceEnum["HALF_ELF"] = "\u0E04\u0E23\u0E36\u0E48\u0E07\u0E40\u0E2D\u0E25\u0E1F\u0E4C";
-    RaceEnum["HALF_ORC"] = "\u0E04\u0E23\u0E36\u0E48\u0E07\u0E2D\u0E2D\u0E23\u0E4C\u0E04";
-    RaceEnum["HALF_TRITON"] = "\u0E04\u0E23\u0E36\u0E48\u0E07\u0E04\u0E19\u0E40\u0E07\u0E37\u0E2D\u0E01";
-    RaceEnum["DWARFLING"] = "\u0E14\u0E27\u0E32\u0E23\u0E4C\u0E1F\u0E25\u0E34\u0E07";
-    RaceEnum["ELVON"] = "\u0E40\u0E2D\u0E25\u0E27\u0E2D\u0E19";
+    RaceEnum["HUMAN"] = "HUMAN";
+    RaceEnum["ELVEN"] = "ELVEN";
+    RaceEnum["ORC"] = "ORC";
+    RaceEnum["TRITON"] = "TRITON";
+    RaceEnum["DWARF"] = "DWARF";
+    RaceEnum["HALFLING"] = "HALFLING";
+    RaceEnum["HALF_ELF"] = "HALF_ELF";
+    RaceEnum["HALF_ORC"] = "HALF_ORC";
+    RaceEnum["HALF_TRITON"] = "HALF_TRITON";
+    RaceEnum["DWARFLING"] = "DWARFLING";
+    RaceEnum["ELVON"] = "ELVON";
+    // HUMAN = 'มนุษย์',
+    // ELVEN = 'เอลฟ์',
+    // ORC = 'ออร์ค',
+    // TRITON = 'คนเงือก',
+    // DWARF = 'คนแคระ',
+    // HALFLING = 'ฮาล์ฟลิง',
+    // HALF_ELF = 'ครึ่งเอลฟ์',
+    // HALF_ORC = 'ครึ่งออร์ค',
+    // HALF_TRITON = 'ครึ่งคนเงือก',
+    // DWARFLING = 'ดวาร์ฟลิง',
+    // ELVON = 'เอลวอน',
     // Monster
     RaceEnum["GOBLIN"] = "GOBLIN";
     RaceEnum["KOBOLD"] = "KOBOLD";

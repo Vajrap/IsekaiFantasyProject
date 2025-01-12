@@ -53,15 +53,19 @@ export async function createCharacterFromDB(dbCharacter: CharacterDB): Promise<C
 
     character.equipments = new CharacterEquipments();
 
-    if (dbCharacter.equipments.mainHand) { await character.equip("mainHand", dbCharacter.equipments.mainHand) }
-    if (dbCharacter.equipments.offHand) { await character.equip("offHand", dbCharacter.equipments.offHand) }
-    if (dbCharacter.equipments.armor) { await character.equip("armor", dbCharacter.equipments.armor) }
-    if (dbCharacter.equipments.headwear) { await character.equip("headwear", dbCharacter.equipments.headwear) }
-    if (dbCharacter.equipments.gloves) { await character.equip("gloves", dbCharacter.equipments.gloves) }
-    if (dbCharacter.equipments.boots) { await character.equip("boots", dbCharacter.equipments.boots) }
-    if (dbCharacter.equipments.necklace) { await character.equip("necklace", dbCharacter.equipments.necklace) }
-    if (dbCharacter.equipments.ring_R) { await character.equip("ring_R", dbCharacter.equipments.ring_R) }
-    if (dbCharacter.equipments.ring_L) { await character.equip("ring_L", dbCharacter.equipments.ring_L) }
+    console.log(dbCharacter.equipments.mainHand);
+    if (dbCharacter.equipments.mainHand !== null) { await character.equip("mainHand", dbCharacter.equipments.mainHand) }
+    console.log(dbCharacter.equipments.offHand);
+    if (dbCharacter.equipments.offHand !== null) { await character.equip("offHand", dbCharacter.equipments.offHand) }
+    console.log(dbCharacter.equipments.armor);
+    if (dbCharacter.equipments.armor  !== null) { await character.equip("armor", dbCharacter.equipments.armor) }
+    console.log(dbCharacter.equipments.headwear);
+    if (dbCharacter.equipments.headwear !== null) { await character.equip("headwear", dbCharacter.equipments.headwear) }
+    if (dbCharacter.equipments.gloves !== null) { await character.equip("gloves", dbCharacter.equipments.gloves) }
+    if (dbCharacter.equipments.boots !== null) { await character.equip("boots", dbCharacter.equipments.boots) }
+    if (dbCharacter.equipments.necklace !== null) { await character.equip("necklace", dbCharacter.equipments.necklace) }
+    if (dbCharacter.equipments.ring_R !== null) { await character.equip("ring_R", dbCharacter.equipments.ring_R) }
+    if (dbCharacter.equipments.ring_L !== null) { await character.equip("ring_L", dbCharacter.equipments.ring_L) }
 
     if (dbCharacter.traits.length > 0) { 
         for (const trait of dbCharacter.traits) {

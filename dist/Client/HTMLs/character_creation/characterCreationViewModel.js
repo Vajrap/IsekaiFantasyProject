@@ -83,9 +83,9 @@ class CharacterCreationViewModel {
         this.genderFemale = this.genderFemale.bind(this);
         this.updateUI = this.updateUI.bind(this);
         this.createCharacterButtonPressed = this.createCharacterButtonPressed.bind(this);
-        this.model.selectRace("HUMAN");
-        this.model.selectClass("CLERIC");
-        this.model.selectBackground("MAGE_APPRENTICE");
+        this.model.selectRace(RaceEnum.HUMAN);
+        this.model.selectClass(ClassEnum.CLERIC);
+        this.model.selectBackground(BackgroundEnum.MAGE_APPRENTICE);
         this.model.selectGender("MALE");
         this.portrait = `${this.model.selectedGender}_${this.model.selectedRace}_${this.model.portraitNumber.toString()}`;
         this.dom.genderMale.classList.add('active'); // Highlight male button
@@ -180,7 +180,7 @@ class CharacterCreationViewModel {
             artisans: {
                 mining: document.getElementById('miningValue'),
                 smithing: document.getElementById('smithingValue'),
-                woodCutting: document.getElementById('woodCuttingValue'),
+                woodcutting: document.getElementById('woodcuttingValue'),
                 carpentry: document.getElementById('carpentryValue'),
                 foraging: document.getElementById('foragingValue'),
                 weaving: document.getElementById('weavingValue'),

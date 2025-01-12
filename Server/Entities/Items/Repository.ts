@@ -13,5 +13,12 @@ export const itemRepository: ItemRepository = {
 }
 
 export function getItem(id: string): Item  {
-    return itemRepository[id];
+    // When get item, we get it from the repository first, if it's not there, we get it from the database
+    let item = itemRepository[id];
+    /*
+    if (!item) {
+        item = db.getItem(id);
+    }
+    */
+    return item;
 }

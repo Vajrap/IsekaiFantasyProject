@@ -58,7 +58,7 @@ class CharacterCreationViewModel {
         artisans: {
             mining: HTMLSpanElement;
             smithing: HTMLSpanElement;
-            woodCutting: HTMLSpanElement;
+            woodcutting: HTMLSpanElement;
             carpentry: HTMLSpanElement;
             foraging: HTMLSpanElement;
             weaving: HTMLSpanElement;
@@ -93,9 +93,9 @@ class CharacterCreationViewModel {
         this.updateUI = this.updateUI.bind(this);
         this.createCharacterButtonPressed = this.createCharacterButtonPressed.bind(this);
 
-        this.model.selectRace("HUMAN");
-        this.model.selectClass("CLERIC");
-        this.model.selectBackground("MAGE_APPRENTICE");
+        this.model.selectRace(RaceEnum.HUMAN);
+        this.model.selectClass(ClassEnum.CLERIC);
+        this.model.selectBackground(BackgroundEnum.MAGE_APPRENTICE);
         this.model.selectGender("MALE");
         this.portrait = `${this.model.selectedGender}_${this.model.selectedRace}_${this.model.portraitNumber.toString()}`
         this.dom.genderMale.classList.add('active'); // Highlight male button
@@ -277,7 +277,7 @@ class CharacterCreationViewModel {
             artisans: {
                 mining: document.getElementById('miningValue') as HTMLSpanElement,
                 smithing: document.getElementById('smithingValue') as HTMLSpanElement,
-                woodCutting: document.getElementById('woodCuttingValue') as HTMLSpanElement,
+                woodcutting: document.getElementById('woodcuttingValue') as HTMLSpanElement,
                 carpentry: document.getElementById('carpentryValue') as HTMLSpanElement,
                 foraging: document.getElementById('foragingValue') as HTMLSpanElement,
                 weaving: document.getElementById('weavingValue') as HTMLSpanElement,

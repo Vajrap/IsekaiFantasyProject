@@ -1,4 +1,6 @@
-import { CharacterInterface, CharacterStatusInterface } from "../../../../Common/RequestResponse/characterWS";
+import { CharacterInterface, CharacterStatusInterface } from "../../../../Common/RequestResponse/characterWS.js";
+import { statusTextMapper } from "../../../../Client/TextMapper/status.js";
+import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 
 export class CharacterCard {
     character: CharacterInterface;
@@ -37,7 +39,6 @@ export class CharacterCard {
         frontFace.appendChild(this.createCharacterInfo());
         frontFace.appendChild(this.createCharacterPortrait());
         frontFace.appendChild(this.createEquipments());
-        frontFace.appendChild(this.createTraits());
         return frontFace;
     }
 
@@ -59,15 +60,15 @@ export class CharacterCard {
         characterInfoPanel.classList.add('characterCard-panel-Info');
         const characterInfoValueContainer = document.createElement('div');
         characterInfoValueContainer.classList.add('characterCard-info-valueContainer');
-        characterInfoValueContainer.appendChild(this.createItemLabel(this.character.name));
-        characterInfoValueContainer.appendChild(this.createItemLabel(this.character.alignment));
+        characterInfoValueContainer.appendChild(this.createItemLabel(`ชื่อ: ${this.character.name}`));
+        characterInfoValueContainer.appendChild(this.createItemLabel(`นิสัย: ${this.character.alignment}`));
         characterInfoValueContainer.appendChild(this.createItemLabel(`เลเวล: ${this.character.level}`));
         characterInfoValueContainer.appendChild(this.createItemLabel(`ฉายา: ${'TITLE PLACE HOLDER'}`));
         characterInfoValueContainer.appendChild(this.createItemLabel(`ชื่อเสียง: ${this.character.fame}`));
         characterInfoValueContainer.appendChild(this.createItemLabel(`อารมณ์: ${this.character.mood}`));
-        characterInfoValueContainer.appendChild(this.createItemValue(`🔴: ${this.character.currentHP}/${this.character.maxHP}`));
-        characterInfoValueContainer.appendChild(this.createItemValue(`🔵: ${this.character.currentMP}/${this.character.maxMP}`))
-        characterInfoValueContainer.appendChild(this.createItemValue(`🟡: ${this.character.currentSP}/${this.character.maxSP}`));
+        characterInfoValueContainer.appendChild(this.createItemValue(`HP: ${this.character.currentHP}/${this.character.maxHP}`));
+        characterInfoValueContainer.appendChild(this.createItemValue(`MP: ${this.character.currentMP}/${this.character.maxMP}`))
+        characterInfoValueContainer.appendChild(this.createItemValue(`SP: ${this.character.currentSP}/${this.character.maxSP}`));
         characterInfoPanel.appendChild(characterInfoValueContainer);
         return characterInfoPanel;
     }
@@ -90,18 +91,18 @@ export class CharacterCard {
             { label: 'มือหลัก', item: equipment.mainHand },
             { label: 'มือรอง', item: equipment.offHand },
             { label: 'ชุดเกราะ', item: equipment.armor },
-            { label: 'รองเท้า', item: equipment.boots },
-            { label: 'ถุงมือ', item: equipment.gloves },
             { label: 'หมวก', item: equipment.headwear },
-            { label: 'สร้อย', item: equipment.necklace },
-            { label: 'แหวน', item: equipment.ring_L },
+            { label: 'ถุงมือ', item: equipment.gloves },
+            { label: 'รองเท้า', item: equipment.boots },
             { label: 'แหวน', item: equipment.ring_R },
+            { label: 'แหวน', item: equipment.ring_L },
+            { label: 'สร้อย', item: equipment.necklace },
         ];
 
         equipItems.forEach(equip => {
-            if (equip.item === null) {
+            if (equip.item === undefined) {
                 const equipmentLabel = this.createItemLabel(equip.label);
-                const equipmentValue = this.createItemValue('0');
+                const equipmentValue = this.createItemValue('-');
                 equipmentContainer.appendChild(equipmentLabel);
                 equipmentContainer.appendChild(equipmentValue);
                 return;
@@ -183,7 +184,7 @@ export class CharacterCard {
             'endurance',
         ]
         for (const attribute of attributes) {
-            const attributeName = attribute.slice(0, 3).toUpperCase();
+            const attributeName = statusTextMapper(attribute as CharacterStatusEnum);
             const attributeElement = this.createItemValue(`${attributeName}: ${this.character.status[attribute as keyof CharacterStatusInterface]}`);
             attributesContainer.appendChild(attributeElement);
         }
@@ -204,7 +205,8 @@ export class CharacterCard {
             'fire',
         ]
         for (const element of elements) {
-            const elementElement = this.createItemValue(`${element}: ${this.character.status[element as keyof CharacterStatusInterface]}`);
+            const elementName = statusTextMapper(element as CharacterStatusEnum);
+            const elementElement = this.createItemValue(`${elementName}: ${this.character.status[element as keyof CharacterStatusInterface]}`);
             elementsContainer.appendChild(elementElement);
         }
         elementsPanel.appendChild(elementsContainer);
@@ -231,7 +233,8 @@ export class CharacterCard {
             'orb',
         ]
         for (const proficiency of proficiencies) {
-            const proficiencyElement = this.createItemValue(`${proficiency}: ${this.character.status[proficiency as keyof CharacterStatusInterface]}`);
+            const proficiencyName = statusTextMapper(proficiency as CharacterStatusEnum);
+            const proficiencyElement = this.createItemValue(`${proficiencyName}: ${this.character.status[proficiency as keyof CharacterStatusInterface]}`);
             proficienciesContainer.appendChild(proficiencyElement);
         }
         proficienciesPanel.appendChild(proficienciesContainer);
@@ -245,7 +248,7 @@ export class CharacterCard {
         const artisans: (keyof CharacterStatusInterface)[] = [
             'mining',
             'smithing',
-            'woodCutting',
+            'woodcutting',
             'carpentry',
             'foraging',
             'weaving',
@@ -257,7 +260,8 @@ export class CharacterCard {
             'enchanting',
         ];
         for (const artisan of artisans) {
-            const artisanElement = this.createItemValue(`${artisan}: ${this.character.status[artisan]}`);
+            const artisanName = statusTextMapper(artisan as CharacterStatusEnum);
+            const artisanElement = this.createItemValue(`${artisanName}: ${this.character.status[artisan]}`);
             artisansContainer.appendChild(artisanElement);
         }
         artisansPanel.appendChild(artisansContainer);

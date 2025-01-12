@@ -489,7 +489,7 @@ export class CharacterStatus {
             fire: this.fire(),
             mining: this.mining(),
             smithing: this.smithing(),
-            woodCutting: this.woodcutting(),
+            woodcutting: this.woodcutting(),
             carpentry: this.carpentry(),
             foraging: this.foraging(),
             weaving: this.weaving(),

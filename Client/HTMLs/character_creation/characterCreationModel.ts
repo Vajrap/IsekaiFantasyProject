@@ -88,7 +88,7 @@ export class CharacterCreationModel {
         this.artisans = {
             mining: 6,
             smithing: 6,
-            woodCutting: 6,
+            woodcutting: 6,
             carpentry: 6,
             foraging: 6,
             weaving: 6,

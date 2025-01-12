@@ -150,7 +150,7 @@ export interface ProficiencyMap {
 export class ArtisanEnum {
 	static readonly MINING = "mining" as const;
 	static readonly SMITHING = "smithing" as const;
-	static readonly WOODCUTTING = "woodcutting" as const;
+	static readonly woodcutting = "woodcutting" as const;
 	static readonly CARPENTRY = "carpentry" as const;
 	static readonly FORAGING = "foraging" as const;
 	static readonly WEAVING = "weaving" as const;
@@ -165,7 +165,7 @@ export class ArtisanEnum {
 export interface ArtisanMap {
 	[ArtisanEnum.MINING]: number;
 	[ArtisanEnum.SMITHING]: number;
-	[ArtisanEnum.WOODCUTTING]: number;
+	[ArtisanEnum.woodcutting]: number;
 	[ArtisanEnum.CARPENTRY]: number;
 	[ArtisanEnum.FORAGING]: number;
 	[ArtisanEnum.WEAVING]: number;
