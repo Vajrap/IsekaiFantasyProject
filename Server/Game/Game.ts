@@ -442,8 +442,6 @@ export class Game {
         if (partyData) {
             ws.send(JSON.stringify(message));
         }
-
-        console.log(`User connected: ${userID}`);
     }
 
     // MARK: TESTING METHODS

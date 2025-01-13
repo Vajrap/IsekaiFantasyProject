@@ -1,5 +1,4 @@
 import { db } from "../Database";
-import { ClassModifier } from "./Character/ClassModifier";
 
 export async function createTableIfNotExists(
     tableName: string,

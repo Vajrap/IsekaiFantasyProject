@@ -54,7 +54,6 @@ export class Party {
 		this.partyID = isTemporarilyBattleScenePartyForTargeting
 			? "temp"
 			: characters[0].id;
-		console.log(this.characters[0].id)
 		if (this.partyID === "temp") {
 			this.addCharactersToTemporarilyBattleSceneParty(characters);
 		} else {

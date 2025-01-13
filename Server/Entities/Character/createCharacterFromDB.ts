@@ -1,4 +1,5 @@
 import { CharacterDB } from "../../Database/Character/CharacterDB";
+import { skillRepository } from "../Skills/SkillRepository";
 import { TraitRepository } from "../Traits/Trait";
 import { Character } from "./Character";
 import { CharacterAlignment } from "./Subclasses/CharacterAlignment";
@@ -53,13 +54,9 @@ export async function createCharacterFromDB(dbCharacter: CharacterDB): Promise<C
 
     character.equipments = new CharacterEquipments();
 
-    console.log(dbCharacter.equipments.mainHand);
     if (dbCharacter.equipments.mainHand !== null) { await character.equip("mainHand", dbCharacter.equipments.mainHand) }
-    console.log(dbCharacter.equipments.offHand);
     if (dbCharacter.equipments.offHand !== null) { await character.equip("offHand", dbCharacter.equipments.offHand) }
-    console.log(dbCharacter.equipments.armor);
     if (dbCharacter.equipments.armor  !== null) { await character.equip("armor", dbCharacter.equipments.armor) }
-    console.log(dbCharacter.equipments.headwear);
     if (dbCharacter.equipments.headwear !== null) { await character.equip("headwear", dbCharacter.equipments.headwear) }
     if (dbCharacter.equipments.gloves !== null) { await character.equip("gloves", dbCharacter.equipments.gloves) }
     if (dbCharacter.equipments.boots !== null) { await character.equip("boots", dbCharacter.equipments.boots) }
@@ -84,9 +81,25 @@ export async function createCharacterFromDB(dbCharacter: CharacterDB): Promise<C
     character.arcaneAptitude.aptitude = dbCharacter.arcaneAptitude;
     character.bagSize = dbCharacter.bagSize;
     character.storyFlags = dbCharacter.storyFlags;
+    for (const skill of dbCharacter.skills) {
+        const skillObj = await skillRepository.getSkill(skill.skill);
+        character.skills.push({
+            skill: skillObj,
+            level: skill.level,
+            exp: skill.exp,
+        })
+    };
+
+    for (const skill of dbCharacter.activeSkills) {
+        const skillObj = await skillRepository.getSkill(skill.skill);
+        character.activeSkills.push({
+            skill: skillObj,
+            level: skill.level,
+            exp: skill.exp,
+        })
+    }
 
     // TODO: Item look up.
-    // TODO: Skill Implementation still in progress
     // TODO: Internal Implementation still in progress
     // TODO: Relation Implementation still in progress
 

@@ -63,7 +63,6 @@ function handleWebsocketMessage(message: any, ws: WebSocket) {
 
 function setUpUserConnection(ws: WebSocket, message: WebSocketConnectRequest) {
     userConnections.set(message.userID, ws);
-    console.log('User connected:', message.userID);
     webSocketEvents.emit("userConnected", { userID: message.userID, ws });
 }
 
