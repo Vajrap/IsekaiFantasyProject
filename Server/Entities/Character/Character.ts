@@ -2980,6 +2980,8 @@ export class Character {
 				level: skill.level,
 				description: skill.skill.baseDescription,
 				tier: skill.skill.tier,
+				consume: skill.skill.consume.intoInterface(),
+				produce: skill.skill.produce.intoInterface(),
 			})),
 			activeSkills: this.activeSkills.map(skill => ({
 				id: skill.skill.id,
@@ -2987,6 +2989,8 @@ export class Character {
 				level: skill.level,
 				description: skill.skill.baseDescription,
 				tier: skill.skill.tier,
+				consume: skill.skill.consume.intoInterface(),
+				produce: skill.skill.produce.intoInterface(),
 			})),
 			position: this.position,
 			itemsBag: this.itemsBag.intoInterface(),

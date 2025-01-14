@@ -1,15 +1,31 @@
-class SkillMenu {
-    constructor() {
-        this.character = gameModel.playerCharacter;
-        this.learnedSkills = gameModel.playerCharacter.skills;
-        this.battleSkills = gameModel.playerCharacter.battleCards;
-        this.beforeChangeLearnedSKills = [...gameModel.playerCharacter.skills];
-        this.beforeChangeBattleSkills = [...gameModel.playerCharacter.battleCards];
+import { CharacterInterface, CharacterSkillInterface } from "../../../../Common/RequestResponse/characterWS.js";
+import { popup } from "../../../../Client/classes/popup/popup.js";
+
+export class SkillMenu {
+    character: CharacterInterface;
+    learnedSkills: CharacterSkillInterface[];
+    battleSkills: CharacterSkillInterface[];
+    beforeChangeLearnedSKills: CharacterSkillInterface[];
+    beforeChangeBattleSkills: CharacterSkillInterface[];
+    showingSkill: CharacterSkillInterface | null;
+    skillMenu: HTMLDivElement;
+    
+    // eslint-disable-next-line max-lines-per-function
+    constructor(
+        playerCharacter: CharacterInterface,
+        learnedSkills: CharacterSkillInterface[],
+        battleSkills: CharacterSkillInterface[],
+    ) {
+        this.character = playerCharacter;
+        this.learnedSkills = playerCharacter.skills;
+        this.battleSkills = playerCharacter.activeSkills;
+        this.beforeChangeLearnedSKills = [...playerCharacter.skills];
+        this.beforeChangeBattleSkills = [...playerCharacter.activeSkills];
         this.showingSkill = null;
         this.skillMenu = this.createSkillMenu();
     }
 
-    moveCardToBattle(card, position) {
+    moveCardToBattle(card: CharacterSkillInterface, position: number) {
         const currentIndex = this.battleSkills.indexOf(card);
         if (currentIndex > -1) {
             // Remove the card from its current position if it's being moved within the same section
@@ -27,7 +43,7 @@ class SkillMenu {
         this.updateSkillMenu();
     }
 
-    moveCardToSkills(card, position) {
+    moveCardToSkills(card: CharacterSkillInterface, position: number) {
         // Remove the card from battleSkills if it exists
         const battleIndex = this.battleSkills.indexOf(card);
         if (battleIndex > -1) {
@@ -51,14 +67,18 @@ class SkillMenu {
     }
     
     updateSkillMenu() {
-        const popupScreen = document.getElementById('gameMenu-popup');
+        let popupScreen = document.getElementById('gameMenu-popup');
         if (!popupScreen) {
             popupScreen = this.createCharacterInfoPopup();
         }
-        popupScreen.innerHTML = '';
+        if (popupScreen) {
+            popupScreen.innerHTML = '';
+        }
         
         const skillMenu = this.createSkillMenu();
-        popupScreen.appendChild(skillMenu);  
+        if (popupScreen) {
+            popupScreen.appendChild(skillMenu);
+        }
     }
 
     createSkillMenu() {
@@ -80,7 +100,7 @@ class SkillMenu {
         return skillMenu;
     }
 
-    createSkillsSection(skills, section, rows, cols) {
+    createSkillsSection(skills: CharacterSkillInterface[], section: string, rows: number, cols: number) {
         const skillsSection = this.createGrid(section, rows, cols);
     
         // Add event listeners for dragover and drop
@@ -90,7 +110,11 @@ class SkillMenu {
     
         skillsSection.addEventListener('drop', (event) => {
             event.preventDefault();
-            const skillId = event.dataTransfer.getData('text/plain');
+            const dataTransfer = event.dataTransfer;
+            if (!dataTransfer) {
+                return;
+            }
+            const skillId = dataTransfer.getData('text/plain');
             const skill = this.getSkillById(skillId);
     
             if (skill) {
@@ -100,7 +124,7 @@ class SkillMenu {
                         'Only 8 skills can be set into the deck',
                         [{
                             label: "Ok",
-                            action: Popup.hide
+                            action: popup.hide
                         }]
                     );
                     return;
@@ -123,7 +147,7 @@ class SkillMenu {
         return skillsSection;
     }    
 
-    createGrid(section, rows, cols) {
+    createGrid(section: string, rows: number, cols: number) {
         const grid = document.createElement('div');
         grid.classList.add(`skills-menu-${section}-section`);
         grid.style.display = 'grid';
@@ -132,7 +156,7 @@ class SkillMenu {
         return grid;
     }
 
-    createSkillSlot(skill) {
+    createSkillSlot(skill: CharacterSkillInterface) {
         const skillSlot = document.createElement('div');
         skillSlot.classList.add('skillCard-small-container');
 
@@ -146,7 +170,9 @@ class SkillMenu {
 
         smallImage.draggable = true;
         smallImage.addEventListener('dragstart', (event) => {
-            event.dataTransfer.setData('text/plain', skill.id);
+            if (event.dataTransfer) {
+                event.dataTransfer.setData('text/plain', skill.id);
+            }
         });
 
         skillSlot.appendChild(smallImage);
@@ -169,36 +195,65 @@ class SkillMenu {
         return skillSlot;
     }
 
-    createSkillConsume(skill) {
+    createSkillConsume(skill: CharacterSkillInterface) {
         const consume = skill.consume;
         const skillConsumesText = document.createElement('div');
         skillConsumesText.classList.add('skillCard-small-consumes');
+
+        let hpConsume = consume.hp[skill.level - 1];
+        let mpConsume = consume.mp[skill.level - 1];
+        let spConsume = consume.sp[skill.level - 1];
+        let elementConsume = consume.elements[skill.level - 1];
+
+        if (hpConsume !== 0) {
+            const hpText = document.createElement('div');
+            hpText.classList.add('skillCard-small-consumes-element');
+            hpText.textContent = `HP: ${hpConsume}`;
+            skillConsumesText.appendChild(hpText);
+        }
+
+        if (mpConsume !== 0) {
+            const mpText = document.createElement('div');
+            mpText.classList.add('skillCard-small-consumes-element');
+            mpText.textContent = `MP: ${mpConsume}`;
+            skillConsumesText.appendChild(mpText);
+        }
+
+        if (spConsume !== 0) {
+            const spText = document.createElement('div');
+            spText.classList.add('skillCard-small-consumes-element');
+            spText.textContent = `SP: ${spConsume}`;
+            skillConsumesText.appendChild(spText);
+        }
+
+        if (elementConsume !== undefined) {
+            const elementText = document.createElement('div');
+            elementText.classList.add('skillCard-small-consumes-element');
+            elementText.textContent = `${elementConsume.element}: ${elementConsume.amount[0]} - ${elementConsume.amount[1]}`;
+            skillConsumesText.appendChild(elementText);
+        }
         
-        Object.entries(consume.elements).forEach(([key, value]) => {
-            if (value.amount[skill.level - 1] !== 0) {
-                const elementText = document.createElement('div');
-                elementText.classList.add('skillCard-small-consumes-element');
-                elementText.textContent = `${value.element}: ${value.amount[skill.level - 1]}`;
-                skillConsumesText.appendChild(elementText);
-            }
-        });
+        // TODO: case when hpConsume, mpConsume, spConsume, elementConsume are 0 or undefined
     
         return skillConsumesText;
     }    
 
-    createSkillProduce(skill) {
+    createSkillProduce(skill: CharacterSkillInterface) {
         const produce = skill.produce;
         const skillProducesText = document.createElement('div');
         skillProducesText.classList.add('skillCard-small-produces');
         
-        Object.entries(produce.elements).forEach(([key, value]) => {
-            if (value.amount !== 0) {
-                const elementText = document.createElement('div');
-                elementText.classList.add('skillCard-small-produces-element');
-                elementText.textContent = `${value.element}: ${value.amountRange[skill.level - 1][0]} - ${value.amountRange[skill.level - 1][1]}`;
-                skillProducesText.appendChild(elementText);
-            }
-        });
+        let produceByLevel = produce.elements[skill.level - 1];
+        
+        if (produceByLevel !== undefined) {
+            const elementText = document.createElement('div');
+            elementText.classList.add('skillCard-small-produces-element');
+            elementText.textContent = `${produceByLevel.element}: ${produceByLevel.amount[0]} - ${produceByLevel.amount[1]}`;
+            skillProducesText.appendChild(elementText);
+        };
+
+        // TODO: case when produceByLevel is undefined
+        
     
         return skillProducesText;
     }        
@@ -213,11 +268,11 @@ class SkillMenu {
         backButton.addEventListener('click', () => {
             const updateMessage = {
                 type: 'UPDATE_SKILLS_AND_BATTLE_CARDS',
-                characterID: this.character.characterID,
+                characterID: this.character.id,
                 skills: this.learnedSkills,
                 battleCards: this.battleSkills
             };
-            characterWS.send(updateMessage);
+            // characterWS.send(updateMessage);
 
             let popupScreen = document.getElementById('gameMenu-popup');
             popupScreen.innerHTML = '';

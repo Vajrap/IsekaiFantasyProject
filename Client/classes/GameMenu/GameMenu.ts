@@ -2,7 +2,7 @@ import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.
 import { CharacterCard } from "../../../Client/classes/Cards/CharacterCard/CharacterCard.js";
 export class GameMenu {
     isPopupVisible: boolean;
-
+    
     constructor() {
         this.isPopupVisible = false;
     }
@@ -112,7 +112,9 @@ export class GameMenu {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
         
-        const skillMenu = new SkillMenu();
+        const skillMenu = new SkillMenu(
+            
+        );
         const skillMenuElement = skillMenu.skillMenu;
         popupScreen.appendChild(skillMenuElement);
     }

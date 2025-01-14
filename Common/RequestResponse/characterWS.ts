@@ -147,6 +147,20 @@ export interface CharacterSkillInterface {
     level: number;
     description: string;
     tier: string;
+    consume: {
+        hp: number[], 
+        mp: number[], 
+        sp: number[], 
+        elements: {
+            element: string, 
+            amount: number[]
+        }[]
+    };
+    produce: {
+        elements: {
+            element: string, 
+              amount: [number, number][]
+        }[]};
 };
 
 export interface CharacterItemInBag {
