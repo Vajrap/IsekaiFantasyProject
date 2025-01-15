@@ -1,6 +1,7 @@
 import sqlite3 from 'sqlite3';
 import { Weapon } from './Entities/Items/Equipments/Weapon/Weapon';
 import { Armor } from './Entities/Items/Equipments/Armors/Armor';
+import { Result, success, unwrap } from '../Common/Lib/Result';
 
 export class DB {
     private db: sqlite3.Database;
@@ -155,7 +156,7 @@ export class DB {
         });
     }
     
-    async read<T>(tableName: string, primaryKey: string, primaryKeyValue: any): Promise<T | null> {
+    async read<T>(tableName: string, primaryKey: string, primaryKeyValue: any): Promise<Result<T | null>> {
         const sql = `SELECT * FROM ${tableName} WHERE ${primaryKey} = ?`;
         const params = [primaryKeyValue];
     
@@ -165,9 +166,9 @@ export class DB {
                     console.error(`Error running query on table "${tableName}" with ${primaryKey} = ${primaryKeyValue}: ${err.message}`);
                     reject(new Error(`Database query error: ${err.message}`));
                 } else if (!row) {
-                    return resolve(null);
+                    return success(null);
                 } else {
-                    resolve(this.deserializeRow(row) as T | null);
+                    return success(this.deserializeRow(row) as T);
                 }
             });
         });
@@ -203,69 +204,67 @@ export class DB {
 
     //MARK: Equipments
     async getWeapon(weapon: string): Promise<Weapon> {
-        console.log(`getting weapon with id ${weapon}`);
-        const weaponObj = await this.read<{
+        const weaponObj = await unwrap(this.read<{
             defenseStats?: any;
             attackStats?: any;
             slottedJewels?: any;
             [key: string]: any;
-        }>('Gears', 'id', weapon);
-        if (weaponObj) {
-            console.log(`weapon get with name ${weaponObj.name}`);
-            // Instantiate and return a GearInstance object
-            return new Weapon({
-                id: weaponObj.id,
-                name: weaponObj.name,
-                description: weaponObj.description,
-                image: weaponObj.image,
-                cost: weaponObj.cost,
-                weight: weaponObj.weight,
-                tier: weaponObj.tier,
-                jewelSlots: weaponObj.jewelSlots,
-                slottedJewels: weaponObj.slottedJewels,
-                maxJewelGrade: weaponObj.maxJewelGrade,
-                material: weaponObj.material,
-                specialTrait: weaponObj.specialTrait,
-                attackStats: weaponObj.attackStats,
-                defenseStats: weaponObj.defenseStats,
-                weaponType: weaponObj.weaponType,
-                weaponSpecificType: weaponObj.weaponSpecificType,
-            });
-        } else {
+        }>('Gears', 'id', weapon));
+
+        if (weaponObj === null || weaponObj === undefined) {
             throw new Error(`Weapon ${weapon} not found in database`);
         }
+
+        return new Weapon({
+            id: weaponObj.id,
+            name: weaponObj.name,
+            description: weaponObj.description,
+            image: weaponObj.image,
+            cost: weaponObj.cost,
+            weight: weaponObj.weight,
+            tier: weaponObj.tier,
+            jewelSlots: weaponObj.jewelSlots,
+            slottedJewels: weaponObj.slottedJewels,
+            maxJewelGrade: weaponObj.maxJewelGrade,
+            material: weaponObj.material,
+            specialTrait: weaponObj.specialTrait,
+            attackStats: weaponObj.attackStats,
+            defenseStats: weaponObj.defenseStats,
+            weaponType: weaponObj.weaponType,
+            weaponSpecificType: weaponObj.weaponSpecificType,
+        });
     }
     
     async getArmor(armor: string): Promise<Armor> {
-        const armorObj = await this.read<{
+        const armorObj = await unwrap(this.read<{
             defenseStats?: any;
             slottedJewels?: any;
             [key: string]: any;
-        }>('Gears', 'id', armor);
-        if (armorObj) {
-            // Instantiate and return a GearInstance object
-            return new Armor({
-                id: armorObj.id,
-                name: armorObj.name,
-                description: armorObj.description,
-                image: armorObj.image,
-                cost: armorObj.cost,
-                weight: armorObj.weight,
-                tier: armorObj.tier,
-                armorType: armorObj.armorType,
-                jewelSlots: armorObj.jewelSlots,
-                slottedJewels: armorObj.slottedJewels,
-                maxJewelGrade: armorObj.maxJewelGrade,
-                material: armorObj.material,
-                spellCastingDamageMultiplier: armorObj.spellCastingDamageMultiplier,
-                spellCastingPenaltyHit: armorObj.spellCastingPenaltyHit,
-                arcaneAptitude: armorObj.arcaneAptitude,
-                specialTrait: armorObj.specialTrait,
-                defenseStats: armorObj.defenseStats,
-            });
-        } else {
+        }>('Gears', 'id', armor));
+
+        if (armorObj === null || armorObj === undefined) {
             throw new Error(`Armor ${armor} not found in database`);
         }
+
+        return new Armor({
+            id: armorObj.id,
+            name: armorObj.name,
+            description: armorObj.description,
+            image: armorObj.image,
+            cost: armorObj.cost,
+            weight: armorObj.weight,
+            tier: armorObj.tier,
+            armorType: armorObj.armorType,
+            jewelSlots: armorObj.jewelSlots,
+            slottedJewels: armorObj.slottedJewels,
+            maxJewelGrade: armorObj.maxJewelGrade,
+            material: armorObj.material,
+            spellCastingDamageMultiplier: armorObj.spellCastingDamageMultiplier,
+            spellCastingPenaltyHit: armorObj.spellCastingPenaltyHit,
+            arcaneAptitude: armorObj.arcaneAptitude,
+            specialTrait: armorObj.specialTrait,
+            defenseStats: armorObj.defenseStats,
+        });
     }
 
     async getAccessory(accessory: string): Promise<any> {

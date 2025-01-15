@@ -18,26 +18,6 @@ export class SkillConsume {
         this.sp = sp
         this.elements = elements
     }
-
-    intoInterface(): {
-        hp: number[],
-        mp: number[],
-        sp: number[],
-        elements: {
-            element: string,
-            amount: number[]
-        }[]
-    } {
-        return {
-            hp: this.hp,
-            mp: this.mp,
-            sp: this.sp,
-            elements: this.elements.map(element => ({
-                element: element.element,
-                amount: element.amount
-            }))
-        }
-    }
         
     validateConsume(
         level: number, 
@@ -88,20 +68,6 @@ export class SkillProduce {
         elements: ElementProduce[]
     }) {
         this.elements = elements
-    }
-
-    intoInterface(): {
-        elements: {
-            element: string,
-            amount: [number, number][]
-        }[]
-    } {
-        return {
-            elements: this.elements.map(element => ({
-                element: element.element,
-                amount: element.amountRange
-            }))
-        }
     }
 }
 

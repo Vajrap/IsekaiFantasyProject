@@ -53,7 +53,7 @@ import {
 import { BuffsAndDebuffsEnum } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { CharacterBattleContext } from "./CharacterBattleContext";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
-import { SkillConsume } from "../Skills/SubClasses/SkillConsume";
+import { SkillConsume, SkillProduce } from "../Skills/SubClasses/SkillConsume";
 import { calculateBaseStat } from "./CalculateHPMPSP";
 import { CharacterClass, class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden } from "../../API/Routes/CreateCharacter/ClassEnum";
 import { RaceEnum, ClassEnum, BackgroundEnum } from "../../../Common/RequestResponse/characterCreation";
@@ -88,6 +88,7 @@ import { Armor } from "../Items/Equipments/Armors/Armor";
 import { getItem, itemRepository } from "../Items/Repository";
 import { Equipment } from "../Items/Equipments/Equipment";
 import { SkillRepository, skillRepository } from "../Skills/SkillRepository";
+import { SkillConsumeInterface, SkillProduceInterface } from "../../../Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
 
 export class Character {
 	id: string;
@@ -2980,8 +2981,8 @@ export class Character {
 				level: skill.level,
 				description: skill.skill.baseDescription,
 				tier: skill.skill.tier,
-				consume: skill.skill.consume.intoInterface(),
-				produce: skill.skill.produce.intoInterface(),
+				consume: turnConsumeIntoInterface(skill.skill.consume),
+				produce: turnProduceIntoInterface(skill.skill.produce),
 			})),
 			activeSkills: this.activeSkills.map(skill => ({
 				id: skill.skill.id,
@@ -2989,8 +2990,8 @@ export class Character {
 				level: skill.level,
 				description: skill.skill.baseDescription,
 				tier: skill.skill.tier,
-				consume: skill.skill.consume.intoInterface(),
-				produce: skill.skill.produce.intoInterface(),
+				consume: turnConsumeIntoInterface(skill.skill.consume),
+				produce: turnProduceIntoInterface(skill.skill.produce),
 			})),
 			position: this.position,
 			itemsBag: this.itemsBag.intoInterface(),
@@ -3004,9 +3005,29 @@ export class Character {
 			maxSP: this.maxSP(),
 		};
 	}
-
-	
 }
+
+function turnConsumeIntoInterface(consume: SkillConsume): SkillConsumeInterface {
+	return {
+		hp: consume.hp,
+		mp: consume.mp,
+		sp: consume.sp,
+		elements: consume.elements.map(element => ({
+			element: element.element,
+			amount: element.amount
+		}))
+	}
+};
+
+function turnProduceIntoInterface(produce: SkillProduce): SkillProduceInterface {
+	return {
+		elements: produce.elements.map(element => ({
+			element: element.element,
+			amount: element.amountRange
+		}))
+	}
+}
+
 
 function switchClass(selectedClass?: ClassEnum): CharacterClass | null {
 		switch (selectedClass) {

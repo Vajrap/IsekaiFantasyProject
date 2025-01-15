@@ -109,4 +109,4 @@ class GameViewModel {
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-const gameVM = new GameViewModel();
+export const gameVM = new GameViewModel();

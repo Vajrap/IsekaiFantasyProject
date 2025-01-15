@@ -1,13 +1,30 @@
-"use strict";
-class SkillMenu {
-    constructor() {
-        this.character = gameModel.playerCharacter;
-        this.learnedSkills = gameModel.playerCharacter.skills;
-        this.battleSkills = gameModel.playerCharacter.battleCards;
-        this.beforeChangeLearnedSKills = [...gameModel.playerCharacter.skills];
-        this.beforeChangeBattleSkills = [...gameModel.playerCharacter.battleCards];
+import { popup } from "../../../../Client/classes/popup/popup.js";
+import { gameVM } from "../../../../Client/HTMLs/game/gameViewModel.js";
+import { gameMenu } from "../GameMenu.js";
+export class SkillMenu {
+    // eslint-disable-next-line max-lines-per-function
+    constructor(playerCharacter, learnedSkills, battleSkills) {
+        this.character = playerCharacter;
+        this.learnedSkills = playerCharacter.skills;
+        this.battleSkills = playerCharacter.activeSkills;
+        this.beforeChangeLearnedSKills = [...playerCharacter.skills];
+        this.beforeChangeBattleSkills = [...playerCharacter.activeSkills];
         this.showingSkill = null;
         this.skillMenu = this.createSkillMenu();
+    }
+    getCharacterInfoPopupScreen() {
+        let popupScreen = document.getElementById('gameMenu-popup');
+        if (!popupScreen) {
+            popupScreen = this.createCharacterInfoPopup();
+        }
+        return popupScreen;
+    }
+    createCharacterInfoPopup() {
+        const popupScreen = document.createElement('div');
+        popupScreen.classList.add('gameMenu-popup', 'hidden');
+        popupScreen.id = 'gameMenu-popup';
+        document.body.appendChild(popupScreen);
+        return popupScreen;
     }
     moveCardToBattle(card, position) {
         const currentIndex = this.battleSkills.indexOf(card);
@@ -48,13 +65,17 @@ class SkillMenu {
         this.updateSkillMenu();
     }
     updateSkillMenu() {
-        const popupScreen = document.getElementById('gameMenu-popup');
+        let popupScreen = document.getElementById('gameMenu-popup');
         if (!popupScreen) {
             popupScreen = this.createCharacterInfoPopup();
         }
-        popupScreen.innerHTML = '';
+        if (popupScreen) {
+            popupScreen.innerHTML = '';
+        }
         const skillMenu = this.createSkillMenu();
-        popupScreen.appendChild(skillMenu);
+        if (popupScreen) {
+            popupScreen.appendChild(skillMenu);
+        }
     }
     createSkillMenu() {
         const skillMenu = document.createElement('div');
@@ -78,13 +99,17 @@ class SkillMenu {
         });
         skillsSection.addEventListener('drop', (event) => {
             event.preventDefault();
-            const skillId = event.dataTransfer.getData('text/plain');
+            const dataTransfer = event.dataTransfer;
+            if (!dataTransfer) {
+                return;
+            }
+            const skillId = dataTransfer.getData('text/plain');
             const skill = this.getSkillById(skillId);
             if (skill) {
                 if (section === 'lower' && this.battleSkills.length >= 8) {
                     popup.show('Exceed', 'Only 8 skills can be set into the deck', [{
                             label: "Ok",
-                            action: Popup.hide
+                            action: popup.hide
                         }]);
                     return;
                 }
@@ -122,7 +147,9 @@ class SkillMenu {
         });
         smallImage.draggable = true;
         smallImage.addEventListener('dragstart', (event) => {
-            event.dataTransfer.setData('text/plain', skill.id);
+            if (event.dataTransfer) {
+                event.dataTransfer.setData('text/plain', skill.id);
+            }
         });
         skillSlot.appendChild(smallImage);
         const skillName = document.createElement('div');
@@ -143,28 +170,50 @@ class SkillMenu {
         const consume = skill.consume;
         const skillConsumesText = document.createElement('div');
         skillConsumesText.classList.add('skillCard-small-consumes');
-        Object.entries(consume.elements).forEach(([key, value]) => {
-            if (value.amount[skill.level - 1] !== 0) {
-                const elementText = document.createElement('div');
-                elementText.classList.add('skillCard-small-consumes-element');
-                elementText.textContent = `${value.element}: ${value.amount[skill.level - 1]}`;
-                skillConsumesText.appendChild(elementText);
-            }
-        });
+        let hpConsume = consume.hp[skill.level - 1];
+        let mpConsume = consume.mp[skill.level - 1];
+        let spConsume = consume.sp[skill.level - 1];
+        let elementConsume = consume.elements[skill.level - 1];
+        if (hpConsume !== 0) {
+            const hpText = document.createElement('div');
+            hpText.classList.add('skillCard-small-consumes-element');
+            hpText.textContent = `HP: ${hpConsume}`;
+            skillConsumesText.appendChild(hpText);
+        }
+        if (mpConsume !== 0) {
+            const mpText = document.createElement('div');
+            mpText.classList.add('skillCard-small-consumes-element');
+            mpText.textContent = `MP: ${mpConsume}`;
+            skillConsumesText.appendChild(mpText);
+        }
+        if (spConsume !== 0) {
+            const spText = document.createElement('div');
+            spText.classList.add('skillCard-small-consumes-element');
+            spText.textContent = `SP: ${spConsume}`;
+            skillConsumesText.appendChild(spText);
+        }
+        if (elementConsume !== undefined) {
+            const elementText = document.createElement('div');
+            elementText.classList.add('skillCard-small-consumes-element');
+            elementText.textContent = `${elementConsume.element}: ${elementConsume.amount[0]} - ${elementConsume.amount[1]}`;
+            skillConsumesText.appendChild(elementText);
+        }
+        // TODO: case when hpConsume, mpConsume, spConsume, elementConsume are 0 or undefined
         return skillConsumesText;
     }
     createSkillProduce(skill) {
         const produce = skill.produce;
         const skillProducesText = document.createElement('div');
         skillProducesText.classList.add('skillCard-small-produces');
-        Object.entries(produce.elements).forEach(([key, value]) => {
-            if (value.amount !== 0) {
-                const elementText = document.createElement('div');
-                elementText.classList.add('skillCard-small-produces-element');
-                elementText.textContent = `${value.element}: ${value.amountRange[skill.level - 1][0]} - ${value.amountRange[skill.level - 1][1]}`;
-                skillProducesText.appendChild(elementText);
-            }
-        });
+        let produceByLevel = produce.elements[skill.level - 1];
+        if (produceByLevel !== undefined) {
+            const elementText = document.createElement('div');
+            elementText.classList.add('skillCard-small-produces-element');
+            elementText.textContent = `${produceByLevel.element}: ${produceByLevel.amount[0]} - ${produceByLevel.amount[1]}`;
+            skillProducesText.appendChild(elementText);
+        }
+        ;
+        // TODO: case when produceByLevel is undefined
         return skillProducesText;
     }
     createButtonsContainer() {
@@ -176,12 +225,12 @@ class SkillMenu {
         backButton.addEventListener('click', () => {
             const updateMessage = {
                 type: 'UPDATE_SKILLS_AND_BATTLE_CARDS',
-                characterID: this.character.characterID,
+                characterID: this.character.id,
                 skills: this.learnedSkills,
                 battleCards: this.battleSkills
             };
-            characterWS.send(updateMessage);
-            let popupScreen = document.getElementById('gameMenu-popup');
+            // characterWS.send(updateMessage);
+            let popupScreen = this.getCharacterInfoPopupScreen();
             popupScreen.innerHTML = '';
             gameMenu.showCharacterInfo(this.character, 'player');
         });
@@ -190,10 +239,13 @@ class SkillMenu {
         cancelButton.classList.add('skills-menu-button');
         cancelButton.textContent = 'Cancel';
         cancelButton.addEventListener('click', () => {
-            gameModel.playerCharacter.skills = this.beforeChangeLearnedSKills;
-            gameModel.playerCharacter.battleCards = this.beforeChangeBattleSkills;
-            let popupScreen = document.getElementById('gameMenu-popup');
-            popupScreen.innerHTML = '';
+            var _a, _b;
+            if (((_a = gameVM.model) === null || _a === void 0 ? void 0 : _a.playerCharacter) !== undefined && ((_b = gameVM.model) === null || _b === void 0 ? void 0 : _b.playerCharacter) !== null) {
+                gameVM.model.playerCharacter.skills = this.beforeChangeLearnedSKills;
+                gameVM.model.playerCharacter.activeSkills = this.beforeChangeBattleSkills;
+                let popupScreen = this.getCharacterInfoPopupScreen();
+                popupScreen.innerHTML = '';
+            }
             gameMenu.showCharacterInfo(this.character, 'player');
         });
         buttonsContainer.appendChild(cancelButton);
@@ -201,6 +253,9 @@ class SkillMenu {
     }
     showSkillCard(skill) {
         const showingSkillCardSection = document.querySelector('.showing-skillCard-section');
+        if (!showingSkillCardSection) {
+            throw new Error('Showing Skill Card Section not found');
+        }
         showingSkillCardSection.innerHTML = '';
         const skillCard = new SkillCard(skill).card;
         showingSkillCardSection.appendChild(skillCard);

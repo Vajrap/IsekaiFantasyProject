@@ -8,7 +8,7 @@ import {
 import { UserID } from '../../../Authenticate/UserID';
 import { db } from '../../../Database';
 import { Party } from '../../../Entities/Party/Party';
-import { Result, success, failure } from '../../../../Common/Lib/Result'
+import { Result, success, failure, unwrap } from '../../../../Common/Lib/Result'
 import { Character, setCharacterStatus } from '../../../Entities/Character/Character';
 import { CharacterDB } from '../../../Database/Character/CharacterDB';
 import { game } from '../../../Game/Game';
@@ -40,25 +40,28 @@ export async function createCharacterHandler(
 
 
 async function validateUser(userID: string): Promise<Result<true>> {
-    const user = await db.read<UserID>('users', 'userID', userID);
-    if (!user) {
+    const user = await unwrap(db.read<UserID>('users', 'userID', userID));
+
+    if (user === null || user === undefined) {
         return failure('USER_NOT_FOUND', 'User does not exist.');
     }
+
     if (user.characterID) {
         return failure('USER_HAS_CHARACTER', 'User already has a character.');
     }
+
     return success(true);
 }
 
-async function validateCharacterName(name: string): Promise<Result<true>> {
+async function validateCharacterName(name: string): Promise<Result<{status: string; message: string}>> {
     if (name.length < 3) {
-        return failure('INVALID_NAME', 'Name must be at least 3 characters long.');
+        return success({status: 'NAME_TOO_SHORT', message: 'Name is too short.'});
     }
     const existingCharacter = await db.read('Characters', 'name', name);
     if (existingCharacter) {
-        return failure('NAME_TAKEN', 'Name is already taken.');
+        return success({status: 'NAME_ALREADY_EXISTS', message: 'Name already exists.'});
     }
-    return success(true);
+    return success({status: 'SUCCESS', message: 'Name is valid.'});
 }
 
 async function createAndSaveCharacter(

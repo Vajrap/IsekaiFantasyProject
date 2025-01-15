@@ -1,5 +1,8 @@
 import { CharacterInterface, CharacterSkillInterface } from "../../../../Common/RequestResponse/characterWS.js";
 import { popup } from "../../../../Client/classes/popup/popup.js";
+import { screamer } from "../../../../Client/Screamer/Screamer.js";
+import { gameVM } from "../../../../Client/HTMLs/game/gameViewModel.js";
+import { gameMenu } from "../GameMenu.js";
 
 export class SkillMenu {
     character: CharacterInterface;
@@ -24,6 +27,25 @@ export class SkillMenu {
         this.showingSkill = null;
         this.skillMenu = this.createSkillMenu();
     }
+
+    getCharacterInfoPopupScreen() {
+        let popupScreen = document.getElementById('gameMenu-popup');
+        if (!popupScreen) {
+            popupScreen = this.createCharacterInfoPopup();
+        }
+        return popupScreen;
+    }
+
+
+    createCharacterInfoPopup() {
+        const popupScreen = document.createElement('div');
+        popupScreen.classList.add('gameMenu-popup', 'hidden');
+        popupScreen.id = 'gameMenu-popup';
+        
+        document.body.appendChild(popupScreen);
+        return popupScreen;
+    }
+
 
     moveCardToBattle(card: CharacterSkillInterface, position: number) {
         const currentIndex = this.battleSkills.indexOf(card);
@@ -274,7 +296,7 @@ export class SkillMenu {
             };
             // characterWS.send(updateMessage);
 
-            let popupScreen = document.getElementById('gameMenu-popup');
+            let popupScreen = this.getCharacterInfoPopupScreen();
             popupScreen.innerHTML = '';
             gameMenu.showCharacterInfo(this.character, 'player');
         });
@@ -284,24 +306,30 @@ export class SkillMenu {
         cancelButton.classList.add('skills-menu-button');
         cancelButton.textContent = 'Cancel';
         cancelButton.addEventListener('click', () => {
-            gameModel.playerCharacter.skills = this.beforeChangeLearnedSKills;
-            gameModel.playerCharacter.battleCards = this.beforeChangeBattleSkills;
-            let popupScreen = document.getElementById('gameMenu-popup');
-            popupScreen.innerHTML = '';
+            if (gameVM.model?.playerCharacter !== undefined && gameVM.model?.playerCharacter !== null) {
+                gameVM.model.playerCharacter.skills = this.beforeChangeLearnedSKills;
+                gameVM.model.playerCharacter.activeSkills = this.beforeChangeBattleSkills;
+                let popupScreen = this.getCharacterInfoPopupScreen();
+                popupScreen.innerHTML = '';
+            }
+            
             gameMenu.showCharacterInfo(this.character, 'player');
         });
         buttonsContainer.appendChild(cancelButton);
         return buttonsContainer;
     }
 
-    showSkillCard(skill) {
+    showSkillCard(skill: CharacterSkillInterface) {
         const showingSkillCardSection = document.querySelector('.showing-skillCard-section');
+        if (!showingSkillCardSection) {
+            throw new Error('Showing Skill Card Section not found');
+        }
         showingSkillCardSection.innerHTML = '';
         const skillCard = new SkillCard(skill).card;
         showingSkillCardSection.appendChild(skillCard);
     }
 
-    calculateDropPosition(clientY, container) {
+    calculateDropPosition(clientY: number, container: HTMLElement) {
         const containerRect = container.getBoundingClientRect();
         const offsetY = clientY - containerRect.top;
         const children = Array.from(container.children);
@@ -315,7 +343,7 @@ export class SkillMenu {
         return children.length;
     }
 
-    getSkillById(skillId) {
+    getSkillById(skillId: string) {
         return this.learnedSkills.find(skill => skill.id === skillId) || this.battleSkills.find(skill => skill.id === skillId);
     }
 }

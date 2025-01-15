@@ -1,5 +1,6 @@
 import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
 import { CharacterCard } from "../../../Client/classes/Cards/CharacterCard/CharacterCard.js";
+import { SkillMenu } from "./SkillMenu/SkillMenu.js";
 export class GameMenu {
     isPopupVisible: boolean;
     
@@ -112,9 +113,14 @@ export class GameMenu {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
         
+        const learnedSkills = character.skills.concat(character.activeSkills);
+
         const skillMenu = new SkillMenu(
-            
-        );
+            character, 
+            learnedSkills, 
+            character.activeSkills
+        )
+        
         const skillMenuElement = skillMenu.skillMenu;
         popupScreen.appendChild(skillMenuElement);
     }
@@ -141,4 +147,4 @@ export class GameMenu {
     }
 }
 
-const gameMenu = new GameMenu();
+export const gameMenu = new GameMenu();
