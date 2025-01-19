@@ -33,10 +33,12 @@ export class SkillRepository {
         let skill = this.skills[id];
 
         if (skill === null || skill === undefined) {
-            const dbSkill = await db.read<Skill>('skills', 'id', id);
+            const dbSkill = await db.getSkill(id);
+
             if (dbSkill !== null) {
                 skill = dbSkill;
             }
+            
         }
         
         if (skill === null || skill === undefined) {

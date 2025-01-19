@@ -9,9 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
 import { GameMenu } from "../../../Client/classes/GameMenu/GameMenu.js";
+import { screamer } from "../../../Client/Screamer/Screamer.js";
 class GameViewModel {
     // ViewModel
     constructor() {
+        this.screamer = screamer;
         this.model = null;
         this.playerPortrait = document.getElementById('player-portrait');
         this.companionPortraits = [
@@ -32,10 +34,13 @@ class GameViewModel {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // Wait for GameModel to initialize
+                console.log(`Wating for GameModel to initialize`);
                 this.model = yield GameModel.create();
+                console.log(`GameModel initialized`);
                 // Setup ViewModel after model is ready
                 this.addEventListener();
                 this.updatePortraits();
+                this.initializeEventListeners();
                 console.log('GameViewModel initialized successfully');
             }
             catch (error) {
@@ -64,6 +69,19 @@ class GameViewModel {
                 this.companionPortraits[i].src = model.companionCharacters[i].portrait;
             }
         }
+    }
+    initializeEventListeners() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const screamerStation = this.screamer.listenToMe();
+            screamerStation.on('GAME_MODEL_UPDATE', () => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    this.updatePortraits();
+                }
+                catch (error) {
+                    console.error('Error updating party:', error);
+                }
+            }));
+        });
     }
     addEventListener() {
         console.log('Adding Event Listeners');

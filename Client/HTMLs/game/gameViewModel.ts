@@ -1,6 +1,7 @@
 import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
 import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
 import { GameMenu } from "../../../Client/classes/GameMenu/GameMenu.js";
+import { screamer } from "../../../Client/Screamer/Screamer.js";
 
 class GameViewModel {
     // Model
@@ -15,7 +16,8 @@ class GameViewModel {
     helpBtn: HTMLElement;
 
     _gameMenu: GameMenu;
-    
+    screamer = screamer;
+
     // ViewModel
     constructor() {
         this.model = null;
@@ -40,11 +42,13 @@ class GameViewModel {
     async initiateVM() {
         try {
             // Wait for GameModel to initialize
+            console.log(`Wating for GameModel to initialize`);
             this.model = await GameModel.create();
-
+            console.log(`GameModel initialized`);
             // Setup ViewModel after model is ready
             this.addEventListener();
             this.updatePortraits();
+            this.initializeEventListeners();
 
             console.log('GameViewModel initialized successfully');
         } catch (error) {
@@ -75,6 +79,18 @@ class GameViewModel {
             }
         }
     }
+
+    private async initializeEventListeners() {
+        const screamerStation = this.screamer.listenToMe();
+
+        screamerStation.on('GAME_MODEL_UPDATE', async () => {
+            try {
+                this.updatePortraits();
+            } catch (error) {
+                console.error('Error updating party:', error);
+            }
+        })
+    } 
 
     addEventListener() {
         console.log('Adding Event Listeners');

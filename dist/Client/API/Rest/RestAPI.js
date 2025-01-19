@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { env } from "../../../Client/env.js";
-import { failure, success } from "../../../Common/Lib/Result.js";
+import { failure, success, unwrap } from "../../../Common/Lib/Result.js";
 class RestAPI {
     send(_a) {
         return __awaiter(this, arguments, void 0, function* ({ path, data }) {
@@ -26,13 +26,14 @@ class RestAPI {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const raw = yield response.json();
-                // hide popup 'Loading'
-                return success(raw);
+                // const item = unwrap(raw.result);
+                // return success(item);
+                return unwrap(success(raw.result));
             }
             catch (error) {
                 console.error('Error sending request:', error);
                 // hide popup 'Loading'
-                return failure('REST_ERROR', 'Error sending request');
+                return failure('REST_ERROR', error instanceof Error ? error.message : 'Unknown error occurred');
             }
         });
     }

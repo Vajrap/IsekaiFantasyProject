@@ -1,3 +1,5 @@
+import { SkillConsumeInterface, SkillProduceInterface } from "Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
+
 export interface GetPartyRequest {
     type: 'GET_PARTY';
     partyID: string;
@@ -147,20 +149,9 @@ export interface CharacterSkillInterface {
     level: number;
     description: string;
     tier: string;
-    consume: {
-        hp: number[], 
-        mp: number[], 
-        sp: number[], 
-        elements: {
-            element: string, 
-            amount: number[]
-        }[]
-    };
-    produce: {
-        elements: {
-            element: string, 
-              amount: [number, number][]
-        }[]};
+    consume: SkillConsumeInterface;
+    produce: SkillProduceInterface;
+    isSpell: boolean;
 };
 
 export interface CharacterItemInBag {

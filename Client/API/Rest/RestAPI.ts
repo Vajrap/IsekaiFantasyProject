@@ -1,5 +1,5 @@
 import { env } from "../../../Client/env.js";
-import { failure, Result, success } from "../../../Common/Lib/Result.js";
+import { failure, Result, success, unwrap } from "../../../Common/Lib/Result.js";
 
 class RestAPI {
     async send({path, data}: {path: string; data: any}): Promise<Result<any>> {
@@ -18,12 +18,14 @@ class RestAPI {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const raw = await response.json();
-            // hide popup 'Loading'
-            return success(raw);
+            return unwrap(success(raw.result));
         } catch(error) {
             console.error('Error sending request:', error);
             // hide popup 'Loading'
-            return failure('REST_ERROR', 'Error sending request');
+            return failure(
+                'REST_ERROR',
+                error instanceof Error ? error.message : 'Unknown error occurred'
+            );        
         }
     }
 }

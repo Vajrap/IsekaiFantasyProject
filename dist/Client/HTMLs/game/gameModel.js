@@ -36,10 +36,11 @@ export class GameModel {
                 path: 'getParty',
                 data: { user_id: model.user_id }
             });
+            console.log('Party data:', partydata);
             if (!partydata.success) {
                 throw new Error('Party data not found');
             }
-            yield model.updateParty(partydata.data.result.party);
+            yield model.updateParty(partydata.data.party);
             return model;
         });
     }
@@ -77,6 +78,7 @@ export class GameModel {
             const screamerStation = this.screamer.listenToMe();
             screamerStation.on('PARTY_DATA', (payload) => __awaiter(this, void 0, void 0, function* () {
                 try {
+                    console.log('Updating party:', payload);
                     yield this.updateParty(payload);
                 }
                 catch (error) {
@@ -96,19 +98,41 @@ export class GameModel {
         return success(userID);
     }
     // Listeners
+    // private async updateParty(payload:PartyInterface) {
+    //     if (this.user_id) {
+    //         let userCharacter = payload.characters.find(character => character != 'none' && character.id === this.user_id);
+    //         if (userCharacter !== undefined && userCharacter !== "none") {
+    //             this.playerCharacter = userCharacter;
+    //         } else {
+    //             throw new Error('User Character not found');
+    //         }
+    //         console.log(`get companion characters:`, payload.characters);
+    //         this.companionCharacters = payload.characters.filter(
+    //             character => character !== 'none' && character.id !== this.user_id && character == null
+    //         );
+    //         screamer.scream('GAME_MODEL_UPDATE', null);
+    //     } else {
+    //         throw new Error('User ID not found');
+    //     }
+    // }
     updateParty(payload) {
         return __awaiter(this, void 0, void 0, function* () {
+            if (!payload || !Array.isArray(payload.characters)) {
+                console.error('Invalid party payload:', payload);
+                throw new Error('Invalid party data received');
+            }
             if (this.user_id) {
-                let userCharacter = payload.characters.find(character => character != 'none' && character.id === this.user_id);
-                if (userCharacter !== undefined && userCharacter !== "none") {
+                let userCharacter = payload.characters.find(character => character !== 'none' && character.id === this.user_id);
+                if (userCharacter !== undefined && userCharacter !== 'none') {
                     this.playerCharacter = userCharacter;
                 }
                 else {
+                    console.error('User Character not found in party data:', payload.characters);
                     throw new Error('User Character not found');
                 }
-                this.companionCharacters = payload.characters.filter(character => character !== 'none' && character.id !== this.user_id && character == null);
-                console.log(`Is going to scream GAME_MODEL_UPDATE`);
-                screamer.scream('GAME_MODEL_UPDATE', this);
+                console.log(`Companion characters:`, payload.characters);
+                this.companionCharacters = payload.characters.filter((character) => character !== 'none' && character.id !== this.user_id);
+                this.screamer.scream('GAME_MODEL_UPDATE', null);
             }
             else {
                 throw new Error('User ID not found');

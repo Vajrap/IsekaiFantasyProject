@@ -14,9 +14,7 @@ export function failure(status: string, message: string): Result<never> {
     };
 }
 
-export async function unwrap<T>(resultOrPromise: Result<T> | Promise<Result<T>>): Promise<T> {
-    const result = resultOrPromise instanceof Promise ? await resultOrPromise : resultOrPromise;
-
+export function unwrap<T>(result: Result<T>): T {
     if (result.success) {
         return result.data;
     } else {

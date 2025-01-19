@@ -40,7 +40,7 @@ export async function createCharacterHandler(
 
 
 async function validateUser(userID: string): Promise<Result<true>> {
-    const user = await unwrap(db.read<UserID>('users', 'userID', userID));
+    const user = await db.read<UserID>('users', 'userID', userID);
 
     if (user === null || user === undefined) {
         return failure('USER_NOT_FOUND', 'User does not exist.');

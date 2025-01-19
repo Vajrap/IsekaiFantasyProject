@@ -8,6 +8,7 @@ class Screamer {
     }
 
     scream(event: string, payload: any) {
+        // TODO: Remove log later
         console.log(`Screamer is screaming ${event} with payload:`, payload);
         this.yellStation.emit(event, payload);
     }

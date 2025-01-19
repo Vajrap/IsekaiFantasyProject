@@ -113,7 +113,6 @@ export class GameMenu {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
         
-<<<<<<< master
         const learnedSkills = character.skills.concat(character.activeSkills);
 
         const skillMenu = new SkillMenu(
@@ -122,9 +121,6 @@ export class GameMenu {
             character.activeSkills
         )
         
-=======
-        const skillMenu = new SkillMenu();
->>>>>>> 934df06 save
         const skillMenuElement = skillMenu.skillMenu;
         popupScreen.appendChild(skillMenuElement);
     }
