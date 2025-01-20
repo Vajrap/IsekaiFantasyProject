@@ -26,8 +26,6 @@ class RestAPI {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 const raw = yield response.json();
-                // const item = unwrap(raw.result);
-                // return success(item);
                 return unwrap(success(raw.result));
             }
             catch (error) {

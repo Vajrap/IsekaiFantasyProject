@@ -1,11 +1,13 @@
 .skill-menu {
+    width: 90vw;
     display: grid;
     grid-auto-flow: column;
     gap: 0px;
 }
 
 .skills-menu-section {
-    margin-right: 1vw;
+    width: 45vw;
+    margin-right: 0vw;
     gap: 0px;
 }
 
@@ -13,14 +15,16 @@
     width: 30vw;
     height: 98vh;
     background-color: rgb(6, 6, 6);
-    margin-right: 2vw;
+    margin-left: 5vw;
     align-self: center;
 }
 
 .skills-menu-buttonsContainer {
+    width: 5vw;
     display: grid;
     padding-top: 10vh;
     padding-bottom: 10vh;
+    padding-left: 0vw;
     justify-content: space-between;
 }
 
@@ -42,7 +46,7 @@
 }
 
 .skills-menu-upper-section {
-    width: 47.2vw;
+    width: 50vw;
     height: 60vh;
     display: flex;
     margin-top: 1vh;
@@ -56,7 +60,7 @@
 }
 
 .skills-menu-lower-section {
-    width: 47.2vw;
+    width: 50vw;
     height: 35vh;
     display: flex;
     padding: 5px;
@@ -67,8 +71,8 @@
 }
 
 .skillCard-small-container {
-    width: 4.29vw;
-    height: 18.6vh;
+    width: 5vw;
+    height: 20vh;
     background-color: rgb(37, 61, 46);
     border: 2px solid black;
     margin-right: 1.5vw;

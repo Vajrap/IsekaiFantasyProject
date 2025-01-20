@@ -2984,6 +2984,7 @@ export class Character {
 				consume: turnConsumeIntoInterface(skill.skill.consume),
 				produce: turnProduceIntoInterface(skill.skill.produce),
 				isSpell: skill.skill.isSpell,
+				equipmentRequirements: skill.skill.equipmentNeeded.weapon? skill.skill.equipmentNeeded.weapon : [],
 			})),
 			activeSkills: this.activeSkills.map(skill => ({
 				id: skill.skill.id,
@@ -2994,6 +2995,7 @@ export class Character {
 				consume: turnConsumeIntoInterface(skill.skill.consume),
 				produce: turnProduceIntoInterface(skill.skill.produce),
 				isSpell: skill.skill.isSpell,
+				equipmentRequirements: skill.skill.equipmentNeeded.weapon? skill.skill.equipmentNeeded.weapon : [],
 			})),
 			position: this.position,
 			itemsBag: this.itemsBag.intoInterface(),

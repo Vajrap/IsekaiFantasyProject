@@ -52,7 +52,7 @@
 .skillCard-description {
     height: 4vh;
 }
-
+/* 
 .skillCard-learningRequirements {
     height: 7.5vh;
 }
@@ -67,7 +67,7 @@
 
 .skillCard-produce {
     height: 3vh;
-}
+} */
 
 .skillCard-label {
     font-weight: bold;

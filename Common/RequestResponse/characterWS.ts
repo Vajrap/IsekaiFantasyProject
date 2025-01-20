@@ -152,6 +152,7 @@ export interface CharacterSkillInterface {
     consume: SkillConsumeInterface;
     produce: SkillProduceInterface;
     isSpell: boolean;
+    equipmentRequirements: string[];
 };
 
 export interface CharacterItemInBag {

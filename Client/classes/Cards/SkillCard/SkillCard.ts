@@ -1,16 +1,25 @@
+import { CharacterSkillInterface } from "../../../../Common/RequestResponse/characterWS";
+
 export class SkillCard {
-    constructor(skill) {
+    skill: CharacterSkillInterface;
+    card: HTMLDivElement;
+    frontFace: HTMLDivElement;
+
+    constructor(skill: CharacterSkillInterface) {
         this.skill = skill;
         this.card = this.createSkillCard();
         this.frontFace = this.createFrontFace();
     }
+
     createSkillCard() {
         const card = document.createElement('div');
         card.classList.add('skillCard');
         this.frontFace = this.createFrontFace();
         card.appendChild(this.frontFace);
+
         return card;
     }
+
     createFrontFace() {
         const frontFace = document.createElement('div');
         frontFace.classList.add('skillCard-front');
@@ -22,24 +31,28 @@ export class SkillCard {
         frontFace.appendChild(this.createSkillCardProduce());
         return frontFace;
     }
+
     createSkillCardName() {
         const name = document.createElement('div');
         name.classList.add('skillCard-name');
         name.textContent = this.skill.name;
         return name;
     }
+
     createSkillCardPortrait() {
         const portrait = document.createElement('img');
         portrait.src = `../../assets/skills/${this.skill.id}.png`;
         portrait.classList.add('skillCard-portrait');
         return portrait;
     }
+
     createSkillCardDescription() {
         const description = document.createElement('div');
         description.classList.add('skillCard-description');
         description.textContent = this.skill.description;
         return description;
     }
+
     createSkillEquipmentRequirements() {
         const equipmentRequirements = document.createElement('div');
         equipmentRequirements.classList.add('skillCard-equipmentRequirements');
@@ -47,6 +60,7 @@ export class SkillCard {
         label.classList.add('skillCard-label');
         label.textContent = 'อาวุธ:';
         equipmentRequirements.appendChild(label);
+
         for (const requirement in this.skill.equipmentRequirements) {
             if (this.skill.equipmentRequirements[requirement] && this.skill.equipmentRequirements[requirement].length > 0) {
                 const textValue = document.createElement('div');
@@ -55,8 +69,10 @@ export class SkillCard {
                 equipmentRequirements.appendChild(textValue);
             }
         }
+
         return equipmentRequirements;
     }
+
     createSkillCardConsume() {
         const consume = document.createElement('div');
         consume.classList.add('skillCard-consume');
@@ -64,7 +80,8 @@ export class SkillCard {
         label.classList.add('skillCard-label');
         label.innerHTML = 'ใช้';
         consume.appendChild(label);
-        let consumeValue = '';
+
+        let consumeValue = ''
         const hpConsumeValue = this.skill.consume.hp[this.skill.level - 1];
         if (hpConsumeValue !== 0) {
             consumeValue += `HP: ${hpConsumeValue}<br>`;
@@ -77,22 +94,28 @@ export class SkillCard {
         if (spConsumeValue !== 0) {
             consumeValue += `SP: ${spConsumeValue}<br>`;
         }
-        for (const element in this.skill.consume.elements) {
+
+        for(const element in this.skill.consume.elements) {
             const elementName = this.skill.consume.elements[element].element;
             const elementConsumeAmount = this.skill.consume.elements[element].amount[this.skill.level - 1];
             if (elementConsumeAmount !== 0) {
                 consumeValue += `${mapElementName(elementName)}: ${elementConsumeAmount}<br>`;
             }
         }
+
         if (consumeValue.charAt(consumeValue.length - 2) === ',') {
             consumeValue = consumeValue.slice(0, -2);
         }
+
         const consumeElement = document.createElement('div');
         consumeElement.classList.add('skillCard-value');
         consumeElement.innerHTML = consumeValue;
+
         consume.appendChild(consumeElement);
+
         return consume;
     }
+
     createSkillCardProduce() {
         const produce = document.createElement('div');
         produce.classList.add('skillCard-produce');
@@ -100,29 +123,40 @@ export class SkillCard {
         label.classList.add('skillCard-label');
         label.textContent = 'ได้รับ';
         produce.appendChild(label);
+
         let produceValue = '';
+
         for (const element in this.skill.produce.elements) {
             const elementName = this.skill.produce.elements[element].element;
+
             const isOnlyOneValue = (this.skill.produce.elements[element].amount[this.skill.level - 1][0] === this.skill.produce.elements[element].amount[this.skill.level - 1][1]);
-            const elementProduceAmount = isOnlyOneValue ?
+           
+            const elementProduceAmount = isOnlyOneValue ? 
                 `${this.skill.produce.elements[element].amount[this.skill.level - 1][0]}` :
                 `${this.skill.produce.elements[element].amount[this.skill.level - 1][0]} - ${this.skill.produce.elements[element].amount[this.skill.level - 1][1]}`;
             produceValue += `${mapElementName(elementName)}: ${elementProduceAmount}<br>`;
         }
+
+
         if (produceValue.charAt(produceValue.length - 2) === ',') {
             produceValue = produceValue.slice(0, -2);
         }
+
         const produceElement = document.createElement('div');
         produceElement.classList.add('skillCard-value');
         produceElement.innerHTML = produceValue;
+
         produce.appendChild(produceElement);
+
         return produce;
     }
+
     render() {
         return this.card;
     }
 }
-export function mapElementName(name) {
+
+export function mapElementName(name: string): string {
     switch (name) {
         case 'fire':
             return 'ไฟ';
@@ -136,13 +170,14 @@ export function mapElementName(name) {
             return 'ระเบียบ';
         case 'chaos':
             return 'วุ่นวาย';
-        case 'none':
+        case 'none' :
             return 'ว่างเปล่า';
         default:
             return name;
     }
 }
-export function mapWeaponTypeName(name) {
+
+export function mapWeaponTypeName(name: string): string {
     switch (name) {
         case 'sword_short':
             return 'กระบี่สั้น';

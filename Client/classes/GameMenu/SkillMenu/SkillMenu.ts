@@ -3,16 +3,37 @@ import { popup } from "../../../../Client/classes/popup/popup.js";
 import { screamer } from "../../../../Client/Screamer/Screamer.js";
 import { gameVM } from "../../../../Client/HTMLs/game/gameViewModel.js";
 import { gameMenu } from "../GameMenu.js";
+import { SkillCard, mapElementName } from "../../../../Client/classes/Cards/SkillCard/SkillCard.js";
 
 export class SkillMenu {
     character: CharacterInterface;
     learnedSkills: CharacterSkillInterface[];
-    battleSkills: CharacterSkillInterface[];
+    // battleSkills: CharacterSkillInterface[];
     beforeChangeLearnedSKills: CharacterSkillInterface[];
     beforeChangeBattleSkills: CharacterSkillInterface[];
     showingSkill: CharacterSkillInterface | null;
     skillMenu: HTMLDivElement;
     
+    // battleSkills might needed to be slots, we allow 7 cards in the deck so 7 slots of battleSkills
+    // might be like battleSkills: {slot1: CharacterSkillInterface | undefined, slot2: CharacterSkillInterface | undefined, ...}
+    battleSkills: {
+        slot1: CharacterSkillInterface | undefined,
+        slot2: CharacterSkillInterface | undefined,
+        slot3: CharacterSkillInterface | undefined,
+        slot4: CharacterSkillInterface | undefined,
+        slot5: CharacterSkillInterface | undefined,
+        slot6: CharacterSkillInterface | undefined,
+        slot7: CharacterSkillInterface | undefined,
+    } = {
+        slot1: undefined,
+        slot2: undefined,
+        slot3: undefined,
+        slot4: undefined,
+        slot5: undefined,
+        slot6: undefined,
+        slot7: undefined,
+    }
+
     // eslint-disable-next-line max-lines-per-function
     constructor(
         playerCharacter: CharacterInterface,
@@ -21,10 +42,19 @@ export class SkillMenu {
     ) {
         this.character = playerCharacter;
         this.learnedSkills = playerCharacter.skills;
-        this.battleSkills = playerCharacter.activeSkills;
+        // this.battleSkills = playerCharacter.activeSkills;
         this.beforeChangeLearnedSKills = [...playerCharacter.skills];
         this.beforeChangeBattleSkills = [...playerCharacter.activeSkills];
         this.showingSkill = null;
+        this.battleSkills = {
+            slot1: battleSkills[0],
+            slot2: battleSkills[1],
+            slot3: battleSkills[2],
+            slot4: battleSkills[3],
+            slot5: battleSkills[4],
+            slot6: battleSkills[5],
+            slot7: battleSkills[6],
+        }
         this.skillMenu = this.createSkillMenu();
     }
 
@@ -46,42 +76,92 @@ export class SkillMenu {
         return popupScreen;
     }
 
-
     moveCardToBattle(card: CharacterSkillInterface, position: number) {
-        const currentIndex = this.battleSkills.indexOf(card);
-        if (currentIndex > -1) {
-            // Remove the card from its current position if it's being moved within the same section
-            this.battleSkills.splice(currentIndex, 1);
+        // Check if the card is already in a battleSkills slot
+        let currentSlotKey: string | undefined;
+        for (const [key, value] of Object.entries(this.battleSkills)) {
+            if (value === card) {
+                currentSlotKey = key;
+                break;
+            }
         }
-        if (position >= 0 && position <= this.battleSkills.length) {
-            this.battleSkills.splice(position, 0, card);
-        } else {
-            this.battleSkills.push(card);
+    
+        // If the card is already in a slot, remove it from the current slot
+        if (currentSlotKey) {
+            this.battleSkills[currentSlotKey as keyof typeof this.battleSkills] = undefined;
         }
-        if (currentIndex === -1) {
-            // Only remove from learnedSkills if it wasn't moved within the same section
-            this.learnedSkills = this.learnedSkills.filter(skill => skill !== card);
+    
+        let previousCardInTheSlot;
+    
+        // Remove the previous card from the target slot
+        switch (position) {
+            case 1:
+                previousCardInTheSlot = this.battleSkills.slot1;
+                this.battleSkills.slot1 = card;
+                break;
+            case 2:
+                previousCardInTheSlot = this.battleSkills.slot2;
+                this.battleSkills.slot2 = card;
+                break;
+            case 3:
+                previousCardInTheSlot = this.battleSkills.slot3;
+                this.battleSkills.slot3 = card;
+                break;
+            case 4:
+                previousCardInTheSlot = this.battleSkills.slot4;
+                this.battleSkills.slot4 = card;
+                break;
+            case 5:
+                previousCardInTheSlot = this.battleSkills.slot5;
+                this.battleSkills.slot5 = card;
+                break;
+            case 6:
+                previousCardInTheSlot = this.battleSkills.slot6;
+                this.battleSkills.slot6 = card;
+                break;
+            case 7:
+                previousCardInTheSlot = this.battleSkills.slot7;
+                this.battleSkills.slot7 = card;
+                break;
+            default:
+                throw new Error('Invalid position while moving card to battle');
         }
+    
+        // If there was a previous card in the slot, move it back to learnedSkills
+        if (previousCardInTheSlot && previousCardInTheSlot !== card) {
+            this.moveCardToSkills(previousCardInTheSlot);
+        }
+    
+        // Remove the new card from learnedSkills (if it exists there)
+        const learnedIndex = this.learnedSkills.findIndex(skill => skill.id === card.id);
+        if (learnedIndex > -1) {
+            this.learnedSkills.splice(learnedIndex, 1);
+        }
+    
         this.updateSkillMenu();
     }
 
-    moveCardToSkills(card: CharacterSkillInterface, position: number) {
-        // Remove the card from battleSkills if it exists
-        const battleIndex = this.battleSkills.indexOf(card);
-        if (battleIndex > -1) {
-            this.battleSkills.splice(battleIndex, 1);
+    moveCardToSkills(card: CharacterSkillInterface) {
+        // Check and remove the card from battleSkills
+        if (this.battleSkills.slot1 === card) {
+            this.battleSkills.slot1 = undefined;
+        } else if (this.battleSkills.slot2 === card) {
+            this.battleSkills.slot2 = undefined;
+        } else if (this.battleSkills.slot3 === card) {
+            this.battleSkills.slot3 = undefined;
+        } else if (this.battleSkills.slot4 === card) {
+            this.battleSkills.slot4 = undefined;
+        } else if (this.battleSkills.slot5 === card) {
+            this.battleSkills.slot5 = undefined;
+        } else if (this.battleSkills.slot6 === card) {
+            this.battleSkills.slot6 = undefined;
+        } else if (this.battleSkills.slot7 === card) {
+            this.battleSkills.slot7 = undefined;
         }
-    
-        // Add the card to learnedSkills at the specified position
-        const currentIndex = this.learnedSkills.indexOf(card);
-        if (currentIndex > -1) {
-            // Remove the card from its current position if it's being moved within the same section
-            this.learnedSkills.splice(currentIndex, 1);
-        }
-    
-        if (position >= 0 && position <= this.learnedSkills.length) {
-            this.learnedSkills.splice(position, 0, card);
-        } else {
+        // Find the card in learnedSkills using findIndex to avoid object reference issues
+        const existingIndex = this.learnedSkills.findIndex(skill => skill.id === card.id);
+        if (existingIndex === -1) {
+            // Add the card back to learnedSkills if it doesn't already exist
             this.learnedSkills.push(card);
         }
     
@@ -110,7 +190,7 @@ export class SkillMenu {
         const allSkillsSection = document.createElement('div');
         allSkillsSection.classList.add('skills-menu-section');
         allSkillsSection.appendChild(this.createSkillsSection(this.learnedSkills, 'upper', 8, 3));
-        allSkillsSection.appendChild(this.createSkillsSection(this.battleSkills, 'lower', 8, 1));
+        allSkillsSection.appendChild(this.createBattleSkillsSection(this.battleSkills, 1, 7));
         skillMenu.appendChild(allSkillsSection);
 
         const showingSkillCardSection = document.createElement('div');
@@ -139,35 +219,65 @@ export class SkillMenu {
             const skillId = dataTransfer.getData('text/plain');
             const skill = this.getSkillById(skillId);
     
-            if (skill) {
-                if (section === 'lower' && this.battleSkills.length >= 8) {
-                    popup.show(
-                        'Exceed',
-                        'Only 8 skills can be set into the deck',
-                        [{
-                            label: "Ok",
-                            action: popup.hide
-                        }]
-                    );
-                    return;
-                }
-                
-                const dropPosition = this.calculateDropPosition(event.clientY, skillsSection);
-                if (section === 'upper') {
-                    this.moveCardToSkills(skill, dropPosition);
-                } else if (section === 'lower') {
-                    this.moveCardToBattle(skill, dropPosition);
-                }
+            if (skill && section === 'upper') {
+                this.moveCardToSkills(skill);
             }
         });
     
+        // Render learnedSkills
         skills.forEach(skill => {
             const skillSlot = this.createSkillSlot(skill);
             skillsSection.appendChild(skillSlot);
         });
     
         return skillsSection;
-    }    
+    }
+    
+    createBattleSkillsSection(battleSkills: { [key: string]: CharacterSkillInterface | undefined }, rows: number, cols: number) {
+        const battleSkillsSection = this.createGrid('lower', rows, cols);
+    
+        // Add event listeners for dragover and drop
+        battleSkillsSection.addEventListener('dragover', (event) => {
+            event.preventDefault(); // Allow drop
+        });
+    
+        battleSkillsSection.addEventListener('drop', (event) => {
+            event.preventDefault();
+            const dataTransfer = event.dataTransfer;
+            if (!dataTransfer) {
+                return;
+            }
+            const skillId = dataTransfer.getData('text/plain');
+            const skill = this.getSkillById(skillId);
+    
+            if (skill) {
+                const currentSkillsCount = Object.values(this.battleSkills).filter(s => s !== undefined).length;
+                if (currentSkillsCount >= 8) {
+                    popup.show(
+                        'Exceed',
+                        'Only 8 skills can be set into the deck',
+                        [
+                            {
+                                label: 'Ok',
+                                action: popup.hide,
+                            },
+                        ]
+                    );
+                    return;
+                }
+            }
+        });
+    
+        // Render battleSkills
+        Object.keys(battleSkills).forEach(slotKey => {
+            const skill = battleSkills[slotKey];
+            const skillSlot = this.createSkillSlot(skill, slotKey); // Pass slotKey for unique ID
+            skillSlot.id = `battle-skill-slot-${slotKey}`; // Add a unique ID for the slot
+            battleSkillsSection.appendChild(skillSlot);
+        });
+    
+        return battleSkillsSection;
+    }
 
     createGrid(section: string, rows: number, cols: number) {
         const grid = document.createElement('div');
@@ -178,42 +288,67 @@ export class SkillMenu {
         return grid;
     }
 
-    createSkillSlot(skill: CharacterSkillInterface) {
+    createSkillSlot(skill: CharacterSkillInterface | undefined, slotKey?: string) {
         const skillSlot = document.createElement('div');
         skillSlot.classList.add('skillCard-small-container');
-
-        const smallImage = document.createElement('img');
-        smallImage.src = `../../assets/skills/${skill.id}.png`;
-        smallImage.classList.add('skillCard-small');
-        
-        smallImage.addEventListener('click', () => {
-            this.showSkillCard(skill);
-        });
-
-        smallImage.draggable = true;
-        smallImage.addEventListener('dragstart', (event) => {
-            if (event.dataTransfer) {
-                event.dataTransfer.setData('text/plain', skill.id);
-            }
-        });
-
-        skillSlot.appendChild(smallImage);
-
-        const skillName = document.createElement('div');
-        skillName.classList.add('skillCard-small-name');
-        skillName.textContent = skill.name;
-        skillSlot.appendChild(skillName);
-
-        const skillConsumes = document.createElement('div');
-        skillConsumes.classList.add('skillCard-small-consumes-container');
-        skillConsumes.appendChild(this.createSkillConsume(skill));
-        skillSlot.appendChild(skillConsumes);
-
-        const skillProduces = document.createElement('div');
-        skillProduces.classList.add('skillCard-small-produces-container');
-        skillProduces.appendChild(this.createSkillProduce(skill));
-        skillSlot.appendChild(skillProduces);
-
+    
+        if (skill) {
+            // Populate the slot with a skill
+            const smallImage = document.createElement('img');
+            smallImage.src = `../../assets/skills/${skill.id}.png`;
+            smallImage.classList.add('skillCard-small');
+    
+            smallImage.addEventListener('click', () => {
+                this.showSkillCard(skill);
+            });
+    
+            smallImage.draggable = true;
+            smallImage.addEventListener('dragstart', (event) => {
+                if (event.dataTransfer) {
+                    event.dataTransfer.setData('text/plain', skill.id);
+                }
+            });
+    
+            skillSlot.appendChild(smallImage);
+    
+            const skillName = document.createElement('div');
+            skillName.classList.add('skillCard-small-name');
+            skillName.textContent = skill.name;
+            skillSlot.appendChild(skillName);
+    
+            const skillConsumes = document.createElement('div');
+            skillConsumes.classList.add('skillCard-small-consumes-container');
+            skillConsumes.appendChild(this.createSkillConsume(skill));
+            skillSlot.appendChild(skillConsumes);
+    
+            const skillProduces = document.createElement('div');
+            skillProduces.classList.add('skillCard-small-produces-container');
+            skillProduces.appendChild(this.createSkillProduce(skill));
+            skillSlot.appendChild(skillProduces);
+        } else {
+            // Empty slot (for battleSkills)
+            skillSlot.classList.add('empty-slot');
+            skillSlot.textContent = 'Empty Slot';
+    
+            skillSlot.addEventListener('dragover', (event) => {
+                event.preventDefault(); // Allow drop
+            });
+    
+            skillSlot.addEventListener('drop', (event) => {
+                event.preventDefault();
+                const dataTransfer = event.dataTransfer;
+                if (!dataTransfer) return;
+    
+                const skillId = dataTransfer.getData('text/plain');
+                const skill = this.getSkillById(skillId);
+    
+                if (skill && slotKey) {
+                    const position = parseInt(slotKey.replace('slot', ''), 10); // Extract the slot number
+                    this.moveCardToBattle(skill, position);
+                }
+            });
+        }
+    
         return skillSlot;
     }
 
@@ -251,7 +386,7 @@ export class SkillMenu {
         if (elementConsume !== undefined) {
             const elementText = document.createElement('div');
             elementText.classList.add('skillCard-small-consumes-element');
-            elementText.textContent = `${elementConsume.element}: ${elementConsume.amount[0]} - ${elementConsume.amount[1]}`;
+            elementText.textContent = `${mapElementName(elementConsume.element)}: ${elementConsume.amount[skill.level - 1]}`;
             skillConsumesText.appendChild(elementText);
         }
         
@@ -270,7 +405,12 @@ export class SkillMenu {
         if (produceByLevel !== undefined) {
             const elementText = document.createElement('div');
             elementText.classList.add('skillCard-small-produces-element');
-            elementText.textContent = `${produceByLevel.element}: ${produceByLevel.amount[0]} - ${produceByLevel.amount[1]}`;
+            const isOnlyOneValue = (produceByLevel.amount[skill.level - 1][0] === produceByLevel.amount[skill.level - 1][1]);
+
+            elementText.textContent = isOnlyOneValue ?
+                `${mapElementName(produceByLevel.element)}: ${produceByLevel.amount[skill.level - 1][0]}` :
+                `${mapElementName(produceByLevel.element)}: ${produceByLevel.amount[skill.level - 1][0]} - ${produceByLevel.amount[skill.level - 1][1]}`;
+
             skillProducesText.appendChild(elementText);
         };
 
@@ -286,15 +426,16 @@ export class SkillMenu {
 
         const backButton = document.createElement('button');
         backButton.classList.add('skills-menu-button');
-        backButton.textContent = 'Save and Back';
+        backButton.textContent = 'บันทึก';
         backButton.addEventListener('click', () => {
+            // TODO: Send the updated skills to the server
             const updateMessage = {
                 type: 'UPDATE_SKILLS_AND_BATTLE_CARDS',
                 characterID: this.character.id,
                 skills: this.learnedSkills,
                 battleCards: this.battleSkills
             };
-            // characterWS.send(updateMessage);
+            console.log(updateMessage);
 
             let popupScreen = this.getCharacterInfoPopupScreen();
             popupScreen.innerHTML = '';
@@ -304,7 +445,7 @@ export class SkillMenu {
 
         const cancelButton = document.createElement('button');
         cancelButton.classList.add('skills-menu-button');
-        cancelButton.textContent = 'Cancel';
+        cancelButton.textContent = 'ยกเลิก';
         cancelButton.addEventListener('click', () => {
             if (gameVM.model?.playerCharacter !== undefined && gameVM.model?.playerCharacter !== null) {
                 gameVM.model.playerCharacter.skills = this.beforeChangeLearnedSKills;
@@ -329,21 +470,18 @@ export class SkillMenu {
         showingSkillCardSection.appendChild(skillCard);
     }
 
-    calculateDropPosition(clientY: number, container: HTMLElement) {
-        const containerRect = container.getBoundingClientRect();
-        const offsetY = clientY - containerRect.top;
-        const children = Array.from(container.children);
-
-        for (let i = 0; i < children.length; i++) {
-            const childRect = children[i].getBoundingClientRect();
-            if (offsetY < childRect.top + childRect.height / 2) {
-                return i;
-            }
+    getSkillById(skillId: string): CharacterSkillInterface {
+        // Search in learnedSkills array
+        const learnedSkill = this.learnedSkills.find(skill => skill.id === skillId);
+        if (learnedSkill) {
+            return learnedSkill;
         }
-        return children.length;
-    }
-
-    getSkillById(skillId: string) {
-        return this.learnedSkills.find(skill => skill.id === skillId) || this.battleSkills.find(skill => skill.id === skillId);
+    
+        // Search in battleSkills object
+        const battleSkill = Object.values(this.battleSkills).find(skill => skill !== undefined && skill.id === skillId);
+        if (battleSkill === undefined) {
+            throw new Error(`Skill not found: ${skillId}`);
+        }
+        return battleSkill;
     }
 }
