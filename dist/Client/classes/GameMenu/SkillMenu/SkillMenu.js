@@ -266,7 +266,8 @@ export class SkillMenu {
         else {
             // Empty slot (for battleSkills)
             skillSlot.classList.add('empty-slot');
-            skillSlot.textContent = 'Empty Slot';
+            // it's slot1, slot2, slot3, etc., we need to extract the number to show the correct slot number
+            skillSlot.textContent = `สกิลลำดับ ${slotKey === null || slotKey === void 0 ? void 0 : slotKey.replace('slot', '')}`;
             skillSlot.addEventListener('dragover', (event) => {
                 event.preventDefault(); // Allow drop
             });
@@ -343,15 +344,16 @@ export class SkillMenu {
         buttonsContainer.classList.add('skills-menu-buttonsContainer');
         const backButton = document.createElement('button');
         backButton.classList.add('skills-menu-button');
-        backButton.textContent = 'Save and Back';
+        backButton.textContent = 'บันทึก';
         backButton.addEventListener('click', () => {
+            // TODO: Send the updated skills to the server
             const updateMessage = {
                 type: 'UPDATE_SKILLS_AND_BATTLE_CARDS',
                 characterID: this.character.id,
                 skills: this.learnedSkills,
                 battleCards: this.battleSkills
             };
-            // characterWS.send(updateMessage);
+            console.log(updateMessage);
             let popupScreen = this.getCharacterInfoPopupScreen();
             popupScreen.innerHTML = '';
             gameMenu.showCharacterInfo(this.character, 'player');
@@ -359,7 +361,7 @@ export class SkillMenu {
         buttonsContainer.appendChild(backButton);
         const cancelButton = document.createElement('button');
         cancelButton.classList.add('skills-menu-button');
-        cancelButton.textContent = 'Cancel';
+        cancelButton.textContent = 'ยกเลิก';
         cancelButton.addEventListener('click', () => {
             var _a, _b;
             if (((_a = gameVM.model) === null || _a === void 0 ? void 0 : _a.playerCharacter) !== undefined && ((_b = gameVM.model) === null || _b === void 0 ? void 0 : _b.playerCharacter) !== null) {

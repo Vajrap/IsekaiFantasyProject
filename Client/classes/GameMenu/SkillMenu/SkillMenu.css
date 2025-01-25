@@ -72,7 +72,7 @@
 
 .skillCard-small-container {
     width: 5vw;
-    height: 20vh;
+    height: 22vh;
     background-color: rgb(37, 61, 46);
     border: 2px solid black;
     margin-right: 1.5vw;
@@ -84,8 +84,10 @@
 
 .skillCard-small-name {
     width: 100%;
+    margin-top: 0px;
+    padding-bottom: 3px;
     padding-left: 5px;
-    font-size: 14px;
+    font-size: 12px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -95,8 +97,8 @@
 .skillCard-small-consumes-container {
     display: flex;
     flex-direction: row;
-    padding-left: 5px;
-    font-size: 14px;
+    padding-left: 2px;
+    font-size: 10px;
     color: black;
     background-color: rgb(236, 113, 113);
 }
@@ -104,8 +106,8 @@
 .skillCard-small-produces-container {
     display: flex;
     flex-direction: row;
-    padding-left: 5px;
-    font-size: 14px;
+    padding-left: 2px;
+    font-size: 10px;
     color: black;
     background-color: aqua;
 }

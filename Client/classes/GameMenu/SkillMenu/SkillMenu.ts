@@ -328,7 +328,8 @@ export class SkillMenu {
         } else {
             // Empty slot (for battleSkills)
             skillSlot.classList.add('empty-slot');
-            skillSlot.textContent = 'Empty Slot';
+            // it's slot1, slot2, slot3, etc., we need to extract the number to show the correct slot number
+            skillSlot.textContent = `สกิลลำดับ ${slotKey?.replace('slot', '')}`;
     
             skillSlot.addEventListener('dragover', (event) => {
                 event.preventDefault(); // Allow drop

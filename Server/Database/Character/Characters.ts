@@ -66,5 +66,4 @@ export async function createCharacterTableIfNotExists() {
 
     // await createTableIfNotExists(tableName, tableStructure, CharacterSeed, 'id');
     await createTableIfNotExists(tableName, tableStructure, [], 'id');
-
 }

@@ -59,9 +59,9 @@ export class Game {
                 createPartyTableIfNotExist(),
             ]);
 
-            await skillRepository.loadSkillsFromDB();
-            
-            console.log('Database initialized successfully.');
+            console.log(`All Database operation completed successfully.`);
+
+            await skillRepository.loadSkillsFromDB();            
         } catch (error) {
             console.error('Error initializing database:', error);
             throw error; // If DB init fails, we throw an error to stop game startup

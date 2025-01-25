@@ -491,7 +491,7 @@ const skillSeed: SkillArchetype[] = [
     new SkillArchetype({
         id: SkillEnum.skill_arcane_sword,
         name: 'ดาบเวทย์มนต์',
-        baseDescription: 'ห่อหุ้มดาบในมือด้วยพลังเวทย์เพื่อโจมตีเป้าหมาย สร้างความเสียหายเท่ากับ 1.0 ความเสียหายของดาบ และเปลี่ยนแปลงค่าความเสียหายจากค่าความเสียหายของดาบเป็นค่าความเสียหายจากพลังเวทย์ ความเสียหายพิเศษได้รับจากค่า (เวทย์มนต์)',
+        baseDescription: 'ห่อหุ้มดาบในมือด้วยพลังเวทย์เพื่อโจมตีเป้าหมาย สร้างความเสียหายเท่ากับ 1.0 ความเสียหายของดาบ และเปลี่ยนแปลงค่าความเสียหายจากค่าความเสียหายของดาบเป็นค่าความเสียหายจากพลังเวทย์ ความเสียหายพิเศษได้รับจาก (เวทย์มนต์) แต่ละขั้นจะเพิ่มความเสียหายเป็นพิเศษ 1 หน่วย',
         requirement: new SkillLearningRequirement({}),
         equipmentNeeded: new SkillEquipmentRequirement({
             weapon: [
@@ -521,7 +521,7 @@ const skillSeed: SkillArchetype[] = [
                         damageDiceBase: [DiceEnum.Weapon_Physical],
                         damageType: [DamageTypes.arcane],
                         damageModifierStat: [CharacterStatusEnum.planar],
-                        damageModifierBonus: [0,0,0,0,0],
+                        damageModifierBonus: [0,1,2,3,4],
                         hitBase: [0],
                         hitStat: [[CharacterStatusEnum.dexterity]],
                         critBase: [0],
@@ -534,7 +534,7 @@ const skillSeed: SkillArchetype[] = [
         consume: new SkillConsume({
             hp: [0],
             mp: [0],
-            sp: [1,1,1,0,0],
+            sp: [1,1,0,0,0],
             elements: []
         }),
         produce: new SkillProduce({
@@ -549,7 +549,7 @@ const skillSeed: SkillArchetype[] = [
     new SkillArchetype({
         id: SkillEnum.skill_mage_reflex,
         name: 'เวทย์ตอบสนอง',
-        baseDescription: 'เพิ่มสถานะ "เวทย์ตอบสนอง" ให้กับตนเป็นเวลา 2 เทิร์น เพิ่มค่าหลบหลีก 2 หน่วย',
+        baseDescription: 'เพิ่มสถานะ "เวทย์ตอบสนอง" ให้กับตนเป็นเวลา 2 เทิร์น เพิ่มค่าหลบหลีก 2 หน่วย, เมื่อระดับถึง 3 และ 5 จะเพิ่มเวลาเป็น 3 และ 4 เทิร์นตามลำดับ',
         requirement: new SkillLearningRequirement({}),
         equipmentNeeded: new SkillEquipmentRequirement({}),
         activeEffect: [
@@ -580,7 +580,7 @@ const skillSeed: SkillArchetype[] = [
                                     effectName: [BuffsAndDebuffsEnum.mage_reflex],
                                     effectHitBase: [0],
                                     effectHitBonus: [[]],
-                                    effectDuration: [2,2,2,2,2],
+                                    effectDuration: [2,2,3,3,4],
                                     effectDurationBonus: [],
                                     effectStatForResistance: CharacterStatusEnum.none,
                                 })
@@ -618,7 +618,7 @@ const skillSeed: SkillArchetype[] = [
     new SkillArchetype({
         id: SkillEnum.skill_shocking_grasp,
         name: 'ฝ่ามือช๊อต',
-        baseDescription: 'สร้างความเสียหายสายฟ้า 1d8 แก่เป้าหมาย และมีโอกาสทำให้เป้าหมายถูกทำให้เป็นอัมพาต 2 เทิร์น',
+        baseDescription: 'สร้างความเสียหายสายฟ้า 1d8 แก่เป้าหมาย และมีโอกาสทำให้เป้าหมายถูกทำให้เป็นอัมพาต 2 เทิร์น, เมื่อระดับถึง 5 ความเสียหายจะเพิ่มเป็น 2d8',
         requirement: new SkillLearningRequirement({}),  
         equipmentNeeded: new SkillEquipmentRequirement({}),
         activeEffect: [
@@ -634,7 +634,7 @@ const skillSeed: SkillArchetype[] = [
                     new SkillActionObject({
                         type: SkillActionType.Negative,
                         subType: SkillActionSubType.DamageAndDebuff,
-                        damageDiceBase: [DiceEnum.OneD8, DiceEnum.OneD8, DiceEnum.OneD8, DiceEnum.OneD8, DiceEnum.OneD10],
+                        damageDiceBase: [DiceEnum.OneD8, DiceEnum.OneD8, DiceEnum.OneD8, DiceEnum.OneD8, DiceEnum.TwoD8],
                         damageType: [DamageTypes.lightning],
                         damageModifierStat: [CharacterStatusEnum.planar],
                         damageModifierBonus: [0,0,0,0,0],
@@ -6171,9 +6171,8 @@ Naor’s Embrace stands as a beacon of hope in the chaos of Grinner Humm. Their 
    */
 ]
 
-
-
 export async function createSkillTableIfNotExists(){
+    console.log(`Creating Skill Table`);
     const tableName = 'Skills';
     const tableStructure = `
         id TEXT PRIMARY KEY,
