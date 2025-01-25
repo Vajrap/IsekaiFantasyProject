@@ -1,3 +1,5 @@
+import { TimeOfDay } from '../../../Common/DTOsEnumsInterfaces/TimeOfDay';
+import { GameTimeInterface } from '../../../Common/DTOsEnumsInterfaces/GameTimeInterface';
 export class GameTime {
     inGameHoursPerDay: number = 4; // 4 phases in a game day: morning, afternoon, evening, night
     inGameDaysPerMonth: number = 24; // 24 days in a game month
@@ -27,20 +29,19 @@ export class GameTime {
         this.gameDateHour = 1; // Initialize to start of day (1 for morning)
     }
 
-    getCurrentGameDate(): { dayPassed: number, day: number, hour: number, month: number, year: number } {
+    getCurrentGameDate(): GameTimeInterface {
         return {
             dayPassed: this.dayPassed,
             day: this.gameDateDay,
             hour: this.gameDateHour,
             month: this.gameDateMonth,
-            year: this.gameDateYear
+            year: this.gameDateYear,
+            phase: this.getCurrentGamePhase()
         };
     }
 
-    getCurrentGamePhase(): string {
-        const phases = ['morning', 'afternoon', 'evening', 'night'];
+    getCurrentGamePhase(): TimeOfDay {
+        const phases = [TimeOfDay.night, TimeOfDay.morning, TimeOfDay.afternoon, TimeOfDay.evening];
         return phases[this.gameDateHour - 1]; // Adjusting for 0-indexed array
-    }
-
-    
+    } 
 }

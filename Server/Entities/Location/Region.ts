@@ -1,18 +1,8 @@
-import { Dice } from "../Utility/Dice";
-import { LocationEventEnum } from "../Utility/Enum/LocationActions+Events"
-import { MobCharacterEnum } from "../Utility/Enum/MobCharacterEnum";
-import { RegionNameEnum } from "../Utility/Enum/RegionNameEnum";
-
-export class RegionSpeedBonus {
-    walk: number;
-    horse: number;
-    caravan: number;
-    constructor(walk: number, horse: number, caravan: number) {
-        this.walk = walk;
-        this.horse = horse;
-        this.caravan = caravan;
-    }
-}
+import { Dice } from "../../Utility/Dice";
+import { LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { RegionNameEnum } from "../../../Common/DTOsEnumsInterfaces/Map/RegionNameEnum";
+import { MobCharacterEnum } from "../../../Common/DTOsEnumsInterfaces/Map/MobCharacterEnum";
+import { TravelMethodEnum } from "../../../Common/DTOsEnumsInterfaces/Map/TravelMethodEnum";
 
 export class Region {
     name: RegionNameEnum
@@ -42,7 +32,7 @@ export class Region {
     }
 
     getRandomEvent(action: string, bonusChance: number = 0): LocationEventEnum {
-        const randomRollSum = Dice.roll('1d20').sum + bonusChance;
+        const randomRollSum = Dice.rollTwenty() + bonusChance;
 
 
         for (const event of this.events[action as keyof Region["events"]]){
@@ -53,13 +43,13 @@ export class Region {
         throw new Error('No event found, The Region events are not set up correctly')
     }
 
-    getSpeedBonusModifire(travelMethod: 'walk' | 'horse' | 'caravan' ): number {
+    getSpeedBonusModifire(travelMethod: TravelMethodEnum ): number {
         switch (travelMethod) {
-            case 'walk':
+            case TravelMethodEnum.walk:
                 return this.speedBonus.walk;
-            case 'horse':
+            case TravelMethodEnum.horse:
                 return this.speedBonus.horse;
-            case 'caravan':
+            case TravelMethodEnum.caravan:
                 return this.speedBonus.caravan;
             default:
                 return 0;
@@ -77,7 +67,7 @@ export class Region {
     }
 
     rollNumberOfEnemies(bonusRoll: number): number {
-        const roll = Dice.roll('1d20').sum + bonusRoll;
+        const roll = Dice.rollTwenty() + bonusRoll;
         if (roll >= 18) return 1;
         if (roll >= 15) return 2;
         if (roll >= 11) return 3;
@@ -86,4 +76,195 @@ export class Region {
         return 6;               
     }
     
+}
+
+export class RegionSpeedBonus {
+    walk: number;
+    horse: number;
+    caravan: number;
+    constructor(walk: number, horse: number, caravan: number) {
+        this.walk = walk;
+        this.horse = horse;
+        this.caravan = caravan;
+    }
+}
+
+
+// export enum RegionNameEnum {
+//     GrassLand_1 = 'Grass Land 1',
+//     GrassLand_2 = 'Grass Land 2',
+//     GrassLand_3 = 'Grass Land 3',
+//     Forest_1 = 'Forest 1',
+//     Forest_2 = 'Forest 2',
+//     Forest_3 = 'Forest 3',
+//     Mountain_1 = 'Mountain 1',
+//     Mountain_2 = 'Mountain 2',
+//     Mountain_3 = 'Mountain 3',
+//     Desert_1 = 'Desert 1',
+//     Desert_2 = 'Desert 2',
+//     Desert_3 = 'Desert 3',
+//     SnowPlain_1 = 'Snow Plain 1',
+//     SnowPlain_2 = 'Snow Plain 2',
+//     SnowPlain_3 = 'Snow Plain 3',
+//     OceanTide = 'Ocean Tide',
+//     MistGarde = 'Mist Garde',
+//     BerrisGrove = 'Berris Grove',
+//     EmberFalls = 'Ember Falls',
+//     SmoothShore = 'Smooth Shore',
+//     WhiteOakEstate = 'White Oak Estate',
+//     IvoryForest = 'Ivory Forest',
+//     CelestialSwordSect = 'Celestial Sword Sect',
+//     FairViewFarm = 'Fair View Farm',
+//     SaltyLake = 'Salty Lake',
+//     Fyornar = 'Fyornar',
+//     TheTrident = 'The Trident',
+//     GreatWhiteCrossing = 'Great White Crossing',
+//     BleakWatch = 'Bleak Watch',
+//     Goldhem = 'Goldhem',
+//     SleekMeadow = 'Sleek Meadow',
+//     SleetWallows = 'Sleet Wallows',
+//     FreeAppleWood = 'Free Apple Wood',
+//     MightGrave = 'Might Grave',
+//     NarrowBridge = 'Narrow Bridge',
+//     CloudShade = 'Cloud Shade',
+//     MountHeaven = 'Mount Heaven',
+//     SpiritSide = 'Spirit Side',
+//     ShadowKeep = 'Shadow Keep',
+//     LittleGiant = 'Little Giant',
+//     UmbralVeil = 'Umbral Veil',
+//     SpringPoint = 'Spring Point',
+//     LushWood = 'Lush Wood',
+//     PineBorn = 'Pine Born',
+//     HeartfeltPond = 'Heartfelt Pond',
+//     MadPass = 'Mad Pass',
+//     BlueSkyMountainSect = 'Blue Sky Mountain Sect'
+// }
+
+function makeDummyRegion(): Region {
+    const dummyRegion = new Region(
+        RegionNameEnum.GrassLand_1,
+        {
+            rest: [{ event: LocationEventEnum.RestEvent, chanceCeiling: 10 }],
+            stroll: [
+                { event: LocationEventEnum.StrollEvent, chanceCeiling: 10 },
+                { event: LocationEventEnum.RanomEvent, chanceCeiling: 10 }
+            ],
+            train: [
+                { event: LocationEventEnum.SkillTrain, chanceCeiling: 10 },
+                { event: LocationEventEnum.AttributeTrain, chanceCeiling: 10 },
+                { event: LocationEventEnum.ArtisanTrain, chanceCeiling: 10 },
+                { event: LocationEventEnum.ProficiencyTrain, chanceCeiling: 10 },
+            ],
+            travel: [{ event: LocationEventEnum.TravelEvent, chanceCeiling: 0 }]
+        },
+        [],
+        new RegionSpeedBonus(1, 3, 2),
+    );
+    return dummyRegion;
+}
+
+const region_grassLand_1 = makeDummyRegion();
+const region_grassLand_2 = makeDummyRegion();
+const region_grassLand_3 = makeDummyRegion();
+const region_forest_1 = makeDummyRegion();
+const region_forest_2 = makeDummyRegion();
+const region_forest_3 = makeDummyRegion();
+const region_mountain_1 = makeDummyRegion();
+const region_mountain_2 = makeDummyRegion();
+const region_mountain_3 = makeDummyRegion();
+const region_desert_1 = makeDummyRegion();
+const region_desert_2 = makeDummyRegion();
+const region_desert_3 = makeDummyRegion();
+const region_snowPlain_1 = makeDummyRegion();
+const region_snowPlain_2 = makeDummyRegion();
+const region_snowPlain_3 = makeDummyRegion();
+const region_oceanTide = makeDummyRegion();
+const region_mistGarde = makeDummyRegion();
+const region_berrisGrove = makeDummyRegion();
+const region_emberFalls = makeDummyRegion();
+const region_smoothShore = makeDummyRegion();
+const region_whiteOakEstate = makeDummyRegion();
+const region_ivoryForest = makeDummyRegion();
+const region_celestialSwordSect = makeDummyRegion();
+const region_fairViewFarm = makeDummyRegion();
+const region_saltyLake = makeDummyRegion();
+const region_fyornar = makeDummyRegion();
+const region_theTrident = makeDummyRegion();
+const region_greatWhiteCrossing = makeDummyRegion();
+const region_bleakWatch = makeDummyRegion();
+const region_goldhem = makeDummyRegion();
+const region_sleekMeadow = makeDummyRegion();
+const region_sleetWallows = makeDummyRegion();
+const region_freeAppleWood = makeDummyRegion();
+const region_mightGrave = makeDummyRegion();
+const region_narrowBridge = makeDummyRegion();
+const region_cloudShade = makeDummyRegion();
+const region_mountHeaven = makeDummyRegion();
+const region_spiritSide = makeDummyRegion();
+const region_shadowKeep = makeDummyRegion();
+const region_littleGiant = makeDummyRegion();
+const region_umbralVeil = makeDummyRegion();
+const region_springPoint = makeDummyRegion();
+const region_lushWood = makeDummyRegion();
+const region_pineBorn = makeDummyRegion();
+const region_heartfeltPond = makeDummyRegion();
+const region_madPass = makeDummyRegion();
+const region_blueSkyMountainSect = makeDummyRegion();
+
+export const regions = [
+    region_grassLand_1,
+    region_grassLand_2,
+    region_grassLand_3,
+    region_forest_1,
+    region_forest_2,
+    region_forest_3,
+    region_mountain_1,
+    region_mountain_2,
+    region_mountain_3,
+    region_desert_1,
+    region_desert_2,
+    region_desert_3,
+    region_snowPlain_1,
+    region_snowPlain_2,
+    region_snowPlain_3,
+    region_oceanTide,
+    region_mistGarde,
+    region_berrisGrove,
+    region_emberFalls,
+    region_smoothShore,
+    region_whiteOakEstate,
+    region_ivoryForest,
+    region_celestialSwordSect,
+    region_fairViewFarm,
+    region_saltyLake,
+    region_fyornar,
+    region_theTrident,
+    region_greatWhiteCrossing,
+    region_bleakWatch,
+    region_goldhem,
+    region_sleekMeadow,
+    region_sleetWallows,
+    region_freeAppleWood,
+    region_mightGrave,
+    region_narrowBridge,
+    region_cloudShade,
+    region_mountHeaven,
+    region_spiritSide,
+    region_shadowKeep,
+    region_littleGiant,
+    region_umbralVeil,
+    region_springPoint,
+    region_lushWood,
+    region_pineBorn,
+    region_heartfeltPond,
+    region_madPass,
+    region_blueSkyMountainSect
+]
+
+export function getRegionFromName(name: RegionNameEnum): Region {
+    const region = regions.find(region => region.name === name)
+        if (!region) {
+            throw new Error('Region not found')
+        }
+        return region
 }

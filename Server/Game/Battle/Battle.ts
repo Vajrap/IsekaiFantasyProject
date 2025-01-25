@@ -7,11 +7,13 @@ import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { Character } from "../../Entities/Character/Character";
 import { TargetPartyType, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { EventEmitter } from "ws";
-import { GameTime } from "../TimeAndDate/GameTime";
 import { SkillActionType } from "../../Entities/Skills/SubClasses/SkillActiveEffect";
 import { Dice } from "../../Utility/Dice";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
-
+import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
+import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
+import { TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
+import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 export class Battle {
     isOngoing: boolean;
     partyA: Party;
@@ -26,9 +28,9 @@ export class Battle {
     constructor(
         partyA: Party, 
         partyB: Party,
-        location: string,
-        environment: string,
-        gameTime: GameTime
+        location: LocationName,
+        environment: GameEnvironment,
+        gameTime: GameTimeInterface
     ) {
         this.isOngoing = true;
         this.partyA = partyA;

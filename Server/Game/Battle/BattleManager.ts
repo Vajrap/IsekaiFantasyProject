@@ -1,3 +1,7 @@
+import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
+import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
+import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
+import { TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
 import { Party } from "../../Entities/Party/Party";
 import { GameTime } from "../TimeAndDate/GameTime";
 import { Battle } from "./Battle";
@@ -16,9 +20,9 @@ export class BattleManager {
     async startNewBattle(
         partyA: Party,
         partyB: Party,
-        location: string,
-        environment: string,
-        gameTime: GameTime
+        location: LocationName,
+        environment: GameEnvironment,
+        gameTime: GameTimeInterface
     ): Promise<BattleReport> {
         const newBattle = new Battle(partyA, partyB, location, environment, gameTime);
         this.activeBattles.push(newBattle);

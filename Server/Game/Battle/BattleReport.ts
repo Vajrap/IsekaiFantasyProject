@@ -1,6 +1,6 @@
 import { Party } from "../../Entities/Party/Party";
 import { CharacterData, ActionDetails } from "../../API/BattleReportDTO";
-import { GameTime } from "../TimeAndDate/GameTime";
+import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 
 export class BattleReport {
     startingPartyAMembers: CharacterData[] = [];
@@ -12,14 +12,14 @@ export class BattleReport {
     //may effect battle, not implemented yet, we should have location.weather system later
     environment: string;
     //may also effect battle, not implemented yet, gameTime is already in used, but effect on character in battle is not, right now FE would use GameTime to Filter the BG
-    gameTime: GameTime;
+    gameTime: GameTimeInterface;
 
     constructor(
         partyA: Party, 
         partyB: Party, 
         location: string = "Unknown", 
         environment: string = "Default",
-        gameTime: GameTime
+        gameTime: GameTimeInterface
     ) {
         for (const character of partyA.characters) {
             if (character && character != "none") {

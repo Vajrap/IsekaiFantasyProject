@@ -89,6 +89,8 @@ import { getItem, itemRepository } from "../Items/Repository";
 import { Equipment } from "../Items/Equipments/Equipment";
 import { SkillRepository, skillRepository } from "../Skills/SkillRepository";
 import { SkillConsumeInterface, SkillProduceInterface } from "../../../Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
+import { SkillResponseType } from "../../API/ResponseTypes/Skill";
+import { unwrap } from "../../../Common/Lib/Result";
 
 export class Character {
 	id: string;
@@ -1065,39 +1067,30 @@ export class Character {
 		);
 	}
 
-	// async trainSkill(
-	// 	skillID: string,
-	// 	expGained: number
-	// ): Promise<SkillResponseType> {
-	// 	//We need to find first if the skill is in skills or in activeSkills?
-	// 	let skill = this.skills.find((s) => s.skill.id === skillID);
-	// 	if (!skill) {
-	// 		skill = this.activeSkills.find((s) => s.skill.id === skillID);
-	// 	}
-	// 	if (!skill) {
-	// 		throw new Error(`Skill with id ${skillID} not found in this character`);
-	// 	}
+	async trainSkill(
+		skillID: string,
+		expGained: number
+	): Promise<SkillResponseType> {
+		//We need to find first if the skill is in skills or in activeSkills?
+		let skill = this.skills.find((s) => s.skill.id === skillID);
+		if (!skill) {
+			skill = this.activeSkills.find((s) => s.skill.id === skillID);
+		}
+		if (!skill) {
+			throw new Error(`Skill with id ${skillID} not found in this character`);
+		}
 
-	// 	let skillObject;
+		let skillObject = await skillRepository.getSkill(skillID);
 
-	// 	if (skillID.includes("auto")) {
-	// 		skillObject = SkillRepository[skillID as keyof typeof SkillRepository];
-	// 	} else {
-	// 		skillObject = await getSkillFromDB(skillID);
-	// 	}
-	// 	if (!skillObject) {
-	// 		throw new Error(`Skill with id ${skillID} not found`);
-	// 	}
-
-	// 	const expNeeded = skillObject.neededExp(skill.level);
-	// 	skill.exp += expGained;
-	// 	if (skill.exp >= expNeeded) {
-	// 		skill.level++;
-	// 		skill.exp -= expNeeded;
-	// 		return SkillResponseType.SuccessTrainingWithLevelUp;
-	// 	}
-	// 	return SkillResponseType.SuccessTrainingWithoutLevelUp;
-	// }
+		const expNeeded = skillObject.neededExp(skill.level);
+		skill.exp += expGained;
+		if (skill.exp >= expNeeded) {
+			skill.level++;
+			skill.exp -= expNeeded;
+			return SkillResponseType.SuccessTrainingWithLevelUp;
+		}
+		return SkillResponseType.SuccessTrainingWithoutLevelUp;
+	}
 
 	//Instead of Validate as a 'must' we may use this to help player see how the deck should be built
 	async validateActiveSkills(): Promise<SuccessResponse | ErrorResponse> {

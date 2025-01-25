@@ -74,4 +74,7 @@ export enum LocationEventEnum {
     //Item events
     ItemPickupEvent = "itemPickupEvent", //Take character and item, add item to character inventory
     ItemShopEvent = "itemShopEvent", //Take character and shop, open shop interface, buy/sell items
+
+    //Travel events
+    TravelEvent = "travelEvent"
 }

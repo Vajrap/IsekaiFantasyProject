@@ -290,3 +290,46 @@ export const location_BlueSkyMountainSect = new GameLocation(
     RegionNameEnum.BlueSkyMountainSect,
     RegionNameEnum.Mountain_3
 )
+
+export const locations = [
+    location_OceanTide,
+    location_MistGarde,
+    location_BerrisGrove,
+    location_EmberFalls,
+    location_SmoothShore,
+    location_WhiteOakEstate,
+    location_IvoryForest,
+    location_CelestialSwordSect,
+    location_FairViewFarm,
+    location_SaltyLake,
+    location_Fyornar,
+    location_TheTrident,
+    location_GreatWhiteCrossing,
+    location_BleakWatch,
+    location_Goldhem,
+    location_SleekMeadow,
+    location_SleetWallow,
+    location_FreeAppleWood,
+    location_MightGrave,
+    location_NarrowBridge,
+    location_CloudShade,
+    location_MountHeaven,
+    location_SpiritSide,
+    location_ShadowKeep,
+    location_LittleGiant,
+    location_UmbralVeil,
+    location_SpringPoint,
+    location_LushWood,
+    location_Pineborn,
+    location_HeartfeltPond,
+    location_MadPass,
+    location_BlueSkyMountainSect
+]
+
+export function getLocationByName(name: LocationName): GameLocation {
+    const location = locations.find(location => location.id === name)
+    if (!location) {
+        throw new Error('Location not found')
+    }
+    return location
+}

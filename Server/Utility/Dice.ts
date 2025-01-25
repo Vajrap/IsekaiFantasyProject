@@ -12,6 +12,10 @@ export class Dice {
 
         return new DiceRollResult(results);
     }
+
+    static rollTwenty(): number {
+        return Math.floor(Math.random() * 20) + 1;
+    }
 }
 
 class DiceRollResult {

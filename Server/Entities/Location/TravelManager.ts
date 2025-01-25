@@ -1,14 +1,10 @@
-import { TravelWebSocketService } from "../../API/WebSocket/TravelWebSocketService";
-import { Dice } from "../Utility/Dice";
 import { Region } from "./Region";
 import { CharacterStatus } from "../../Entities/Character/Subclasses/CharacterStatus";
-import { StatMod } from "../Utility/StatMod";
-
-export enum TravelMethod {
-    walk = 'walk',
-    horse = 'horse',
-    caravan = 'caravan'
-}
+import { TravelMethodEnum } from "../../../Common/DTOsEnumsInterfaces/Map/TravelMethodEnum";
+import { GameLocation } from "./GameLocation";
+import { Dice } from "../../Utility/Dice";
+import { StatMod } from "../../Utility/StatMod";
+import { getRegionFromName } from "./Region"
 
 //Party.travelManager = new TravelManager();
 //When Player start a travel, it's actually the party that start the travel
@@ -20,15 +16,13 @@ export class TravelManager {
     currentLocation: GameLocation;
     currentLocationIndex: number = -1;
     distanceCovered: number = 0;
-    wsService: TravelWebSocketService;
     isTraveling: boolean = false;
-    currentTravelMethod: TravelMethod;
+    currentTravelMethod: TravelMethodEnum;
 
     constructor(partyID: string, currentLocation: GameLocation) {
         this.partyID = partyID;
         this.currentLocation = currentLocation;
-        this.wsService = travelWebSocketService;
-        this.currentTravelMethod = TravelMethod.walk;
+        this.currentTravelMethod = TravelMethodEnum.walk;
     }
 
     addLocationToPath(location: GameLocation):boolean {
@@ -37,7 +31,7 @@ export class TravelManager {
                 this.path.push(location);
                 return true;
             } else {
-                console.log('Location not connected:', location.name);
+                console.log('Location not connected:', location.id);
                 return false;
             }
         } else {
@@ -46,7 +40,7 @@ export class TravelManager {
                 this.path.push(location);
                 return true;
             } else {
-                console.log('Location not connected:', location.name);
+                console.log('Location not connected:', location.id);
                 return false;
             }
         }
@@ -62,7 +56,7 @@ export class TravelManager {
         }
     }
 
-    async travel(status: CharacterStatus, travelMethod: TravelMethod) {
+    async travel(status: CharacterStatus, travelMethod: TravelMethodEnum) {
         if (this.path.length === 0) {
             console.log('No path set');
             return;
@@ -72,10 +66,10 @@ export class TravelManager {
 
         const nextLocation = this.path[this.currentLocationIndex + 1];
 
-        const randomEventChance = Dice.roll('1d20').sum;
+        const randomEventChance = Dice.rollTwenty();
         let isRandomEventSuccess = true;
 
-        let regionToUse: Region;
+        let regionToUse = getRegionFromName(this.currentLocation.)
         if (this.distanceCovered < 100) {
             regionToUse = this.currentLocation.mainRegion;
         } else {
