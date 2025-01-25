@@ -1,8 +1,7 @@
 import { CharacterInterface, CharacterSkillInterface } from "../../../../Common/RequestResponse/characterWS.js";
 import { popup } from "../../../../Client/classes/popup/popup.js";
 import { screamer } from "../../../../Client/Screamer/Screamer.js";
-import { gameVM } from "../../../../Client/HTMLs/game/gameViewModel.js";
-import { gameMenu } from "../GameMenu.js";
+// import { gameVM } from "../../../../Client/HTMLs/game/gameViewModel.js";
 import { SkillCard, mapElementName } from "../../../../Client/classes/Cards/SkillCard/SkillCard.js";
 
 export class SkillMenu {
@@ -440,7 +439,10 @@ export class SkillMenu {
 
             let popupScreen = this.getCharacterInfoPopupScreen();
             popupScreen.innerHTML = '';
-            gameMenu.showCharacterInfo(this.character, 'player');
+            screamer.scream(
+                'close_skill_menu_update',
+                {},
+            )
         });
         buttonsContainer.appendChild(backButton);
 
@@ -448,14 +450,13 @@ export class SkillMenu {
         cancelButton.classList.add('skills-menu-button');
         cancelButton.textContent = 'ยกเลิก';
         cancelButton.addEventListener('click', () => {
-            if (gameVM.model?.playerCharacter !== undefined && gameVM.model?.playerCharacter !== null) {
-                gameVM.model.playerCharacter.skills = this.beforeChangeLearnedSKills;
-                gameVM.model.playerCharacter.activeSkills = this.beforeChangeBattleSkills;
-                let popupScreen = this.getCharacterInfoPopupScreen();
-                popupScreen.innerHTML = '';
-            }
-            
-            gameMenu.showCharacterInfo(this.character, 'player');
+            screamer.scream(
+                'close_skill_menu_cancel',
+                {
+                    skills: this.beforeChangeLearnedSKills,
+                    activeSkills: this.beforeChangeBattleSkills, 
+                }
+            )
         });
         buttonsContainer.appendChild(cancelButton);
         return buttonsContainer;

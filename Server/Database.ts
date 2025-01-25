@@ -1,9 +1,6 @@
 import sqlite3 from 'sqlite3';
 import { Weapon } from './Entities/Items/Equipments/Weapon/Weapon';
 import { Armor } from './Entities/Items/Equipments/Armors/Armor';
-import { Result, success, unwrap } from '../Common/Lib/Result';
-import  { foundSkill, skillNotFound } from '../Common/DTOsEnumsInterfaces/Skill/GetSkillFromDBInterface';
-import { Skill } from './Entities/Skills/Skill';
 
 export class DB {
     private db: sqlite3.Database;

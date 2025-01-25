@@ -5,6 +5,9 @@ import { GameLocation } from "./GameLocation";
 import { Dice } from "../../Utility/Dice";
 import { StatMod } from "../../Utility/StatMod";
 import { getRegionFromName } from "./Region"
+import { getLocationByName } from "./Locations";
+import { getEventByName } from "../../Game/GameEvent/GameEvent";
+import { screamer } from "../../Utility/Screamer/Screamer";
 
 //Party.travelManager = new TravelManager();
 //When Player start a travel, it's actually the party that start the travel
@@ -69,17 +72,23 @@ export class TravelManager {
         const randomEventChance = Dice.rollTwenty();
         let isRandomEventSuccess = true;
 
-        let regionToUse = getRegionFromName(this.currentLocation.)
+        
+        // let regionToUse = getRegionFromName(this.currentLocation.region)
+        let regionToUse:Region;
+
         if (this.distanceCovered < 100) {
-            regionToUse = this.currentLocation.mainRegion;
+            regionToUse = getRegionFromName(this.currentLocation.mainRegion);
         } else {
-            regionToUse = this.currentLocation.region;
+            regionToUse = getRegionFromName(this.currentLocation.region);
         }
 
         if (randomEventChance <= 5) {
             const bonusChance = StatMod.value(status.luck());
 
-            const event = regionToUse.getRandomEvent('travel', bonusChance);
+            const eventEnum = regionToUse.getRandomEvent('travel', bonusChance);
+
+            const event = getEventByName(eventEnum);
+
             if (event !== undefined) {
                 isRandomEventSuccess = await event.executeFromParty(this.partyID);
             }
@@ -97,7 +106,7 @@ export class TravelManager {
         }
     }
 
-    getSpeedModifierFromRegion(region: Region, travelMethod: TravelMethod): number {
+    getSpeedModifierFromRegion(region: Region, travelMethod: TravelMethodEnum): number {
         let speedModifier = 0;
         speedModifier = region.getSpeedBonusModifire(travelMethod);
         return speedModifier;
@@ -108,18 +117,21 @@ export class TravelManager {
             this.currentLocationIndex++;
             this.currentLocation = this.path[this.currentLocationIndex];
             this.distanceCovered = 0;
-            this.wsService.broadcast(JSON.stringify({
-                type: 'location_arrival',
-                partyID: this.partyID,
-                location: this.currentLocation.name
-            }));
+            screamer.scream(
+                'location_arrival',
+                {
+                    partyID: this.partyID,
+                    location: this.currentLocation.id
+                }
+            );
         } else {
-            this.wsService.broadcast(JSON.stringify({
-                type: 'travel_update',
-                partyID: this.partyID,
-                currentLocation: this.currentLocation.name,
-                distanceCovered: this.distanceCovered
-            }));
+            screamer.scream(
+                'travel_update',
+                {
+                    partyID: this.partyID,
+                    currentLocation: this.currentLocation.id,
+                    distanceCovered: this.distanceCovered,
+                });
         }
 
         if (this.currentLocationIndex === this.path.length - 1) {
@@ -128,13 +140,15 @@ export class TravelManager {
     }
 
     arrivedAtDestination() {
-        console.log('Arrived at destination:', this.path[this.path.length - 1].name);
+        console.log('Arrived at destination:', this.path[this.path.length - 1].id);
         this.isTraveling = false;
-        this.wsService.broadcast(JSON.stringify({
-            type: 'destination_arrival',
-            partyID: this.partyID,
-            destination: this.path[this.path.length - 1].name
-        }));
+        screamer.scream(
+            'destination_arrival',
+            {
+                partyID: this.partyID,
+                destination: this.path[this.path.length - 1].id
+            }
+        )
     }
 
     getTravelProgress(): number {
