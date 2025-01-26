@@ -1,98 +1,57 @@
-// import { CharacterArchetype } from "../../../Entities/Character/Subclasses/CharacterArchetype";
-// import { CharacterType } from "../../../Entities/Character/Subclasses/CharacterType";
-// import { CharacterAlignment } from "../../../Entities/Character/Subclasses/CharacterAlignment";
-// import { SkillRepository } from "../../Skills/SkillRepository";
-// import { WeaponRepository } from "../../Items/Equipments/Weapon/WeaponRepository";
-// import { InternalRepository } from "../../Internal/Internal";
-// import { TraitRepository } from "../../Traits/Trait";
+import { CharacterType } from "../../../Entities/Character/Subclasses/CharacterType";
+import { MobCharacterEnum } from "../../../../Common/DTOsEnumsInterfaces/Map/MobCharacterEnum";
+import { RaceEnum } from "../../../../Common/RequestResponse/characterCreation";
+import { Enemy } from "./Enemy";
 
-// const archetype_enemy_skeleton_fighter = new CharacterArchetype({
-// 	type: new CharacterType("Undead"),
-// 	level: 4,
-// 	attributes: {
-// 		charisma: 1,
-// 		luck: 1,
-// 		breath: 1,
-// 		planar: 10,
-// 		dexterity: 14,
-// 		agility: 5,
-// 		intelligence: 6,
-// 		leadership: 1,
-// 		strength: 10,
-// 		endurance: 12,
-// 		vitality: 10,
-// 		willpower: 8,
-// 	},
-// 	proficiencies: {
-// 		bareHand: 8,
-// 		sword: 12,
-// 		spear: 12,
-// 		staff: 12,
-// 		mace: 6,
-// 		tome: 6,
-// 		magicWand: 6,
-// 		orb: 6,
-// 		bow: 6,
-// 		dagger: 6,
-// 		blade: 6,
-// 		axe: 12,
-// 		shield: 12,
-// 	},
-// 	battlers: {
-// 		pATK: 0,
-// 		pHIT: 0,
-// 		pDEF: 0,
-// 		pCRT: 0,
-// 		mATK: 0,
-// 		mHIT: 0,
-// 		mDEF: 0,
-// 		mCRT: 0,
-// 		dodge: 0,
-// 	},
-// 	elements: {
-// 		order: 0,
-// 		chaos: 0,
-// 		geo: 0,
-// 		water: 0,
-// 		air: 0,
-// 		fire: 0,
-// 	},
-// 	artisans: {
-// 		tailoring: 0,
-// 		leatherWorking: 0,
-// 		smithing: 0,
-// 		woodWorking: 0,
-// 		jewelCrafting: 0,
-// 		alchemy: 0,
-// 		cooking: 0,
-// 		enchanting: 0,
-// 	},
-// 	alignment: [
-// 		new CharacterAlignment({
-// 			lawVsChaos: 30,
-// 			goodVsEvil: 30,
-// 		}),
-// 	],
-// 	skillSet: [
-// 		[
-// 			// SkillRepository.skill_fighter_02,
-// 			// SkillRepository.skill_fighter_14,
-// 			SkillRepository.skill_auto_physical.id,
-// 		],
-// 	],
-// 	internalSet: [InternalRepository.internal_none_01.id],
-// 	traitSet: [TraitRepository.trait_skeleton.id],
-// 	armorSet: [],
-// 	accessorySet: [],
-// 	mainHandSet: [
-// 		WeaponRepository.axe,
-// 		WeaponRepository.sword,
-// 		WeaponRepository.spear,
-// 		WeaponRepository.mace,
-// 		WeaponRepository.blade,
-// 	],
-// 	offHandSet: [],
-// });
+
+export class SkeletonEnemyArchetype {
+    name: MobCharacterEnum = MobCharacterEnum.skeleton_archer;
+    type: CharacterType = CharacterType.undead;
+    description: string = "A reanimated skeleton, hostile and mindless.";
+    portrait: string = "skeleton_portrait.png";
+    race: RaceEnum = RaceEnum.UNDEAD;
+
+    create(): Enemy {
+        return new Enemy(
+            this.name,
+            "NONE",
+            this.description,
+            this.portrait,
+            0,
+            0,
+            []
+        );
+    }
+}
+
+const skeletonArcher = new SkeletonEnemyArchetype();
+
+export class SkeletonEnemyFighter {
+    name: MobCharacterEnum = MobCharacterEnum.skeleton_fighter;
+    type: CharacterType = CharacterType.undead;
+    description: string = "A reanimated skeleton, hostile and mindless.";
+    portrait: string = "skeleton_portrait.png";
+    race: RaceEnum = RaceEnum.UNDEAD;
+
+    create(): Enemy {
+        return new Enemy(
+            this.name,
+            "NONE",
+            this.description,
+            this.portrait,
+            0,
+            0,
+            []
+        )
+    }
+}
+
+const skeletonFighter = new SkeletonEnemyFighter();
+
+export const skeletonEnemyRepository = [
+    skeletonArcher,
+    skeletonFighter,
+]
 
 // const archetype_enemy_skeleton_knight = new CharacterArchetype({
 // 	type: new CharacterType("Undead"),

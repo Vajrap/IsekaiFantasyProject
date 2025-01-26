@@ -1,10 +1,9 @@
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
 import { createTableIfNotExists } from "../../Seeding";
-// import { ConsumableEffect } from "../Consumable/consumable";
-import { ConsumableEffect } from "../../../../Common/DTOsEnumsInterfaces/Item/ConsumableEffect";
+import { ConsumableEffect } from "../../../../Common/DTOsEnumsInterfaces/Item/Consumable/Interfaces";
 
 export class ItemResourceInstance {
-	id: string;
+	id: ItemResourceEnum;
 	name: string;
 	description: string;
 	type: ResourceType;
@@ -20,7 +19,7 @@ export class ItemResourceInstance {
     consumedAfterUse: boolean;
 	
 	constructor(dto: {
-		id: string;
+		id: ItemResourceEnum;
 		name: string;
 		description: string;
 		type: ResourceType;

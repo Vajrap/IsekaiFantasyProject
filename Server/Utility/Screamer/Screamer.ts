@@ -7,10 +7,10 @@ class Screamer {
         this.yellStation = new SimpleEventEmitter();
     }
 
-    scream(event: string, payload: any) {
+    async scream(event: string, payload: any) {
         // TODO: Remove log later
         console.log(`Screamer is screaming ${event} with payload:`, payload);
-        this.yellStation.emit(event, payload);
+        await this.yellStation.emit(event, payload);
     }
 
     listenToMe() {

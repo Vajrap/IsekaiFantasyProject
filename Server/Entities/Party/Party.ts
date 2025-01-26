@@ -1,10 +1,11 @@
 import { Dice } from "../../Utility/Dice";
 import { Character } from "../Character/Character";
-import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
+import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { PartyInterface } from "../../../Common/RequestResponse/characterWS";
+import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 
 export class Party {
 	partyID: string;
@@ -37,16 +38,17 @@ export class Party {
 	isTemporarilyBattleScenePartyForTargeting: boolean = false;
 	isTraveling: boolean = false;
 	// Should move to LocationEnum
-	location: string = "None";
-	// travelManager: TravelManager;
-	// currentLocation: GameLocation;
+	location: LocationName = LocationName.None;
+	currentLocation: LocationName;
 
 	//we would normally only allow creation of a party with an array of one character, but in battle we need to create a party with multiple characters
 	//When Player character was created, it created a party of itself, so it's one character in a party.
 
 	constructor(
 		characters: Character[],
-		isTemporarilyBattleScenePartyForTargeting: boolean = false
+		isTemporarilyBattleScenePartyForTargeting: boolean = false,
+		location?: LocationName,
+		firstEnemyPosition?: number
 	) {
 		this.characters[0] = characters[0] as Character;
 		this.isTemporarilyBattleScenePartyForTargeting =
@@ -60,15 +62,21 @@ export class Party {
 			//Normal creation of party when player character is created; the party id is the same as the player character id: Player character will 'ALWAYS' be in this party!
 			this.characters[0] = characters[0] as Character;
 			this.characters[0].partyID = this.partyID;
+			this.characters[0].position = firstEnemyPosition ? firstEnemyPosition : 1;
 		}
-		// this.currentLocation = gameMap.locations.find(location => location.name === 'None') as GameLocation;
-		// this.travelManager = new TravelManager(this.partyID, this.currentLocation)
+		this.currentLocation = location ?? LocationName.None;
 	}
 
 	leader(): Character {
 		// leader is the character with the same id
 		return this.characters.find(
 			character => character != "none" && character.id === this.partyID
+		) as Character;
+	}
+
+	getPlayerCharacter(): Character {
+		return this.characters.find(
+			character => character != "none" && character.isPlayerCharacter
 		) as Character;
 	}
 
@@ -79,19 +87,35 @@ export class Party {
 		}
 	}
 
-	async addCharacterToParty(character: Character) {
+	async addCharacterToParty(character: Character, position?: number) {
 		console.log(`Adding ${character.name} to party`);
 		if (this.isPartyFull()) {
 			return "Party is full";
 		}
-		for (let i = 0; i < 5; i++) {
-			console.log(`Checking slot ${i}`);
-			if (this.characters[i] === "none") {
-				console.log(`Replacing slot ${i} with ${character.name}`);
-				this.characters[i] = character;
-				character.position = i;
-				character.partyID = this.partyID;
-				break;
+		if (position !== undefined) {
+			if (position < 0 || position > 5) {
+				throw new Error("Character Position in Party must be between 0 - 5");
+			}
+			for (let i = 0; i < 6; i++) {
+				const currentIndex = (position + i) % 6; // Wrap around using modulo
+				if (this.characters[currentIndex] === "none") {
+					console.log(`Replacing slot ${currentIndex} with ${character.name}`);
+					this.characters[currentIndex] = character;
+					character.position = currentIndex;
+					character.partyID = this.partyID;
+					return;
+				}
+			}
+		} else {
+			for (let i = 0; i < 6; i++) {
+				console.log(`Checking slot ${i}`);
+				if (this.characters[i] === "none") {
+					console.log(`Replacing slot ${i} with ${character.name}`);
+					this.characters[i] = character;
+					character.position = i;
+					character.partyID = this.partyID;
+					break;
+				}
 			}
 		}
 	}

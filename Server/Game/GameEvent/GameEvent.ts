@@ -1,48 +1,30 @@
 import { Internal } from "../../Entities/Internal/Internal";
-import { InternalResponseType } from "../../API/ResponseTypes/Internal";
 import { Skill } from "../../Entities/Skills/Skill";
 import { Dice } from "../../Utility/Dice";
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { Character } from "../../Entities/Character/Character";
 import { Party } from "../../Entities/Party/Party";
-import { game } from "../Game";
 import { GameLocation } from "../../Entities/Location/GameLocation";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 import { LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { screamer } from "../../Utility/Screamer/Screamer";
 
-export class GameEvent<T> {
-    name: LocationEventEnum;
-    execute: (param: T) => Promise<any>;
+export class GameEvent<T extends keyof GameEventParams> {
+    name: T;
+    execute: (params: GameEventParams[T]) => Promise<any>;
+    
     constructor(
-        name: LocationEventEnum,
-        execute: (param: T) => Promise<any>,
+        name: T,
+        execute: (params: GameEventParams[T]) => Promise<any>
     ) {
         this.name = name;
         this.execute = execute;
     }
-    async executeFromParty(partyID: string): Promise<any> {
-        const party = game.partyManager.parties.find(party => party.partyID === partyID);
-        if (party as unknown as T) {
-            return await this.execute(party as unknown as T);
-        } else {
-            throw new Error("The provided party cannot be cast to the required parameter type.");
-        }
-    }
-    async executeFromPlayerCharacter(player: Character): Promise<any> {
-        if (player as unknown as T) {
-            return await this.execute(player as unknown as T);
-        } else {
-            throw new Error("The provided player character cannot be cast to the required parameter type.");
-        }
-    }
-    async executeBattleEvent(party: Party, enemyParties: Character[]): Promise<any> {
-        if(party && enemyParties) {
-            return await this.execute({ party, enemyParties } as unknown as T);
-        } else {
-            throw new Error("The provided party and enemy parties cannot be cast to the required parameter type.");
-        }
+    
+    async executeWithParams(params: GameEventParams[T]): Promise<any> {
+        return await this.execute(params);
     }
 }
 
@@ -126,20 +108,18 @@ type TravelEvent = {
 type StrollEvent = {
     party: Party;
     player: Character;
-    event: GameEvent<RandomEvent>;
+    event: RandomEvent;
 }
 
 type BattleEvent = {
     party: Party;
-    enemyParties: Party[]; //Take multiple enemy party defined by the location and then randomly choose one to fight
+    enemyParty: Party;
     location: LocationName;
-    environment: GameEnvironment;
-    gameTime: GameTimeInterface;
 }
 
 
 //These events are not include the random events chance, these are the base events themselves.
-const gameEvent_rest = new GameEvent <RestEvent>(
+const gameEvent_rest = new GameEvent<LocationEventEnum.RestEvent>(
     LocationEventEnum.RestEvent, 
     async ({ party }) => {
         if (party === undefined || party === null) { throw new Error("Party is undefined"); }
@@ -159,7 +139,7 @@ const gameEvent_rest = new GameEvent <RestEvent>(
     }
 );
 
-const gameEvent_innRest = new GameEvent<RestEvent>(
+const gameEvent_innRest = new GameEvent<LocationEventEnum.InnRest>(
     LocationEventEnum.InnRest,
     async ({ party }) => {
         if (party === undefined || party === null) { throw new Error("Party is undefined"); }
@@ -179,7 +159,7 @@ const gameEvent_innRest = new GameEvent<RestEvent>(
     }
 );
 
-const gameEvent_houseRest = new GameEvent<RestEvent>(
+const gameEvent_houseRest = new GameEvent<LocationEventEnum.HouseRest>(
     LocationEventEnum.HouseRest,
     async ({ party }) => {
         if (party === undefined || party === null) { throw new Error("Party is undefined"); }
@@ -199,7 +179,7 @@ const gameEvent_houseRest = new GameEvent<RestEvent>(
     }
 );
 
-const gameEvent_campRest = new GameEvent<CampRestEvent>(
+const gameEvent_campRest = new GameEvent<LocationEventEnum.CampRest>(
     LocationEventEnum.CampRest,
     async ({ party, useItem }) => {
         if (party === undefined || party === null) { throw new Error("Party is undefined"); }
@@ -220,7 +200,7 @@ const gameEvent_campRest = new GameEvent<CampRestEvent>(
     }
 );
 
-const gameEvent_attributeTrain = new GameEvent<TrainEvent>(
+const gameEvent_attributeTrain = new GameEvent<LocationEventEnum.AttributeTrain>(
     LocationEventEnum.AttributeTrain,
     async ({ actor, trainTarget, bonusTrainingExp = 1 }) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
@@ -236,7 +216,7 @@ const gameEvent_attributeTrain = new GameEvent<TrainEvent>(
     }
 );
 
-const gameEvent_artisanTrain = new GameEvent<TrainEvent>(
+const gameEvent_artisanTrain = new GameEvent<LocationEventEnum.ArtisanTrain>(
     LocationEventEnum.ArtisanTrain,
     async ({ actor, trainTarget, bonusTrainingExp = 1 }) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
@@ -252,7 +232,7 @@ const gameEvent_artisanTrain = new GameEvent<TrainEvent>(
     }
 );
 
-const gameEvent_proficiencyTrain = new GameEvent<TrainEvent>(
+const gameEvent_proficiencyTrain = new GameEvent<LocationEventEnum.ProficiencyTrain>(
     LocationEventEnum.ProficiencyTrain,
     async ({ actor, trainTarget, bonusTrainingExp = 1 }) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
@@ -268,7 +248,7 @@ const gameEvent_proficiencyTrain = new GameEvent<TrainEvent>(
     }
 );
 
-const gameEvent_skillTrain = new GameEvent<TrainEvent>(
+const gameEvent_skillTrain = new GameEvent<LocationEventEnum.SkillTrain>(
     LocationEventEnum.SkillTrain,
     async ({ actor, trainTarget, bonusTrainingExp = 1 }) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
@@ -289,26 +269,7 @@ const gameEvent_skillTrain = new GameEvent<TrainEvent>(
     }
 )
 
-// const gameEvent_internalSkillTrain = new GameEvent<TrainEvent>(
-//     EventType.InternalSkillTrain,
-//     async ({ actor, trainTarget, bonusTrainingExp = 1 }) => {
-//         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
-//         if (trainTarget === undefined || trainTarget === null) { throw new Error("ExtraArgForString is undefined, needed to verify the internal skill trained"); }
-        
-//         const learningBonus = actor.getModifier(CharacterStatusEnum.intelligence) + actor.getModifier(CharacterStatusEnum.willpower);
-//         const learningDice = Dice.rollTwenty();
-//         const trainingExpGain = (10 + learningBonus + learningDice)*bonusTrainingExp;
-
-//         const internal = actor.internals.find(internal => internal.internalID === trainTarget);
-//         if (internal === undefined || internal === null) { throw new Error("Internal Skill is undefined"); }
-
-//         actor.trainInternal(internal.internalID, trainingExpGain);
-
-//         return true;
-//     }
-// )
-
-const gameEvent_skillLearn = new GameEvent<SkillLearnEvent>(
+const gameEvent_skillLearn = new GameEvent<LocationEventEnum.SkillLearn>(
     LocationEventEnum.SkillLearn,
     async ({ actor, skillToLearn }) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
@@ -318,42 +279,19 @@ const gameEvent_skillLearn = new GameEvent<SkillLearnEvent>(
     }
 )
 
-// const gameEvent_internalSkillLearn = new GameEvent<InternalSkillLearnEvent>(
-//     EventType.InternalSkillLearn,
-//     async ({ actor, internalToLearn }) => {
-//         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
-//         if (internalToLearn === undefined || internalToLearn === null) { throw new Error("Internal Skill is undefined"); }
-//         if (internalToLearn.requirement) {
-//             return actor.learnInternal(internalToLearn.id);
-//         } else {
-//             return InternalResponseType.SuccessNotEligibleToLearn;
-//         }   
-//     }
-// )
-
-const gameEvent_strollEvent = new GameEvent<StrollEvent>(
-    LocationEventEnum.StrollEvent,
-    async ({ party, player, event }) => {
-        if (party === undefined || party === null) { throw new Error("Party is undefined"); }
-        if (player === undefined || player === null) { throw new Error("Player is undefined"); }
-        if (event === undefined || event === null) { throw new Error("Event is undefined"); }
-        await event.execute({ party: party, actor: player });
-
-        return true;
-    }
-)
-
-const gameEvent_battleEvent = new GameEvent<BattleEvent>(
+const gameEvent_battleEvent = new GameEvent<LocationEventEnum.BattleEvent>(
     LocationEventEnum.BattleEvent,
-    async ({ party, enemyParties, location, environment, gameTime }) => {
-        if (party === undefined || party === null) { throw new Error("Party is undefined"); }
-        if (enemyParties === undefined || enemyParties === null) { throw new Error("EnemyParty is undefined"); }
-
-        let dice = Dice.rollTwenty()
-        let enemyParty = enemyParties[Math.floor(dice / (20 / enemyParties.length))];
-        
+    async ({ party, enemyParty, location }) => { 
         try {
-            return await game.battles.startNewBattle(party, enemyParty, location, environment, gameTime);
+            await screamer.scream(
+                'START_BATTLE_EVENT',
+                {
+                    party: party,
+                    enemyParty: enemyParty,
+                    location: location,
+                }
+            )
+            // TODO: This means the screamer needed to return battle result, long way to go.
         } catch (error) {
             console.error(error);
             return false;
@@ -361,20 +299,25 @@ const gameEvent_battleEvent = new GameEvent<BattleEvent>(
     }
 )
 
-
-
-export { RestEvent, CampRestEvent, TrainEvent, SkillLearnEvent, InternalSkillLearnEvent, EventType, RandomEvent, TravelEvent, StrollEvent, BattleEvent };
-export { gameEvent_rest, gameEvent_innRest, gameEvent_houseRest, gameEvent_campRest, gameEvent_attributeTrain, gameEvent_artisanTrain, gameEvent_proficiencyTrain, gameEvent_skillTrain, gameEvent_skillLearn, gameEvent_strollEvent, gameEvent_battleEvent };
+export { RestEvent, CampRestEvent, TrainEvent, SkillLearnEvent, InternalSkillLearnEvent, EventType, RandomEvent, TravelEvent, BattleEvent };
+export { gameEvent_rest, gameEvent_innRest, gameEvent_houseRest, gameEvent_campRest, gameEvent_attributeTrain, gameEvent_artisanTrain, gameEvent_proficiencyTrain, gameEvent_skillTrain, gameEvent_skillLearn, gameEvent_battleEvent };
 
 export const gameEvents = [
-    gameEvent_rest, gameEvent_innRest, gameEvent_houseRest, gameEvent_campRest, gameEvent_attributeTrain, gameEvent_artisanTrain, gameEvent_proficiencyTrain, gameEvent_skillTrain, gameEvent_skillLearn, gameEvent_strollEvent, gameEvent_battleEvent
+    gameEvent_rest, gameEvent_innRest, gameEvent_houseRest, gameEvent_campRest, gameEvent_attributeTrain, gameEvent_artisanTrain, gameEvent_proficiencyTrain, gameEvent_skillTrain, gameEvent_skillLearn, gameEvent_battleEvent
 ]
 
-export function getEventByName(eventName: LocationEventEnum): GameEvent<any> {
-    let event = gameEvents.find(event => event.name === eventName);
-    if (event) {
-        return event;
-    } else {
-        throw new Error("Event not found");
-    }
+export interface GameEventParams {
+    [LocationEventEnum.RestEvent]: RestEvent;
+    [LocationEventEnum.CampRest]: CampRestEvent;
+    [LocationEventEnum.InnRest]: RestEvent;
+    [LocationEventEnum.HouseRest]: RestEvent;
+    [LocationEventEnum.AttributeTrain]: TrainEvent;
+    [LocationEventEnum.ArtisanTrain]: TrainEvent;
+    [LocationEventEnum.ProficiencyTrain]: TrainEvent;
+    [LocationEventEnum.SkillTrain]: TrainEvent;
+    [LocationEventEnum.SkillLearn]: SkillLearnEvent;
+    [LocationEventEnum.InternalSkillLearn]: InternalSkillLearnEvent;
+    [LocationEventEnum.BattleEvent]: BattleEvent;
+    [LocationEventEnum.StrollEvent]: StrollEvent;
+    // Add all other event mappings here...
 }

@@ -53,6 +53,7 @@ export type CharacterDB = {
 	bagSize: number;
 	storyFlags: StoryFlagsDB; // Flags for story progression
 	relation: { [key: string]: { value: number; status: RelationEnum } }; // Relationship map
+    isPlayerCharacter: boolean;
 };
 
 export type CharacterStatusDB = {

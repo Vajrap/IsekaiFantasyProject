@@ -85,12 +85,11 @@ import {
 import { CharacterInterface } from "../../../Common/RequestResponse/characterWS";
 import { Weapon } from "../Items/Equipments/Weapon/Weapon";
 import { Armor } from "../Items/Equipments/Armors/Armor";
-import { getItem, itemRepository } from "../Items/Repository";
+import { getItem } from "../Items/Repository";
 import { Equipment } from "../Items/Equipments/Equipment";
-import { SkillRepository, skillRepository } from "../Skills/SkillRepository";
+import { skillRepository } from "../Skills/SkillRepository";
 import { SkillConsumeInterface, SkillProduceInterface } from "../../../Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
 import { SkillResponseType } from "../../API/ResponseTypes/Skill";
-import { unwrap } from "../../../Common/Lib/Result";
 
 export class Character {
 	id: string;
@@ -150,6 +149,7 @@ export class Character {
 	storyFlags: StoryFlags;
 	// Relationship to other characters, key = character ID, value = relation value from -100 to 100, and status is the relationship status enum
 	relation: { [key: string]: { value: number; status: number } } = {};
+	isPlayerCharacter: boolean = false;
 	constructor(
 		data: {
 			id: string,

@@ -32,7 +32,7 @@ export class SimpleEventEmitter {
      * @param event The name of the event
      * @param args Data to pass to the listeners
      */
-    emit(event: string, ...args: any[]) {
+    async emit(event: string, ...args: any[]) {
         if (!this.events[event]) return;
         this.events[event].forEach(listener => listener(...args));
     }

@@ -82,6 +82,9 @@ async function createAndSaveCharacter(
         }
     );
 
+    // Set the character as a player character; This is the only plcae where this is done.
+    character.isPlayerCharacter = true;
+
     await setCharacterStatus(character, className, race, background);
 
     const characterData:CharacterDB = {
@@ -158,6 +161,7 @@ async function createAndSaveCharacter(
         bagSize: character.bagSize,
         storyFlags: character.storyFlags,
         relation: {},
+        isPlayerCharacter: character.isPlayerCharacter,
     }
 
     await db.writeNew(

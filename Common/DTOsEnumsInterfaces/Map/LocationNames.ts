@@ -1,5 +1,4 @@
 export enum LocationName {
-    None = 'none',
     OceanTide = 'Ocean Tide',
     MistGarde = 'Mist Garde',
     BerrisGrove = 'Berris Grove',
@@ -32,4 +31,5 @@ export enum LocationName {
     HeartfeltPond = 'Heartfelt Pond',
     MadPass = 'Mad Pass',
     BlueSkyMountainSect = 'Blue Sky Mountain Sect',
+    None = 'None'
 }

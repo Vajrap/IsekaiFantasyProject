@@ -114,8 +114,6 @@ export class CharacterArchetype {
         necklace: string | null;
         ring: string | null;
     };
-    internals: { internalID: string, level: number, exp: number }[];
-    activeInternal: string | null;
     traits: string[];
     skills: { skillID: string, level: number, exp: number }[];
     activeSkills: { skillID: string, level: number, exp: number }[];
@@ -240,8 +238,6 @@ export class CharacterArchetype {
             necklace: string | null;
             ring: string | null;
         };        
-        internals: { internalID: string, level: number, exp: number }[],
-        activeInternal: string | null,
         traits: string[],
         skills: { skillID: string, level: number, exp: number }[],
         activeSkills: { skillID: string, level: number, exp: number }[],
@@ -366,8 +362,6 @@ export class CharacterArchetype {
             necklace: dto.equipments.necklace? dto.equipments.necklace : null,
             ring: dto.equipments.ring? dto.equipments.ring : null
         };
-        this.internals = dto.internals;
-        this.activeInternal = dto.activeInternal? dto.activeInternal : null;
         this.traits = dto.traits;
         this.skills = dto.skills;
         this.activeSkills = dto.activeSkills;
