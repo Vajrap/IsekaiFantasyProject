@@ -6,10 +6,8 @@ export async function createTableIfNotExists(
     tableData: any[],
     primaryKeyColumn: string,
 ) {
-    console.log(`Checking table ${tableName}...`);
     try {
         const tableExists = await db.tableExists(tableName);
-        console.log(`Table ${tableName} exists: ${tableExists}`);
         if (tableExists) {
             await checkDatabaseValidity(tableName, tableData, primaryKeyColumn);
             return;
