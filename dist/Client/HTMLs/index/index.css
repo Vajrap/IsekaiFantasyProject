@@ -1,0 +1,101 @@
+body {
+    height: 99%;
+    width: 99%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #424242;
+}
+
+.gameView{
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 98vh;
+    width: 98vw;
+    border: none;
+    background: none;
+    font-family: Arial, sans-serif;
+    background-color: rgb(41, 39, 53);
+    background-image: linear-gradient(to bottom, rgb(41, 39, 53), #676875);
+}
+
+#gameLogo {
+    height: 58vh;
+}
+
+
+.enterGamePart{
+ height: 30vh;
+}
+
+
+button {
+    width: 5vw;
+    height: 2vw;
+    font-size: 2vh;
+    background-color: #f6f4c3;
+    color: #5f4f5c;
+    border: none;
+    cursor: pointer;
+    margin: 0.7vh;
+    border-radius: 3%;
+}
+
+.gameDescription{
+    font-size: 1.5vh;
+    margin: 2vh;
+    text-align: center;
+    color: #ffffff;
+}
+
+
+
+#loginButton:hover{
+    background: #ec8e00;
+    color: rgb(0, 0, 0)
+}
+
+
+.login-page {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    display: flexbox;
+    justify-content: center;
+    align-items: center;
+    height: 98vh;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-form input {
+    margin: 10px;
+    border: 1px solid #ccc;
+    width: 200px;
+}
+
+.login-form input:invalid {
+    border-color: red;
+}
+
+.login-form-submitButton button {
+    width: 100px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+
+.links a {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    color: white;
+}

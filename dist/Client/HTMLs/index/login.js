@@ -30,10 +30,10 @@ class LoginModel {
     }
     redirectToAppropriatePage(statusType) {
         if (statusType === LoginResponseStatus.LoggedInWithCharacter) {
-            window.location.href = '../../../Client/HTMLs/game/game.html';
+            window.location.href = '../Client/HTMLs/game/game.html';
         }
         else {
-            window.location.href = '../../../Client/HTMLs/character_creation/character_creation.html';
+            window.location.href = '../Client/HTMLs/character_creation/character_creation.html';
         }
     }
     checkForAutoLogin() {

@@ -1,8 +1,8 @@
 import { CharacterInterface, CharacterSkillInterface } from "../../../../Common/RequestResponse/characterWS.js";
 import { popup } from "../../../../Client/classes/popup/popup.js";
 import { screamer } from "../../../../Client/Screamer/Screamer.js";
-// import { gameVM } from "../../../../Client/HTMLs/game/gameViewModel.js";
 import { SkillCard, mapElementName } from "../../../../Client/classes/Cards/SkillCard/SkillCard.js";
+import { K } from "../../../../Common/Constant.js";
 
 export class SkillMenu {
     character: CharacterInterface;
@@ -12,6 +12,8 @@ export class SkillMenu {
     beforeChangeBattleSkills: CharacterSkillInterface[];
     showingSkill: CharacterSkillInterface | null;
     skillMenu: HTMLDivElement;
+
+    screamer = screamer;
     
     // battleSkills might needed to be slots, we allow 7 cards in the deck so 7 slots of battleSkills
     // might be like battleSkills: {slot1: CharacterSkillInterface | undefined, slot2: CharacterSkillInterface | undefined, ...}
@@ -430,18 +432,14 @@ export class SkillMenu {
         backButton.addEventListener('click', () => {
             // TODO: Send the updated skills to the server
             const updateMessage = {
-                type: 'UPDATE_SKILLS_AND_BATTLE_CARDS',
-                characterID: this.character.id,
                 skills: this.learnedSkills,
                 battleCards: this.battleSkills
             };
-            console.log(updateMessage);
-
             let popupScreen = this.getCharacterInfoPopupScreen();
             popupScreen.innerHTML = '';
             screamer.scream(
-                'close_skill_menu_update',
-                {},
+                K.SKILL_MENU_UPDATE,
+                {updateMessage},
             )
         });
         buttonsContainer.appendChild(backButton);
@@ -450,13 +448,16 @@ export class SkillMenu {
         cancelButton.classList.add('skills-menu-button');
         cancelButton.textContent = 'ยกเลิก';
         cancelButton.addEventListener('click', () => {
+            let popupScreen = this.getCharacterInfoPopupScreen();
+            popupScreen.innerHTML = '';
             screamer.scream(
-                'close_skill_menu_cancel',
+                K.SKILL_MENU_CLOSE,
                 {
                     skills: this.beforeChangeLearnedSKills,
                     activeSkills: this.beforeChangeBattleSkills, 
                 }
-            )
+            );
+            
         });
         buttonsContainer.appendChild(cancelButton);
         return buttonsContainer;

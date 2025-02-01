@@ -58,6 +58,7 @@ export async function createCharacterTableIfNotExists() {
         bagSize: 'INTEGER',
         storyFlags: 'TEXT',
         relation: 'TEXT',
+        isPlayerCharacter: "BOOLEAN",
     };
 
     const tableStructure = Object.entries(fieldTypes)

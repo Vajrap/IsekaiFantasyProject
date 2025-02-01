@@ -1,0 +1,78 @@
+.skillCard-front {
+    width: 30vw;
+    height: 95vh;
+    background-image: url(../../../assets/cardBG/01.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: beige;
+    border: 10px solid palegoldenrod;
+    border-radius: 5px;
+}
+
+.skillCard-name {
+    height: 5vh;
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    color:rgb(214, 224, 224);
+    background-color: darkslategray;
+    justify-content: center;
+    align-content: center;
+    padding-left: 10px;
+}
+
+.skillCard-portrait {
+    width: 20vw;
+    border-radius: 5%;
+    margin-inline-start: 5vw;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    align-items: center;
+    align-self: center;
+    align-content: center;
+}
+
+.skillCard-description, .skillCard-learningRequirements, .skillCard-equipmentRequirements, .skillCard-consume, .skillCard-produce {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 15px;
+    background-color: darkslategray;
+    color:rgb(214, 224, 224);
+}
+
+.skillCard-description {
+    height: 4vh;
+}
+/* 
+.skillCard-learningRequirements {
+    height: 7.5vh;
+}
+
+.skillCard-equipmentRequirements {
+    height: 3vh;
+}
+
+.skillCard-consume {
+    height: 3vh;
+}
+
+.skillCard-produce {
+    height: 3vh;
+} */
+
+.skillCard-label {
+    font-weight: bold;
+}
+
+.skillCard-value {
+    font-weight: normal;
+}

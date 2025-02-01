@@ -1,0 +1,90 @@
+/* register.css */
+
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+}
+
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.register-form {
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 50vw;
+}
+
+.register-form-username,
+.register-form-password,
+.register-form-confirm-password,
+.register-form-eula,
+.register-form-submit {
+    margin-bottom: 15px;
+}
+
+.register-form-username label,
+.register-form-password label,
+.register-form-confirm-password label,
+.register-form-eula label {
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.register-form-username input,
+.register-form-password input,
+.register-form-confirm-password input,
+.register-form-eula textarea,
+.register-form-submit button {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+
+.register-form-eula textarea {
+    resize: none;
+}
+
+.register-form-submit button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.register-form-submit button:hover {
+    background-color: #45a049;
+}
+
+.register-form-submit button.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+#backToLogin {
+    text-align: center;
+    margin-top: 10px;
+    /* font-size: 12px; */
+    color: #5200d7;
+    text-decoration: none;
+}
+
+#backToLogin:hover {
+    color: #333;
+    text-decoration: underline;
+}
+

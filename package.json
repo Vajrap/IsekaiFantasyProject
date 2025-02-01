@@ -11,7 +11,7 @@
     "style-loader": "^4.0.0",
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.2",
+    "typescript": "^5.7.3",
     "webpack": "^5.97.1",
     "webpack-cli": "^5.1.4"
   },
@@ -34,6 +34,7 @@
   },
   "scripts": {
     "test": "jest",
-    "server":  "ts-node Server/server.ts"
+    "server": "ts-node Server/server.ts",
+    "build": "npx tsc && node copy-static.js"
   }
 }

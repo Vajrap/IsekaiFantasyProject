@@ -67,4 +67,6 @@ export var LocationEventEnum;
     //Item events
     LocationEventEnum["ItemPickupEvent"] = "itemPickupEvent";
     LocationEventEnum["ItemShopEvent"] = "itemShopEvent";
+    //Travel events
+    LocationEventEnum["TravelEvent"] = "travelEvent";
 })(LocationEventEnum || (LocationEventEnum = {}));

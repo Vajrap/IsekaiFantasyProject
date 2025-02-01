@@ -1,6 +1,5 @@
 export var LocationName;
 (function (LocationName) {
-    LocationName["None"] = "none";
     LocationName["OceanTide"] = "Ocean Tide";
     LocationName["MistGarde"] = "Mist Garde";
     LocationName["BerrisGrove"] = "Berris Grove";
@@ -33,4 +32,5 @@ export var LocationName;
     LocationName["HeartfeltPond"] = "Heartfelt Pond";
     LocationName["MadPass"] = "Mad Pass";
     LocationName["BlueSkyMountainSect"] = "Blue Sky Mountain Sect";
+    LocationName["None"] = "None";
 })(LocationName || (LocationName = {}));

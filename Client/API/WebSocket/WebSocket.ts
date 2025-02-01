@@ -14,12 +14,10 @@ class WebSocketManager {
     }
 
     async connect(): Promise<Result<true>> {
-        console.log('Connecting to WebSocket...');
         return new Promise((resolve, reject) => {
             this.ws = new WebSocket(env.ws());
     
             this.ws.addEventListener('open', () => {
-                console.log('WebSocket connection opened.');
                 this.startHeartbeat();
                 resolve(success(true));
             });

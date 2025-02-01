@@ -1,8 +1,20 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import { CharacterCard } from "../../../Client/classes/Cards/CharacterCard/CharacterCard.js";
 import { SkillMenu } from "./SkillMenu/SkillMenu.js";
+import { screamer } from "../../../Client/Screamer/Screamer.js";
 export class GameMenu {
     constructor() {
+        this.screamer = screamer;
         this.isPopupVisible = false;
+        this.initializeEventListeners();
     }
     showCharacterInfo(character, type) {
         const characterCard = new CharacterCard(character).card;
@@ -109,6 +121,11 @@ export class GameMenu {
         popupScreen.innerHTML = '';
         popupScreen.classList.add('hidden');
         popupScreen.classList.remove('visible');
+    }
+    initializeEventListeners() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const screamerStation = this.screamer.listenToMe();
+        });
     }
 }
 export const gameMenu = new GameMenu();

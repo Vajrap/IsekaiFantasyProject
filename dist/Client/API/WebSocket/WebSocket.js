@@ -19,11 +19,9 @@ class WebSocketManager {
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Connecting to WebSocket...');
             return new Promise((resolve, reject) => {
                 this.ws = new WebSocket(env.ws());
                 this.ws.addEventListener('open', () => {
-                    console.log('WebSocket connection opened.');
                     this.startHeartbeat();
                     resolve(success(true));
                 });

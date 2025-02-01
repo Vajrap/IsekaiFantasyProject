@@ -1,11 +1,15 @@
-import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
+import { CharacterInterface, CharacterSkillInterface } from "../../../Common/RequestResponse/characterWS.js";
 import { CharacterCard } from "../../../Client/classes/Cards/CharacterCard/CharacterCard.js";
 import { SkillMenu } from "./SkillMenu/SkillMenu.js";
+import { screamer } from "../../../Client/Screamer/Screamer.js";
+
 export class GameMenu {
     isPopupVisible: boolean;
+    screamer = screamer;
 
     constructor() {
         this.isPopupVisible = false;
+        this.initializeEventListeners();
     }
 
     showCharacterInfo(character: CharacterInterface, type: 'player' | 'companion') {
@@ -145,6 +149,12 @@ export class GameMenu {
         popupScreen.classList.add('hidden');
         popupScreen.classList.remove('visible');
     }
+
+    private async initializeEventListeners() {
+        const screamerStation = this.screamer.listenToMe();
+        
+        
+    } 
 }
 
 export const gameMenu = new GameMenu();

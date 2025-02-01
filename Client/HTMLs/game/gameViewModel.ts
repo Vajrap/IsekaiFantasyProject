@@ -2,6 +2,7 @@ import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.
 import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
 import { GameMenu } from "../../../Client/classes/GameMenu/GameMenu.js";
 import { screamer } from "../../../Client/Screamer/Screamer.js";
+import { K } from "../../../Common/Constant.js";
 
 class GameViewModel {
     // Model
@@ -42,15 +43,11 @@ class GameViewModel {
     async initiateVM() {
         try {
             // Wait for GameModel to initialize
-            console.log(`Wating for GameModel to initialize`);
             this.model = await GameModel.create();
-            console.log(`GameModel initialized`);
             // Setup ViewModel after model is ready
             this.addEventListener();
             this.updatePortraits();
             this.initializeEventListeners();
-
-            console.log('GameViewModel initialized successfully');
         } catch (error) {
             console.error('Failed to initialize GameViewModel:', error);
         }
@@ -80,20 +77,9 @@ class GameViewModel {
         }
     }
 
-    private async initializeEventListeners() {
-        const screamerStation = this.screamer.listenToMe();
 
-        screamerStation.on('GAME_MODEL_UPDATE', async () => {
-            try {
-                this.updatePortraits();
-            } catch (error) {
-                console.error('Error updating party:', error);
-            }
-        })
-    } 
 
     addEventListener() {
-        console.log('Adding Event Listeners');
         const model = this.ensureModel();
 
         const playerCharacter = model.playerCharacter;
@@ -138,6 +124,38 @@ class GameViewModel {
     showBattleReport() {
         battleReportMenu.showBattleReportMenu();
     }
+
+    private async initializeEventListeners() {
+        const screamerStation = this.screamer.listenToMe();
+
+        screamerStation.on('GAME_MODEL_UPDATE', async () => {
+            try {
+                this.updatePortraits();
+            } catch (error) {
+                console.error('Error updating party:', error);
+            }
+        })
+
+        screamerStation.on(K.SKILL_MENU_CLOSE, async (_: any) => {
+            const playerCharacter = this.model?.playerCharacter;
+
+            if (!playerCharacter) {
+                throw new Error('Player Character not found');
+            }
+    
+            this.playerPortrait.addEventListener('click', () => {
+                this.showCharacterInfo(playerCharacter, 'player')
+            });
+        })
+        screamerStation.on(K.SKILL_MENU_CLOSE, async (_: any) => {
+            const playerCharacter = this.model?.playerCharacter;
+            if (!playerCharacter) {
+                throw new Error('Player Character not found');
+            }
+    
+            this.showCharacterInfo(playerCharacter, 'player');
+        })
+    } 
 }
 
 function delay(ms: number) {

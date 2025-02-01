@@ -1,10 +1,11 @@
 import { popup } from "../../../../Client/classes/popup/popup.js";
-import { gameVM } from "../../../../Client/HTMLs/game/gameViewModel.js";
-import { gameMenu } from "../GameMenu.js";
+import { screamer } from "../../../../Client/Screamer/Screamer.js";
 import { SkillCard, mapElementName } from "../../../../Client/classes/Cards/SkillCard/SkillCard.js";
+import { K } from "../../../../Common/Constant.js";
 export class SkillMenu {
     // eslint-disable-next-line max-lines-per-function
     constructor(playerCharacter, learnedSkills, battleSkills) {
+        this.screamer = screamer;
         // battleSkills might needed to be slots, we allow 7 cards in the deck so 7 slots of battleSkills
         // might be like battleSkills: {slot1: CharacterSkillInterface | undefined, slot2: CharacterSkillInterface | undefined, ...}
         this.battleSkills = {
@@ -348,29 +349,24 @@ export class SkillMenu {
         backButton.addEventListener('click', () => {
             // TODO: Send the updated skills to the server
             const updateMessage = {
-                type: 'UPDATE_SKILLS_AND_BATTLE_CARDS',
-                characterID: this.character.id,
                 skills: this.learnedSkills,
                 battleCards: this.battleSkills
             };
-            console.log(updateMessage);
             let popupScreen = this.getCharacterInfoPopupScreen();
             popupScreen.innerHTML = '';
-            gameMenu.showCharacterInfo(this.character, 'player');
+            screamer.scream(K.SKILL_MENU_UPDATE, { updateMessage });
         });
         buttonsContainer.appendChild(backButton);
         const cancelButton = document.createElement('button');
         cancelButton.classList.add('skills-menu-button');
         cancelButton.textContent = 'ยกเลิก';
         cancelButton.addEventListener('click', () => {
-            var _a, _b;
-            if (((_a = gameVM.model) === null || _a === void 0 ? void 0 : _a.playerCharacter) !== undefined && ((_b = gameVM.model) === null || _b === void 0 ? void 0 : _b.playerCharacter) !== null) {
-                gameVM.model.playerCharacter.skills = this.beforeChangeLearnedSKills;
-                gameVM.model.playerCharacter.activeSkills = this.beforeChangeBattleSkills;
-                let popupScreen = this.getCharacterInfoPopupScreen();
-                popupScreen.innerHTML = '';
-            }
-            gameMenu.showCharacterInfo(this.character, 'player');
+            let popupScreen = this.getCharacterInfoPopupScreen();
+            popupScreen.innerHTML = '';
+            screamer.scream(K.SKILL_MENU_CLOSE, {
+                skills: this.beforeChangeLearnedSKills,
+                activeSkills: this.beforeChangeBattleSkills,
+            });
         });
         buttonsContainer.appendChild(cancelButton);
         return buttonsContainer;

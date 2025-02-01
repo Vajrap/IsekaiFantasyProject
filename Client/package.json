@@ -2,5 +2,8 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "eventemitter3": "^5.0.1"
+  },
+  "devDependencies": {
+    "electron": "^34.0.2"
   }
 }

@@ -13,6 +13,7 @@ import { webSocketManager } from "../../API/WebSocket/WebSocket.js";
 import { restAPI } from "../../../Client/API/Rest/RestAPI.js";
 import { screamer } from "../../../Client/Screamer/Screamer.js";
 import { success } from "../../../Common/Lib/Result.js";
+import { K } from "../../../Common/Constant.js";
 export class GameModel {
     constructor() {
         this.webSocketManager = webSocketManager;
@@ -36,7 +37,6 @@ export class GameModel {
                 path: 'getParty',
                 data: { user_id: model.user_id }
             });
-            console.log('Party data:', partydata);
             if (!partydata.success) {
                 throw new Error('Party data not found');
             }
@@ -46,7 +46,6 @@ export class GameModel {
     }
     initiate() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(`GameModel initiated`);
             const userID = this.getUserID();
             if (!userID.success) {
                 popup.show('อุ๊ปส์ เกิดปัญหาบางอย่าง', 'ไม่พบ User ID ในระบบ กรุณาลองเข้าสู่ระบบใหม่อีกครั้ง', [
@@ -73,20 +72,6 @@ export class GameModel {
             ;
         });
     }
-    initializeEventListeners() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const screamerStation = this.screamer.listenToMe();
-            screamerStation.on('PARTY_DATA', (payload) => __awaiter(this, void 0, void 0, function* () {
-                try {
-                    console.log('Updating party:', payload);
-                    yield this.updateParty(payload);
-                }
-                catch (error) {
-                    console.error('Error updating party:', error);
-                }
-            }));
-        });
-    }
     getUserID() {
         const userID = localStorage.getItem('isekaiFantasy_userID');
         if (!userID || userID === '' || userID === 'undefined' || userID === null) {
@@ -97,24 +82,6 @@ export class GameModel {
         }
         return success(userID);
     }
-    // Listeners
-    // private async updateParty(payload:PartyInterface) {
-    //     if (this.user_id) {
-    //         let userCharacter = payload.characters.find(character => character != 'none' && character.id === this.user_id);
-    //         if (userCharacter !== undefined && userCharacter !== "none") {
-    //             this.playerCharacter = userCharacter;
-    //         } else {
-    //             throw new Error('User Character not found');
-    //         }
-    //         console.log(`get companion characters:`, payload.characters);
-    //         this.companionCharacters = payload.characters.filter(
-    //             character => character !== 'none' && character.id !== this.user_id && character == null
-    //         );
-    //         screamer.scream('GAME_MODEL_UPDATE', null);
-    //     } else {
-    //         throw new Error('User ID not found');
-    //     }
-    // }
     updateParty(payload) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!payload || !Array.isArray(payload.characters)) {
@@ -130,13 +97,39 @@ export class GameModel {
                     console.error('User Character not found in party data:', payload.characters);
                     throw new Error('User Character not found');
                 }
-                console.log(`Companion characters:`, payload.characters);
                 this.companionCharacters = payload.characters.filter((character) => character !== 'none' && character.id !== this.user_id);
                 this.screamer.scream('GAME_MODEL_UPDATE', null);
             }
             else {
                 throw new Error('User ID not found');
             }
+        });
+    }
+    initializeEventListeners() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const screamerStation = this.screamer.listenToMe();
+            screamerStation.on('PARTY_DATA', (payload) => __awaiter(this, void 0, void 0, function* () {
+                try {
+                    yield this.updateParty(payload);
+                }
+                catch (error) {
+                    console.error('Error updating party:', error);
+                }
+            }));
+            screamerStation.on(K.SKILL_MENU_CLOSE, (payload) => __awaiter(this, void 0, void 0, function* () {
+                if (!this.playerCharacter || this.playerCharacter === null) {
+                    throw new Error('Player Character not found');
+                }
+                this.playerCharacter.skills = payload.skills;
+                this.playerCharacter.activeSkills = payload.activeSkills;
+            }));
+            screamerStation.on(K.SKILL_MENU_CLOSE, (payload) => __awaiter(this, void 0, void 0, function* () {
+                webSocketManager.send({
+                    type: K.SKILL_MENU_CLOSE,
+                    skills: payload.skills,
+                    battleCards: payload.battleCards
+                });
+            }));
         });
     }
 }
