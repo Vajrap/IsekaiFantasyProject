@@ -1273,10 +1273,10 @@ export class Character {
 			skillPosition = 0;
 		}
 
-		//If skill position exceed the activeSkills length, we need to return normal attack
 		if (skillPosition >= this.activeSkills.length) {
-			// let skill = this.status.strength > this.status.planar ? SkillRepository.skill_auto_physical : SkillRepository.skill_auto_magical;
-			let skill = this.status.strength > this.status.planar ? await skillRepository.getSkill("auto_physical") : await skillRepository.getSkill("auto_magical");
+			let skill = this.status.strength > this.status.planar ? 
+				await skillRepository.getSkill("auto_physical") : 
+				await skillRepository.getSkill("auto_magical");
 
 			return {
 				skillThatCanBePlay: skill,
