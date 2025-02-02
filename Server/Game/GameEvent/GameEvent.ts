@@ -131,8 +131,6 @@ type BattleEvent = {
     party: Party;
     enemyParty: Party;
     location: LocationName;
-    gameTime: GameTimeInterface;
-    env: GameEnvironment;
 }
 
 
@@ -299,7 +297,7 @@ const gameEvent_skillLearn = new GameEvent<LocationEventEnum.SkillLearn>(
 
 const gameEvent_battleEvent = new GameEvent<LocationEventEnum.BattleEvent>(
     LocationEventEnum.BattleEvent,
-    async ({ party, enemyParty, location, gameTime, env }) => { 
+    async ({ party, enemyParty, location }) => { 
         try {
             await screamer.scream(
                 'START_BATTLE_EVENT',
