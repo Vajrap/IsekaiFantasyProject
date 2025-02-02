@@ -71,43 +71,31 @@ enum EventType {
 type RandomEvent = {
     party: Party;
     actor: Character;
-    gameTime: GameTimeInterface;
-    env: GameEnvironment;
 }
 
 type RestEvent = {
     party: Party;
-    gameTime: GameTimeInterface;
-    env: GameEnvironment;
 }
 
 type CampRestEvent = {
     party: Party;
     useItem: boolean;
-    gameTime: GameTimeInterface;
-    env: GameEnvironment;
 }
 
 type TrainEvent = {
     actor: Character;
     trainTarget: CharacterStatusEnum;
     bonusTrainingExp?: number;
-    gameTime: GameTimeInterface;
-    env: GameEnvironment;
 }
 
 type SkillLearnEvent = {
     actor: Character;
     skillToLearn: Skill;
-    gameTime: GameTimeInterface;
-    env: GameEnvironment;
 }
 
 type InternalSkillLearnEvent = {
     actor: Character;
     internalToLearn: Internal;
-    gameTime: GameTimeInterface;
-    env: GameEnvironment;
 }
 
 type TravelEvent = {
@@ -115,16 +103,12 @@ type TravelEvent = {
     player: Character;
     startingLocation: GameLocation;
     destination: GameLocation;
-    gameTime: GameTimeInterface;
-    env: GameEnvironment;
 }
 
 type StrollEvent = {
     party: Party;
     player: Character;
     event: RandomEvent;
-    gameTime: GameTimeInterface;
-    env: GameEnvironment;
 }
 
 type BattleEvent = {
@@ -137,7 +121,7 @@ type BattleEvent = {
 //These events are not include the random events chance, these are the base events themselves.
 const gameEvent_rest = new GameEvent<LocationEventEnum.RestEvent>(
     LocationEventEnum.RestEvent, 
-    async ({ party, gameTime, env }) => {
+    async ({ party }) => {
         if (party === undefined || party === null) { throw new Error("Party is undefined"); }
 
         for (const character of party.characters) {
@@ -157,7 +141,7 @@ const gameEvent_rest = new GameEvent<LocationEventEnum.RestEvent>(
 
 const gameEvent_innRest = new GameEvent<LocationEventEnum.InnRest>(
     LocationEventEnum.InnRest,
-    async ({ party, gameTime }) => {
+    async ({ party }) => {
         if (party === undefined || party === null) { throw new Error("Party is undefined"); }
         
         for (const character of party.characters) {
@@ -177,7 +161,7 @@ const gameEvent_innRest = new GameEvent<LocationEventEnum.InnRest>(
 
 const gameEvent_houseRest = new GameEvent<LocationEventEnum.HouseRest>(
     LocationEventEnum.HouseRest,
-    async ({ party, gameTime, env }) => {
+    async ({ party }) => {
         if (party === undefined || party === null) { throw new Error("Party is undefined"); }
 
         for (const character of party.characters) {
@@ -197,7 +181,7 @@ const gameEvent_houseRest = new GameEvent<LocationEventEnum.HouseRest>(
 
 const gameEvent_campRest = new GameEvent<LocationEventEnum.CampRest>(
     LocationEventEnum.CampRest,
-    async ({ party, useItem, gameTime, env }) => {
+    async ({ party, useItem }) => {
         if (party === undefined || party === null) { throw new Error("Party is undefined"); }
         if (useItem === undefined || useItem === null) { throw new Error("Need to assign useItem value to campRest"); }
 
@@ -218,7 +202,7 @@ const gameEvent_campRest = new GameEvent<LocationEventEnum.CampRest>(
 
 const gameEvent_attributeTrain = new GameEvent<LocationEventEnum.AttributeTrain>(
     LocationEventEnum.AttributeTrain,
-    async ({ actor, trainTarget, bonusTrainingExp = 1, gameTime, env }) => {
+    async ({ actor, trainTarget, bonusTrainingExp = 1 }) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
         if (trainTarget === undefined || trainTarget === null) { throw new Error("AttributeName is undefined, needed to verify the attribute trained"); }
 
@@ -234,7 +218,7 @@ const gameEvent_attributeTrain = new GameEvent<LocationEventEnum.AttributeTrain>
 
 const gameEvent_artisanTrain = new GameEvent<LocationEventEnum.ArtisanTrain>(
     LocationEventEnum.ArtisanTrain,
-    async ({ actor, trainTarget, bonusTrainingExp = 1, gameTime, env }) => {
+    async ({ actor, trainTarget, bonusTrainingExp = 1 }) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
         if (trainTarget === undefined || trainTarget === null) { throw new Error("ExtraArgForString is undefined, needed to verify the artisan trained"); }
         
@@ -250,7 +234,7 @@ const gameEvent_artisanTrain = new GameEvent<LocationEventEnum.ArtisanTrain>(
 
 const gameEvent_proficiencyTrain = new GameEvent<LocationEventEnum.ProficiencyTrain>(
     LocationEventEnum.ProficiencyTrain,
-    async ({ actor, trainTarget, bonusTrainingExp = 1, gameTime, env}) => {
+    async ({ actor, trainTarget, bonusTrainingExp = 1}) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
         if (trainTarget === undefined || trainTarget === null) { throw new Error("ExtraArgForString is undefined, needed to verify the proficiency trained"); }
         
@@ -266,7 +250,7 @@ const gameEvent_proficiencyTrain = new GameEvent<LocationEventEnum.ProficiencyTr
 
 const gameEvent_skillTrain = new GameEvent<LocationEventEnum.SkillTrain>(
     LocationEventEnum.SkillTrain,
-    async ({ actor, trainTarget, bonusTrainingExp = 1, gameTime, env }) => {
+    async ({ actor, trainTarget, bonusTrainingExp = 1 }) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
         if (trainTarget === undefined || trainTarget === null) { throw new Error("ExtraArgForString is undefined, needed to verify the skill trained"); }
         
@@ -287,7 +271,7 @@ const gameEvent_skillTrain = new GameEvent<LocationEventEnum.SkillTrain>(
 
 const gameEvent_skillLearn = new GameEvent<LocationEventEnum.SkillLearn>(
     LocationEventEnum.SkillLearn,
-    async ({ actor, skillToLearn, gameTime, env }) => {
+    async ({ actor, skillToLearn }) => {
         if (actor === undefined || actor === null) { throw new Error("Actor is undefined"); }
         if (skillToLearn === undefined || skillToLearn === null) { throw new Error("Skill is undefined"); }
         
