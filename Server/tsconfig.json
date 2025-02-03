@@ -5,6 +5,6 @@
       "outDir": "../js",
       "strict": true,
       "esModuleInterop": true,
-      "lib": ["ES2015"]
+      "lib": ["ES2016", "DOM"]
     }
 }
