@@ -79,8 +79,6 @@ export interface CharacterInterface {
     isDead: boolean;
     status: CharacterStatusInterface;
     equipment: CharacterEquipmentInterface;
-    internals: CharacterInternalInterface[];
-    activeInternal: CharacterInternalInterface;
     traits: CharacterTraitInterface[];
     skills: CharacterSkillInterface[];
     activeSkills: CharacterSkillInterface[];

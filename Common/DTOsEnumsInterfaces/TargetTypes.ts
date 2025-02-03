@@ -149,4 +149,5 @@ export class TargetType {
     desperation = 'desperation',
     mage_reflex = 'mage_reflex',
     demonic_empowerment = 'demonic_empowerment',
+    frost_shield = 'frost_shield',
   }

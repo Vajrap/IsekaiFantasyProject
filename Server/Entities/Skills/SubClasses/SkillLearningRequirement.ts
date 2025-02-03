@@ -1,5 +1,3 @@
-import { CharacterStatus } from "../../../Entities/Character/Subclasses/CharacterStatus";
-
 export class SkillLearningRequirement {
     preRequireSkillID?: string[];
     preRequireElements?: {element: string, value: number}[];

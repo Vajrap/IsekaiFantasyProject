@@ -11,7 +11,6 @@ import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Char
 import { SkillActiveEffect, SkillActionObject, SkillActionSubType, SkillActionType } from "../SubClasses/SkillActiveEffect";
 import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
-import { SkillInternalType } from "../SubClasses/SkillInternalType";
 
 export function createAutoAttackSkill(
     skillID: string,
@@ -97,7 +96,6 @@ export function createAutoAttackSkill(
         elementProduce,
         Tier.common,
         isSpell ? isSpell : false,
-        SkillInternalType.None,
         true,
         true
     );

@@ -44,8 +44,6 @@ export async function createCharacterTableIfNotExists() {
         currentSP: 'INTEGER',
         status: 'TEXT',
         equipments: 'TEXT',
-        internals: 'TEXT',
-        activeInternal: 'TEXT',
         traits: 'TEXT',
         skills: 'TEXT',
         activeSkills: 'TEXT',

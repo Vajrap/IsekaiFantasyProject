@@ -129,18 +129,6 @@ async function createAndSaveCharacter(
             ring_R: character.equipments.ring_R? character.equipments.ring_R.id : null,
             ring_L: character.equipments.ring_L? character.equipments.ring_L.id : null,
         }, // Assuming this matches CharacterEquipmentDB
-        internals: character.internals.map((internal) => ({
-            internal: internal.internal.id,
-            level: internal.level,
-            exp: internal.exp,
-        })),
-        activeInternal: character.activeInternal
-            ? {
-                  internal: character.activeInternal.internal.id,
-                  level: character.activeInternal.level,
-                  exp: character.activeInternal.exp,
-              }
-            : null,
         traits: character.traits.map((trait) => trait.id),
         skills: character.skills.map((skill) => ({
             skill: skill.skill.id,

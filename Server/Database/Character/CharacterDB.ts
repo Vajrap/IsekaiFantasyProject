@@ -39,8 +39,6 @@ export type CharacterDB = {
 	currentSP: number;
 	status: CharacterStatusDB; // Nested type placeholder
 	equipments: CharacterEquipmentDB; // Serialized or nested
-	internals: { internal: string; level: number; exp: number }[]; //user id instead of the whole internal object
-	activeInternal: { internal: string; level: number; exp: number } | null;
 	traits: string[]; // List of trait ids
 	skills: { skill: string; level: number; exp: number }[]; //use id instead of the whole skill object
 	activeSkills: { skill: string; level: number; exp: number }[];

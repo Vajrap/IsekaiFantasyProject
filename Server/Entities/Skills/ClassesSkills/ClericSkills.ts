@@ -1,18 +1,3 @@
-import { Skill, SkillGrowth, SkillGrowthManager } from "../Skill"
-import { SkillLearningRequirement } from "../SubClasses/SkillLearningRequirement"
-import { SkillEquipmentRequirement } from "../SubClasses/SkillEquipmentRequirement"
-import { PreferredPositionEnum, SkillActionObject, SkillActionSubType, SkillActionType, SkillActiveEffect, SkillApplyEffect, SpecialEffectResult } from "../SubClasses/SkillActiveEffect"
-import { SkillConsume, SkillProduce } from "../SubClasses/SkillConsume"
-import { ElementConsume, ElementProduce } from "../SubClasses/SkillConsume"
-import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums"
-import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier"
-import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes"
-import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes"
-import { TargetConditionFilters, TargetPartyType, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes"
-import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes"
-import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum"
-import { WeaponSpecificType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums"
-
 //MARK: Cleric Skills
 /*
 1. Smite

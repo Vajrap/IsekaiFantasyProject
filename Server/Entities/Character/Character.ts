@@ -129,10 +129,6 @@ export class Character {
 	currentSP: number = 1;
 	status: CharacterStatus = new CharacterStatus();
 	equipments: CharacterEquipments = new CharacterEquipments();
-	internals: { internal: Internal; level: number; exp: number }[] = [];
-	activeInternal: {internal: Internal; level: number; exp: number } | null = null;
-	activeInternalBonus: CharacterActiveInternalBonus =
-		new CharacterActiveInternalBonus();
 	traits: Trait[] = [];
 	skills: { skill: Skill; level: number; exp: number }[] = [];
 	activeSkills: { skill: Skill; level: number; exp: number }[] = [];
@@ -189,9 +185,6 @@ export class Character {
 		this.currentSP = 1;
 		this.status = new CharacterStatus();
 		this.equipments = new CharacterEquipments();
-		this.internals = [];
-		this.activeInternal = null;
-		this.activeInternalBonus = new CharacterActiveInternalBonus();
 		this.traits = [];
 		this.skills = [];
 		this.activeSkills = [];
@@ -330,10 +323,8 @@ export class Character {
 			(
 				this.status.elements[element as keyof CharacterStatus["elements"]].base +
 				this.status.elements[element as keyof CharacterStatus["elements"]].bonus +
-				this.status.elements[element as keyof CharacterStatus["elements"]].battle +
-				this.activeInternalBonus.elements[element]
-			) /
-			2
+				this.status.elements[element as keyof CharacterStatus["elements"]].battle
+			) / 2
 		);
 	}
 
@@ -796,168 +787,6 @@ export class Character {
 		});
 		this.setBodyValue();
 		return this;
-	}
-
-	//MARK: INTERNAL
-	//We start with methods that can be called from others
-	// learnInternal(internalID: string): InternalResponseType {
-	// 	const internal =
-	// 		InternalRepository[internalID as keyof typeof InternalRepository];
-	// 	if (!internal) {
-	// 		throw new Error(`Internal with id:${internalID} not exist.`);
-	// 	}
-	// 	for (const learnedInternal of this.internals) {
-	// 		if (learnedInternal.internal === internal) {
-	// 			return InternalResponseType.SuccessAlreadyLearned;
-	// 		}
-	// 	}
-	// 	if (!this.validateInternalLearning(internal)) {
-	// 		return InternalResponseType.SuccessNotEligibleToLearn;
-	// 	}
-	// 	const newInternal = { internal: internal, level: 1, exp: 0 };
-	// 	this.internals.push(newInternal);
-	// 	this.applyInternalPassiveBonuses(internal, 1);
-	// 	return InternalResponseType.SuccessLearning;
-	// }
-
-	validateInternalLearning(internal: Internal): boolean {
-		if (internal.requirement) {
-			if (
-				internal.requirement.preRequireCharacterLevel &&
-				this.level < internal.requirement.preRequireCharacterLevel
-			) {
-				return false;
-			}
-			if (internal.requirement.preRequireElements) {
-				for (const element of internal.requirement.preRequireElements) {
-					if (this.element(element.element) < element.value) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
-
-	// trainInternal(internalID: string, expGained: number): InternalResponseType {
-	// 	const internal = this.internals.find((i) => i.internal.id === internalID);
-	// 	if (!internal) {
-	// 		throw new Error(
-	// 			`Character ${this.id} didn't learned internal with id:${internalID}`
-	// 		);
-	// 	}
-	// 	const internalObj =
-	// 		InternalRepository[internalID as keyof typeof InternalRepository];
-	// 	const expNeeded = internalObj.neededExp(internal.level);
-	// 	internal.exp += expGained;
-	// 	if (internal.exp >= expNeeded) {
-	// 		this.levelUpInternal(internal);
-	// 		return InternalResponseType.SuccessTrainingWithLevelUp;
-	// 	}
-	// 	return InternalResponseType.SuccessTrainingWithoutLevelUp;
-	// }
-
-	levelUpInternal(internal: {
-		internal: Internal;
-		level: number;
-		exp: number;
-	}) {
-		const isActiveInternal = this.activeInternal?.internal === internal.internal;
-		if (isActiveInternal) {
-			this.removeActiveInternalBonus(internal.internal, internal.level);
-		}
-		internal.level++;
-		internal.exp -= internal.internal.neededExp(internal.level - 1);
-		this.applyInternalPassiveBonuses(internal.internal, internal.level);
-		if (isActiveInternal) {
-			this.applyInternalActiveBonus(internal.internal, internal.level);
-		}
-	}
-
-	applyInternalPassiveBonuses(internal: Internal, level: number) {
-		const bonuses = internal.passiveBonus[level - 1];
-		if (level > 1)
-			for (const bonus in bonuses.attributes) {
-				this.status.attributes[bonus as keyof AttributeMap].bonus +=
-					bonuses.attributes[bonus as keyof AttributeMap] ?? 0;
-			}
-		for (const bonus in bonuses.proficiencies) {
-			this.status.proficiencies[bonus as keyof ProficiencyMap].bonus +=
-				bonuses.proficiencies[bonus as keyof ProficiencyMap] ?? 0;
-		}
-		for (const bonus in bonuses.battlers) {
-			this.status.battlers[bonus as keyof BattlerMap].bonus +=
-				bonuses.battlers[bonus as keyof BattlerMap] ?? 0;
-		}
-		for (const bonus in bonuses.elements) {
-			this.status.elements[bonus as keyof CoreElementMap].bonus +=
-				bonuses.elements[bonus as keyof CoreElementMap] ?? 0;
-		}
-	}
-
-	chooseActiveInternal(internalID: string) {
-		const internal =
-			InternalRepository[internalID as keyof typeof InternalRepository];
-		if (!internal) {
-			throw new Error(`Internal with id ${internalID} is not found.`);
-		}
-		if (this.activeInternal) {
-			this.removeActiveInternalBonus(
-				this.activeInternal.internal,
-				this.internals.find((i) => i.internal === this.activeInternal?.internal)?.level ||
-					1
-			);
-		}
-
-		let internalLearned = false;
-		for (const learnedInternal of this.internals) {
-			if (learnedInternal.internal === internal) {
-				internalLearned = true;
-				this.applyInternalActiveBonus(
-					learnedInternal.internal,
-					learnedInternal.level
-				);
-				this.activeInternal = learnedInternal;
-			}
-		}
-
-		if (!internalLearned) {
-			throw new Error("Internal not learned, should not be able to call this");
-		}
-	}
-
-	removeActiveInternal() {
-		if (!this.activeInternal) {
-			throw new Error("No active internal, shouldn't be able to call this");
-		}
-		this.removeActiveInternalBonus(
-			this.activeInternal.internal,
-			this.internals.find((i) => i.internal === this.activeInternal?.internal)?.level || 1
-		);
-		this.activeInternal = null;
-	}
-
-	applyInternalActiveBonus(internal: Internal, level: number) {
-		const activeBonus = internal.getInternalActiveTraits(level);
-		for (const traitString of activeBonus) {
-			const trait =
-				TraitRepository[traitString as keyof typeof TraitRepository];
-			this.gainTrait(trait);
-		}
-	}
-
-	removeActiveInternalBonus(internal: Internal, level: number) {
-		if (this.activeInternal?.internal != internal) {
-			throw new Error(
-				`Intermal with id ${internal.id} is not an active internal of ${this.id}`
-			);
-		}
-		const activeBonus = internal.getInternalActiveTraits(level);
-		for (const traitString of activeBonus) {
-			const trait =
-				TraitRepository[traitString as keyof typeof TraitRepository];
-			this.removeTrait(trait);
-		}
 	}
 
 	//MARK: TRAIT
@@ -2916,8 +2745,6 @@ export class Character {
 			currentSP: this.currentSP,
 			status: this.status,
 			equipments: this.equipments,
-			internals: this.internals,
-			activeInternal: this.activeInternal,
 			traits: this.traits,
 			skills: this.skills,
 			activeSkills: this.activeSkills,
@@ -2949,20 +2776,6 @@ export class Character {
 			isDead: this.isDead,
 			status: this.status.intoInterface(),
 			equipment: this.equipments.intoInterface(),
-			internals: this.internals.map(internal => ({
-				id: internal.internal.id,
-				name: internal.internal.name,
-				level: internal.level,
-				description: internal.internal.description,
-				tier: internal.internal.tier,
-			})),
-			activeInternal: {
-				id: this.activeInternal?.internal.id || "none",
-				name: this.activeInternal?.internal.name || "none",
-				level: this.activeInternal?.level || 0,
-				description: this.activeInternal?.internal.description || "none",
-				tier: this.activeInternal?.internal.tier || "none",
-			},
 			traits: this.traits.map(trait =>({
 				id: trait.id,
 				name: trait.name,

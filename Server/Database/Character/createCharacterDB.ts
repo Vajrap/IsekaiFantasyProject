@@ -128,13 +128,13 @@ export function createCharacterDB(overrides: Partial<CharacterDB> = {}): Charact
             mainHand: null,
             offHand: null,
             armor: null,
-            cloth: null,
-            headWear: null,
+            headwear: null,
+            gloves: null,
+            boots: null,
             necklace: null,
-            ring: null,
+            ring_L: null,
+            ring_R: null,
         },
-        internals: [],
-        activeInternal: null,
         traits: [],
         skills: [],
         activeSkills: [],
@@ -149,6 +149,7 @@ export function createCharacterDB(overrides: Partial<CharacterDB> = {}): Charact
             finishedStartingEvent: false,
         },
         relation: {},
+        isPlayerCharacter: false,
     };
 
     // Merge the overrides with the default values

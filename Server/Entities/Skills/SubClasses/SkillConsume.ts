@@ -6,11 +6,14 @@ export class SkillConsume {
     sp: number[];
     elements: ElementConsume[]
     constructor({
-        hp, mp, sp, elements
+        hp = Array(10).fill(0), 
+        mp = Array(10).fill(0), 
+        sp = Array(10).fill(0), 
+        elements
     }: {
-        hp: number[],
-        mp: number[],
-        sp: number[],
+        hp?: number[],
+        mp?: number[],
+        sp?: number[],
         elements: ElementConsume[]
     }) {
         this.hp = hp
