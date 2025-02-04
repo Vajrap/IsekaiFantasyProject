@@ -67,6 +67,7 @@ export class BuffsAndDebuffs {
     desperation: number = 0;
     mage_reflex: number = 0;
     demonic_empowerment: number = 0;
+    frost_shield: number = 0;
 
     constructor(){
         //debuffs
@@ -135,6 +136,7 @@ export class BuffsAndDebuffs {
         this.cleanse = 0;
         this.mage_reflex = 0;
         this.demonic_empowerment = 0;
+        this.frost_shield = 0;
     }
 
     // actorBuffs: Record<BuffsAndDebuffsEnum, number>;
@@ -204,6 +206,7 @@ export class BuffsAndDebuffs {
             [BuffsAndDebuffsEnum.desperation]: this.desperation,
             [BuffsAndDebuffsEnum.mage_reflex]: this.mage_reflex,
             [BuffsAndDebuffsEnum.demonic_empowerment]: this.demonic_empowerment,
+            [BuffsAndDebuffsEnum.frost_shield]: this.frost_shield
         };
     }
 

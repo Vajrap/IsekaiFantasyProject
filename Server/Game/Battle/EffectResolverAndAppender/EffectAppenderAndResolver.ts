@@ -627,6 +627,10 @@ export class EffectAppender {
 			}
 		});
 	}
+
+	static frost_shield(appender: EffectAppenderSendObject): EffectReturnObject {
+		return EffectAppender.applyEffect(appender, "frost_shield");
+	}
 }
 
 export class EffectResolver {
@@ -1324,6 +1328,10 @@ export class EffectResolver {
 			}
 			return returnObject;
 		})
+	}
+
+	static frost_shield(resolver: EffectResolverSendObject): EffectReturnObject {
+		return EffectResolver.resolveEffect(resolver, "frost_shield")
 	}
 }
 

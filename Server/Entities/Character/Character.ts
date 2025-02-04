@@ -1,6 +1,4 @@
 import { CharacterStatus } from "./Subclasses/CharacterStatus";
-import { CharacterActiveInternalBonus } from "./Subclasses/CharacterActiveInternalBonus";
-import { Internal, InternalRepository } from "../Internal/Internal";
 import { CharacterResources } from "./Subclasses/CharacterResources";
 import { CharacterEquipments } from "./Subclasses/CharacterEquipments";
 import { StatMod } from "../../Utility/StatMod";
@@ -38,10 +36,7 @@ import {
 } from "./Subclasses/CharacterDataEnum";
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { StoryFlags } from "../../Game/StoryEvent/StoryFlags";
-import { getSkillFromDB, Skill } from "../Skills/Skill";
-import { AccessoryType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
-import { EquipmentType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
-import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
+import { Skill } from "../Skills/Skill";
 import { db } from "../../Database";
 import {
 	SkillActionObject,
@@ -51,45 +46,74 @@ import {
 	SpecialEffectResult,
 } from "../Skills/SubClasses/SkillActiveEffect";
 import { BuffsAndDebuffsEnum } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
-import { CharacterBattleContext } from "./CharacterBattleContext";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { SkillConsume, SkillProduce } from "../Skills/SubClasses/SkillConsume";
 import { calculateBaseStat } from "./CalculateHPMPSP";
-import { CharacterClass, class_cleric, class_fighter, class_guardian, class_hexbinder, class_mage, class_occultist, class_scout, class_skirmisher, class_soldier, class_spellblade, class_templar, class_warden } from "../../API/Routes/CreateCharacter/ClassEnum";
-import { RaceEnum, ClassEnum, BackgroundEnum } from "../../../Common/RequestResponse/characterCreation";
-import { 
-    raceDwarf, 
-    raceDwarfling, 
-    raceElven, 
-    raceElvon, 
-    raceHalfElf, 
-    raceHalfOrc, 
-    raceHalfTriton,
-    raceHalfling, 
-    raceHuman, 
-    raceOrc, 
-    raceTriton,
-    backgroundAbandonedFarmhand,
-    backgroundApprenticeScribe,
-    backgroundFallenNobility,
-    backgroundFailedCraftsman,
-    backgroundInnkeepersChild,
-    backgroundDesertedMilitary,
-    backgroundMageApprentice,
-    backgroundMercsChild,
-    backgroundStreetUrchin,
-    backgroundTavernBrawler,
-    backgroundTraineeInCaravan,
-    backgroundWanderingMusician 
-} from '../../../Common/Entity/raceClassBackground';
+import {
+	CharacterClass,
+	class_cleric,
+	class_fighter,
+	class_guardian,
+	class_hexbinder,
+	class_mage,
+	class_occultist,
+	class_scout,
+	class_skirmisher,
+	class_soldier,
+	class_spellblade,
+	class_templar,
+	class_warden,
+} from "../../API/Routes/CreateCharacter/ClassEnum";
+import {
+	RaceEnum,
+	ClassEnum,
+	BackgroundEnum,
+} from "../../../Common/RequestResponse/characterCreation";
+import {
+	raceDwarf,
+	raceDwarfling,
+	raceElven,
+	raceElvon,
+	raceHalfElf,
+	raceHalfOrc,
+	raceHalfTriton,
+	raceHalfling,
+	raceHuman,
+	raceOrc,
+	raceTriton,
+	backgroundAbandonedFarmhand,
+	backgroundApprenticeScribe,
+	backgroundFallenNobility,
+	backgroundFailedCraftsman,
+	backgroundInnkeepersChild,
+	backgroundDesertedMilitary,
+	backgroundMageApprentice,
+	backgroundMercsChild,
+	backgroundStreetUrchin,
+	backgroundTavernBrawler,
+	backgroundTraineeInCaravan,
+	backgroundWanderingMusician,
+} from "../../../Common/Entity/raceClassBackground";
 import { CharacterInterface } from "../../../Common/RequestResponse/characterWS";
 import { Weapon } from "../Items/Equipments/Weapon/Weapon";
 import { Armor } from "../Items/Equipments/Armors/Armor";
 import { getItem } from "../Items/Repository";
 import { Equipment } from "../Items/Equipments/Equipment";
 import { skillRepository } from "../Skills/SkillRepository";
-import { SkillConsumeInterface, SkillProduceInterface } from "../../../Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
+import {
+	SkillConsumeInterface,
+	SkillProduceInterface,
+} from "../../../Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
 import { SkillResponseType } from "../../API/ResponseTypes/Skill";
+import { getAutoSkill } from "../../Game/Battle/Calculators/getAutoSkill";
+import { validateSkillEquipment } from "../../Game/Battle/Calculators/validateSkillEquipment";
+import { validateSkillConsumable } from "../../Game/Battle/Calculators/validateSkillConsumable";
+import { isSkillPlayable } from "../../Game/Battle/Calculators/isSkillPlayable";
+import { calculateAttackModifiers } from "../../Game/Battle/Calculators/calculateAttckModifiers";
+import { CharacterBattleContext } from "./CharacterBattleContext";
+import { EquipmentType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
+import { AccessoryType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
+import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 
 export class Character {
 	id: string;
@@ -98,7 +122,7 @@ export class Character {
 	type: CharacterType;
 	gender: "MALE" | "FEMALE" | "NONE";
 	portrait: any = null;
-	background: string = '';
+	background: string = "";
 	race: RaceEnum;
 	alignment: CharacterAlignment = new CharacterAlignment({
 		good: 0,
@@ -146,22 +170,25 @@ export class Character {
 	// Relationship to other characters, key = character ID, value = relation value from -100 to 100, and status is the relationship status enum
 	relation: { [key: string]: { value: number; status: number } } = {};
 	isPlayerCharacter: boolean = false;
-	constructor(
-		data: {
-			id: string,
-			name: string,
-			gender: "MALE" | "FEMALE" | "NONE",
-			portrait: string,
-		}
-	) {
+	constructor(data: {
+		id: string;
+		name: string;
+		gender: "MALE" | "FEMALE" | "NONE";
+		portrait: string;
+	}) {
 		this.id = data.id;
 		this.name = data.name;
 		this.type = CharacterType.none;
 		this.gender = data.gender;
 		this.race = RaceEnum.UNDEFINED;
 		this.portrait = data.portrait || null;
-		this.background = '';
-		this.alignment = new CharacterAlignment({ good: 0, evil: 0, law: 0, chaos: 0 });
+		this.background = "";
+		this.alignment = new CharacterAlignment({
+			good: 0,
+			evil: 0,
+			law: 0,
+			chaos: 0,
+		});
 		this.mood = 100;
 		this.energy = 100;
 		this.fame = 0;
@@ -210,15 +237,27 @@ export class Character {
 	}
 
 	setBaseHP(): Character {
-		this.baseHP = calculateBaseStat(this.baseHP, this.level, this.attribute("vitality"))
+		this.baseHP = calculateBaseStat(
+			this.baseHP,
+			this.level,
+			this.attribute("vitality")
+		);
 		return this;
 	}
 	setBaseMP(): Character {
-		this.baseMP = calculateBaseStat(this.baseMP, this.level, this.attribute("planar"));
+		this.baseMP = calculateBaseStat(
+			this.baseMP,
+			this.level,
+			this.attribute("planar")
+		);
 		return this;
 	}
 	setBaseSP(): Character {
-		this.baseSP = calculateBaseStat(this.baseSP, this.level, this.attribute("endurance"));
+		this.baseSP = calculateBaseStat(
+			this.baseSP,
+			this.level,
+			this.attribute("endurance")
+		);
 		return this;
 	}
 
@@ -259,7 +298,7 @@ export class Character {
 
 	battler(battler: keyof CharacterStatus["battlers"]): number {
 		return (
-			this.status.battlers[battler].base + 
+			this.status.battlers[battler].base +
 			this.status.battlers[battler].bonus +
 			this.status.battlers[battler].battle
 		);
@@ -320,18 +359,19 @@ export class Character {
 			);
 		}
 		return (
-			(
-				this.status.elements[element as keyof CharacterStatus["elements"]].base +
-				this.status.elements[element as keyof CharacterStatus["elements"]].bonus +
-				this.status.elements[element as keyof CharacterStatus["elements"]].battle
-			) / 2
+			(this.status.elements[element as keyof CharacterStatus["elements"]].base +
+				this.status.elements[element as keyof CharacterStatus["elements"]]
+					.bonus +
+				this.status.elements[element as keyof CharacterStatus["elements"]]
+					.battle) /
+			2
 		);
 	}
 
 	artisan(artisan: keyof CharacterStatus["artisans"]): number {
 		return (
-			this.status.artisans[artisan].base + 
-			this.status.artisans[artisan].bonus + 
+			this.status.artisans[artisan].base +
+			this.status.artisans[artisan].bonus +
 			this.status.artisans[artisan].battle
 		);
 	}
@@ -624,143 +664,29 @@ export class Character {
 		(this.alignment[alignment as keyof CharacterAlignment] as number) += value;
 	}
 
-	private getArmorPentaltyForSpellCastingDamage(): number {
-		let spellDamageMultiPlier = this.equipments.armor?.spellCastingDamageMultiplier || 1;
-
-		let armotType = this.equipments.armor?.armorType;
-
-		if (armotType != undefined) {
-			switch (armotType) {
-				case "light":
-					if (this.traits.includes(
-						TraitRepository.trait_hexbinder_01 || 
-						TraitRepository.trait_hexbinder_02 || 
-						TraitRepository.trait_hexbinder_03)) 
-					{
-						spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.2, 1);
-					}
-					if (this.traits.includes(
-						TraitRepository.trait_spellblade_01 || 
-						TraitRepository.trait_spellblade_02 || 
-						TraitRepository.trait_spellblade_03)) 
-					{
-						spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.4, 1);
-					}
-					return spellDamageMultiPlier;
-		
-				case "medium":
-					if (this.traits.includes(
-						TraitRepository.trait_hexbinder_01 || 
-						TraitRepository.trait_hexbinder_02 || 
-						TraitRepository.trait_hexbinder_03)) 
-					{
-						spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.3, 1);
-					}
-					if (this.traits.includes(
-						TraitRepository.trait_spellblade_01 || 
-						TraitRepository.trait_spellblade_02 || 
-						TraitRepository.trait_spellblade_03)) 
-					{
-						spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.3, 1);
-					}
-					return spellDamageMultiPlier;
-		
-				case "heavy":
-					if (this.traits.includes(
-						TraitRepository.trait_hexbinder_01 || 
-						TraitRepository.trait_hexbinder_02 || 
-						TraitRepository.trait_hexbinder_03)) 
-					{
-						spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.4, 1);
-					}
-					if (this.traits.includes(
-						TraitRepository.trait_spellblade_01 || 
-						TraitRepository.trait_spellblade_02 || 
-						TraitRepository.trait_spellblade_03)) 
-					{
-						spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.2, 1);
-					}
-					return spellDamageMultiPlier;
-				default:
-					return spellDamageMultiPlier;
-			}
-		}
-		return spellDamageMultiPlier;
-	}
-
-	getArmorPenaltyForSpellCastingHit(): number {
-		let armorPenalty = this.equipments.armor?.spellCastingPenaltyHit || 0; // Default penalty from the armor
-		let armorType = this.equipments.armor?.armorType; // 'light', 'medium', or 'heavy'
-	
-		if (armorType != undefined) {
-			switch (armorType) {
-				case "light":
-					if (this.traits.includes(TraitRepository.trait_hexbinder_01 || TraitRepository.trait_hexbinder_02 || TraitRepository.trait_hexbinder_03)) {
-						armorPenalty = Math.max(armorPenalty + 1, 0); // Warlock improves light armor hit up to 0
-					}
-					if (this.traits.includes(TraitRepository.trait_spellblade_01 || TraitRepository.trait_spellblade_02 || TraitRepository.trait_spellblade_03)) {
-						armorPenalty = Math.max(armorPenalty + 3, 0); // Swordmage boosts light armor hit further up to 0
-					}
-					break;
-	
-				case "medium":
-					if (this.traits.includes(TraitRepository.trait_hexbinder_01 || TraitRepository.trait_hexbinder_02 || TraitRepository.trait_hexbinder_03)) {
-						armorPenalty = Math.max(armorPenalty + 2, 0); // Warlock mitigates medium armor penalty to max 0
-					}
-					if (this.traits.includes(TraitRepository.trait_spellblade_01 || TraitRepository.trait_spellblade_02 || TraitRepository.trait_spellblade_03)) {
-						armorPenalty = Math.max(armorPenalty + 2, 0); // Swordmage improves medium armor hit to max 0
-					}
-					break;
-	
-				case "heavy":
-					if (this.traits.includes(TraitRepository.trait_hexbinder_01 || TraitRepository.trait_hexbinder_02 || TraitRepository.trait_hexbinder_03)) {
-						armorPenalty = Math.max(armorPenalty + 3, 0); // Warlock mitigates heavy armor penalty to max 0
-					}
-					if (this.traits.includes(TraitRepository.trait_spellblade_01 || TraitRepository.trait_spellblade_02 || TraitRepository.trait_spellblade_03)) {
-						armorPenalty = Math.max(armorPenalty + 1, 0); // Swordmage slightly mitigates heavy armor penalty
-					}
-					break;
-	
-				default:
-					break;
-			}
-		}
-		return armorPenalty;
-	}
-
-	private getCriticalModifiedDamage(damage: number): number {
-		// This will be used for critical hit damage calculation, normally it will be 1.5 times the damage
-		// But some triats or skills can modify this value, right now there's none
-		let baseModifier = 1.5;
-
-		// TODO: Placeholders for traits or skills that can modify this value
-
-		return damage * baseModifier;
-	}
-
 	gainExp(exp: number): void {
 		const levelUpExp = this.getLevelUpExp();
 		if (this.level >= 20) {
 			this.exp = levelUpExp; // Ensure exp is maxed at level 20
 			return;
 		}
-	
+
 		this.exp += exp;
-	
+
 		if (this.exp >= levelUpExp && this.level < 20) {
 			this.levelUp();
 		}
-	
+
 		if (this.level === 20) {
 			this.exp = levelUpExp; // Ensure exp is maxed at level 20
 		}
 	}
-	
+
 	// Method to get the experience needed for the next level
 	getLevelUpExp(): number {
 		const baseExp = 100; // Starting XP for level 1 to 2
 		const growthRate = 1.7; // Growth rate for exponential scaling
-	
+
 		return Math.round(baseExp * Math.pow(growthRate, this.level - 1));
 	}
 
@@ -781,9 +707,8 @@ export class Character {
 		});
 		let artisanRolls = Dice.roll(DiceEnum.EightD20).rolls;
 		Object.keys(this.status.artisans).forEach((artisan, index) => {
-			this.status.artisans[
-				artisan as keyof CharacterStatus["artisans"]
-			].base += artisanRolls[index] === 20 ? 1 : 0;
+			this.status.artisans[artisan as keyof CharacterStatus["artisans"]].base +=
+				artisanRolls[index] === 20 ? 1 : 0;
 		});
 		this.setBodyValue();
 		return this;
@@ -1050,29 +975,7 @@ export class Character {
 		The battle start with Battle updating abgauge for all characters in turn and get one active character
 		After that, it should be the character responsibility to calculate his turn, we normally use the battle to do that but it's give us too much dependency cycle
 	*/
-	intoBattleContext(): CharacterBattleContext {
-		return {
-			actorID: this.id,
-			actorPosition: this.position,
-			actorEquipment: {
-				mainHand: this.equipments.mainHand?.weaponSpecificType ?? null,
-				offHand: this.equipments.offHand?.weaponSpecificType ?? null,
-				armor: this.equipments.armor?.armorType ?? null,
-				Headwear: this.equipments.headwear ? EquipmentType.Headwear : null,
-				gloves: this.equipments.gloves ? EquipmentType.gloves : null,
-				boots: this.equipments.boots ? EquipmentType.boots : null,
-				necklace: this.equipments.necklace ? AccessoryType.necklace : null,
-				ring_R: this.equipments.ring_R ? AccessoryType.ring : null,
-				ring_L: this.equipments.ring_L ? AccessoryType.ring : null,
-			},
-			actorStats: this.status.getStats(),
-			actorBuffs: this.buffsAndDebuffs.getBuffsAndDebuffs(),
-			actorTraits: this.getTraits(),
-		};
-	}
-	
-
-	addResourcesFromElementsModifier(): Character {
+	addResourcesFromElementsModifier() {
 		const coreElement: (keyof typeof this.status.elements)[] = [
 			"air",
 			"water",
@@ -1090,7 +993,6 @@ export class Character {
 					resourceBonusFromElement;
 			}
 		}
-		return this;
 	}
 
 	async getSkillThatCanBePlay(skillPosition?: number): Promise<{
@@ -1103,57 +1005,18 @@ export class Character {
 		}
 
 		if (skillPosition >= this.activeSkills.length) {
-			let skill = this.status.strength > this.status.planar ? 
-				await skillRepository.getSkill("auto_physical") : 
-				await skillRepository.getSkill("auto_magical");
-
-			return {
-				skillThatCanBePlay: skill,
-				skillLevel: 1,
-				skillPosition: -1,
-			}
-		};
-
-		const skillInSuspect = this.activeSkills[skillPosition].skill;
-		if (
-			!skillInSuspect.validateEquipment({
-				weapon: [
-					this.equipments.mainHand?.weaponSpecificType || "none",
-					this.equipments.offHand?.weaponSpecificType || "none",
-				],
-			})
-		) {
-			console.log(
-				`${this.name} is not eligible to play skill ${skillInSuspect.id}/ Weapon not match`
-			);
-			return this.moveToNextSkill(skillPosition);
+			return await getAutoSkill(this.status.strength(), this.status.planar());
 		}
 
-		let consume = new SkillConsume(skillInSuspect.consume);
+		const { skill, level } = this.activeSkills[skillPosition];
 
-		if (
-			!consume.validateConsume(
-				this.activeSkills[skillPosition].level,
-				{
-					none: this.resources.none,
-					order: this.resources.order,
-					chaos: this.resources.chaos,
-					geo: this.resources.geo,
-					water: this.resources.water,
-					air: this.resources.air,
-					fire: this.resources.fire,
-				},
-				this.currentHP,
-				this.currentMP,
-				this.currentSP
-			)
-		) {
+		if (!isSkillPlayable(this.resources, this.currentHP, this.currentMP, this.currentSP, this.equipments, skill, level)) {
 			return this.moveToNextSkill(skillPosition);
 		}
 
 		return {
-			skillThatCanBePlay: skillInSuspect,
-			skillLevel: this.activeSkills[skillPosition].level,
+			skillThatCanBePlay: skill,
+			skillLevel: level,
 			skillPosition: skillPosition,
 		};
 	}
@@ -1165,369 +1028,6 @@ export class Character {
 	}> {
 		skillPosition++;
 		return await this.getSkillThatCanBePlay(skillPosition);
-	}
-
-	consumeActionObject(
-		skillActionObject: SkillActionObject,
-		level: number,
-		target: Character,
-		isSpell: boolean,
-		isWeaponAttack: boolean,
-		isAuto: boolean
-	): {
-		actor: Character;
-		target: Character;
-		damageObjectResult: {
-			isHit: boolean;
-			isCrit: boolean;
-			baseDamage: number;
-			damageType: DamageTypes[];
-		};
-		effectRecorded: EffectReturnObject[];
-		skillActionSubType: SkillActionSubType;
-	} {
-		let damageType = skillActionObject.damageType.length === 1 ? skillActionObject.damageType[0] : skillActionObject.damageType[level - 1];
-
-		if (isWeaponAttack === true) {
-			if (isSpell === true) {
-				damageType = this.equipments.mainHand?.attackStats?.magicalType || DamageTypes.arcane;
-			} else {
-				damageType = this.equipments.mainHand?.attackStats?.physicalType || DamageTypes.blunt;
-			}
-		}
-
-		if (isAuto === true) {
-			if (isSpell === true) {
-				damageType = this.equipments.mainHand?.attackStats?.magicalType || DamageTypes.arcane;
-			} else {
-				damageType = this.equipments.mainHand?.attackStats?.physicalType || DamageTypes.blunt;
-			}
-		}
-
-		let baseDamage = this.calculateBaseDamage(skillActionObject, level, damageType, isWeaponAttack, isSpell);
-
-		let [hit, crit] = this.calculateCritAndHit(skillActionObject, level)
-
-		if (isSpell) {
-			baseDamage *= this.getArmorPentaltyForSpellCastingDamage();
-		}
-
-		if (isSpell) {
-			hit += this.getArmorPenaltyForSpellCastingHit();
-		}
-
-		if (isSpell) {
-			baseDamage *= this.arcaneAptitude.getSpellEffectivenessAptitude();
-		}
-
-		const damageObject = {
-			baseDamage: baseDamage,
-			type: damageType,
-			crit: crit,
-			hit: hit,
-			trueHit: skillActionObject.trueHit,
-			trueHitDice: skillActionObject.trueHitDice,
-			trueHitDC: skillActionObject.trueHitDC,
-			trueHitFailDamageMultiplier: skillActionObject.trueHitFailDamageMultiplier,
-			saveStat: skillActionObject.saveStat,
-			applyEffect:
-				skillActionObject.applyEffect[
-					skillActionObject.applyEffect.length === 1 ? 0 : level - 1
-				],
-			skillActionSubType: skillActionObject.subType,
-			traitBasedModifier:
-				skillActionObject.traitBasedModifier[
-					skillActionObject.traitBasedModifier.length === 1 ? 0 : level - 1
-				],
-			buffBasedModifier:
-				skillActionObject.buffBasedModifier[
-					skillActionObject.buffBasedModifier.length === 1 ? 0 : level - 1
-				],
-			specialEffect:
-				skillActionObject.specialEffect[
-					skillActionObject.specialEffect.length === 1 ? 0 : level - 1
-				],
-		};
-
-		// Implement Damage additional Buffs and Debuffs here
-		// Weapon Magical Coating, if attacking with Weapon, damage + 3
-		if (isWeaponAttack) {
-			// *Put additional weapon attack buff here
-			if (this.buffsAndDebuffs.weaponMagicalCoating > 0) { damageObject.baseDamage += 3 };	
-			
-		}
-
-		if (isSpell) {
-			// *Put additional spell attack buff here
-
-		}
-
-		switch (skillActionObject.type) {
-			case SkillActionType.Negative:
-				return this.playNegativeSkill({
-					target,
-					damageObject,
-					skillLevel: level,
-					isWeaponAttack
-				});
-			case SkillActionType.Positive:
-				return this.playPositiveSkill({
-					target,
-					damageObject,
-					skillLevel: level,
-				});
-		}
-	}
-
-	private calculateBaseDamage(
-		skillActionObject: SkillActionObject,
-		level: number,
-		damageType: DamageTypes,
-		isWeaponAttack: boolean,
-		isSpell: boolean
-	): number {
-		let baseDamage: number = 0;
-		// In case of using Weapon DMG
-		if (skillActionObject.damageDiceBase[0] === DiceEnum.Weapon_Physical || skillActionObject.damageDiceBase[0] === DiceEnum.Weapon_Magical) {
-			if (this.equipments.mainHand === null) {
-				baseDamage = Dice.roll(DiceEnum.OneD6).sum;
-			} else if (this.equipments.mainHand !== null) {
-				baseDamage = this.calculateWeaponDamage(skillActionObject.damageDiceBase[0]);
-			}
-		}
-
-		// Case it's not weapon damage
-		if (skillActionObject.damageDiceBase[0] !== DiceEnum.Weapon_Physical && skillActionObject.damageDiceBase[0] !== DiceEnum.Weapon_Magical) {
-			baseDamage = Dice.roll(skillActionObject.damageDiceBase.length === 1 ? skillActionObject.damageDiceBase[0] : skillActionObject.damageDiceBase[level - 1]).sum;
-		}
-
-		// We multiply the base damage by the damage multiplier
-		baseDamage *=
-			skillActionObject.damageMultiplier[
-				skillActionObject.damageMultiplier.length === 1 ? 0 : level - 1
-			];
-
-		// We add the damage modifier stat to the base damage
-		if (
-			skillActionObject.damageModifierStat[
-				skillActionObject.damageModifierStat.length === 1 ? 0 : level - 1
-			].length > 0
-		) {
-			const skillModfierBonus =
-				skillActionObject.damageModifierStat[
-					skillActionObject.damageModifierStat.length === 1 ? 0 : level - 1
-				];
-			baseDamage += this.getModifier(skillModfierBonus as CharacterStatusEnum);
-		}
-
-		// Additional damage from damage type
-		switch (damageType) {
-			case DamageTypes.blunt:
-				baseDamage += this.status.bluntAttack();
-				break;
-			case DamageTypes.pierce:
-				baseDamage += this.status.pierceAttack()
-				break;
-			case DamageTypes.slash:
-				baseDamage += this.status.slashAttack();
-				break;
-			case DamageTypes.arcane:
-				baseDamage += this.status.arcaneAttack();
-				break;
-			case DamageTypes.fire:
-				baseDamage += this.status.fireAttack();
-				break;
-			case DamageTypes.water:
-				baseDamage += this.status.waterAttack();
-				break;
-			case DamageTypes.air:
-				baseDamage += this.status.airAttack();
-				break;
-			case DamageTypes.geo:
-				baseDamage += this.status.geoAttack();
-				break;
-			case DamageTypes.order:
-				baseDamage += this.status.orderAttack();
-				break;
-			case DamageTypes.chaos:
-				baseDamage += this.status.chaosAttack();
-				break;
-			case DamageTypes.angelic:
-				baseDamage += this.status.angelicAttack();
-				break;
-			case DamageTypes.demonic:
-				baseDamage += this.status.demonicAttack();
-				break;
-			case DamageTypes.holy:
-				baseDamage += this.status.holyAttack();
-				break;
-			case DamageTypes.dark:
-				baseDamage += this.status.darkAttack();
-				break;
-			case DamageTypes.ice:
-				baseDamage += this.status.iceAttack();
-				break;
-			case DamageTypes.lightning:
-				baseDamage += this.status.lightningAttack();
-				break;
-			case DamageTypes.poison:
-				baseDamage += this.status.poisonAttack();
-				break;
-			case DamageTypes.life:
-				baseDamage += this.status.lifeAttack();
-				break;
-			case DamageTypes.necrotic:
-				baseDamage += this.status.necroticAttack();
-				break;
-			case DamageTypes.metal:
-				baseDamage += this.status.metalAttack();
-				break;
-			case DamageTypes.nature:
-				baseDamage += this.status.natureAttack();
-				break;
-			case DamageTypes.spirit:
-				baseDamage += this.status.spiritAttack();
-				break;
-			case DamageTypes.chiCold:
-				baseDamage += this.status.chiColdAttack();
-				break;
-			case DamageTypes.chiWarm:
-				baseDamage += this.status.chiWarmAttack();
-				break;
-			case DamageTypes.chiHarmony:
-				baseDamage += this.status.chiHarmonyAttack();
-				break;
-			default:
-				break;
-		}
-
-		//Additional Damage from proficiency
-		if (isWeaponAttack === true) {
-			switch (this.equipments.mainHand?.weaponType) {
-				case WeaponType.axe:
-					baseDamage += this.getModifier(CharacterStatusEnum.axe);
-					break;
-				case WeaponType.sword:
-					baseDamage += this.getModifier(CharacterStatusEnum.sword);
-					break;
-				case WeaponType.blade:
-					baseDamage += this.getModifier(CharacterStatusEnum.blade);
-					break;
-				case WeaponType.bow:
-					baseDamage += this.getModifier(CharacterStatusEnum.bow);
-					break;
-				case WeaponType.dagger:
-					baseDamage += this.getModifier(CharacterStatusEnum.dagger);
-					break;
-				case WeaponType.mace:
-					baseDamage += this.getModifier(CharacterStatusEnum.mace);
-					break;
-				case WeaponType.orb:
-					baseDamage += this.getModifier(CharacterStatusEnum.orb);
-					break;
-				case WeaponType.spear:
-					baseDamage += this.getModifier(CharacterStatusEnum.spear);
-					break;
-				case WeaponType.staff:
-					baseDamage += this.getModifier(CharacterStatusEnum.staff);
-					break;
-				case WeaponType.tome:
-					baseDamage += this.getModifier(CharacterStatusEnum.tome);
-					break;
-				case WeaponType.wand:
-					baseDamage += this.getModifier(CharacterStatusEnum.magicWand);
-					break;
-				// Will this automatically means BareHand?
-				default:
-					baseDamage += this.getModifier(CharacterStatusEnum.bareHand);
-					break;
-			}
-		}
-
-		// isSpell? this is damage penalty if wearing armor
-
-
-		return baseDamage;
-	}
-
-	private calculateWeaponDamage(diceType: DiceEnum.Weapon_Physical | DiceEnum.Weapon_Magical): number {
-		let weaponDiceEnum: DiceEnum = DiceEnum.OneD6;
-		if (this.equipments.mainHand !== undefined) {
-			switch (diceType) {
-				case DiceEnum.Weapon_Physical:
-					weaponDiceEnum =
-						this.equipments.mainHand.attackStats?.physicalDiceEnum ||
-						DiceEnum.OneD6;
-					break;
-				case DiceEnum.Weapon_Magical:
-					weaponDiceEnum =
-						this.equipments.mainHand.attackStats?.magicalDiceEnum ||
-						DiceEnum.OneD6;
-					break;
-			}
-			return Dice.roll(weaponDiceEnum).sum;
-		} else if (this.equipments.offHand !== undefined) {
-			switch (diceType) {
-				case DiceEnum.Weapon_Physical:
-					weaponDiceEnum =
-						this.equipments.offHand.attackStats?.physicalDiceEnum ||
-						DiceEnum.OneD6;
-					break;
-				case DiceEnum.Weapon_Magical:
-					weaponDiceEnum =
-						this.equipments.offHand.attackStats?.magicalDiceEnum ||
-						DiceEnum.OneD6;
-					break;
-			}
-			return Dice.roll(weaponDiceEnum).sum;
-		} else {
-			return Dice.roll(DiceEnum.OneD6).sum;
-		}
-	}
-
-	private calculateCritAndHit(
-		skillActionObject: SkillActionObject,
-		level: number,
-	): [number, boolean] {
-		if (skillActionObject.trueHit) {
-			return [9999, false]; // True hit skill garantee hit but can't crit
-		}
-		let hitRoll = Dice.roll(DiceEnum.OneD20).sum;
-
-		if (hitRoll === 20) {
-			return [20, true];
-		}
-		if (hitRoll === 1) {
-			return [1, false];
-		}
-
-		let hitModifier = 0;
-
-		if (skillActionObject.hitStat.length > 0) {
-			if (skillActionObject.hitStat.length === 1 ) {
-				for (const hitStat of skillActionObject.hitStat[0]) {
-					hitModifier += this.getModifier(hitStat);
-				}
-			} else if (skillActionObject.hitStat.length > 1) {
-				for (const hitStat of skillActionObject.hitStat[level - 1]) {
-					hitModifier += this.getModifier(hitStat);
-				}
-			}
-		};
-
-		let critThreshold =
-			skillActionObject.critBase[
-				skillActionObject.critBase.length === 1 ? 0 : level - 1
-			];
-		if (skillActionObject.critStat.length > 0) {
-			for (const critBonus of skillActionObject.critStat[
-				skillActionObject.critStat.length === 1 ? 0 : level - 1
-			]) {
-				critThreshold += this.getModifier(critBonus);
-			}
-		}
-
-		return [hitRoll, (hitRoll + critThreshold >= 20)];
 	}
 
 	//MARK:: ATTACK
@@ -1603,7 +1103,9 @@ export class Character {
 		skillActionSubType: SkillActionSubType;
 	} {
 		console.log(
-			`${this.name} is attacking ${target.name}(HP:${target.currentHP}/${target.maxHP()}) with ${damageObject.type} damage`
+			`${this.name} is attacking ${target.name}(HP:${
+				target.currentHP
+			}/${target.maxHP()}) with ${damageObject.type} damage`
 		);
 
 		let isHit = false;
@@ -1612,20 +1114,12 @@ export class Character {
 		let effectResults: EffectReturnObject[] = [];
 		let damageType: DamageTypes[] = [];
 
-		const targetTraits = target.getTraits();
-		const traitModifier =
-			damageObject.traitBasedModifier.trait in targetTraits
-				? damageObject.traitBasedModifier.modifier
-				: 1;
-		const targetBuffs = target.getBuffsAndDebuffs();
-		// const buffModifier = damageObject.buffBasedModifier(targetBuffs, skillLevel);
-		const buffModifier =
-			damageObject.buffBasedModifier.buff == BuffsAndDebuffsEnum.none
-				? 1
-				: targetBuffs[damageObject.buffBasedModifier.buff] >=
-				  damageObject.buffBasedModifier.stackNeeded
-				? damageObject.buffBasedModifier.value
-				: 1;
+		// This only calculate 'Target' modifier from buff and trait, that means we only support skill with 'target' condition for onw
+		// TODO: Add 'actor' condition for skill
+		const { traitModifier, buffModifier } = calculateAttackModifiers(
+			damageObject,
+			target.intoBattleContext()
+		);
 
 		// Check for a critical miss
 		if (damageObject.hit === 1 && !damageObject.trueHit) {
@@ -1637,63 +1131,79 @@ export class Character {
 				hitChance: 0,
 				damageType: damageObject.type,
 			});
-		} else {
-			// Check for a critical hit
-			if (isCrit && !damageObject.trueHit) {
-				isCrit = true;
-				damageObject.baseDamage = this.getCriticalModifiedDamage(damageObject.baseDamage); // Critical hit multiplier
-				console.log(`Critical Hit!`);
+			return {
+				actor: this,
+				target: target,
+				damageObjectResult: {
+					isHit: false,
+					isCrit: false,
+					baseDamage: 0,
+					damageType: [],
+				},
+				effectRecorded: [],
+				skillActionSubType: damageObject.skillActionSubType,
+			};
+		}
+
+		// Check for a critical hit
+		if (isCrit && !damageObject.trueHit) {
+			isCrit = true;
+			damageObject.baseDamage = getCriticalModifiedDamage(
+				this,
+				damageObject.baseDamage
+			); // Critical hit multiplier
+			console.log(`Critical Hit!`);
+		}
+
+		if (damageObject.trueHit) {
+			const saveStat = target.getModifier(damageObject.saveStat);
+			const saveRoll = Dice.roll(damageObject.trueHitDice).sum;
+			const totalSaves = saveStat + saveRoll;
+			if (totalSaves >= damageObject.trueHitDC) {
+				damageObject.baseDamage *= damageObject.trueHitFailDamageMultiplier;
 			}
+		}
 
-			if (damageObject.trueHit) {
-				const saveStat = target.getModifier(damageObject.saveStat);
-				const saveRoll = Dice.roll(damageObject.trueHitDice).sum;
-				const totalSaves = saveStat + saveRoll;
-				if (totalSaves >= damageObject.trueHitDC) {
-					damageObject.baseDamage *= damageObject.trueHitFailDamageMultiplier;	
-				}
-			}
+		let damageWithModifier =
+			damageObject.baseDamage * traitModifier * buffModifier;
 
-			let damageWithModifier =
-				damageObject.baseDamage * traitModifier * buffModifier;
-
-			let additionalApplyEffect:
+		let additionalApplyEffect:
 			| { type: BuffsAndDebuffsEnum; duration: number }
 			| undefined = undefined;
 
-			if (damageObject.specialEffect !== undefined) {
-				let specialEffect = damageObject.specialEffect;
-				let isSkillLevelMet = true;
-				if (specialEffect!== undefined) {
-					if (specialEffect.condition !== undefined) {
-						isSkillLevelMet = skillLevel >= (specialEffect.condition?.skillLevel ?? 1);
-					}
-				};
-
-				let specialEffectConditionMet =
-					this.checkSpecialEffectCondition(
-						specialEffect.condition.actor?.stat,
-						specialEffect.condition.actor?.trait,
-						specialEffect.condition.actor?.buff
-					) && isSkillLevelMet;
-
-				if (specialEffectConditionMet) {
-					let result = specialEffect.effect;
-
-					if (result.damage !== undefined) {
-						damageWithModifier += result.damage;
-					}
-					if (result.damageMultiplier !== undefined) {
-						damageWithModifier *= result.damageMultiplier;
-					}
-					if (result.buffsOrDebuffs !== undefined) {
-						additionalApplyEffect = {
-							type: result.buffsOrDebuffs.type,
-							duration: result.buffsOrDebuffs.duration,
-						};
-					}
+		if (damageObject.specialEffect !== undefined) {
+			let specialEffect = damageObject.specialEffect;
+			let isSkillLevelMet = true;
+			if (specialEffect !== undefined) {
+				if (specialEffect.condition !== undefined) {
+					isSkillLevelMet =
+						skillLevel >= (specialEffect.condition?.skillLevel ?? 1);
 				}
-			}	
+			}
+
+			let specialEffectConditionMet =
+				this.checkSpecialEffectCondition(
+					specialEffect.condition.actor?.stat,
+					specialEffect.condition.actor?.trait,
+					specialEffect.condition.actor?.buff
+				) && isSkillLevelMet;
+
+			if (specialEffectConditionMet) {
+				let result = specialEffect.effect;
+
+				if (result.damage !== undefined) {
+					damageWithModifier += result.damage;
+				}
+				if (result.damageMultiplier !== undefined) {
+					damageWithModifier *= result.damageMultiplier;
+				}
+				if (result.buffsOrDebuffs !== undefined) {
+					additionalApplyEffect = {
+						type: result.buffsOrDebuffs.type,
+						duration: result.buffsOrDebuffs.duration,
+					};
+				}
+			}
 
 			// Attempt to deal damage to the target
 			console.log(
@@ -1710,7 +1220,7 @@ export class Character {
 			isHit = afterAttackResult.dHit;
 			finalDamage = afterAttackResult.damage;
 			damageType.push(damageObject.type);
-			
+
 			// Record effects applied
 			// Attacking skill that applied some buff also needed to be done her
 			// *Apply Buffs Effect that create Debuff to target hits
@@ -1767,7 +1277,6 @@ export class Character {
 					);
 					effectResults.push(effectResult);
 				}
-				
 			}
 
 			if (additionalApplyEffect !== undefined) {
@@ -1873,6 +1382,7 @@ export class Character {
 
 		return isConditionMet;
 	}
+
 	//MARK: RECEIVE DAMAGE
 	receiveDamage({
 		attacker,
@@ -1910,6 +1420,40 @@ export class Character {
 				dHit: false,
 			};
 		}
+
+		let isNotStoppedByReaction: boolean = true;
+		let reactive_skills = this.activeSkills.filter(
+			(skill) => skill.skill.isReaction
+		);
+		if (reactive_skills.length > 0) {
+			for (const skill of reactive_skills) {
+				if (
+					isSkillPlayable(this.resources, this.currentHP, this.currentMP, this.currentSP, this.equipments, skill.skill, skill.level)
+				) {
+					for (const activeEffect of skill.skill.activeEffect) {
+						for (const actionObject of activeEffect.skillActionObjects) {
+							switch (
+								actionObject.type
+								// Playing reaction skill might return a boolean value, to decided if the attacker should continue attacking or not
+							) {
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (!isNotStoppedByReaction) {
+			// TODO: Should add a message that the attack is stopped by a reaction skill.
+			return {
+				actor: attacker,
+				target: this,
+				damage: 0,
+				damageType: damageType,
+				dHit: false,
+			};
+		}
+
 		//IMPORTANT DAMAGE CALCULATION METHODS GOING HERE, ALL DAMAGE MODIFIER GOES HERE!!!
 		//Soaked target don't get any effect, but take 1.5x damage from lightning attack
 		if (this.buffsAndDebuffs.soaked > 0 && damageType === "lightning") {
@@ -1959,12 +1503,12 @@ export class Character {
 
 		// Divine Shield reduce chaos, dark, evil damage, for 70%
 		if (
-			(damageType === DamageTypes.chaos || 
-			damageType === DamageTypes.demonic ||
-			damageType === DamageTypes.lightning ||
-			damageType === DamageTypes.dark || 
-			damageType === DamageTypes.poison) &&
-			(this.buffsAndDebuffs.divineShield > 0)
+			(damageType === DamageTypes.chaos ||
+				damageType === DamageTypes.demonic ||
+				damageType === DamageTypes.lightning ||
+				damageType === DamageTypes.dark ||
+				damageType === DamageTypes.poison) &&
+			this.buffsAndDebuffs.divineShield > 0
 		) {
 			damage = Math.floor(damage * 0.3);
 		}
@@ -1987,7 +1531,8 @@ export class Character {
 		if (this.buffsAndDebuffs.arcaneShield > 0) {
 			let arcaneShieldCapacity = this.buffsAndDebuffs.arcaneShield * 2;
 			// Calculate the amount of damage the arcane shield can absorb
-			let arcaneShieldAbsorb = damage - arcaneShieldCapacity > 0 ? arcaneShieldCapacity : damage;
+			let arcaneShieldAbsorb =
+				damage - arcaneShieldCapacity > 0 ? arcaneShieldCapacity : damage;
 			// Reduce the damage by the amount absorbed by the arcane shield
 			damage -= arcaneShieldAbsorb;
 			// Reduce the arcane shield stacks by the amount absorbed divided by 2
@@ -2037,7 +1582,7 @@ export class Character {
 	} {
 		let isHit = true;
 		let isCrit = false;
-		let finalHealing = -(damageObject.baseDamage);
+		let finalHealing = -damageObject.baseDamage;
 		let effectResults: EffectReturnObject[] = [];
 
 		if (damageObject.crit) {
@@ -2063,7 +1608,7 @@ export class Character {
 			for (const effect of damageObject.applyEffect) {
 				const effectResult = this.inflictEffect(target, effect, skillLevel);
 				effectResults.push(effectResult);
-			}	
+			}
 		}
 
 		target.recieveHeal({ actor: this, healing: finalHealing });
@@ -2092,7 +1637,9 @@ export class Character {
 			this.maxHP()
 		);
 
-		console.log(`${this.name} healed for ${healing}: ${this.currentHP}/${this.maxHP()}`);
+		console.log(
+			`${this.name} healed for ${healing}: ${this.currentHP}/${this.maxHP()}`
+		);
 		return this.hpUp(healing);
 	}
 
@@ -2125,12 +1672,14 @@ export class Character {
 			totalHitChance = 9999;
 		}
 
-		let duration = applyEffect.effectDuration.length === 0 ? 0 
-			: applyEffect.effectDuration.length === 1 ? applyEffect.effectDuration[0]
+		let duration =
+			applyEffect.effectDuration.length === 0
+				? 0
+				: applyEffect.effectDuration.length === 1
+				? applyEffect.effectDuration[0]
 				: applyEffect.effectDuration[skillLevel - 1];
 
-
-		const durationBonuses:CharacterStatusEnum[] = [];
+		const durationBonuses: CharacterStatusEnum[] = [];
 		if (applyEffect.effectDurationBonus.length > 0) {
 			if (applyEffect.effectDurationBonus.length === 1) {
 				durationBonuses.push(applyEffect.effectDurationBonus[0]);
@@ -2138,7 +1687,7 @@ export class Character {
 				durationBonuses.push(applyEffect.effectDurationBonus[skillLevel - 1]);
 			}
 		}
-				
+
 		if (durationBonuses.length > 0) {
 			for (const bonus of durationBonuses) {
 				duration += this.getModifier(bonus);
@@ -2148,7 +1697,6 @@ export class Character {
 		console.log(
 			`${this.name} is trying to inflict ${applyEffect.effectName} to ${target?.name} with DC ${totalHitChance}`
 		);
-
 
 		return target.effectInflicted(
 			applyEffect.effectName[
@@ -2171,7 +1719,6 @@ export class Character {
 		savingStatModifier: CharacterStatusEnum,
 		applyWithoutHit: boolean
 	): EffectReturnObject {
-
 		// Apply the effect directly if applyWithoutHit is true
 		if (applyWithoutHit === true) {
 			return this.applyEffect(effect, effectDuration);
@@ -2210,25 +1757,39 @@ export class Character {
 		);
 
 		// Reroll because of curse
-		if (totalSaves >= hitChance && this.buffsAndDebuffs.cursed > 0 && diceRoll !== 20) {
+		if (
+			totalSaves >= hitChance &&
+			this.buffsAndDebuffs.cursed > 0 &&
+			diceRoll !== 20
+		) {
 			console.log(`${this.name} must reroll a saved throw because of curse.`);
 			this.buffsAndDebuffs.cursed -= 1;
-			[diceRoll, baseModifier, buffModifier] = this.saveRoll(savingStatModifier);
+			[diceRoll, baseModifier, buffModifier] =
+				this.saveRoll(savingStatModifier);
 			totalSaves = diceRoll + baseModifier + buffModifier;
 		}
 
 		// Reroll because of bless
-		if (totalSaves < hitChance && this.buffsAndDebuffs.bless > 0 && diceRoll !== 1) {
+		if (
+			totalSaves < hitChance &&
+			this.buffsAndDebuffs.bless > 0 &&
+			diceRoll !== 1
+		) {
 			console.log(`${this.name} must reroll a failed throw because of bless.`);
 			this.buffsAndDebuffs.bless -= 1;
-			[diceRoll, baseModifier, buffModifier] = this.saveRoll(savingStatModifier);
+			[diceRoll, baseModifier, buffModifier] =
+				this.saveRoll(savingStatModifier);
 			totalSaves = diceRoll + baseModifier + buffModifier;
 		}
 
 		//*Inspiration and Desperation Buffs, give +2 or -2 to saving throw
-		if (this.buffsAndDebuffs.inspiration > 0) { totalSaves += 2 };
-		if (this.buffsAndDebuffs.desperation > 0) { totalSaves -= 2 };
-		
+		if (this.buffsAndDebuffs.inspiration > 0) {
+			totalSaves += 2;
+		}
+		if (this.buffsAndDebuffs.desperation > 0) {
+			totalSaves -= 2;
+		}
+
 		// this one determine if the effect is applied or not
 		if (totalSaves >= hitChance) {
 			console.log(`${this.name} saved from ${effect}`);
@@ -2239,29 +1800,28 @@ export class Character {
 				damage: undefined,
 				status: this.status,
 			};
-		};
+		}
 
 		return this.applyEffect(effect, effectDuration);
 	}
 
-	private applyEffect(
-		effect: BuffsAndDebuffsEnum,
-		effectDuration: number
-	) {
+	private applyEffect(effect: BuffsAndDebuffsEnum, effectDuration: number) {
 		console.log(`Effect ${effect} is applied to ${this.name}`);
 		const appenderFunction = EffectAppender[effect];
-		
+
 		if (typeof appenderFunction !== "function") {
-			/*Panic!*/ throw new Error(`Effect ${effect} not found in EffectAppender!`);
+			/*Panic!*/ throw new Error(
+				`Effect ${effect} not found in EffectAppender!`
+			);
 		}
 
 		const appenderObject = new EffectAppenderSendObject(
-        	this.status,
-        	this.buffsAndDebuffs,
-        	effectDuration
-    	);
+			this.status,
+			this.buffsAndDebuffs,
+			effectDuration
+		);
 
-    	const result: EffectReturnObject = appenderFunction(appenderObject);
+		const result: EffectReturnObject = appenderFunction(appenderObject);
 
 		//unwrapping result
 		this.buffsAndDebuffs = result.buffsAndDebuffs;
@@ -2297,7 +1857,6 @@ export class Character {
 		for (const effect in this.buffsAndDebuffs) {
 			const effectValue = this.buffsAndDebuffs[effect as keyof BuffsAndDebuffs];
 			if (typeof effectValue === "number" && effectValue > 0) {
-				
 				const resolverFunction = EffectResolver[effect as BuffsAndDebuffsEnum];
 
 				console.log(`Trying to resolve ${effect}`);
@@ -2384,11 +1943,13 @@ export class Character {
 				case "ring_L":
 					equipmentInstance = await db.getAccessory(equipment);
 					break;
-			}	
+			}
 		}
 
-		// If equipment is still undefined, throw an error		
-		if (equipmentInstance === undefined) { throw new Error(`Equipment ${equipment} not found in database!`) }
+		// If equipment is still undefined, throw an error
+		if (equipmentInstance === undefined) {
+			throw new Error(`Equipment ${equipment} not found in database!`);
+		}
 
 		if (this.equipments[position] !== undefined) {
 			this.unequip(position);
@@ -2426,17 +1987,22 @@ export class Character {
 
 		// Apply ArcaneAptitude
 		if (equipmentInstance.arcaneAptitude > 0) {
-			this.arcaneAptitude.increaseAptitude(equipmentInstance.arcaneAptitude)
+			this.arcaneAptitude.increaseAptitude(equipmentInstance.arcaneAptitude);
 		} else if (equipmentInstance.arcaneAptitude < 0) {
-			this.arcaneAptitude.decreaseAptitude(-(equipmentInstance.arcaneAptitude))
+			this.arcaneAptitude.decreaseAptitude(-equipmentInstance.arcaneAptitude);
 		}
 
 		// Apply Attack Bonuses
 		if (equipmentInstance.attackStats?.bonus != null) {
 			for (const stat in equipmentInstance.attackStats.bonus) {
-				const bonusValue = equipmentInstance.attackStats.bonus[stat as keyof typeof equipmentInstance.attackStats.bonus];
+				const bonusValue =
+					equipmentInstance.attackStats.bonus[
+						stat as keyof typeof equipmentInstance.attackStats.bonus
+					];
 				if (bonusValue && this.status.battlers.hasOwnProperty(stat)) {
-					this.status.battlers[stat as keyof typeof this.status.battlers].bonus += bonusValue;
+					this.status.battlers[
+						stat as keyof typeof this.status.battlers
+					].bonus += bonusValue;
 				}
 			}
 		}
@@ -2444,7 +2010,10 @@ export class Character {
 		// Applying Attack Stats
 		if (equipmentInstance.attackStats?.bonus != null) {
 			for (const stat in equipmentInstance.attackStats.bonus) {
-				const bonusValue = equipmentInstance.attackStats.bonus[stat as keyof typeof equipmentInstance.attackStats.bonus];
+				const bonusValue =
+					equipmentInstance.attackStats.bonus[
+						stat as keyof typeof equipmentInstance.attackStats.bonus
+					];
 				if (bonusValue != null) {
 					if (
 						stat === "order" ||
@@ -2454,11 +2023,15 @@ export class Character {
 						stat === "air" ||
 						stat === "fire"
 					) {
-						let statTarget = stat+"ATK"
-						this.status.battlers[statTarget as keyof typeof this.status.battlers].bonus += bonusValue;
+						let statTarget = stat + "ATK";
+						this.status.battlers[
+							statTarget as keyof typeof this.status.battlers
+						].bonus += bonusValue;
 					} else if (this.status.battlers.hasOwnProperty(stat)) {
 						// Handle regular stats
-						this.status.battlers[stat as keyof typeof this.status.battlers].bonus += bonusValue;
+						this.status.battlers[
+							stat as keyof typeof this.status.battlers
+						].bonus += bonusValue;
 					} else {
 						throw new Error(`Stat ${stat} not found in character battlers.`);
 					}
@@ -2469,11 +2042,16 @@ export class Character {
 		// Apply defense stats
 		if (equipmentInstance.defenseStats != null) {
 			for (const stat in equipmentInstance.defenseStats) {
-				const defenseValue = equipmentInstance.defenseStats[stat as keyof typeof equipmentInstance.defenseStats];
+				const defenseValue =
+					equipmentInstance.defenseStats[
+						stat as keyof typeof equipmentInstance.defenseStats
+					];
 
-				if (defenseValue != null){
+				if (defenseValue != null) {
 					if (this.status.battlers.hasOwnProperty(stat)) {
-						this.status.battlers[stat as keyof typeof this.status.battlers].bonus += defenseValue;
+						this.status.battlers[
+							stat as keyof typeof this.status.battlers
+						].bonus += defenseValue;
 					} else {
 						throw new Error(`Stat ${stat} not found in character battlers.`);
 					}
@@ -2496,7 +2074,7 @@ export class Character {
 			| "boots"
 			| "necklace"
 			| "ring_R"
-			| "ring_L",
+			| "ring_L"
 	): Character {
 		if (this.equipments[position] === undefined) {
 			throw new Error("No equipment to unequip");
@@ -2520,17 +2098,22 @@ export class Character {
 
 		// Reduce ArcaneAptitude
 		if (equipment.arcaneAptitude > 0) {
-			this.arcaneAptitude.decreaseAptitude(equipment.arcaneAptitude)
+			this.arcaneAptitude.decreaseAptitude(equipment.arcaneAptitude);
 		} else if (equipment.arcaneAptitude < 0) {
-			this.arcaneAptitude.increaseAptitude(-(equipment.arcaneAptitude))
+			this.arcaneAptitude.increaseAptitude(-equipment.arcaneAptitude);
 		}
 
 		// Reduce Attack Bonuses
 		if (equipment.attackStats?.bonus != null) {
 			for (const stat in equipment.attackStats.bonus) {
-				const bonusValue = equipment.attackStats.bonus[stat as keyof typeof equipment.attackStats.bonus];
+				const bonusValue =
+					equipment.attackStats.bonus[
+						stat as keyof typeof equipment.attackStats.bonus
+					];
 				if (bonusValue && this.status.battlers.hasOwnProperty(stat)) {
-					this.status.battlers[stat as keyof typeof this.status.battlers].bonus -= bonusValue;
+					this.status.battlers[
+						stat as keyof typeof this.status.battlers
+					].bonus -= bonusValue;
 				}
 			}
 		}
@@ -2538,7 +2121,10 @@ export class Character {
 		// Reduce Attack Stats
 		if (equipment.attackStats?.bonus != null) {
 			for (const stat in equipment.attackStats.bonus) {
-				const bonusValue = equipment.attackStats.bonus[stat as keyof typeof equipment.attackStats.bonus];
+				const bonusValue =
+					equipment.attackStats.bonus[
+						stat as keyof typeof equipment.attackStats.bonus
+					];
 				if (bonusValue != null) {
 					if (
 						stat === "order" ||
@@ -2548,11 +2134,15 @@ export class Character {
 						stat === "air" ||
 						stat === "fire"
 					) {
-						let statTarget = stat+"ATK"
-						this.status.battlers[statTarget as keyof typeof this.status.battlers].bonus -= bonusValue;
+						let statTarget = stat + "ATK";
+						this.status.battlers[
+							statTarget as keyof typeof this.status.battlers
+						].bonus -= bonusValue;
 					} else if (this.status.battlers.hasOwnProperty(stat)) {
 						// Handle regular stats
-						this.status.battlers[stat as keyof typeof this.status.battlers].bonus -= bonusValue;
+						this.status.battlers[
+							stat as keyof typeof this.status.battlers
+						].bonus -= bonusValue;
 					} else {
 						throw new Error(`Stat ${stat} not found in character battlers.`);
 					}
@@ -2562,7 +2152,7 @@ export class Character {
 
 		// Reduce Defense Stats
 		if (position === "armor") {
-			if (equipment instanceof Armor ) {
+			if (equipment instanceof Armor) {
 				for (const defenseType in equipment.defenseStats) {
 					if (defenseType !== null && defenseType !== undefined) {
 						if (this.status.battlers.hasOwnProperty(defenseType)) {
@@ -2578,7 +2168,7 @@ export class Character {
 
 		this.equipments[position] = undefined;
 		//TODO: add to inventory, if equipment.materail is 'magic_summoned' then destroy
-		
+
 		return this;
 	}
 
@@ -2588,7 +2178,9 @@ export class Character {
 
 	//MARK: Training
 	train(status: CharacterStatusEnum, amount: number) {
-		if (this.level >= 20) { return; }
+		if (this.level >= 20) {
+			return;
+		}
 
 		let statObject: { base: number; bonus: number; exp: number };
 
@@ -2613,7 +2205,9 @@ export class Character {
 		// Get the current stat base value
 		const currentStat = statObject.base;
 
-		if (currentStat >= 30) { return; } // Max stat is 30
+		if (currentStat >= 30) {
+			return;
+		} // Max stat is 30
 
 		// Determine the stat range modifier
 		const statRange = StatMod.value(currentStat);
@@ -2694,11 +2288,15 @@ export class Character {
 
 	setAllBattleBonusToZero() {
 		for (const key in this.status.attributes) {
-			this.status.attributes[key as keyof CharacterStatus["attributes"]].battle = 0;
+			this.status.attributes[
+				key as keyof CharacterStatus["attributes"]
+			].battle = 0;
 		}
 
 		for (const key in this.status.proficiencies) {
-			this.status.proficiencies[key as keyof CharacterStatus["proficiencies"]].battle = 0;
+			this.status.proficiencies[
+				key as keyof CharacterStatus["proficiencies"]
+			].battle = 0;
 		}
 
 		for (const key in this.status.battlers) {
@@ -2765,7 +2363,8 @@ export class Character {
 			type: this.type,
 			gender: this.gender,
 			portrait: this.portrait,
-			background: BackgroundEnum[this.background as keyof typeof BackgroundEnum],
+			background:
+				BackgroundEnum[this.background as keyof typeof BackgroundEnum],
 			race: RaceEnum[this.race as keyof typeof RaceEnum],
 			alignment: this.alignment.intoInterface(),
 			mood: this.mood,
@@ -2776,12 +2375,12 @@ export class Character {
 			isDead: this.isDead,
 			status: this.status.intoInterface(),
 			equipment: this.equipments.intoInterface(),
-			traits: this.traits.map(trait =>({
+			traits: this.traits.map((trait) => ({
 				id: trait.id,
 				name: trait.name,
 				description: trait.description,
 			})),
-			skills: this.skills.map(skill => ({
+			skills: this.skills.map((skill) => ({
 				id: skill.skill.id,
 				name: skill.skill.name,
 				level: skill.level,
@@ -2790,9 +2389,11 @@ export class Character {
 				consume: turnConsumeIntoInterface(skill.skill.consume),
 				produce: turnProduceIntoInterface(skill.skill.produce),
 				isSpell: skill.skill.isSpell,
-				equipmentRequirements: skill.skill.equipmentNeeded.weapon? skill.skill.equipmentNeeded.weapon : [],
+				equipmentRequirements: skill.skill.equipmentNeeded.weapon
+					? skill.skill.equipmentNeeded.weapon
+					: [],
 			})),
-			activeSkills: this.activeSkills.map(skill => ({
+			activeSkills: this.activeSkills.map((skill) => ({
 				id: skill.skill.id,
 				name: skill.skill.name,
 				level: skill.level,
@@ -2801,7 +2402,9 @@ export class Character {
 				consume: turnConsumeIntoInterface(skill.skill.consume),
 				produce: turnProduceIntoInterface(skill.skill.produce),
 				isSpell: skill.skill.isSpell,
-				equipmentRequirements: skill.skill.equipmentNeeded.weapon? skill.skill.equipmentNeeded.weapon : [],
+				equipmentRequirements: skill.skill.equipmentNeeded.weapon
+					? skill.skill.equipmentNeeded.weapon
+					: [],
 			})),
 			position: this.position,
 			itemsBag: this.itemsBag.intoInterface(),
@@ -2815,72 +2418,96 @@ export class Character {
 			maxSP: this.maxSP(),
 		};
 	}
+
+	intoBattleContext(): CharacterBattleContext {
+		return {
+			actorID: this.id,
+			actorPosition: this.position,
+			actorEquipment: {
+				mainHand: this.equipments.mainHand?.weaponSpecificType ?? null,
+				offHand: this.equipments.offHand?.weaponSpecificType ?? null,
+				armor: this.equipments.armor?.armorType ?? null,
+				Headwear: this.equipments.headwear ? EquipmentType.Headwear : null,
+				gloves: this.equipments.gloves ? EquipmentType.gloves : null,
+				boots: this.equipments.boots ? EquipmentType.boots : null,
+				necklace: this.equipments.necklace ? AccessoryType.necklace : null,
+				ring_R: this.equipments.ring_R ? AccessoryType.ring : null,
+				ring_L: this.equipments.ring_L ? AccessoryType.ring : null,
+			},
+			actorStats: this.status.getStats(),
+			actorBuffs: this.buffsAndDebuffs.getBuffsAndDebuffs(),
+			actorTraits: this.getTraits(),
+		};
+	}
 }
 
-function turnConsumeIntoInterface(consume: SkillConsume): SkillConsumeInterface {
+function turnConsumeIntoInterface(
+	consume: SkillConsume
+): SkillConsumeInterface {
 	return {
 		hp: consume.hp,
 		mp: consume.mp,
 		sp: consume.sp,
-		elements: consume.elements.map(element => ({
+		elements: consume.elements.map((element) => ({
 			element: element.element,
-			amount: element.amount
-		}))
-	}
-};
-
-function turnProduceIntoInterface(produce: SkillProduce): SkillProduceInterface {
-	return {
-		elements: produce.elements.map(element => ({
-			element: element.element,
-			amount: element.amountRange
-		}))
-	}
+			amount: element.amount,
+		})),
+	};
 }
 
+function turnProduceIntoInterface(
+	produce: SkillProduce
+): SkillProduceInterface {
+	return {
+		elements: produce.elements.map((element) => ({
+			element: element.element,
+			amount: element.amountRange,
+		})),
+	};
+}
 
 function switchClass(selectedClass?: ClassEnum): CharacterClass | null {
-		switch (selectedClass) {
-			case ClassEnum.CLERIC:
-				return class_cleric;
+	switch (selectedClass) {
+		case ClassEnum.CLERIC:
+			return class_cleric;
 			break;
-			case ClassEnum.MAGE:
-				return class_mage;
+		case ClassEnum.MAGE:
+			return class_mage;
 			break;
-			case ClassEnum.SCOUT:
-				return class_scout;
+		case ClassEnum.SCOUT:
+			return class_scout;
 			break;
-			case ClassEnum.HEXBINDER:
-				return class_hexbinder;
+		case ClassEnum.HEXBINDER:
+			return class_hexbinder;
 			break;
-			case ClassEnum.FIGHTER:
-				return class_fighter;
+		case ClassEnum.FIGHTER:
+			return class_fighter;
 			break;
-			case ClassEnum.WARDEN:
-				return class_warden;
+		case ClassEnum.WARDEN:
+			return class_warden;
 			break;
-			case ClassEnum.GUARDIAN:
-				return class_guardian;
+		case ClassEnum.GUARDIAN:
+			return class_guardian;
 			break;
-			case ClassEnum.SPELLBLADE:
-				return class_spellblade;
+		case ClassEnum.SPELLBLADE:
+			return class_spellblade;
 			break;
-			case ClassEnum.SKIRMISHER:
-				return class_skirmisher;
+		case ClassEnum.SKIRMISHER:
+			return class_skirmisher;
 			break;
-			case ClassEnum.OCCULTIST:
-				return class_occultist;
+		case ClassEnum.OCCULTIST:
+			return class_occultist;
 			break;
-			case ClassEnum.SOLDIER:
-				return class_soldier;
+		case ClassEnum.SOLDIER:
+			return class_soldier;
 			break;
-			case ClassEnum.TEMPLAR:
-				return class_templar;
+		case ClassEnum.TEMPLAR:
+			return class_templar;
 			break;
-			default:
-				throw new Error("class: " + selectedClass + " not found in switchClass!");
+		default:
+			throw new Error("class: " + selectedClass + " not found in switchClass!");
 			break;
-		}
+	}
 	return null;
 }
 
@@ -2888,40 +2515,40 @@ function switchRace(selectedRace?: RaceEnum) {
 	switch (selectedRace) {
 		case RaceEnum.DWARF:
 			return raceDwarf;
-		break;
+			break;
 		case RaceEnum.DWARFLING:
 			return raceDwarfling;
-		break;
+			break;
 		case RaceEnum.ELVEN:
 			return raceElven;
-		break;
+			break;
 		case RaceEnum.ELVON:
 			return raceElvon;
-		break;
+			break;
 		case RaceEnum.HALFLING:
 			return raceHalfling;
-		break;
+			break;
 		case RaceEnum.HALF_ELF:
 			return raceHalfElf;
-		break;
+			break;
 		case RaceEnum.HALF_ORC:
 			return raceHalfOrc;
-		break;
+			break;
 		case RaceEnum.HALF_TRITON:
 			return raceHalfTriton;
-		break;
+			break;
 		case RaceEnum.HUMAN:
 			return raceHuman;
-		break;
+			break;
 		case RaceEnum.ORC:
 			return raceOrc;
-		break;
+			break;
 		case RaceEnum.TRITON:
 			return raceTriton;
-		break;
+			break;
 		default:
 			throw new Error("race: " + selectedRace + " not found in switchRace!");
-		break;
+			break;
 	}
 }
 
@@ -2964,14 +2591,16 @@ function switchBackground(selectedBackground?: BackgroundEnum) {
 			return backgroundWanderingMusician;
 			break;
 		default:
-			throw new Error("background: " + selectedBackground + " not found in switchBackground!");
+			throw new Error(
+				"background: " + selectedBackground + " not found in switchBackground!"
+			);
 			break;
 	}
 }
 
 export async function setCharacterStatus(
 	character: Character,
-	classSelected?: ClassEnum ,
+	classSelected?: ClassEnum,
 	raceSelected?: RaceEnum,
 	backGroundSelected?: BackgroundEnum
 ): Promise<Character> {
@@ -2979,8 +2608,12 @@ export async function setCharacterStatus(
 		let characterRace = switchRace(raceSelected);
 		if (characterRace != null) {
 			for (const attribute in characterRace.attributes) {
-				character.status.attributes[attribute as keyof CharacterStatus["attributes"]].base += 
-				characterRace.attributes[attribute as keyof CharacterStatus["attributes"]];
+				character.status.attributes[
+					attribute as keyof CharacterStatus["attributes"]
+				].base +=
+					characterRace.attributes[
+						attribute as keyof CharacterStatus["attributes"]
+					];
 			}
 			character.raceHP = characterRace.hp;
 			character.raceMP = characterRace.mp;
@@ -2997,21 +2630,33 @@ export async function setCharacterStatus(
 		let characterClass = switchClass(classSelected);
 		if (characterClass != null) {
 			for (const attribute in characterClass.bonusStats.attribute) {
-				character.status.attributes[attribute as keyof CharacterStatus["attributes"]].base += 
-				characterClass.bonusStats.attribute[attribute as keyof CharacterStatus["attributes"]];
+				character.status.attributes[
+					attribute as keyof CharacterStatus["attributes"]
+				].base +=
+					characterClass.bonusStats.attribute[
+						attribute as keyof CharacterStatus["attributes"]
+					];
 			}
 			for (const proficiency in characterClass.bonusStats.proficiency) {
-				character.status.proficiencies[proficiency as keyof CharacterStatus["proficiencies"]].base += 
-				characterClass.bonusStats.proficiency[proficiency as keyof CharacterStatus["proficiencies"]];
+				character.status.proficiencies[
+					proficiency as keyof CharacterStatus["proficiencies"]
+				].base +=
+					characterClass.bonusStats.proficiency[
+						proficiency as keyof CharacterStatus["proficiencies"]
+					];
 			}
 			for (const artisan in characterClass.bonusStats.artisan) {
-				character.status.artisans[artisan as keyof CharacterStatus["artisans"]].base += 
-				characterClass.bonusStats.artisan[artisan as keyof CharacterStatus["artisans"]];
+				character.status.artisans[
+					artisan as keyof CharacterStatus["artisans"]
+				].base +=
+					characterClass.bonusStats.artisan[
+						artisan as keyof CharacterStatus["artisans"]
+					];
 			}
 			for (const skill of characterClass.skills) {
 				await character.learnSkill(skill);
 			}
-			for (let i = character.skills.length - 1; i >=0; i--) {
+			for (let i = character.skills.length - 1; i >= 0; i--) {
 				let skill = character.skills[i];
 				character.moveCardToBattle(skill.skill.id);
 			}
@@ -3056,25 +2701,39 @@ export async function setCharacterStatus(
 		if (characterBackground != null) {
 			if (characterBackground.attributes != null) {
 				for (const attribute in characterBackground.attributes) {
-					character.status.attributes[attribute as keyof CharacterStatus["attributes"]].base += 1;
+					character.status.attributes[
+						attribute as keyof CharacterStatus["attributes"]
+					].base += 1;
 					(characterBackground.attributes as Record<string, number>)[attribute];
 				}
 			}
 			if (characterBackground.proficiencies != null) {
 				for (const proficiency in characterBackground.proficiencies) {
-					character.status.proficiencies[proficiency as keyof CharacterStatus["proficiencies"]].base += 1;
-					(characterBackground.proficiencies as Record<string, number>)[proficiency];
+					character.status.proficiencies[
+						proficiency as keyof CharacterStatus["proficiencies"]
+					].base += 1;
+					(characterBackground.proficiencies as Record<string, number>)[
+						proficiency
+					];
 				}
 			}
 			if (characterBackground.artisans != null) {
 				for (const artisan in characterBackground.artisans) {
-					character.status.artisans[artisan as keyof CharacterStatus["artisans"]].base += 1;
+					character.status.artisans[
+						artisan as keyof CharacterStatus["artisans"]
+					].base += 1;
 					(characterBackground.artisans as Record<string, number>)[artisan];
 				}
 			}
-		
-			if (characterBackground.trait != null && characterBackground.trait != undefined) {
-				let trait = TraitRepository[characterBackground.trait as keyof typeof TraitRepository];
+
+			if (
+				characterBackground.trait != null &&
+				characterBackground.trait != undefined
+			) {
+				let trait =
+					TraitRepository[
+						characterBackground.trait as keyof typeof TraitRepository
+					];
 				character.gainTrait(trait);
 			}
 		}
@@ -3085,4 +2744,626 @@ export async function setCharacterStatus(
 	character.setBodyValue();
 
 	return character;
+}
+
+function calculateBaseDamage(
+	character: Character,
+	skillActionObject: SkillActionObject,
+	level: number,
+	damageType: DamageTypes,
+	isWeaponAttack: boolean,
+	isSpell: boolean
+): number {
+	let baseDamage: number = 0;
+	// In case of using Weapon DMG
+	if (
+		skillActionObject.damageDiceBase[0] === DiceEnum.Weapon_Physical ||
+		skillActionObject.damageDiceBase[0] === DiceEnum.Weapon_Magical
+	) {
+		if (character.equipments.mainHand === null) {
+			baseDamage = Dice.roll(DiceEnum.OneD6).sum;
+		} else if (character.equipments.mainHand !== null) {
+			baseDamage = calculateWeaponDamage(
+				character,
+				skillActionObject.damageDiceBase[0]
+			);
+		}
+	}
+
+	// Case it's not weapon damage
+	if (
+		skillActionObject.damageDiceBase[0] !== DiceEnum.Weapon_Physical &&
+		skillActionObject.damageDiceBase[0] !== DiceEnum.Weapon_Magical
+	) {
+		baseDamage = Dice.roll(
+			skillActionObject.damageDiceBase.length === 1
+				? skillActionObject.damageDiceBase[0]
+				: skillActionObject.damageDiceBase[level - 1]
+		).sum;
+	}
+
+	// We multiply the base damage by the damage multiplier
+	baseDamage *=
+		skillActionObject.damageMultiplier[
+			skillActionObject.damageMultiplier.length === 1 ? 0 : level - 1
+		];
+
+	// We add the damage modifier stat to the base damage
+	if (
+		skillActionObject.damageModifierStat[
+			skillActionObject.damageModifierStat.length === 1 ? 0 : level - 1
+		].length > 0
+	) {
+		const skillModfierBonus =
+			skillActionObject.damageModifierStat[
+				skillActionObject.damageModifierStat.length === 1 ? 0 : level - 1
+			];
+		baseDamage += character.getModifier(
+			skillModfierBonus as CharacterStatusEnum
+		);
+	}
+
+	// Additional damage from damage type
+	switch (damageType) {
+		case DamageTypes.blunt:
+			baseDamage += character.status.bluntAttack();
+			break;
+		case DamageTypes.pierce:
+			baseDamage += character.status.pierceAttack();
+			break;
+		case DamageTypes.slash:
+			baseDamage += character.status.slashAttack();
+			break;
+		case DamageTypes.arcane:
+			baseDamage += character.status.arcaneAttack();
+			break;
+		case DamageTypes.fire:
+			baseDamage += character.status.fireAttack();
+			break;
+		case DamageTypes.water:
+			baseDamage += character.status.waterAttack();
+			break;
+		case DamageTypes.air:
+			baseDamage += character.status.airAttack();
+			break;
+		case DamageTypes.geo:
+			baseDamage += character.status.geoAttack();
+			break;
+		case DamageTypes.order:
+			baseDamage += character.status.orderAttack();
+			break;
+		case DamageTypes.chaos:
+			baseDamage += character.status.chaosAttack();
+			break;
+		case DamageTypes.angelic:
+			baseDamage += character.status.angelicAttack();
+			break;
+		case DamageTypes.demonic:
+			baseDamage += character.status.demonicAttack();
+			break;
+		case DamageTypes.holy:
+			baseDamage += character.status.holyAttack();
+			break;
+		case DamageTypes.dark:
+			baseDamage += character.status.darkAttack();
+			break;
+		case DamageTypes.ice:
+			baseDamage += character.status.iceAttack();
+			break;
+		case DamageTypes.lightning:
+			baseDamage += character.status.lightningAttack();
+			break;
+		case DamageTypes.poison:
+			baseDamage += character.status.poisonAttack();
+			break;
+		case DamageTypes.life:
+			baseDamage += character.status.lifeAttack();
+			break;
+		case DamageTypes.necrotic:
+			baseDamage += character.status.necroticAttack();
+			break;
+		case DamageTypes.metal:
+			baseDamage += character.status.metalAttack();
+			break;
+		case DamageTypes.nature:
+			baseDamage += character.status.natureAttack();
+			break;
+		case DamageTypes.spirit:
+			baseDamage += character.status.spiritAttack();
+			break;
+		case DamageTypes.chiCold:
+			baseDamage += character.status.chiColdAttack();
+			break;
+		case DamageTypes.chiWarm:
+			baseDamage += character.status.chiWarmAttack();
+			break;
+		case DamageTypes.chiHarmony:
+			baseDamage += character.status.chiHarmonyAttack();
+			break;
+		default:
+			break;
+	}
+
+	//Additional Damage from proficiency
+	if (isWeaponAttack === true) {
+		switch (character.equipments.mainHand?.weaponType) {
+			case WeaponType.axe:
+				baseDamage += character.getModifier(CharacterStatusEnum.axe);
+				break;
+			case WeaponType.sword:
+				baseDamage += character.getModifier(CharacterStatusEnum.sword);
+				break;
+			case WeaponType.blade:
+				baseDamage += character.getModifier(CharacterStatusEnum.blade);
+				break;
+			case WeaponType.bow:
+				baseDamage += character.getModifier(CharacterStatusEnum.bow);
+				break;
+			case WeaponType.dagger:
+				baseDamage += character.getModifier(CharacterStatusEnum.dagger);
+				break;
+			case WeaponType.mace:
+				baseDamage += character.getModifier(CharacterStatusEnum.mace);
+				break;
+			case WeaponType.orb:
+				baseDamage += character.getModifier(CharacterStatusEnum.orb);
+				break;
+			case WeaponType.spear:
+				baseDamage += character.getModifier(CharacterStatusEnum.spear);
+				break;
+			case WeaponType.staff:
+				baseDamage += character.getModifier(CharacterStatusEnum.staff);
+				break;
+			case WeaponType.tome:
+				baseDamage += character.getModifier(CharacterStatusEnum.tome);
+				break;
+			case WeaponType.wand:
+				baseDamage += character.getModifier(CharacterStatusEnum.magicWand);
+				break;
+			// Will character automatically means BareHand?
+			default:
+				baseDamage += character.getModifier(CharacterStatusEnum.bareHand);
+				break;
+		}
+	}
+
+	// isSpell? character is damage penalty if wearing armor
+
+	return baseDamage;
+}
+
+function calculateWeaponDamage(
+	character: Character,
+	diceType: DiceEnum.Weapon_Magical | DiceEnum.Weapon_Physical
+): number {
+	const weapon = character.equipments.mainHand ?? character.equipments.offHand;
+
+	if (weapon) {
+		const dice =
+			diceType === DiceEnum.Weapon_Magical
+				? weapon.attackStats?.magicalDiceEnum ?? DiceEnum.OneD6
+				: weapon.attackStats?.physicalDiceEnum ?? DiceEnum.OneD6;
+		return Dice.roll(dice).sum;
+	}
+
+	// Fallback: no weapon equipped
+	return Dice.roll(DiceEnum.OneD6).sum;
+}
+
+export function consumeActionObject(
+	character: Character,
+	skillActionObject: SkillActionObject,
+	level: number,
+	target: Character,
+	isSpell: boolean,
+	isWeaponAttack: boolean,
+	isAuto: boolean
+): {
+	actor: Character;
+	target: Character;
+	damageObjectResult: {
+		isHit: boolean;
+		isCrit: boolean;
+		baseDamage: number;
+		damageType: DamageTypes[];
+	};
+	effectRecorded: EffectReturnObject[];
+	skillActionSubType: SkillActionSubType;
+} {
+	let damageType =
+		skillActionObject.damageType.length === 1
+			? skillActionObject.damageType[0]
+			: skillActionObject.damageType[level - 1];
+
+	if (isWeaponAttack === true) {
+		if (isSpell === true) {
+			damageType =
+				character.equipments.mainHand?.attackStats?.magicalType ||
+				DamageTypes.arcane;
+		} else {
+			damageType =
+				character.equipments.mainHand?.attackStats?.physicalType ||
+				DamageTypes.blunt;
+		}
+	}
+
+	if (isAuto === true) {
+		if (isSpell === true) {
+			damageType =
+				character.equipments.mainHand?.attackStats?.magicalType ||
+				DamageTypes.arcane;
+		} else {
+			damageType =
+				character.equipments.mainHand?.attackStats?.physicalType ||
+				DamageTypes.blunt;
+		}
+	}
+
+	let baseDamage = calculateBaseDamage(
+		character,
+		skillActionObject,
+		level,
+		damageType,
+		isWeaponAttack,
+		isSpell
+	);
+
+	let [hit, crit] = calculateCritAndHit(character, skillActionObject, level);
+
+	if (isSpell) {
+		baseDamage *= getArmorPenaltyForSpellCastingDamage(character);
+	}
+
+	if (isSpell) {
+		hit += getArmorPenaltyForSpellCastingHit(character);
+	}
+
+	if (isSpell) {
+		baseDamage *= character.arcaneAptitude.getSpellEffectivenessAptitude();
+	}
+
+	const damageObject = {
+		baseDamage: baseDamage,
+		type: damageType,
+		crit: crit,
+		hit: hit,
+		trueHit: skillActionObject.trueHit,
+		trueHitDice: skillActionObject.trueHitDice,
+		trueHitDC: skillActionObject.trueHitDC,
+		trueHitFailDamageMultiplier: skillActionObject.trueHitFailDamageMultiplier,
+		saveStat: skillActionObject.saveStat,
+		applyEffect:
+			skillActionObject.applyEffect[
+				skillActionObject.applyEffect.length === 1 ? 0 : level - 1
+			],
+		skillActionSubType: skillActionObject.subType,
+		traitBasedModifier:
+			skillActionObject.traitBasedModifier[
+				skillActionObject.traitBasedModifier.length === 1 ? 0 : level - 1
+			],
+		buffBasedModifier:
+			skillActionObject.buffBasedModifier[
+				skillActionObject.buffBasedModifier.length === 1 ? 0 : level - 1
+			],
+		specialEffect:
+			skillActionObject.specialEffect[
+				skillActionObject.specialEffect.length === 1 ? 0 : level - 1
+			],
+	};
+
+	// Implement Damage additional Buffs and Debuffs here
+	// Weapon Magical Coating, if attacking with Weapon, damage + 3
+	if (isWeaponAttack) {
+		// *Put additional weapon attack buff here
+		if (character.buffsAndDebuffs.weaponMagicalCoating > 0) {
+			damageObject.baseDamage += 3;
+		}
+	}
+
+	if (isSpell) {
+		// *Put additional spell attack buff here
+	}
+
+	switch (skillActionObject.type) {
+		case SkillActionType.Negative:
+			return character.playNegativeSkill({
+				target,
+				damageObject,
+				skillLevel: level,
+				isWeaponAttack,
+			});
+		case SkillActionType.Positive:
+			return character.playPositiveSkill({
+				target,
+				damageObject,
+				skillLevel: level,
+			});
+	}
+}
+
+export function calculateCritAndHit(
+	character: Character,
+	skillActionObject: SkillActionObject,
+	level: number
+): [number, boolean] {
+	if (skillActionObject.trueHit) return [9999, false];
+
+	const hitRoll = Dice.rollTwenty();
+	if (hitRoll === 20) return [20, true];
+	if (hitRoll === 1) return [1, false];
+
+	const averageHitModifier = calculateAverageHitModifier(
+		character,
+		skillActionObject.hitStat,
+		level
+	);
+	const requiredCritScore = calculateRequiredCritScore(
+		character,
+		skillActionObject,
+		level
+	);
+	const totalHitScore = hitRoll + averageHitModifier;
+
+	return [totalHitScore, totalHitScore >= requiredCritScore];
+}
+
+function calculateAverageHitModifier(
+	character: Character,
+	hitStat: CharacterStatusEnum[][], // assuming hitStat is an array of arrays of stats
+	level: number
+): number {
+	if (hitStat.length === 0) return 0;
+
+	// Use the single set if provided, otherwise use the one corresponding to the level.
+	const selectedStats = hitStat.length === 1 ? hitStat[0] : hitStat[level - 1];
+	const totalModifier = selectedStats.reduce(
+		(sum, stat) => sum + character.getModifier(stat),
+		0
+	);
+	return totalModifier / selectedStats.length;
+}
+
+function calculateRequiredCritScore(
+	character: Character,
+	skillActionObject: SkillActionObject,
+	level: number
+): number {
+	if (skillActionObject.critBase.length === 0) return 0;
+
+	let baseCritScore =
+		skillActionObject.critBase[
+			skillActionObject.critBase.length === 1 ? 0 : level - 1
+		];
+
+	const critBonusStats =
+		skillActionObject.critStat.length === 1
+			? skillActionObject.critStat[0]
+			: skillActionObject.critStat.length > 0
+			? skillActionObject.critStat[level - 1]
+			: [];
+
+	if (critBonusStats.length > 0) {
+		let critStatsCount = critBonusStats.length;
+		let critStatsSum = 0;
+		for (const bonusStat of critBonusStats) {
+			critStatsSum += character.getModifier(bonusStat);
+		}
+		baseCritScore += critStatsSum / critStatsCount;
+	}
+
+	return baseCritScore;
+}
+
+export function getArmorPenaltyForSpellCastingDamage(
+	character: Character
+): number {
+	let spellDamageMultiPlier =
+		character.equipments.armor?.spellCastingDamageMultiplier || 1;
+
+	let armotType = character.equipments.armor?.armorType;
+
+	if (armotType != undefined) {
+		switch (armotType) {
+			case "light":
+				if (
+					character.traits.includes(
+						TraitRepository.trait_hexbinder_01 ||
+							TraitRepository.trait_hexbinder_02 ||
+							TraitRepository.trait_hexbinder_03
+					)
+				) {
+					spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.2, 1);
+				}
+				if (
+					character.traits.includes(
+						TraitRepository.trait_spellblade_01 ||
+							TraitRepository.trait_spellblade_02 ||
+							TraitRepository.trait_spellblade_03
+					)
+				) {
+					spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.4, 1);
+				}
+				return spellDamageMultiPlier;
+
+			case "medium":
+				if (
+					character.traits.includes(
+						TraitRepository.trait_hexbinder_01 ||
+							TraitRepository.trait_hexbinder_02 ||
+							TraitRepository.trait_hexbinder_03
+					)
+				) {
+					spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.3, 1);
+				}
+				if (
+					character.traits.includes(
+						TraitRepository.trait_spellblade_01 ||
+							TraitRepository.trait_spellblade_02 ||
+							TraitRepository.trait_spellblade_03
+					)
+				) {
+					spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.3, 1);
+				}
+				return spellDamageMultiPlier;
+
+			case "heavy":
+				if (
+					character.traits.includes(
+						TraitRepository.trait_hexbinder_01 ||
+							TraitRepository.trait_hexbinder_02 ||
+							TraitRepository.trait_hexbinder_03
+					)
+				) {
+					spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.4, 1);
+				}
+				if (
+					character.traits.includes(
+						TraitRepository.trait_spellblade_01 ||
+							TraitRepository.trait_spellblade_02 ||
+							TraitRepository.trait_spellblade_03
+					)
+				) {
+					spellDamageMultiPlier = Math.min(spellDamageMultiPlier + 0.2, 1);
+				}
+				return spellDamageMultiPlier;
+			default:
+				return spellDamageMultiPlier;
+		}
+	}
+	return spellDamageMultiPlier;
+}
+
+export function getArmorPenaltyForSpellCastingHit(
+	character: Character
+): number {
+	let armorPenalty = character.equipments.armor?.spellCastingPenaltyHit || 0; // Default penalty from the armor
+	let armorType = character.equipments.armor?.armorType; // 'light', 'medium', or 'heavy'
+
+	if (armorType != undefined) {
+		switch (armorType) {
+			case "light":
+				if (
+					character.traits.includes(
+						TraitRepository.trait_hexbinder_01 ||
+							TraitRepository.trait_hexbinder_02 ||
+							TraitRepository.trait_hexbinder_03
+					)
+				) {
+					armorPenalty = Math.max(armorPenalty + 1, 0); // Warlock improves light armor hit up to 0
+				}
+				if (
+					character.traits.includes(
+						TraitRepository.trait_spellblade_01 ||
+							TraitRepository.trait_spellblade_02 ||
+							TraitRepository.trait_spellblade_03
+					)
+				) {
+					armorPenalty = Math.max(armorPenalty + 3, 0); // Swordmage boosts light armor hit further up to 0
+				}
+				break;
+
+			case "medium":
+				if (
+					character.traits.includes(
+						TraitRepository.trait_hexbinder_01 ||
+							TraitRepository.trait_hexbinder_02 ||
+							TraitRepository.trait_hexbinder_03
+					)
+				) {
+					armorPenalty = Math.max(armorPenalty + 2, 0); // Warlock mitigates medium armor penalty to max 0
+				}
+				if (
+					character.traits.includes(
+						TraitRepository.trait_spellblade_01 ||
+							TraitRepository.trait_spellblade_02 ||
+							TraitRepository.trait_spellblade_03
+					)
+				) {
+					armorPenalty = Math.max(armorPenalty + 2, 0); // Swordmage improves medium armor hit to max 0
+				}
+				break;
+
+			case "heavy":
+				if (
+					character.traits.includes(
+						TraitRepository.trait_hexbinder_01 ||
+							TraitRepository.trait_hexbinder_02 ||
+							TraitRepository.trait_hexbinder_03
+					)
+				) {
+					armorPenalty = Math.max(armorPenalty + 3, 0); // Warlock mitigates heavy armor penalty to max 0
+				}
+				if (
+					character.traits.includes(
+						TraitRepository.trait_spellblade_01 ||
+							TraitRepository.trait_spellblade_02 ||
+							TraitRepository.trait_spellblade_03
+					)
+				) {
+					armorPenalty = Math.max(armorPenalty + 1, 0); // Swordmage slightly mitigates heavy armor penalty
+				}
+				break;
+
+			default:
+				break;
+		}
+	}
+	return armorPenalty;
+}
+
+export function getCriticalModifiedDamage(
+	character: Character,
+	damage: number
+): number {
+	// This will be used for critical hit damage calculation, normally it will be 1.5 times the damage
+	// But some triats or skills can modify this value, right now there's none
+	let baseModifier = 1.5;
+
+	// TODO: Placeholders for traits or skills that can modify this value
+
+	return damage * baseModifier;
+}
+
+
+
+export function processSpecialEffect(
+    actor: Character,
+    damageObject: {
+        specialEffect: {
+            condition: {
+                actor?: {
+                    stat: { type: CharacterStatusEnum; value: number };
+                    trait: TraitEnum;
+                    buff: { type: BuffsAndDebuffsEnum; stack: number };
+                };
+                target?: {
+                    stat: { type: CharacterStatusEnum; value: number };
+                    trait: TraitEnum;
+                    buff: { type: BuffsAndDebuffsEnum; stack: number };
+                };
+                skillLevel?: number;
+            };
+            effect: SpecialEffectResult;
+        };
+    },
+    skillLevel: number
+) {
+    if (!damageObject.specialEffect) return undefined;
+    const specialEffect = damageObject.specialEffect;
+    const isSkillLevelMet = skillLevel >= (specialEffect.condition?.skillLevel ?? 1);
+    const conditionMet =
+        actor.checkSpecialEffectCondition(
+            specialEffect.condition.actor?.stat,
+            specialEffect.condition.actor?.trait,
+            specialEffect.condition.actor?.buff
+        ) && isSkillLevelMet;
+    if (conditionMet) {
+        const result = specialEffect.effect;
+        return {
+            damage: result.damage,
+            damageMultiplier: result.damageMultiplier,
+            buffsOrDebuffs: result.buffsOrDebuffs,
+        };
+    }
+    return undefined;
 }

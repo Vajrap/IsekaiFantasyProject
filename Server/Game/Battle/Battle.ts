@@ -4,7 +4,7 @@ import { ActionDetails, ActorSkillEffect, TargetSkillEffect } from "../../API/Ba
 import { skillRepository } from "../../Entities/Skills/SkillRepository";
 import { Skill } from "../../Entities/Skills/Skill";
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
-import { Character } from "../../Entities/Character/Character";
+import { Character, consumeActionObject } from "../../Entities/Character/Character";
 import { TargetPartyType, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { EventEmitter } from "ws";
 import { SkillActionType } from "../../Entities/Skills/SubClasses/SkillActiveEffect";
@@ -340,22 +340,12 @@ export class Battle {
         let weapons = [];
         if (actor.equipments.mainHand && actor.equipments.mainHand.weaponSpecificType != null) { weapons.push(actor.equipments.mainHand.weaponSpecificType) };
         if (actor.equipments.offHand && actor.equipments.offHand.weaponSpecificType != null) { weapons.push(actor.equipments.offHand.weaponSpecificType) };
-    
-        const weaponValidated = skill.validateEquipment({weapon: weapons});
-        if (weaponValidated === false) {
-            return this.actorMoveToNextActiveSkill(actor, skillPosition, selfParty, oppositeParty, targets);
-        }
-        
-        const resourceValidated = this.actorValidateResource(actor, skill, skillLevel);
-        if (resourceValidated === false) {
-            return this.actorMoveToNextActiveSkill(actor, skillPosition, selfParty, oppositeParty, targets);
-        }
 
         console.log(`${actor.name} is using ${skill.name}`);
         this.actorRemoveResource(actor, skill, skillLevel);
         let positiveTargets: Character[] = [];
         let negativeTargets: Character[] = [];
-        let castMessage = `${actor.name} use ${skill.name}`;
+        let castMessage = `${actor.name} ${skill.isSpell ?"is casting" : "is using"} ${skill.name}`;
         let sequenceMessages: string[] = [];
 
         //TODO: Implement these, for Frontend
@@ -378,7 +368,8 @@ export class Battle {
         
             for (const actionObject of activeEffect.skillActionObjects) {
                 for (const target of targets) {
-                    let consumedResult = actor.consumeActionObject(
+                    let consumedResult = consumeActionObject(
+                        actor,
                         actionObject, 
                         skillLevel, 
                         target, 
@@ -456,29 +447,6 @@ export class Battle {
                 skillPosition
             );
         }
-    }
-
-    actorValidateResource(actor: Character, skillObject: Skill, level: number): boolean {
-        const { hp, mp, sp, elements } = skillObject.consume;
-        if (
-            hp[level-1] >= actor.currentHP ||
-            mp[level-1] > actor.currentMP ||
-            sp[level-1] > actor.currentSP
-        ) {
-            return false;
-        }
-        if (elements.length === 0) {
-            return true;
-        }
-        for (const { element, amount } of elements) {
-            if (
-                amount[level - 1] >
-                actor.resources[element as keyof typeof actor.resources]
-            ) {
-                return false;
-            }
-        }
-        return true;
     }
 
     actorAddResource(actor: Character, skill: Skill, level: number) {

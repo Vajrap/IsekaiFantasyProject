@@ -22,6 +22,7 @@ export class Skill {
     isSpell: boolean;
     isAuto: boolean = false;
     isWeaponAttack: boolean = false;
+    isReaction: boolean = false;
     constructor(
         id: string, 
         name: string, 
@@ -34,7 +35,8 @@ export class Skill {
         tier: Tier,
         isSpell: boolean,
         isAuto?: boolean,
-        isWeaponAttack?: boolean
+        isWeaponAttack?: boolean,
+        isReaction?: boolean
     ) {
         this.id = id;
         this.name = name;
@@ -49,6 +51,7 @@ export class Skill {
         this.isSpell = isSpell;
         this.isAuto = isAuto || false;
         this.isWeaponAttack = isWeaponAttack || false;
+        this.isReaction = isReaction || false;
     }
 
     validateSkillLearning(
@@ -543,5 +546,39 @@ export class NonAutoSpellNonWeapon extends NonAutoSpell {
             params.tier
         );        
         this.isWeaponAttack = false;
+    }
+}
+
+export class SpellReaction extends Spell {
+    constructor(
+        id: string, 
+        name: string, 
+        baseDescription: string,
+        requirement: SkillLearningRequirement, 
+        equipmentNeeded: SkillEquipmentRequirement, 
+        activeEffect: SkillActiveEffect[], 
+        consume: SkillConsume, 
+        produce: SkillProduce,
+        tier: Tier,
+    ) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier);
+        this.isReaction = true;
+    }
+}
+
+export class MartialReaction extends Martial {
+    constructor(
+        id: string, 
+        name: string, 
+        baseDescription: string,
+        requirement: SkillLearningRequirement, 
+        equipmentNeeded: SkillEquipmentRequirement, 
+        activeEffect: SkillActiveEffect[], 
+        consume: SkillConsume, 
+        produce: SkillProduce,
+        tier: Tier,
+    ) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier);
+        this.isReaction = true;
     }
 }
