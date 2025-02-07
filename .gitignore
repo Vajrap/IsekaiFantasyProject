@@ -1,5 +1,7 @@
 Client/server.js
+Client/assets/
 Client/node_modules/
 Server/node_modules/
+dist/Client/assets/
 node_modules/
 .VSCodeCounter/
