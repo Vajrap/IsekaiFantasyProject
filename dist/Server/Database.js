@@ -50,7 +50,6 @@ export class DB {
     // Method to check if a table exists in the database
     tableExists(tableName) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(`Checking if table "${tableName}" exists...`);
             const sql = `SELECT name FROM sqlite_master WHERE type='table' AND name=?`;
             return new Promise((resolve, reject) => {
                 this.db.get(sql, [tableName], (err, row) => {
@@ -59,8 +58,6 @@ export class DB {
                         reject(err);
                     }
                     else {
-                        console.log(`Query executed: ${sql}, Parameters: ${tableName}`);
-                        console.log(`Result row:`, row); // Log the row returned by SQLite    
                         resolve(!!row); // Return true if the table exists, false otherwise
                     }
                 });
@@ -70,7 +67,6 @@ export class DB {
     // Create table
     createTable(tableName, schema) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(`Table "${tableName}" doesn't exist, creating...`);
             const sql = `CREATE TABLE IF NOT EXISTS ${tableName} (${schema})`;
             return new Promise((resolve, reject) => {
                 this.db.run(sql, (err) => {
@@ -79,7 +75,6 @@ export class DB {
                         reject(err);
                     }
                     else {
-                        console.log(`Table "${tableName}" is ready.`);
                         resolve();
                     }
                 });
@@ -103,7 +98,6 @@ export class DB {
                         reject(err);
                     }
                     else {
-                        console.log(`Inserted row into ${tableName} with id ${primaryKeyValue}`);
                         resolve();
                     }
                 });
@@ -200,10 +194,8 @@ export class DB {
     //MARK: Equipments
     getWeapon(weapon) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(`getting weapon with id ${weapon}`);
             const weaponObj = yield this.read('Gears', 'id', weapon);
             if (weaponObj) {
-                console.log(`weapon get with name ${weaponObj.name}`);
                 // Instantiate and return a GearInstance object
                 return new Weapon({
                     id: weaponObj.id,

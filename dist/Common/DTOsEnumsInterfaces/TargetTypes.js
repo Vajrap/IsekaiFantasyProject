@@ -135,4 +135,5 @@ export var BuffsAndDebuffsEnum;
     BuffsAndDebuffsEnum["desperation"] = "desperation";
     BuffsAndDebuffsEnum["mage_reflex"] = "mage_reflex";
     BuffsAndDebuffsEnum["demonic_empowerment"] = "demonic_empowerment";
+    BuffsAndDebuffsEnum["frost_shield"] = "frost_shield";
 })(BuffsAndDebuffsEnum || (BuffsAndDebuffsEnum = {}));

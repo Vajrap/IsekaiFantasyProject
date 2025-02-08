@@ -21,6 +21,8 @@ export class ItemBag {
             id: item.item.id,
             name: item.item.name,
             description: item.item.description,
+            itemType: item.item.itemType,
+            cost: item.item.cost,
             quantity: item.quantity,
         }));
     }

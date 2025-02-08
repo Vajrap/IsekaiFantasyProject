@@ -1,3 +1,5 @@
+import { ItemType } from "Common/DTOsEnumsInterfaces/Item/Enums";
+import { ItemCost } from "Common/DTOsEnumsInterfaces/Item/ItemCost";
 import { SkillConsumeInterface, SkillProduceInterface } from "Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
 
 export interface GetPartyRequest {
@@ -158,18 +160,20 @@ export interface CharacterItemInBag {
     name: string;
     description: string;
     quantity: number;
+    cost: ItemCost;
+    itemType: ItemType;
 };
 
 export interface CharacterEquipmentInterface {
-    mainHand: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
-    offHand: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
-    armor: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
-    headwear: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
-    gloves: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
-    boots: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
-    necklace: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
-    ring_R: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
-    ring_L: {id: string, name: string, cost: number, weight: number, description: string}|undefined;
+    mainHand: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
+    offHand: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
+    armor: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
+    headwear: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
+    gloves: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
+    boots: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
+    necklace: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
+    ring_R: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
+    ring_L: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
 };
 
 export interface CharacterInternalInterface {

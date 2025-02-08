@@ -10,10 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { db } from "../Database";
 export function createTableIfNotExists(tableName, tableStructure, tableData, primaryKeyColumn) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(`Checking table ${tableName}...`);
         try {
             const tableExists = yield db.tableExists(tableName);
-            console.log(`Table ${tableName} exists: ${tableExists}`);
             if (tableExists) {
                 yield checkDatabaseValidity(tableName, tableData, primaryKeyColumn);
                 return;

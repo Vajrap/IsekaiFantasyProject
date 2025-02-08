@@ -13,12 +13,12 @@ import { SkillLearningRequirement } from "./SubClasses/SkillLearningRequirement"
 import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
 import { SkillActiveEffect } from "./SubClasses/SkillActiveEffect";
 import { db } from "../../Database";
-import { SkillInternalType } from "./SubClasses/SkillInternalType";
 import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 export class Skill {
-    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier, isSpell, internalType, isAuto, isWeaponAttack) {
+    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier, isSpell, isAuto, isWeaponAttack, isReaction) {
         this.isAuto = false;
         this.isWeaponAttack = false;
+        this.isReaction = false;
         this.id = id;
         this.name = name;
         this.baseDescription = baseDescription;
@@ -30,9 +30,9 @@ export class Skill {
         this.growth = SkillGrowthManager.getGrowth(tier);
         this.tier = tier;
         this.isSpell = isSpell;
-        this.internalType = internalType || SkillInternalType.None;
         this.isAuto = isAuto || false;
         this.isWeaponAttack = isWeaponAttack || false;
+        this.isReaction = isReaction || false;
     }
     validateSkillLearning(characterLevel, status, skills, traits) {
         let isValid = true;
@@ -173,7 +173,101 @@ export function getSkillFromDB(skillID) {
         const consume = typeof skillArchetype.consume === 'string' ? JSON.parse(skillArchetype.consume) : SkillConsume;
         const produce = typeof skillArchetype.produce === 'string' ? JSON.parse(skillArchetype.produce) : SkillProduce;
         // Create the Skill object with the parsed values
-        const skill = new Skill(skillArchetype.id, skillArchetype.name, skillArchetype.baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, skillArchetype.tier, skillArchetype.isSpell, skillArchetype.internalType, false, skillArchetype.isWeaponAttack);
+        const skill = new Skill(skillArchetype.id, skillArchetype.name, skillArchetype.baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, skillArchetype.tier, skillArchetype.isSpell, false, skillArchetype.isWeaponAttack);
         return skill;
     });
+}
+class Spell extends Skill {
+    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier, true);
+    }
+}
+class Martial extends Skill {
+    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier, false);
+    }
+}
+class AutoSpell extends Spell {
+    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier);
+        this.isAuto = true;
+    }
+}
+class NonAutoSpell extends Spell {
+    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier);
+        this.isAuto = false;
+    }
+}
+class AutoMartial extends Martial {
+    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier);
+        this.isAuto = true;
+    }
+}
+class NonAutoMartial extends Martial {
+    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier);
+        this.isAuto = false;
+    }
+}
+export class AutoMartialWeapon extends AutoMartial {
+    constructor(params) {
+        super(params.id, params.name, params.baseDescription, params.requirement, params.equipmentNeeded, params.activeEffect, params.consume, params.produce, params.tier);
+        this.isWeaponAttack = true;
+    }
+}
+export class AutoMartialNonWeapon extends AutoMartial {
+    constructor(params) {
+        super(params.id, params.name, params.baseDescription, params.requirement, params.equipmentNeeded, params.activeEffect, params.consume, params.produce, params.tier);
+        this.isWeaponAttack = false;
+    }
+}
+export class NonAutoMartialWeapon extends NonAutoMartial {
+    constructor(params) {
+        super(params.id, params.name, params.baseDescription, params.requirement, params.equipmentNeeded, params.activeEffect, params.consume, params.produce, params.tier);
+        this.isWeaponAttack = true;
+    }
+}
+export class NonAutoMartialNonWeapon extends NonAutoMartial {
+    constructor(params) {
+        super(params.id, params.name, params.baseDescription, params.requirement, params.equipmentNeeded, params.activeEffect, params.consume, params.produce, params.tier);
+        this.isWeaponAttack = false;
+    }
+}
+export class AutoSpellWeapon extends AutoSpell {
+    constructor(params) {
+        super(params.id, params.name, params.baseDescription, params.requirement, params.equipmentNeeded, params.activeEffect, params.consume, params.produce, params.tier);
+        this.isWeaponAttack = true;
+    }
+}
+export class AutoSpellNonWeapon extends AutoSpell {
+    constructor(params) {
+        super(params.id, params.name, params.baseDescription, params.requirement, params.equipmentNeeded, params.activeEffect, params.consume, params.produce, params.tier);
+        this.isWeaponAttack = false;
+    }
+}
+export class NonAutoSpellWeapon extends NonAutoSpell {
+    constructor(params) {
+        super(params.id, params.name, params.baseDescription, params.requirement, params.equipmentNeeded, params.activeEffect, params.consume, params.produce, params.tier);
+        this.isWeaponAttack = true;
+    }
+}
+export class NonAutoSpellNonWeapon extends NonAutoSpell {
+    constructor(params) {
+        super(params.id, params.name, params.baseDescription, params.requirement, params.equipmentNeeded, params.activeEffect, params.consume, params.produce, params.tier);
+        this.isWeaponAttack = false;
+    }
+}
+export class SpellReaction extends Spell {
+    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier);
+        this.isReaction = true;
+    }
+}
+export class MartialReaction extends Martial {
+    constructor(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier) {
+        super(id, name, baseDescription, requirement, equipmentNeeded, activeEffect, consume, produce, tier);
+        this.isReaction = true;
+    }
 }

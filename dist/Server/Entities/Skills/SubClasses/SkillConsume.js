@@ -1,5 +1,5 @@
 export class SkillConsume {
-    constructor({ hp, mp, sp, elements }) {
+    constructor({ hp = Array(10).fill(0), mp = Array(10).fill(0), sp = Array(10).fill(0), elements }) {
         this.hp = hp;
         this.mp = mp;
         this.sp = sp;

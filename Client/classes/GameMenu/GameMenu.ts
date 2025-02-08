@@ -1,7 +1,8 @@
-import { CharacterInterface, CharacterSkillInterface } from "../../../Common/RequestResponse/characterWS.js";
+import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
 import { CharacterCard } from "../../../Client/classes/Cards/CharacterCard/CharacterCard.js";
 import { SkillMenu } from "./SkillMenu/SkillMenu.js";
 import { screamer } from "../../../Client/Screamer/Screamer.js";
+import { EquipmentsAndItemsMenu } from "../../../Client/classes/GameMenu/EquipmentsAndItemsMenu/EquipementsAndItemsMenu.js";
 
 export class GameMenu {
     isPopupVisible: boolean;
@@ -137,7 +138,7 @@ export class GameMenu {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
 
-        const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu();
+        const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu(character);
         const equipmentsAndItemsMenuElement = equipmentsAndItemsMenu.menu;
         popupScreen.appendChild(equipmentsAndItemsMenuElement);
     }

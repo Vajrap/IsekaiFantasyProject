@@ -20,11 +20,9 @@ import { createTableIfNotExists } from "../Seeding";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { WeaponSpecificType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
-import { SkillInternalType } from "../../Entities/Skills/SubClasses/SkillInternalType";
 export class SkillArchetype {
     constructor(dto) {
         this.isSpell = false;
-        this.internalType = SkillInternalType.None;
         this.isWeaponAttack = false;
         this.id = dto.id;
         this.name = dto.name;
@@ -36,7 +34,6 @@ export class SkillArchetype {
         this.produce = dto.produce;
         this.tier = dto.tier;
         this.isSpell = dto.isSpell || false;
-        this.internalType = dto.internalType || SkillInternalType.None;
         this.isWeaponAttack = dto.isWeaponAttack || false;
     }
 }
@@ -95,11 +92,6 @@ export var SkillEnum;
     SkillEnum["skill_demonic_empowerment"] = "skill_demonic_empowerment";
     // holy = "holy",
     SkillEnum["skill_smite"] = "skill_smite";
-    // Internal Energy Skills
-    SkillEnum["skill_inner_focus"] = "skill_inner_focus";
-    SkillEnum["skill_chi_blast"] = "skill_chi_blast";
-    SkillEnum["skill_chi_infused_strike"] = "skill_chi_infused_strike";
-    SkillEnum["skill_chi_circulation"] = "skill_chi_circulation";
     // uncommon
     // physical skills
     SkillEnum["skill_counter_attack"] = "skill_counter_attack";
@@ -2281,259 +2273,6 @@ const skillSeed = [
             ]
         }),
         isSpell: true,
-        tier: Tier.common
-    }),
-    // MARK: Internal Energy Skills
-    // Internal Energy Skills
-    // skill_inner_focus = 'skill_inner_focus',
-    new SkillArchetype({
-        id: SkillEnum.skill_inner_focus,
-        name: 'รวมปราณ',
-        baseDescription: 'วิชาพื้นฐานในการรวบรวมลมปราณภายในร่างกาย เข้าสู่สถานะ "รวมปราณ" เพิ่มความแม่นยำ เพิ่มพลังทำลายกายภาพ เพิ่มพลังป้องกันเวทย์มนต์ ลดพลังทำลายเวทย์มนต์เป็นเวลา 3 เทิร์น;เมื่อพัฒนาถึงขั้น 5 จะเพิ่มเป็น 4 เทิร์น',
-        requirement: new SkillLearningRequirement({
-            preRequireCharacterLevel: 1
-        }),
-        equipmentNeeded: new SkillEquipmentRequirement({
-            weapon: []
-        }),
-        activeEffect: [
-            new SkillActiveEffect(new TargetType(TargetPartyType.Self, TargetSelectionScope.Single, TargetConditionFilters.None, TargetSortingOptions.None, TargetTauntConsideration.NoTauntCount), [
-                new SkillActionObject({
-                    type: SkillActionType.Positive,
-                    subType: SkillActionSubType.Buff,
-                    damageDiceBase: [DiceEnum.None],
-                    damageType: [DamageTypes.None],
-                    damageModifierStat: [CharacterStatusEnum.none],
-                    damageModifierBonus: [0],
-                    hitBase: [0],
-                    hitStat: [[]],
-                    critBase: [0],
-                    critStat: [[]],
-                    applyEffect: [
-                        [
-                            new SkillApplyEffect({
-                                applyWithoutHit: [true],
-                                effectName: [
-                                    BuffsAndDebuffsEnum.innerFocus_1,
-                                    BuffsAndDebuffsEnum.innerFocus_1,
-                                    BuffsAndDebuffsEnum.innerFocus_1,
-                                    BuffsAndDebuffsEnum.innerFocus_1,
-                                    BuffsAndDebuffsEnum.innerFocus_1,
-                                ],
-                                effectHitBase: [0],
-                                effectHitBonus: [[]],
-                                effectDuration: [3, 3, 3, 3, 4],
-                                effectStatForResistance: CharacterStatusEnum.none,
-                                effectDurationBonus: [CharacterStatusEnum.breath],
-                            })
-                        ]
-                    ],
-                })
-            ])
-        ],
-        consume: new SkillConsume({
-            hp: [0],
-            mp: [0],
-            sp: [5],
-            elements: [
-                new ElementConsume({
-                    element: FundamentalElementTypes.none,
-                    amount: [1, 1, 1, 1, 1]
-                })
-            ]
-        }),
-        produce: new SkillProduce({
-            elements: [
-                new ElementProduce({
-                    element: FundamentalElementTypes.order,
-                    amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-                }),
-                new ElementProduce({
-                    element: FundamentalElementTypes.chaos,
-                    amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-                })
-            ],
-        }),
-        tier: Tier.common
-    }),
-    // skill_chi_blast = 'skill_chi_blast',
-    new SkillArchetype({
-        id: SkillEnum.skill_chi_blast,
-        name: 'คลื่นปราณ',
-        baseDescription: 'โจมตีด้วยคลื่นลมปราณ สร้างความเสียหายกลมกลืน 1d6 (+ลมหายใจ)',
-        requirement: new SkillLearningRequirement({
-            preRequireCharacterLevel: 1
-        }),
-        equipmentNeeded: new SkillEquipmentRequirement({
-            weapon: []
-        }),
-        activeEffect: [
-            new SkillActiveEffect(new TargetType(TargetPartyType.Enemy, TargetSelectionScope.Single, TargetConditionFilters.None, TargetSortingOptions.None, TargetTauntConsideration.TauntCount), [
-                new SkillActionObject({
-                    type: SkillActionType.Negative,
-                    subType: SkillActionSubType.Damage,
-                    damageDiceBase: [DiceEnum.OneD6],
-                    damageType: [DamageTypes.chiHarmony],
-                    damageModifierStat: [CharacterStatusEnum.breath],
-                    damageModifierBonus: [0, 1, 2, 3, 4],
-                    hitBase: [0],
-                    hitStat: [[CharacterStatusEnum.dexterity]],
-                    critBase: [0],
-                    critStat: [[CharacterStatusEnum.luck]],
-                    applyEffect: [],
-                    preferredPositionDamageModifier: { position: PreferredPositionEnum.FrontToAny, penaltyModifier: 0.7 }
-                })
-            ])
-        ],
-        consume: new SkillConsume({
-            hp: [0],
-            mp: [0],
-            sp: [5],
-            elements: [
-                new ElementConsume({
-                    element: FundamentalElementTypes.none,
-                    amount: [2, 2, 2, 2, 2]
-                })
-            ]
-        }),
-        produce: new SkillProduce({
-            elements: [
-                new ElementProduce({
-                    element: FundamentalElementTypes.order,
-                    amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-                }),
-                new ElementProduce({
-                    element: FundamentalElementTypes.chaos,
-                    amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-                })
-            ]
-        }),
-        tier: Tier.common
-    }),
-    // skill_chi_infused_strike = 'skill_chi_infused_strike',
-    new SkillArchetype({
-        id: SkillEnum.skill_chi_infused_strike,
-        name: 'โจมตีผสานปราณ',
-        baseDescription: 'ใช้ลมปราณห่อหุ้มอาวุธและโจมตี สร้างความเสียหายกลมกลืนเท่ากับ 1.2 เท่าความเสียหายของอาวุธ; เมื่อพัฒนาถึงขั้น 5 ความเสียหายเพิ่มเป็น 1.5 เท่า',
-        requirement: new SkillLearningRequirement({
-            preRequireCharacterLevel: 1
-        }),
-        equipmentNeeded: new SkillEquipmentRequirement({
-            weapon: [
-                WeaponSpecificType.sword_long,
-                WeaponSpecificType.blade_cutlass,
-                WeaponSpecificType.dagger_knife,
-                WeaponSpecificType.dagger_stiletto,
-            ]
-        }),
-        activeEffect: [
-            new SkillActiveEffect(new TargetType(TargetPartyType.Enemy, TargetSelectionScope.Single, TargetConditionFilters.None, TargetSortingOptions.None, TargetTauntConsideration.TauntCount), [
-                new SkillActionObject({
-                    type: SkillActionType.Negative,
-                    subType: SkillActionSubType.Damage,
-                    damageDiceBase: [DiceEnum.Weapon_Physical],
-                    damageType: [DamageTypes.chiHarmony],
-                    damageModifierStat: [CharacterStatusEnum.breath],
-                    damageModifierBonus: [0, 1, 2, 3, 4],
-                    damageMultiplier: [1.2, 1.2, 1.2, 1.2, 1.5],
-                    hitBase: [0],
-                    hitStat: [[CharacterStatusEnum.dexterity]],
-                    critBase: [0],
-                    critStat: [[CharacterStatusEnum.luck]],
-                    applyEffect: [],
-                    preferredPositionDamageModifier: { position: PreferredPositionEnum.FrontToAny, penaltyModifier: 0.7 }
-                })
-            ])
-        ],
-        consume: new SkillConsume({
-            hp: [0],
-            mp: [0],
-            sp: [5],
-            elements: [
-                new ElementConsume({
-                    element: FundamentalElementTypes.none,
-                    amount: [2, 2, 2, 2, 2]
-                })
-            ]
-        }),
-        produce: new SkillProduce({
-            elements: [
-                new ElementProduce({
-                    element: FundamentalElementTypes.order,
-                    amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-                }),
-                new ElementProduce({
-                    element: FundamentalElementTypes.chaos,
-                    amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-                })
-            ]
-        }),
-        tier: Tier.common
-    }),
-    // skill_chi_circulation = 'skill_chi_circulation', //used for healing, slow healing over time
-    // skill_chi_circulation = 'skill_chi_circulation', //used for healing, slow healing over time
-    new SkillArchetype({
-        id: SkillEnum.skill_chi_circulation,
-        name: 'เดินปราณรักษา',
-        baseDescription: 'เดินปราณรักษาตนเอง เข้าสู่สถานะ "เดินปราณ" เป็นเวลา 3 เทิร์น ฟื้นฟูพลังชีวิตของตนเล็กน้อยทุก ๆ เทิร์น; เมื่อพัฒนาถึงขั้น 5 จะเป็น 4 เทิร์น',
-        requirement: new SkillLearningRequirement({
-            preRequireCharacterLevel: 1
-        }),
-        equipmentNeeded: new SkillEquipmentRequirement({
-            weapon: []
-        }),
-        activeEffect: [
-            new SkillActiveEffect(new TargetType(TargetPartyType.Self, TargetSelectionScope.Single, TargetConditionFilters.None, TargetSortingOptions.None, TargetTauntConsideration.NoTauntCount), [
-                new SkillActionObject({
-                    type: SkillActionType.Positive,
-                    subType: SkillActionSubType.Buff,
-                    damageDiceBase: [DiceEnum.None],
-                    damageType: [DamageTypes.chiHarmony],
-                    damageModifierStat: [CharacterStatusEnum.breath],
-                    damageModifierBonus: [0],
-                    hitBase: [0],
-                    hitStat: [[]],
-                    critBase: [0],
-                    critStat: [[]],
-                    applyEffect: [
-                        [
-                            new SkillApplyEffect({
-                                applyWithoutHit: [true],
-                                effectName: [BuffsAndDebuffsEnum.chiCirculation],
-                                effectHitBase: [0],
-                                effectHitBonus: [[]],
-                                effectDuration: [3, 3, 3, 3, 4],
-                                effectDurationBonus: [],
-                                effectStatForResistance: CharacterStatusEnum.none,
-                            })
-                        ]
-                    ],
-                })
-            ])
-        ],
-        consume: new SkillConsume({
-            hp: [0],
-            mp: [0],
-            sp: [5],
-            elements: [
-                new ElementConsume({
-                    element: FundamentalElementTypes.none,
-                    amount: [1, 1, 1, 1, 1]
-                })
-            ]
-        }),
-        produce: new SkillProduce({
-            elements: [
-                new ElementProduce({
-                    element: FundamentalElementTypes.order,
-                    amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-                }),
-                new ElementProduce({
-                    element: FundamentalElementTypes.chaos,
-                    amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-                })
-            ]
-        }),
         tier: Tier.common
     }),
     // uncommon (max level = 5)

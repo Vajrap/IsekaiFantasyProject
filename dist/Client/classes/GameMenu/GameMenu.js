@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { CharacterCard } from "../../../Client/classes/Cards/CharacterCard/CharacterCard.js";
 import { SkillMenu } from "./SkillMenu/SkillMenu.js";
 import { screamer } from "../../../Client/Screamer/Screamer.js";
+import { EquipmentsAndItemsMenu } from "../../../Client/classes/GameMenu/EquipmentsAndItemsMenu/EquipementsAndItemsMenu.js";
 export class GameMenu {
     constructor() {
         this.screamer = screamer;
@@ -112,7 +113,7 @@ export class GameMenu {
     showEquipmentsAndItemsMenu(character) {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
-        const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu();
+        const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu(character);
         const equipmentsAndItemsMenuElement = equipmentsAndItemsMenu.menu;
         popupScreen.appendChild(equipmentsAndItemsMenuElement);
     }
