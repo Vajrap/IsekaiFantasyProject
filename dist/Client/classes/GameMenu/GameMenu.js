@@ -113,6 +113,8 @@ export class GameMenu {
     showEquipmentsAndItemsMenu(character) {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
+        popupScreen.classList.remove('hidden');
+        popupScreen.classList.add('visible');
         const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu(character);
         const equipmentsAndItemsMenuElement = equipmentsAndItemsMenu.menu;
         popupScreen.appendChild(equipmentsAndItemsMenuElement);

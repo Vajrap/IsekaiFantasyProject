@@ -3,6 +3,7 @@ import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
 import { GameMenu } from "../../../Client/classes/GameMenu/GameMenu.js";
 import { screamer } from "../../../Client/Screamer/Screamer.js";
 import { K } from "../../../Common/Constant.js";
+import { EquipmentsAndItemsMenu } from "../../../Client/classes/GameMenu/EquipmentsAndItemsMenu/EquipementsAndItemsMenu.js";
 
 class GameViewModel {
     // Model
@@ -13,7 +14,12 @@ class GameViewModel {
     companionPortraits: HTMLImageElement[];
     dialogueBoxCharacterLeft: HTMLElement;
     dialogueBoxCharacterRight: HTMLElement;
+
     battleReportBtn: HTMLElement;
+    planningBtn: HTMLElement;
+    questBtn: HTMLElement;
+    inventoryBtn: HTMLElement;
+    optionBtn: HTMLElement;
     helpBtn: HTMLElement;
 
     _gameMenu: GameMenu;
@@ -33,11 +39,14 @@ class GameViewModel {
         this.dialogueBoxCharacterLeft = document.querySelector('.dialogueBoxCharacter-left') as HTMLElement;
         this.dialogueBoxCharacterRight = document.querySelector('.dialogueBoxCharacter-right') as HTMLElement;
         this.battleReportBtn = document.getElementById('menu-battleReport') as HTMLElement;
+        this.planningBtn = document.getElementById('menu-action') as HTMLElement;
+        this.questBtn = document.getElementById('menu-quest') as HTMLElement;
+        this.inventoryBtn = document.getElementById('menu-inventory') as HTMLElement;
+        this.optionBtn = document.getElementById('menu-options') as HTMLElement;
         this.helpBtn = document.getElementById('menu-help') as HTMLElement;
         
         this._gameMenu = new GameMenu();
         this.initiateVM();
-
     }
 
     async initiateVM() {
@@ -77,8 +86,6 @@ class GameViewModel {
         }
     }
 
-
-
     addEventListener() {
         const model = this.ensureModel();
 
@@ -110,6 +117,20 @@ class GameViewModel {
         //         selectedClass: 'fighter'
         //     });
         // });
+        this.planningBtn.addEventListener('click', () => {
+            // TODO:
+        });
+
+        // this.questBtn.addEventListener('click', () => {
+        //     // TODO:
+        // });
+
+        this.inventoryBtn.addEventListener('click', () => {
+            if (!this.model?.playerCharacter) {
+                throw new Error('Player Character not found');
+            }
+            this._gameMenu.showEquipmentsAndItemsMenu(this.model.playerCharacter);
+        });
     }
 
     showCharacterInfo(character: CharacterInterface, type: 'player' | 'companion') {
@@ -118,6 +139,11 @@ class GameViewModel {
             return;
         } else {
             this._gameMenu.showCharacterInfo(character, type);
+
+            const popupScreen = getCharacterInfoPopupScreen();
+            
+            popupScreen.classList.add('visible');
+            popupScreen.classList.remove('hidden');
         }
     }
 
@@ -171,13 +197,6 @@ function delay(ms: number) {
 }
 
 export const gameVM = new GameViewModel();
-
-
-// const popupScreen = this.getCharacterInfoPopupScreen();
-// popupScreen.innerHTML = '';
-// popupScreen.classList.add('hidden');
-// popupScreen.classList.remove('visible');
-
 
 function getCharacterInfoPopupScreen() {
     let popupScreen = document.getElementById('gameMenu-popup');

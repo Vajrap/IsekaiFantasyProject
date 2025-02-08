@@ -24,8 +24,21 @@ class EventManager {
             { type: 'speak', name: 'Captain', message: `Hey you! Wake up! We are arriving at the port!`, nameColor: 'blue' },
             { type: 'portraitR', portrait: `m/${this.gameModel.playerCharacter.portrait}` },
             { type: 'options', message: 'How would you answer?:', options: [
-                    { option: `Thank you, Captain! I'm going now.`, action: () => { dialogue.clearCharacterPortraits(`left`); dialogue.clearCharacterPortraits(`right`); } },
-                    { option: `Don't use that tone with me you blaster piece of shite, I'm going on my way now!`, action: () => { this.gameModel.playerCharacter.karma -= 1; dialogue.clearPortrait(`left`); dialogue.clearPortrait(`right`); } }
+                    {
+                        option: `Thank you, Captain! I'm going now.`,
+                        action: () => {
+                            dialogue.clearCharacterPortraits(`left`);
+                            dialogue.clearCharacterPortraits(`right`);
+                        }
+                    },
+                    {
+                        option: `Don't use that tone with me you blaster piece of shite, I'm going on my way now!`,
+                        action: () => {
+                            this.gameModel.playerCharacter.karma -= 1;
+                            dialogue.clearPortrait(`left`);
+                            dialogue.clearPortrait(`right`);
+                        }
+                    }
                 ] },
             { type: 'narrative', message: `You are now at the port of the city of Lighthaven, the biggest city in the continent.` },
             { type: 'narrative', message: `You can click on the 'Help' icon in the right side of the screen to see the tutorial.` },

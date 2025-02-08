@@ -27,6 +27,10 @@ class GameViewModel {
         this.dialogueBoxCharacterLeft = document.querySelector('.dialogueBoxCharacter-left');
         this.dialogueBoxCharacterRight = document.querySelector('.dialogueBoxCharacter-right');
         this.battleReportBtn = document.getElementById('menu-battleReport');
+        this.planningBtn = document.getElementById('menu-action');
+        this.questBtn = document.getElementById('menu-quest');
+        this.inventoryBtn = document.getElementById('menu-inventory');
+        this.optionBtn = document.getElementById('menu-options');
         this.helpBtn = document.getElementById('menu-help');
         this._gameMenu = new GameMenu();
         this.initiateVM();
@@ -94,6 +98,19 @@ class GameViewModel {
         //         selectedClass: 'fighter'
         //     });
         // });
+        this.planningBtn.addEventListener('click', () => {
+            // TODO:
+        });
+        // this.questBtn.addEventListener('click', () => {
+        //     // TODO:
+        // });
+        this.inventoryBtn.addEventListener('click', () => {
+            var _a;
+            if (!((_a = this.model) === null || _a === void 0 ? void 0 : _a.playerCharacter)) {
+                throw new Error('Player Character not found');
+            }
+            this._gameMenu.showEquipmentsAndItemsMenu(this.model.playerCharacter);
+        });
     }
     showCharacterInfo(character, type) {
         if (!character) {
@@ -102,6 +119,9 @@ class GameViewModel {
         }
         else {
             this._gameMenu.showCharacterInfo(character, type);
+            const popupScreen = getCharacterInfoPopupScreen();
+            popupScreen.classList.add('visible');
+            popupScreen.classList.remove('hidden');
         }
     }
     showBattleReport() {
@@ -149,10 +169,6 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 export const gameVM = new GameViewModel();
-// const popupScreen = this.getCharacterInfoPopupScreen();
-// popupScreen.innerHTML = '';
-// popupScreen.classList.add('hidden');
-// popupScreen.classList.remove('visible');
 function getCharacterInfoPopupScreen() {
     let popupScreen = document.getElementById('gameMenu-popup');
     if (!popupScreen) {
