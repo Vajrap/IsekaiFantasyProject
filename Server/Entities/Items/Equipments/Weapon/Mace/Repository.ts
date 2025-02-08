@@ -53,7 +53,8 @@ const mace_hammer = new Mace_Hammer({
         magicalDiceEnum: null,
         magicalDamageStat: null,
         preferredPosition: PreferredPosition.melee,
-        handle: 1
+        handle: 1,
+        physicalHitModifier: -1
     },
     defenseStats: {}
 });
@@ -79,7 +80,8 @@ const mace_warhammer = new Mace_Warhammer({
         magicalDiceEnum: null,
         magicalDamageStat: null,
         preferredPosition: PreferredPosition.melee,
-        handle: 2
+        handle: 2,
+        physicalHitModifier: -2
     },
     defenseStats: {}
 });

@@ -27,7 +27,8 @@ const blade_katana = new Blade_Katana({
         magicalDiceEnum: null,
         magicalDamageStat: null,
         preferredPosition: PreferredPosition.melee,
-        handle: 2
+        handle: 2,
+        physicalHitModifier: -1
     },
     defenseStats: {}
 });
@@ -105,7 +106,8 @@ const blade_falchion = new Blade_Falchion({
         magicalDiceEnum: null,
         magicalDamageStat: null,
         preferredPosition: PreferredPosition.melee,
-        handle: 2
+        handle: 2,
+        physicalHitModifier: -2
     },
     defenseStats: {}
 });

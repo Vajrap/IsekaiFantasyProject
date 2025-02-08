@@ -22,9 +22,6 @@ const shield_buckler = new Shield_Buckler({
     },
     defenseStats: {
         pDEF: 1,
-        slashDEF: 1,
-        bluntDEF: 1,
-        pierceDEF: 1,
     }
 });
 
@@ -46,9 +43,6 @@ const shield_kite = new Shield_Kite({
     },
     defenseStats: {
         pDEF: 2,
-        slashDEF: 2,
-        bluntDEF: 2,
-        pierceDEF: 2,
     }
 });
 
@@ -70,9 +64,6 @@ const shield_tower = new Shield_Tower({
     },
     defenseStats: {
         pDEF: 3,
-        slashDEF: 3,
-        bluntDEF: 3,
-        pierceDEF: 3,
     }
 });
 
@@ -94,9 +85,6 @@ const shield_round = new Shield_Round({
     },
     defenseStats: {
         pDEF: 1,
-        slashDEF: 1,
-        bluntDEF: 2,
-        pierceDEF: 1,
     }
 });
 

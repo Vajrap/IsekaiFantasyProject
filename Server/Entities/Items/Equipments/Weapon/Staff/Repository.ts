@@ -27,7 +27,7 @@ const staff_quarter = new Staff_Quarter({
         magicalDiceEnum: null,
         magicalDamageStat: null,
         preferredPosition: PreferredPosition.melee,
-        handle: 2
+        handle: 1
     },
     defenseStats: {}
 });

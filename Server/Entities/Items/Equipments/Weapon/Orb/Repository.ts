@@ -8,7 +8,7 @@ import { Orb_Crystal, Orb_Metallic } from "./Orb";
 
 const orb_metallic = new Orb_Metallic({
     id: WeaponEnum.orb_metallic,
-    name: 'Metallic Orb',
+    name: 'Metal Orb',
     description: 'A dense metallic orb used for channeling magical energy.',
     image: 'orb_metallic.jpg',
     cost: new ItemCost(20, 0), // 2 Gold

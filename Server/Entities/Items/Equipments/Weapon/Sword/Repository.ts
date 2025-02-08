@@ -79,7 +79,8 @@ const sword_great = new Sword_Great({
         magicalDiceEnum: null,
         magicalDamageStat: null,
         preferredPosition: PreferredPosition.melee,
-        handle: 2
+        handle: 2,
+        physicalHitModifier: -2
     },
     defenseStats: {}
 });

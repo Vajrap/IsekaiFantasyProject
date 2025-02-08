@@ -52,7 +52,7 @@ const spear_javelin = new Spear_Javelin({
         physicalDamageStat: AttributeEnum.dexterity,
         magicalDiceEnum: null,
         magicalDamageStat: null,
-        preferredPosition: PreferredPosition.ranged,
+        preferredPosition: PreferredPosition.both,
         handle: 1
     },
     defenseStats: {}
@@ -79,7 +79,8 @@ const spear_halberd = new Spear_Halberd({
         magicalDiceEnum: null,
         magicalDamageStat: null,
         preferredPosition: PreferredPosition.melee,
-        handle: 2
+        handle: 2,
+        physicalHitModifier: -2
     },
     defenseStats: {}
 });

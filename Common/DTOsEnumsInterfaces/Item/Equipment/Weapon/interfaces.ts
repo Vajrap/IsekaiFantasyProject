@@ -28,5 +28,7 @@ export interface WeaponAttack {
         fire: number,
         order: number,
         chaos: number
-    }
+    },
+    physicalHitModifier: number,
+    magicalHitModifier: number
 }

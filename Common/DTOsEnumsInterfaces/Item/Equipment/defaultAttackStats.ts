@@ -20,6 +20,8 @@ export const defaultAttackStats: WeaponAttack = {
         mATK: 0, mHIT: 0, mCRT: 0, 
         geo: 0, water: 0, air: 0, 
         fire: 0, order: 0, chaos: 0
-    }
+    },
+    physicalHitModifier: 0,
+    magicalHitModifier: 0,
 };
 
