@@ -5,6 +5,7 @@ import { ItemCard } from "../../../../Client/classes/Cards/ItemCard/ItemCard.js"
 import { ItemCost } from "../../../../Common/DTOsEnumsInterfaces/Item/ItemCost.js";
 import { ItemType } from "../../../../Common/DTOsEnumsInterfaces/Item/Enums.js";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier.js";
+import { K } from "../../../../Common/Constant.js";
 
 export class EquipmentsAndItemsMenu {
     character: CharacterInterface;
@@ -176,7 +177,7 @@ export class EquipmentsAndItemsMenu {
         returnButton.textContent = 'กลับ';
         returnButton.addEventListener('click', () => {
             screamer.scream(
-                'EQUIPMENT_AND_ITEMS_MENU_RETURN_BUTTON_CLICKED',
+                K.EQUIPMENT_MENU_CLOSE,
                 {}
             )
         });

@@ -2,6 +2,7 @@ import { screamer } from "../../../../Client/Screamer/Screamer.js";
 import { ItemCard } from "../../../../Client/classes/Cards/ItemCard/ItemCard.js";
 import { ItemType } from "../../../../Common/DTOsEnumsInterfaces/Item/Enums.js";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier.js";
+import { K } from "../../../../Common/Constant.js";
 export class EquipmentsAndItemsMenu {
     constructor(character) {
         this.character = character;
@@ -133,7 +134,7 @@ export class EquipmentsAndItemsMenu {
         returnButton.classList.add('equipmentsAndItems-menu-returnButton');
         returnButton.textContent = 'กลับ';
         returnButton.addEventListener('click', () => {
-            screamer.scream('EQUIPMENT_AND_ITEMS_MENU_RETURN_BUTTON_CLICKED', {});
+            screamer.scream(K.EQUIPMENT_MENU_CLOSE, {});
         });
         buttonContainer.appendChild(returnButton);
         return buttonContainer;

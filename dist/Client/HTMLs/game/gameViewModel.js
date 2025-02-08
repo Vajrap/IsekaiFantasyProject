@@ -136,6 +136,12 @@ class GameViewModel {
                 }
                 this.showCharacterInfo(playerCharacter, 'player');
             }));
+            screamerStation.on(K.EQUIPMENT_MENU_CLOSE, (_) => __awaiter(this, void 0, void 0, function* () {
+                const equipmentWindow = getCharacterInfoPopupScreen();
+                equipmentWindow.innerHTML = '';
+                equipmentWindow.classList.add('hidden');
+                equipmentWindow.classList.remove('visible');
+            }));
         });
     }
 }
@@ -143,3 +149,21 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 export const gameVM = new GameViewModel();
+// const popupScreen = this.getCharacterInfoPopupScreen();
+// popupScreen.innerHTML = '';
+// popupScreen.classList.add('hidden');
+// popupScreen.classList.remove('visible');
+function getCharacterInfoPopupScreen() {
+    let popupScreen = document.getElementById('gameMenu-popup');
+    if (!popupScreen) {
+        popupScreen = createCharacterInfoPopup();
+    }
+    return popupScreen;
+}
+function createCharacterInfoPopup() {
+    const popupScreen = document.createElement('div');
+    popupScreen.classList.add('gameMenu-popup', 'hidden');
+    popupScreen.id = 'gameMenu-popup';
+    document.body.appendChild(popupScreen);
+    return popupScreen;
+}

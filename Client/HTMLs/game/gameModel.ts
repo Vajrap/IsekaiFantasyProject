@@ -106,6 +106,8 @@ export class GameModel {
         if (this.user_id) {
             let userCharacter = payload.characters.find(character => character !== 'none' && character.id === this.user_id);
             if (userCharacter !== undefined && userCharacter !== 'none') {
+                //TODO: Proxy image for testing
+                userCharacter.portrait = 'test_port';
                 this.playerCharacter = userCharacter;
             } else {
                 console.error('User Character not found in party data:', payload.characters);
