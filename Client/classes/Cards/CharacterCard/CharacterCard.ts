@@ -25,8 +25,6 @@ export class CharacterCard {
 
         this.frontFace.addEventListener('click', () => this.flipCard());
         this.backFace.addEventListener('click', () => this.flipCard());
-        console.log(this.frontFace);
-        console.log(this.backFace);
         card.appendChild(this.frontFace);
         card.appendChild(this.backFace);
 

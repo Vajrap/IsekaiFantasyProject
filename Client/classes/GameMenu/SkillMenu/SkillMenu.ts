@@ -296,7 +296,9 @@ export class SkillMenu {
         if (skill) {
             // Populate the slot with a skill
             const smallImage = document.createElement('img');
-            smallImage.src = `../../assets/skills/${skill.id}.png`;
+            // TODO: Change the path to the correct one
+            // smallImage.src = `../../assets/skills/${skill.id}.png`;
+            smallImage.src = `../../assets/skills/test_skill.png`;
             smallImage.classList.add('skillCard-small');
     
             smallImage.addEventListener('click', () => {

@@ -30,7 +30,9 @@ export class SkillCard {
     }
     createSkillCardPortrait() {
         const portrait = document.createElement('img');
-        portrait.src = `../../assets/skills/${this.skill.id}.png`;
+        // TODO: Change to actual path
+        // portrait.src = `../../assets/skills/${this.skill.id}.png`;
+        portrait.src = `../../assets/skills/test_skill.png`;
         portrait.classList.add('skillCard-portrait');
         return portrait;
     }
