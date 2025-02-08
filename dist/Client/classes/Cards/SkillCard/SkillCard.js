@@ -17,9 +17,15 @@ export class SkillCard {
         frontFace.appendChild(this.createSkillCardName());
         frontFace.appendChild(this.createSkillCardPortrait());
         frontFace.appendChild(this.createSkillCardDescription());
-        frontFace.appendChild(this.createSkillEquipmentRequirements());
-        frontFace.appendChild(this.createSkillCardConsume());
-        frontFace.appendChild(this.createSkillCardProduce());
+        const equipmentRequirements = this.createSkillEquipmentRequirements();
+        if (equipmentRequirements)
+            frontFace.appendChild(equipmentRequirements);
+        const consume = this.createSkillCardConsume();
+        if (consume)
+            frontFace.appendChild(consume);
+        const produce = this.createSkillCardProduce();
+        if (produce)
+            frontFace.appendChild(produce);
         return frontFace;
     }
     createSkillCardName() {
@@ -43,19 +49,17 @@ export class SkillCard {
         return description;
     }
     createSkillEquipmentRequirements() {
+        if (this.skill.equipmentRequirements.length === 0) {
+            return undefined;
+        }
         const equipmentRequirements = document.createElement('div');
         equipmentRequirements.classList.add('skillCard-equipmentRequirements');
         const label = document.createElement('div');
         label.classList.add('skillCard-label');
-        label.textContent = 'อาวุธ:';
+        label.textContent = 'อาวุธ: ';
         equipmentRequirements.appendChild(label);
         for (const requirement in this.skill.equipmentRequirements) {
-            if (this.skill.equipmentRequirements[requirement] && this.skill.equipmentRequirements[requirement].length > 0) {
-                const textValue = document.createElement('div');
-                textValue.classList.add('skillCard-value');
-                textValue.textContent = `${mapWeaponTypeName(this.skill.equipmentRequirements[requirement])}`;
-                equipmentRequirements.appendChild(textValue);
-            }
+            label.textContent += `${mapWeaponTypeName(this.skill.equipmentRequirements[requirement])}, `;
         }
         return equipmentRequirements;
     }
@@ -86,6 +90,10 @@ export class SkillCard {
                 consumeValue += `${mapElementName(elementName)}: ${elementConsumeAmount}<br>`;
             }
         }
+        if (consumeValue === '') {
+            return undefined;
+        }
+        ;
         if (consumeValue.charAt(consumeValue.length - 2) === ',') {
             consumeValue = consumeValue.slice(0, -2);
         }
@@ -96,13 +104,11 @@ export class SkillCard {
         return consume;
     }
     createSkillCardProduce() {
-        const produce = document.createElement('div');
-        produce.classList.add('skillCard-produce');
-        const label = document.createElement('div');
-        label.classList.add('skillCard-label');
-        label.textContent = 'ได้รับ';
-        produce.appendChild(label);
         let produceValue = '';
+        if (this.skill.produce.elements.length === 0) {
+            return undefined;
+        }
+        ;
         for (const element in this.skill.produce.elements) {
             const elementName = this.skill.produce.elements[element].element;
             const isOnlyOneValue = (this.skill.produce.elements[element].amount[this.skill.level - 1][0] === this.skill.produce.elements[element].amount[this.skill.level - 1][1]);
@@ -111,6 +117,12 @@ export class SkillCard {
                 `${this.skill.produce.elements[element].amount[this.skill.level - 1][0]} - ${this.skill.produce.elements[element].amount[this.skill.level - 1][1]}`;
             produceValue += `${mapElementName(elementName)}: ${elementProduceAmount}<br>`;
         }
+        const produce = document.createElement('div');
+        produce.classList.add('skillCard-produce');
+        const label = document.createElement('div');
+        label.classList.add('skillCard-label');
+        label.textContent = 'ได้รับ';
+        produce.appendChild(label);
         if (produceValue.charAt(produceValue.length - 2) === ',') {
             produceValue = produceValue.slice(0, -2);
         }
@@ -149,7 +161,7 @@ export function mapWeaponTypeName(name) {
         case 'sword_short':
             return 'กระบี่สั้น';
         case 'sword_long':
-            return 'กะบี่ยาว';
+            return 'กระบี่ยาว';
         case 'sword_great':
             return 'กระบี่ใหญ่';
         case 'sword_rapier':
