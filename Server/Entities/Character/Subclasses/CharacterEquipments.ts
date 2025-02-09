@@ -1,5 +1,5 @@
 import { db } from "../../../Database";
-import { CharacterEquipmentInterface } from "../../../../Common/RequestResponse/characterWS";
+import { CharacterEquipmentsInterface } from "../../../../Common/RequestResponse/characterWS";
 import { Weapon } from "../../Items/Equipments/Weapon/Weapon";
 import { Armor } from "../../Items/Equipments/Armors/Armor";
 import { Headwear } from "../../Items/Equipments/Headwear/Headwear";
@@ -36,7 +36,7 @@ export class CharacterEquipments {
 		this.ring_L = (ring_L != undefined)? await db.getArmor(ring_L): undefined
 	}
 
-	intoInterface(): CharacterEquipmentInterface {
+	intoInterface(): CharacterEquipmentsInterface {
 		return {
 			mainHand: this.mainHand
 				? {

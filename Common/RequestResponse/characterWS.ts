@@ -80,12 +80,12 @@ export interface CharacterInterface {
     gold: number;
     isDead: boolean;
     status: CharacterStatusInterface;
-    equipment: CharacterEquipmentInterface;
+    equipment: CharacterEquipmentsInterface;
     traits: CharacterTraitInterface[];
     skills: CharacterSkillInterface[];
     activeSkills: CharacterSkillInterface[];
     position: number;
-    itemsBag: CharacterItemInBag[];
+    itemsBag: ItemInterface[];
     arcaneAptitude: string;
     bagSize: number;
     currentHP: number;
@@ -155,33 +155,33 @@ export interface CharacterSkillInterface {
     equipmentRequirements: string[];
 };
 
-export interface CharacterItemInBag {
+export interface ItemInterface {
     id: string;
     name: string;
     description: string;
     quantity: number;
     cost: ItemCost;
     itemType: ItemType;
+    weight: number;
 };
 
-export interface CharacterEquipmentInterface {
-    mainHand: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
-    offHand: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
-    armor: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
-    headwear: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
-    gloves: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
-    boots: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
-    necklace: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
-    ring_R: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
-    ring_L: {id: string, name: string, cost: ItemCost, weight: number, description: string}|undefined;
+export interface EquipmentInterface {
+    id: string,
+    name: string,
+    cost: ItemCost,
+    weight: number,
+    description: string,
 };
-
-export interface CharacterInternalInterface {
-    id: string;
-    name: string;
-    level: number;
-    description: string;
-    tier: string;
+export interface CharacterEquipmentsInterface {
+    mainHand: ItemInterface|undefined;
+    offHand: ItemInterface|undefined;
+    armor: ItemInterface|undefined;
+    headwear: ItemInterface|undefined;
+    gloves: ItemInterface|undefined;
+    boots: ItemInterface|undefined;
+    necklace: ItemInterface|undefined;
+    ring_R: ItemInterface|undefined;
+    ring_L: ItemInterface|undefined;
 };
 
 export interface CharacterTraitInterface {

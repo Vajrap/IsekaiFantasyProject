@@ -1,4 +1,4 @@
-import { CharacterEquipmentInterface, CharacterInterface, CharacterItemInBag } from "../../../../Common/RequestResponse/characterWS.js";
+import { CharacterEquipmentsInterface, CharacterInterface, ItemInterface } from "../../../../Common/RequestResponse/characterWS.js";
 import { screamer } from "../../../../Client/Screamer/Screamer.js";
 import { EquipmentType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums.js";
 import { ItemCard } from "../../../../Client/classes/Cards/ItemCard/ItemCard.js";
@@ -9,8 +9,8 @@ import { K } from "../../../../Common/Constant.js";
 
 export class EquipmentsAndItemsMenu {
     character: CharacterInterface;
-    equipments: CharacterEquipmentInterface;
-    itemsBag: CharacterItemInBag[];
+    equipments: CharacterEquipmentsInterface;
+    itemsBag: ItemInterface[];
     menu: HTMLDivElement;
 
     constructor(character: CharacterInterface) {
@@ -81,7 +81,7 @@ export class EquipmentsAndItemsMenu {
             label.textContent = name;
             element.appendChild(label);
     
-            const item = this.equipments[key as keyof CharacterEquipmentInterface];
+            const item = this.equipments[key as keyof CharacterEquipmentsInterface];
 
             if (item) {
                 const itemCard = this.makeEquipmentsSmallCard(item, key as keyof EquipmentType);
@@ -185,7 +185,7 @@ export class EquipmentsAndItemsMenu {
         return buttonContainer;
     }
 
-    makeItemSmallCard(item: CharacterItemInBag) {
+    makeItemSmallCard(item: ItemInterface) {
         const container = document.createElement('div');
         container.classList.add('equipmentsAndItems-menu-smallCard-container');
 
@@ -293,14 +293,14 @@ export class EquipmentsAndItemsMenu {
         itemCardSection.innerHTML = '';
     }
 
-    createItemCard(item: CharacterItemInBag) {
+    createItemCard(item: ItemInterface) {
         const card = new ItemCard(item);
         const itemCard = document.createElement('div');
         itemCard.classList.add('equipmentsAndItems-menu-itemCard');
         itemCard.appendChild(card.card);
     }
 
-    showItemCard(item: CharacterItemInBag) {
+    showItemCard(item: ItemInterface) {
         const itemCardSection = document.querySelector('.equipmentsAndItems-menu-itemCard-container');
         if (!itemCardSection) { return }
         itemCardSection.innerHTML = '';
@@ -310,21 +310,4 @@ export class EquipmentsAndItemsMenu {
         const buttons = this.createItemCardButtons(item.itemType);
         itemCardSection.appendChild(buttons);
     }
-
-    showEquipmentCard(equipment: {id: string, name: string, cost: ItemCost, weight: number, description: string}, key: keyof CharacterEquipmentInterface) {
-        const itemCardSection = document.querySelector('.equipmentsAndItems-menu-itemCard-container');
-        if (!itemCardSection) { return }
-        itemCardSection.innerHTML = '';
-        const equipmentAsItem = {
-            id: equipment.id,
-            name: equipment.name,
-            description: equipment.description,
-            quantity: 1,
-            itemType: ItemType.equipment,
-            cost: equipment.cost,
-        };
-        const card = new ItemCard(equipmentAsItem);
-        itemCardSection.appendChild(card.card);
-    }
-
 }

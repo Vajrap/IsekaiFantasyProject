@@ -1,9 +1,9 @@
-import { CharacterItemInBag } from "Common/RequestResponse/characterWS";
+import { ItemInterface } from "Common/RequestResponse/characterWS";
 
 export class ItemCard {
-        item: CharacterItemInBag;
+        item: ItemInterface;
         card: HTMLDivElement;
-    constructor(item: CharacterItemInBag) {
+    constructor(item: ItemInterface) {
         this.item = item;
         this.card = this.createItemCard();
     }

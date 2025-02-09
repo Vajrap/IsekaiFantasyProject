@@ -1,4 +1,4 @@
-import { CharacterItemInBag } from "../../../Common/RequestResponse/characterWS";
+import { ItemInterface } from "../../../Common/RequestResponse/characterWS";
 import { ItemType } from "../../../Common/DTOsEnumsInterfaces/Item/Enums";
 import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
 import { ItemCost, ItemCostInterface } from "../../../Common/DTOsEnumsInterfaces/Item/ItemCost";
@@ -40,14 +40,15 @@ export class ItemBag {
         this.items = [];
     }
     
-    intoInterface(): CharacterItemInBag[] {
+    intoInterface(): ItemInterface[] {
         return this.items.map(item => ({
             id: item.item.id,
             name: item.item.name,
             description: item.item.description,
-            itemType: item.item.itemType,
-            cost: item.item.cost,
             quantity: item.quantity,
+            cost: item.item.cost,
+            itemType: item.item.itemType,
+            weight: item.item.weight
         }));
     }
 }

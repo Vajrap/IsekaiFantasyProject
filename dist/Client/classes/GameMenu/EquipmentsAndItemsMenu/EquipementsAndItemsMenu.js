@@ -249,21 +249,4 @@ export class EquipmentsAndItemsMenu {
         const buttons = this.createItemCardButtons(item.itemType);
         itemCardSection.appendChild(buttons);
     }
-    showEquipmentCard(equipment, key) {
-        const itemCardSection = document.querySelector('.equipmentsAndItems-menu-itemCard-container');
-        if (!itemCardSection) {
-            return;
-        }
-        itemCardSection.innerHTML = '';
-        const equipmentAsItem = {
-            id: equipment.id,
-            name: equipment.name,
-            description: equipment.description,
-            quantity: 1,
-            itemType: ItemType.equipment,
-            cost: equipment.cost,
-        };
-        const card = new ItemCard(equipmentAsItem);
-        itemCardSection.appendChild(card.card);
-    }
 }
