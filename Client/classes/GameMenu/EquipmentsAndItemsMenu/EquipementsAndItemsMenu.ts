@@ -76,22 +76,18 @@ export class EquipmentsAndItemsMenu {
         const createEquipmentElement = (name: string, key: string) => {
             const element = document.createElement('div');
             element.classList.add('equipmentsAndItems-menu-equipmentElement');
-    
-            const label = document.createElement('div');
-            label.classList.add('equipmentsAndItems-menu-equipmentLabel');
-            label.textContent = name;
-            element.appendChild(label);
-    
+
             const item = this.equipments[key as keyof CharacterEquipmentsInterface];
 
             if (item) {
                 const itemCard = this.makeEquipmentsSmallCard(item, key as keyof EquipmentType);
                 element.appendChild(itemCard);
             } else {
-                const empty = document.createElement('div');
-                empty.textContent = '';
-                empty.classList.add('equipmentsAndItems-menu-equipmentEmpty');
-                element.appendChild(empty);
+                const image = `../../assets/icons/equipments/${key}.png`;
+                const img = document.createElement('img');
+                img.src = image;
+                img.classList.add('equipmentsAndItems-menu-equipmentElement-empty-image');
+                element.appendChild(img);
             }
     
             return element;

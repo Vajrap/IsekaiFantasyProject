@@ -42,30 +42,28 @@ export class EquipmentsAndItemsMenu {
             { name: 'มือสำรอง', key: 'offHand', side: 'right' },
             { name: 'เกราะ', key: 'armor', side: 'left' },
             { name: 'หมวก', key: 'headwear', side: 'right' },
-            { name: 'สร้อยคอ', key: 'necklace', side: 'left' },
-            { name: 'อื่น ๆ', key: 'utility', side: 'right' },
             { name: 'ถุงมือ', key: 'gloves', side: 'left' },
             { name: 'รองเท้า', key: 'boots', side: 'right' },
+            // TODO: Utility Equipment slot is not implemented in BE yet.
+            { name: 'สร้อยคอ', key: 'necklace', side: 'left' },
+            { name: 'อื่น ๆ', key: 'utility', side: 'right' },
             { name: 'แหวนซ้าย', key: 'ring_L', side: 'left' },
             { name: 'แหวนขวา', key: 'ring_R', side: 'right' }
         ];
         const createEquipmentElement = (name, key) => {
             const element = document.createElement('div');
             element.classList.add('equipmentsAndItems-menu-equipmentElement');
-            const label = document.createElement('div');
-            label.classList.add('equipmentsAndItems-menu-equipmentLabel');
-            label.textContent = name;
-            element.appendChild(label);
             const item = this.equipments[key];
             if (item) {
                 const itemCard = this.makeEquipmentsSmallCard(item, key);
                 element.appendChild(itemCard);
             }
             else {
-                const empty = document.createElement('div');
-                empty.textContent = '';
-                empty.classList.add('equipmentsAndItems-menu-equipmentEmpty');
-                element.appendChild(empty);
+                const image = `../../assets/icons/equipments/${key}.png`;
+                const img = document.createElement('img');
+                img.src = image;
+                img.classList.add('equipmentsAndItems-menu-equipmentElement-empty-image');
+                element.appendChild(img);
             }
             return element;
         };

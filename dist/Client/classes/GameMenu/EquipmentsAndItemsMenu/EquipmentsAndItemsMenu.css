@@ -2,7 +2,7 @@
     width: 90vw;
     height: 100vh;
     display: grid;
-    grid-template-columns: 70% 30%;
+    grid-template-columns: 50% 50%;
     grid-template-rows: 50% 50%;
 }
 
@@ -13,9 +13,9 @@
 }
 
 .equipmentsAndItems-menu-equipmentsBox {
-    width: 50vw;
+    width: 40.4vw;
     background-color: rgb(224, 224, 224, 0.2);
-    border: 0.1vh solid palegoldenrod;
+    border: 1vh rgb(234, 255, 224, 0.4);
     border-radius: 0.1vh;
     margin-top: 1vh;
     margin-bottom: 1vh;
@@ -29,24 +29,25 @@
 .equipmentsAndItems-menu-equipmentBox-container {
     display: grid;
     grid-auto-flow: column;
-    width: 50vw;
+    width: 40vw;
+    height: 7vw;
+    margin: 0.2vw;
 }
 
 .equipmentsAndItems-menu-itemsBox {
-    width: 100%;
+    width: 40.4vw;
     height: 50vh;
-    background-color: slategray;
-    border: 0.5vh solid palegoldenrod;
+    background-color: rgb(224, 224, 224, 0.2);
     border-radius: 5px;
+    overflow-y: auto;
 }
 
 .equipmentsAndItems-menu-inventoryBar {
-    width: 100%;
+    width: 40.4vw;
     height: 3vh;
-    padding-top: 0.7vh;
+    padding-top: 0.8vh;
     color: rgb(255, 255, 255);
-    border: 0.5vh solid palegoldenrod;
-    background-color: rgb(157, 135, 107);
+    background-color: rgb(157, 135, 107, 0.4);
     border-radius: 5px;
     margin-top: 1vh;
     margin-bottom: 1vh;
@@ -56,21 +57,16 @@
     width: 10vw;
     height: 5vw;
     justify-self: center;
-    background-color: #5884b3;
+    background-color: rgb(45, 131, 133, 0.4);
     color: #fff;
     border: none;
     border-radius: 5px;
+    font-size: 20px;
+    margin-left: 15vw;
 }
 
 .equipmentsAndItems-menu-returnButton:hover {
-    background-color: #0056b3;
-}
-
-.equipmentsAndItems-menu-itemCard-container {
-    width: 30vw;
-    height: 98vh;
-    margin-top: 1vh;
-    margin-left: 1vw;
+    background-color: rgb(45, 131, 133);
 }
 
 .equipmentsAndItems-menu-title {
@@ -86,8 +82,8 @@
 .equipmentsAndItems-menu-equipmentElement {
     display: grid;
     margin: 0.2vw;
-    width: 9vw;
-    height: 4vw;
+    width: 6vw;
+    height: 6vw;
     grid-template-columns: 50% 50%;
     border: 1px solid palegoldenrod;
 }
@@ -103,17 +99,53 @@
 
 .equipmentsAndItems-menu-smallCard-container {
     background-color: rgb(45, 131, 133);
-    width: 4vw;
+    width: 6vw;
+    height: 6vw;
     display: flex;
     flex-direction: column;
-    margin-left: 0.4vw;
-}
-
-.equipmentsAndItems-menu-smallCard-label {
-    font-size: 10px;
-    color: rgb(214, 224, 224);
 }
 
 .equipmentsAndItems-menu-smallCard-image {
-    width: 4vw;
+    width: 6vw;
+}
+
+.equipmentsAndItems-menu-equipmentElement-empty-image {
+    width: 6vw;
+    height: 6vw;
+}
+
+.equipmentsAndItems-menu-inventoryBar-size {
+    font-size: 18px;
+    margin-left: 30vw;
+}
+
+.equipmentsAndItems-menu-itemCard-container {
+    width: 30vw;
+    height: 98vh;
+    margin-top: 1vh;
+    margin-left: 1vw;
+    display: flex;
+    flex-direction: row;
+}
+
+.equipmentsAndItems-menu-itemCard-buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30vh;
+}
+
+.equipmentsAndItems-menu-itemCard-button {
+    width: 6vw;
+    height: 6vw;
+    background-color: rgb(45, 131, 133, 0.4);    
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 20px;
+    margin-left: 1vw;
+    margin-top: 5vh;
+}
+
+.equipmentsAndItems-menu-itemCard-button:hover {
+    background-color: rgb(45, 131, 133);
 }
