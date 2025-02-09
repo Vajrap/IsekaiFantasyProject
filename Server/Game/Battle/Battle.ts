@@ -250,7 +250,7 @@ export class Battle {
             4. play skill
         */
         //1. Gain Resource from elements modifier
-        actor.addResourcesFromElementsModifier();
+        actor.replenishResources();
 
         //2. Loop through skills to get a skill that can be played this must return Skill, 
         //even if there is no valid skill in the set, this still must return auto attack skill.

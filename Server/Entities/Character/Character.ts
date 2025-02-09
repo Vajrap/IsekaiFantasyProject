@@ -975,7 +975,7 @@ export class Character {
 		The battle start with Battle updating abgauge for all characters in turn and get one active character
 		After that, it should be the character responsibility to calculate his turn, we normally use the battle to do that but it's give us too much dependency cycle
 	*/
-	addResourcesFromElementsModifier() {
+	replenishResources() {
 		const coreElement: (keyof typeof this.status.elements)[] = [
 			"air",
 			"water",
@@ -992,6 +992,12 @@ export class Character {
 				this.resources[element as keyof typeof this.status.elements] +=
 					resourceBonusFromElement;
 			}
+		}
+
+		let breathModifier = this.getModifier(CharacterStatusEnum.breath);
+		if (breathModifier > 0) {
+			this.currentMP += breathModifier * 2;
+			this.currentSP += breathModifier * 2;
 		}
 	}
 
