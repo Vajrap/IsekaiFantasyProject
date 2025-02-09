@@ -54,7 +54,7 @@ export class EquipmentsAndItemsMenu {
         leftBoxContainer.classList.add('equipmentsAndItems-menu-equipmentBox-container');
         const rightBoxContainer = document.createElement('div');
         rightBoxContainer.classList.add('equipmentsAndItems-menu-equipmentBox-container');
-
+ 
         const equipmentSlots = [
             { name: 'มือหลัก', key: 'mainHand', side: 'left' },
             { name: 'มือสำรอง', key: 'offHand', side: 'right' },
@@ -62,11 +62,12 @@ export class EquipmentsAndItemsMenu {
             { name: 'เกราะ', key: 'armor', side: 'left' },
             { name: 'หมวก', key: 'headwear', side: 'right' },
 
-            { name: 'สร้อยคอ', key: 'necklace', side: 'left' },
-            { name: 'อื่น ๆ', key: 'utility', side: 'right' },
-
             { name: 'ถุงมือ', key: 'gloves', side: 'left' },
             { name: 'รองเท้า', key: 'boots', side: 'right' },
+
+            // TODO: Utility Equipment slot is not implemented in BE yet.
+            { name: 'สร้อยคอ', key: 'necklace', side: 'left' },
+            { name: 'อื่น ๆ', key: 'utility', side: 'right' },
 
             { name: 'แหวนซ้าย', key: 'ring_L', side: 'left' },
             { name: 'แหวนขวา', key: 'ring_R', side: 'right' }

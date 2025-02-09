@@ -13,10 +13,10 @@
 }
 
 .equipmentsAndItems-menu-equipmentsBox {
-    width: 100%;
-    background-color: slategray;
-    border: 0.5vh solid palegoldenrod;
-    border-radius: 5px;
+    width: 50vw;
+    background-color: rgb(224, 224, 224, 0.2);
+    border: 0.1vh solid palegoldenrod;
+    border-radius: 0.1vh;
     margin-top: 1vh;
     margin-bottom: 1vh;
     margin-right: 1vw;
@@ -29,7 +29,7 @@
 .equipmentsAndItems-menu-equipmentBox-container {
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns: 50% 50%;
+    width: 50vw;
 }
 
 .equipmentsAndItems-menu-itemsBox {
@@ -85,7 +85,10 @@
 
 .equipmentsAndItems-menu-equipmentElement {
     display: grid;
-    grid-template-columns: 30% 70%;
+    margin: 0.2vw;
+    width: 9vw;
+    height: 4vw;
+    grid-template-columns: 50% 50%;
     border: 1px solid palegoldenrod;
 }
 
