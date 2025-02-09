@@ -45,6 +45,8 @@ export class CharacterEquipments {
 					  cost: this.mainHand.cost.cost,
 					  weight: this.mainHand.weight,
 					  description: this.mainHand.description,
+					  quantity: 1,
+					  itemType: this.mainHand.itemType,
 				  }
 				: undefined,
 			offHand: this.offHand
@@ -54,6 +56,8 @@ export class CharacterEquipments {
 					  cost: this.offHand.cost.cost,
 					  weight: this.offHand.weight,
 					  description: this.offHand.description,
+					  quantity: 1,
+					  itemType: this.offHand.itemType
 				  }
 				: undefined,
 			armor: this.armor
@@ -63,6 +67,8 @@ export class CharacterEquipments {
 					  cost: this.armor.cost.cost,
 					  weight: this.armor.weight,
 					  description: this.armor.description,
+					  quantity: 1,
+					  itemType: this.armor.itemType,
 				  }
 				: undefined,
 			headwear: this.headwear
@@ -72,6 +78,8 @@ export class CharacterEquipments {
 					  cost: this.headwear.cost.cost,
 					  weight: this.headwear.weight,
 					  description: this.headwear.description,
+					  quantity: 1,
+					  itemType: this.headwear.itemType,
 				  }
 				: undefined,
 			gloves: this.gloves
@@ -81,6 +89,8 @@ export class CharacterEquipments {
 					  cost: this.gloves.cost.cost,
 					  weight: this.gloves.weight,
 					  description: this.gloves.description,
+					  quantity: 1,
+					  itemType: this.gloves.itemType,
 				  }
 				: undefined,
 			boots: this.boots
@@ -90,6 +100,8 @@ export class CharacterEquipments {
 					  cost: this.boots.cost.cost,
 					  weight: this.boots.weight,
 					  description: this.boots.description,
+					  quantity: 1,
+					  itemType: this.boots.itemType,
 				  }
 				: undefined,
 			necklace: this.necklace
@@ -99,6 +111,8 @@ export class CharacterEquipments {
 					  cost: this.necklace.cost.cost,
 					  weight: this.necklace.weight,
 					  description: this.necklace.description,
+					  quantity: 1,
+					  itemType: this.necklace.itemType
 				  }
 				: undefined,
 			ring_R: this.ring_R
@@ -108,6 +122,8 @@ export class CharacterEquipments {
 					  cost: this.ring_R.cost.cost,
 					  weight: this.ring_R.weight,
 					  description: this.ring_R.description,
+					  quantity: 1,
+					  itemType: this.ring_R.itemType
 				  }
 				: undefined,
 			ring_L: this.ring_L
@@ -117,6 +133,8 @@ export class CharacterEquipments {
 					  cost: this.ring_L.cost.cost,
 					  weight: this.ring_L.weight,
 					  description: this.ring_L.description,
+					  quantity: 1,
+					  itemType: this.ring_L.itemType
 				  }
 				: undefined,
 		};
