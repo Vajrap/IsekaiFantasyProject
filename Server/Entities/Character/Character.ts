@@ -114,6 +114,7 @@ import { CharacterBattleContext } from "./CharacterBattleContext";
 import { EquipmentType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
 import { AccessoryType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
 import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
+import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
 
 export class Character {
 	id: string;
@@ -976,6 +977,34 @@ export class Character {
 		After that, it should be the character responsibility to calculate his turn, we normally use the battle to do that but it's give us too much dependency cycle
 	*/
 	replenishResources() {
+		this.calculateElementReplenish();
+		this.calculateSPandMPReplenish();		
+	}
+
+	private calculateSPandMPReplenish() {
+		let staminaDice = Dice.roll(DiceEnum.OneD3).sum;
+		let manaDice = Dice.roll(DiceEnum.OneD3).sum;
+		let breathModifier = Math.max(this.getModifier(CharacterStatusEnum.breath), 0);
+		let planarModifier = Math.max(this.getModifier(CharacterStatusEnum.planar), 0);
+		let enduranceModifier = Math.max(this.getModifier(CharacterStatusEnum.endurance), 0);
+		
+		const armorPenaltyMap: Record<ArmorType, number> = {
+			[ArmorType.cloth]: 0,
+			[ArmorType.light]: 1,
+			[ArmorType.medium]: 2,
+			[ArmorType.heavy]: 3,
+		};
+		
+		let armorpenalty = 0;
+		if (this.equipments.armor !== undefined && this.equipments.armor.armorType !== null) {
+			armorpenalty = armorPenaltyMap[this.equipments.armor?.armorType]
+		}
+
+		this.currentSP += Math.max(staminaDice - armorpenalty + breathModifier + enduranceModifier, 0);
+		this.currentMP += Math.max(manaDice - armorpenalty + breathModifier + planarModifier, 0);
+	}
+
+	private calculateElementReplenish() {
 		const coreElement: (keyof typeof this.status.elements)[] = [
 			"air",
 			"water",
@@ -992,12 +1021,6 @@ export class Character {
 				this.resources[element as keyof typeof this.status.elements] +=
 					resourceBonusFromElement;
 			}
-		}
-
-		let breathModifier = this.getModifier(CharacterStatusEnum.breath);
-		if (breathModifier > 0) {
-			this.currentMP += breathModifier * 2;
-			this.currentSP += breathModifier * 2;
 		}
 	}
 
@@ -1409,22 +1432,10 @@ export class Character {
 	} {
 		//TODO: Implement buffs and debuffs that affect saving rolls
 		//IMPORTANT DODGE CALCULATION GOES HERE, BUFFS AND DEBUFFS THAT AFFECTED SAVING ROLLS GOES HERE!!!
-		let dodgeChance =
-			this.battler("dodge") +
-			this.getModifier(CharacterStatusEnum.agility) +
-			this.baseAC;
-		if (dodgeChance > 20) {
-			dodgeChance = 20;
-		}
+		let dodgeChance = this.battler("dodge") + this.getModifier(CharacterStatusEnum.agility) + this.baseAC;
 		if (dodgeChance >= hitChance) {
-			console.log(`${this.name} dodged the attack!`);
-			return {
-				actor: attacker,
-				target: this,
-				damage: 0,
-				damageType: damageType,
-				dHit: false,
-			};
+    		console.log(`${this.name} dodged the attack!`);
+    		return { actor: attacker, target: this, damage: 0, damageType, dHit: false };
 		}
 
 		let isNotStoppedByReaction: boolean = true;
