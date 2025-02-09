@@ -27,6 +27,7 @@ export class ItemCard {
     }
 
     createItemCardNameAndCost() {
+        console.log(this.item.cost)
         const nameAndCostContainer = document.createElement('div');
         nameAndCostContainer.classList.add('itemCard-nameAndCost');
         
@@ -37,7 +38,7 @@ export class ItemCard {
 
         const cost = document.createElement('div');
         cost.classList.add('itemCard-cost');
-        cost.textContent = `Cost: ${this.item.cost.baseCost + this.item.cost.bonusCost}`;
+        cost.textContent = `Cost: ${this.item.cost}`;
         nameAndCostContainer.appendChild(cost);
 
         return nameAndCostContainer;
@@ -46,7 +47,7 @@ export class ItemCard {
     createItemCardPortrait() {
         const portrait = document.createElement('img');
         // portrait.src = `../../assets/items/${this.item.id}.png`;
-        portrait.src = `../../assets/skills/skill_rogue_05.png`
+        portrait.src = `../../assets/items/test_item.png`
         portrait.classList.add('itemCard-portrait');
         return portrait;
     }

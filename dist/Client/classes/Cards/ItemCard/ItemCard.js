@@ -19,6 +19,7 @@ export class ItemCard {
         return frontFace;
     }
     createItemCardNameAndCost() {
+        console.log(this.item.cost);
         const nameAndCostContainer = document.createElement('div');
         nameAndCostContainer.classList.add('itemCard-nameAndCost');
         const name = document.createElement('div');
@@ -27,7 +28,7 @@ export class ItemCard {
         nameAndCostContainer.appendChild(name);
         const cost = document.createElement('div');
         cost.classList.add('itemCard-cost');
-        cost.textContent = `Cost: ${this.item.cost.baseCost + this.item.cost.bonusCost}`;
+        cost.textContent = `Cost: ${this.item.cost}`;
         nameAndCostContainer.appendChild(cost);
         return nameAndCostContainer;
     }
