@@ -28,18 +28,18 @@
 } 
 
 .gameMenu-popup-buttonsContainer {
-    height: 97vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    height: 5vw;
+    width: 5vw;
+    margin-top: 1vh;
+    margin-left: 1vh;
     background-color: rgba(0, 0, 0, 0);
 }
 
 .gameMenu-popup-button {
+    height: 5vw;
+    width: 5vw;
     background-color: rgb(40, 130, 130, 0.5);
     font-size: medium;
-    width: 11vw;
-    height: 11vh;
     color: #fff;
     border: none;
     padding: 10px;

@@ -4,7 +4,9 @@
     background-color: rgb(6, 6, 6);
     display: grid;
     grid-template-areas: "characterCard-front characterCard-back";
-    border: 1vh solid palegoldenrod;
+    margin-top: 1vh;
+    margin-left: 5vw;
+    border: 1px solid rgb(230, 230, 170);
 }
 
 .characterCard-front {
@@ -28,7 +30,7 @@
 .characterCard-back {
     width: 30vw;
     height: 95vh;
-    background-image: url(../../assets/background/card_bg.png);
+    background-image: url(../../../assets/cardBG/01.png);
     background-size: cover;
     background-repeat: no-repeat;
     display: grid;
@@ -39,7 +41,6 @@
     "characterCard-back-elements",
     "characterCard-back-artisans",
     "characterCard-back-learnedSkills";
-    background-color: rosybrown;
 }
 
 .characterCard-portrait {
@@ -54,17 +55,26 @@
 }
 
 .characterCard-panel-backgroundBox {
-    background-color: darkolivegreen;
+    background-color: rgb(85, 105, 45);
+    height: 3vh;
 }
 
 .characterCard-panel-Info, .characterCard-panel-Active-Internal, .characterCard-panel-Equipments, .characterCard-panel-Traits, .characterCard-panel-Skill-Sequence, .characterCard-panel-Party-Position, .characterCard-panel-Attributes, .characterCard-panel-Battlers, .characterCard-panel-Elements, .characterCard-panel-Artisans, .characterCard-panel-Learned-Skills, .characterCard-panel-Proficiencies, .characterCard-panel-Learned-Internal {
-    height: 12vh;
-    margin-bottom: 0.4vh;
+    margin-top: 0.4vh;
     margin-left: 0.5vw;
     margin-right: 0.5vw;
     background-color: darkslategrey;
     border-radius: 5px;
     overflow-y: auto;
+    color: white;
+}
+
+.characterCard-panel-Equipments {
+    height: 20vh;
+}
+
+.characterCard-panel-Attributes {
+    height: 13vh;
 }
 
 .characterCard-panel-Elements {
@@ -75,16 +85,18 @@
     height: 15vh;
 }
 
-.characterCard-panel-Equipments {
-    height: 20vh;
-}
-
-.characterCard-panel-Learned-Internal {
-    height: 10vh;
+.characterCard-panel-Artisans {
+    height: 13vh;
 }
 
 .characterCard-panel-Learned-Skills {
-    height: 32vh;
+    height: 30vh;
+    overflow-x: auto;
+}
+
+.characterCard-panel-Traits {
+    height: 10vh;
+    overflow-x: auto;
 }
 
 .characterCard-panel-Info {
@@ -97,7 +109,7 @@
 .characterCard-panel-Equipments {
     display: grid;
     grid-auto-flow: column;
-    grid-template-rows: 30% 70%;
+    grid-template-rows: 20% 80%;
 }
 
 .characterCard-status-container {

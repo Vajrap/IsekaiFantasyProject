@@ -60,16 +60,10 @@ export class GameMenu {
         const buttonsContainer = document.createElement('div');
         buttonsContainer.classList.add('gameMenu-popup-buttonsContainer');
         const playerButtons = [
-            { label: 'รายละเอียด', action: () => this.showCharacterInformation(character) },
-            { label: 'สกิล', action: () => this.showSkillsMenu(character) },
-            { label: 'ไอเทม', action: () => this.showEquipmentsAndItemsMenu(character) },
-            { label: 'ปาร์ตี้', action: () => this.showPartyMenu(character) },
             { label: 'ปิด', action: () => this.hideCharacterInfo() }
         ];
         const companionButtons = [
-            { label: 'รายละเอียด', action: () => this.showCharacterInformation(character) },
             { label: 'สัมพันธ์', action: () => this.showInteractMenu(character) },
-            { label: 'ปาร์ตี้', action: () => this.showPartyMenu(character) },
             { label: 'ปิด', action: () => this.hideCharacterInfo() }
         ];
         const buttons = type === 'player' ? playerButtons : companionButtons;
