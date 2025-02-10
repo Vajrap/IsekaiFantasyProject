@@ -375,6 +375,40 @@ body, h1, h2, h3, p {
     grid-template-areas: '.showConsole' '.helpIcon';
 }
 
+.gameScreen-menu {
+    display: grid;
+    grid-auto-flow: row;
+    gap: 0px;
+}
+
+.bottom-left {
+    width: 80%;
+}
+
+.bottom-right {
+    width: 20%;
+    display: grid;
+    grid-auto-flow: row;
+    gap: 0px;
+}
+
+.bottom-right button {
+    width: 5vw;
+    height: 5vw;
+    background-color: rgba(0, 0, 0, 0.1);
+    color: rgba(255, 255, 255, 1);
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    margin-left: 1vw;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.bottom-right button:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
 .showConsole {
     width: 85vw;
     height: 15vh;

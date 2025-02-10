@@ -28,6 +28,7 @@ class GameViewModel {
         this.dialogueBoxCharacterRight = document.querySelector('.dialogueBoxCharacter-right');
         this.battleReportBtn = document.getElementById('menu-battleReport');
         this.planningBtn = document.getElementById('menu-action');
+        this.skillsBtn = document.getElementById('menu-skills');
         this.questBtn = document.getElementById('menu-quest');
         this.inventoryBtn = document.getElementById('menu-inventory');
         this.optionBtn = document.getElementById('menu-options');
@@ -118,7 +119,7 @@ class GameViewModel {
             return;
         }
         else {
-            this._gameMenu.showCharacterInfo(character, type);
+            this._gameMenu.showGameMenuWithPlayerCharacterInfo(character, type);
             const popupScreen = getCharacterInfoPopupScreen();
             popupScreen.classList.add('visible');
             popupScreen.classList.remove('hidden');

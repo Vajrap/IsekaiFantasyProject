@@ -17,7 +17,7 @@ export class GameMenu {
         this.isPopupVisible = false;
         this.initializeEventListeners();
     }
-    showCharacterInfo(character, type) {
+    showGameMenuWithPlayerCharacterInfo(character, type) {
         const characterCard = new CharacterCard(character).card;
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';

@@ -17,6 +17,7 @@ class GameViewModel {
 
     battleReportBtn: HTMLElement;
     planningBtn: HTMLElement;
+    skillsBtn: HTMLElement;
     questBtn: HTMLElement;
     inventoryBtn: HTMLElement;
     optionBtn: HTMLElement;
@@ -40,6 +41,7 @@ class GameViewModel {
         this.dialogueBoxCharacterRight = document.querySelector('.dialogueBoxCharacter-right') as HTMLElement;
         this.battleReportBtn = document.getElementById('menu-battleReport') as HTMLElement;
         this.planningBtn = document.getElementById('menu-action') as HTMLElement;
+        this.skillsBtn = document.getElementById('menu-skills') as HTMLElement;
         this.questBtn = document.getElementById('menu-quest') as HTMLElement;
         this.inventoryBtn = document.getElementById('menu-inventory') as HTMLElement;
         this.optionBtn = document.getElementById('menu-options') as HTMLElement;
