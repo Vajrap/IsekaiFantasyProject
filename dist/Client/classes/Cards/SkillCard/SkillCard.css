@@ -5,7 +5,7 @@
     background-size: cover;
     background-repeat: no-repeat;
     color: beige;
-    border: 10px solid palegoldenrod;
+    border: 1px solid rgba(240, 255, 209, 0.4);
     border-radius: 5px;
 }
 
@@ -50,8 +50,14 @@
 }
 
 .skillCard-description {
-    height: 4vh;
+    height: 7vh;
+    overflow-y: auto;
 }
+
+.skillCard-equipmentRequirements {
+    overflow-y: auto;
+}
+
 /* 
 .skillCard-learningRequirements {
     height: 7.5vh;

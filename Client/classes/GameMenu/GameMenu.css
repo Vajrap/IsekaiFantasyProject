@@ -36,7 +36,8 @@
 }
 
 .gameMenu-popup-button {
-    background-color: #5884b3;
+    background-color: rgb(40, 130, 130, 0.5);
+    font-size: medium;
     width: 11vw;
     height: 11vh;
     color: #fff;
@@ -50,5 +51,7 @@
 }
 
 .gameMenu-popup-button:hover {
-    background-color: #0056b3;
+    background-color: rgb(40, 130, 130, 1);
+    font-size: large;
+    transition-duration: 0.5s;
 }
