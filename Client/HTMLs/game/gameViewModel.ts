@@ -138,7 +138,7 @@ class GameViewModel {
             console.error('Player Character not found');
             return;
         } else {
-            this._gameMenu.showCharacterInfo(character, type);
+            this._gameMenu.showGameMenuWithPlayerCharacterInfo(character, type);
 
             const popupScreen = getCharacterInfoPopupScreen();
             

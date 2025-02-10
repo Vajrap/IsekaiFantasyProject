@@ -13,7 +13,7 @@ export class GameMenu {
         this.initializeEventListeners();
     }
 
-    showCharacterInfo(character: CharacterInterface, type: 'player' | 'companion') {
+    showGameMenuWithPlayerCharacterInfo(character: CharacterInterface, type: 'player' | 'companion') {
         const characterCard = new CharacterCard(character).card;
         const popupScreen = this.getCharacterInfoPopupScreen();
 
