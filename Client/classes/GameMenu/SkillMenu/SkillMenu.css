@@ -14,35 +14,36 @@
 .showing-skillCard-section {
     width: 30vw;
     height: 98vh;
-    background-color: rgb(6, 6, 6);
-    margin-left: 5vw;
+    margin-left: 8vw;
     align-self: center;
 }
 
 .skills-menu-buttonsContainer {
     width: 5vw;
     display: grid;
-    padding-top: 10vh;
-    padding-bottom: 10vh;
+    padding-top: 30vh;
+    padding-bottom: 20vh;
     padding-left: 0vw;
-    justify-content: space-between;
 }
 
 .skills-menu-button {
-    width: 10vw;
-    height: 15vw;
-    background-color: #5884b3;
+    width: 7vw;
+    height: 7vw;
+    background-color: rgb(40, 130, 130, 0.5);
     color: #fff;
     border: none;
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin: 3px;
+    margin-left: 1vw;
     text-align: center;
+    font-size: medium;
 }
 
 .skills-menu-button:hover {
-    background-color: #0056b3;
+    background-color: rgb(40, 130, 130, 1);
+    font-size: large;
+    transition-duration: 0.5s;
 }
 
 .skills-menu-upper-section {
@@ -55,7 +56,7 @@
     padding-left: 3vw;
     grid-template-areas: "skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container" "skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container" "skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container" "skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container";
     justify-content: left;
-    background-color: #686868;
+    background-color: rgb(100, 100, 100, 0.5);
     overflow-y: auto;
 }
 
@@ -66,15 +67,15 @@
     padding: 5px;
     padding-left: 3vw;
     grid-template-areas: "skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container skillCard-small-container";
-    background-color: #686868;
+    background-color: rgb(100, 100, 100, 0.5);
     justify-content: left;
 }
 
 .skillCard-small-container {
     width: 5vw;
     height: 22vh;
-    background-color: rgb(37, 61, 46);
-    border: 2px solid black;
+    background-color: rgb(46, 57, 50);
+    border: 1px solid black;
     margin-right: 1.5vw;
 }
 
@@ -100,7 +101,7 @@
     padding-left: 2px;
     font-size: 10px;
     color: black;
-    background-color: rgb(236, 113, 113);
+    background-color: rgb(185, 118, 118);
 }
 
 .skillCard-small-produces-container {
@@ -109,5 +110,5 @@
     padding-left: 2px;
     font-size: 10px;
     color: black;
-    background-color: aqua;
+    background-color: rgb(116, 208, 208);
 }
