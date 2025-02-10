@@ -543,7 +543,7 @@ export class Battle {
 
         const expGained = Math.max(victoriedPartyEXP - defeatedPartyEXP, 0) + (2 * allDefeatedPartyNumber);
         for (const actor of vicrotiedParty.getPosssibleTargetsAsCharacterArray()) {
-            if (actor!==null && actor.isDead === false) { actor.exp += expGained; }
+            if (actor!==null && actor.isDead === false) { actor.statTracker += expGained; }
         }
     }
 

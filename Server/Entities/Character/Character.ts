@@ -136,7 +136,7 @@ export class Character {
 	fame: number = 0;
 	level: number = 1;
 	gold: number = 0;
-	exp: number = 0;
+	statTracker: number = 0;
 	isDead: boolean = false;
 	abGauge: number = 0;
 	lastTarget: string | null;
@@ -195,7 +195,7 @@ export class Character {
 		this.fame = 0;
 		this.level = 1;
 		this.gold = 0;
-		this.exp = 0;
+		this.statTracker = 0;
 		this.isDead = false;
 		this.abGauge = 0;
 		this.lastTarget = null;
@@ -665,35 +665,34 @@ export class Character {
 		(this.alignment[alignment as keyof CharacterAlignment] as number) += value;
 	}
 
-	gainExp(exp: number): void {
-		const levelUpExp = this.getLevelUpExp();
-		if (this.level >= 20) {
-			this.exp = levelUpExp; // Ensure exp is maxed at level 20
+	gainStatTracker(statValue: number): void {
+		let levelUpStatNeeded = this.getLevelUpStatNeeded();
+
+		if (this.level >= 30) {
+			this.statTracker = levelUpStatNeeded; // Level capped at 30
 			return;
 		}
 
-		this.exp += exp;
+		this.statTracker += statValue;
 
-		if (this.exp >= levelUpExp && this.level < 20) {
+		while (this.statTracker >= levelUpStatNeeded && this.level < 30) {
+			this.statTracker -= levelUpStatNeeded; // Keep excess points
 			this.levelUp();
+			levelUpStatNeeded = this.getLevelUpStatNeeded(); // Update required stats for new level
 		}
 
-		if (this.level === 20) {
-			this.exp = levelUpExp; // Ensure exp is maxed at level 20
+		if (this.level === 30) {
+			this.statTracker = levelUpStatNeeded; // Ensure exp is maxed at level 20
 		}
 	}
 
 	// Method to get the experience needed for the next level
-	getLevelUpExp(): number {
-		const baseExp = 100; // Starting XP for level 1 to 2
-		const growthRate = 1.7; // Growth rate for exponential scaling
-
-		return Math.round(baseExp * Math.pow(growthRate, this.level - 1));
+	getLevelUpStatNeeded(): number {
+		return 5 + (this.level * 2);
 	}
 
 	levelUp(): Character {
 		this.level += 1;
-		this.exp = 0;
 		let attributeRolls = Dice.roll(DiceEnum.TwelveD20).rolls;
 		Object.keys(this.status.attributes).forEach((attribute, index) => {
 			this.status.attributes[
@@ -2202,19 +2201,11 @@ export class Character {
 		let statObject: { base: number; bonus: number; exp: number };
 
 		if (status in this.status.attributes) {
-			statObject =
-				this.status.attributes[status as keyof CharacterStatus["attributes"]];
+			statObject = this.status.attributes[status as keyof CharacterStatus["attributes"]];
 		} else if (status in this.status.proficiencies) {
-			statObject =
-				this.status.proficiencies[
-					status as keyof CharacterStatus["proficiencies"]
-				];
-		} else if (status in this.status.battlers) {
-			statObject =
-				this.status.battlers[status as keyof CharacterStatus["battlers"]];
-		} else if (status in this.status.elements) {
-			statObject =
-				this.status.elements[status as keyof CharacterStatus["elements"]];
+			statObject = this.status.proficiencies[status as keyof CharacterStatus["proficiencies"]];
+		} else if (status in this.status.artisans) {
+			statObject = this.status.artisans[status as keyof CharacterStatus["artisans"]];
 		} else {
 			throw new Error(`Invalid stat type: ${status}`);
 		}
@@ -2226,67 +2217,11 @@ export class Character {
 			return;
 		} // Max stat is 30
 
-		// Determine the stat range modifier
-		const statRange = StatMod.value(currentStat);
-
 		// Determine the amount of experience needed to level up based on the stat range
-		let expNeeded: number;
-		switch (statRange) {
-			case -5:
-				expNeeded = 100;
-				break;
-			case -4:
-				expNeeded = 110;
-				break;
-			case -3:
-				expNeeded = 120;
-				break;
-			case -2:
-				expNeeded = 140;
-				break;
-			case -1:
-				expNeeded = 160;
-				break;
-			case 0:
-				expNeeded = 190;
-				break;
-			case 1:
-				expNeeded = 220;
-				break;
-			case 2:
-				expNeeded = 250;
-				break;
-			case 3:
-				expNeeded = 290;
-				break;
-			case 4:
-				expNeeded = 330;
-				break;
-			case 5:
-				expNeeded = 380;
-				break;
-			case 6:
-				expNeeded = 430;
-				break;
-			case 7:
-				expNeeded = 490;
-				break;
-			case 8:
-				expNeeded = 550;
-				break;
-			case 9:
-				expNeeded = 620;
-				break;
-			case 10:
-				expNeeded = 8000;
-				break;
-			default:
-				expNeeded = 10000; // Just in case
-				break;
-		}
+		const expNeeded = 50 + (Math.max(StatMod.value(currentStat), 0) + 1) ** 2 * 20;
 
 		// Calculate the experience gained
-		const expGained = amount + Dice.roll(DiceEnum.TwoD10).sum;
+		const expGained = amount + Dice.rollTwenty();
 
 		// Add the experience gained to the current stat's experience
 		statObject.exp += expGained;
@@ -2295,11 +2230,10 @@ export class Character {
 		if (statObject.exp >= expNeeded) {
 			statObject.exp -= expNeeded; // Subtract the required experience from the current experience
 			statObject.base++; // Increment the base stat
-		}
+			// Increase stat tracker for level up, 
+			const statTrackGain = Math.max(StatMod.value(statObject.base), 0) + 1; 
 
-		// give exp to player too
-		if (this.level < 20) {
-			this.gainExp(expGained);
+			this.gainStatTracker(statTrackGain)
 		}
 	}
 
@@ -2350,7 +2284,7 @@ export class Character {
 			fame: this.fame,
 			level: this.level,
 			gold: this.gold,
-			exp: this.exp,
+			exp: this.statTracker,
 			isDead: this.isDead,
 			baseHP: this.baseHP,
 			baseMP: this.baseMP,

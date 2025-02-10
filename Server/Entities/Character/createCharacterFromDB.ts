@@ -30,7 +30,7 @@ export async function createCharacterFromDB(dbCharacter: CharacterDB): Promise<C
     character.fame = dbCharacter.fame;
     character.level = dbCharacter.level;
     character.gold = dbCharacter.gold;
-    character.exp = dbCharacter.exp;
+    character.statTracker = dbCharacter.exp;
     character.isDead = dbCharacter.isDead;
     character.lastTarget = dbCharacter.lastTarget;
     character.raceHP = dbCharacter.raceHP;

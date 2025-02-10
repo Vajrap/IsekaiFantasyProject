@@ -102,7 +102,7 @@ async function createAndSaveCharacter(
         fame: character.fame,
         level: character.level,
         gold: character.gold,
-        exp: character.exp,
+        exp: character.statTracker,
         isDead: character.isDead,
         lastTarget: character.lastTarget,
         raceHP: character.raceHP,

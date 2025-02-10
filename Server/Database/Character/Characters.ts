@@ -1,8 +1,5 @@
-import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
-import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType";
 import { createTableIfNotExists } from "../Seeding";
 // import { NPCCharacterSeed } from "./NPC";
-import { RelationEnum } from "../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
 import { CharacterDB } from "./CharacterDB";
 
 // export const CharacterSeed: CharacterDB[] = [
