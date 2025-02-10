@@ -4,7 +4,7 @@ import { SkillCard, mapElementName } from "../../../../Client/classes/Cards/Skil
 import { K } from "../../../../Common/Constant.js";
 export class SkillMenu {
     // eslint-disable-next-line max-lines-per-function
-    constructor(playerCharacter, learnedSkills, battleSkills) {
+    constructor(playerCharacter, learnedSkills, battleSkills, comingFrom) {
         this.screamer = screamer;
         // battleSkills might needed to be slots, we allow 7 cards in the deck so 7 slots of battleSkills
         // might be like battleSkills: {slot1: CharacterSkillInterface | undefined, slot2: CharacterSkillInterface | undefined, ...}
@@ -19,6 +19,7 @@ export class SkillMenu {
         };
         this.character = playerCharacter;
         this.learnedSkills = playerCharacter.skills;
+        this.comingFrom = comingFrom;
         // this.battleSkills = playerCharacter.activeSkills;
         this.beforeChangeLearnedSKills = [...playerCharacter.skills];
         this.beforeChangeBattleSkills = [...playerCharacter.activeSkills];
@@ -33,6 +34,7 @@ export class SkillMenu {
             slot7: battleSkills[6],
         };
         this.skillMenu = this.createSkillMenu();
+        console.log(this.comingFrom);
     }
     getCharacterInfoPopupScreen() {
         let popupScreen = document.getElementById('gameMenu-popup');
@@ -356,7 +358,10 @@ export class SkillMenu {
             };
             let popupScreen = this.getCharacterInfoPopupScreen();
             popupScreen.innerHTML = '';
-            screamer.scream(K.SKILL_MENU_UPDATE, { updateMessage });
+            screamer.scream(K.SKILL_MENU_UPDATE, {
+                updateMessage,
+                comingFrom: this.comingFrom
+            });
         });
         buttonsContainer.appendChild(backButton);
         const cancelButton = document.createElement('button');
@@ -368,6 +373,7 @@ export class SkillMenu {
             screamer.scream(K.SKILL_MENU_CLOSE, {
                 skills: this.beforeChangeLearnedSKills,
                 activeSkills: this.beforeChangeBattleSkills,
+                comingFrom: this.comingFrom
             });
         });
         buttonsContainer.appendChild(cancelButton);

@@ -101,8 +101,10 @@ export class GameMenu {
     showSkillsMenu(character) {
         const popupScreen = this.getCharacterInfoPopupScreen();
         popupScreen.innerHTML = '';
+        popupScreen.classList.remove('hidden');
+        popupScreen.classList.add('visible');
         const learnedSkills = character.skills.concat(character.activeSkills);
-        const skillMenu = new SkillMenu(character, learnedSkills, character.activeSkills);
+        const skillMenu = new SkillMenu(character, learnedSkills, character.activeSkills, 'gameMenu');
         const skillMenuElement = skillMenu.skillMenu;
         popupScreen.appendChild(skillMenuElement);
     }
@@ -115,7 +117,7 @@ export class GameMenu {
         popupScreen.innerHTML = '';
         popupScreen.classList.remove('hidden');
         popupScreen.classList.add('visible');
-        const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu(character);
+        const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu(character, 'gameMenu');
         const equipmentsAndItemsMenuElement = equipmentsAndItemsMenu.menu;
         popupScreen.appendChild(equipmentsAndItemsMenuElement);
     }

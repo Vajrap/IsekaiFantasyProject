@@ -145,6 +145,7 @@ export class GameModel {
             this.playerCharacter.skills = payload.skills;
             this.playerCharacter.activeSkills = payload.activeSkills;
         })
+        
         screamerStation.on(K.SKILL_MENU_CLOSE, async (payload: {
             skills: CharacterSkillInterface[]
             battleCards: {

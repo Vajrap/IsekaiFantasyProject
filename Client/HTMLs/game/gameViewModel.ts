@@ -4,6 +4,7 @@ import { GameMenu } from "../../../Client/classes/GameMenu/GameMenu.js";
 import { screamer } from "../../../Client/Screamer/Screamer.js";
 import { K } from "../../../Common/Constant.js";
 import { EquipmentsAndItemsMenu } from "../../../Client/classes/GameMenu/EquipmentsAndItemsMenu/EquipementsAndItemsMenu.js";
+import { SkillMenu } from "../../../Client/classes/GameMenu/SkillMenu/SkillMenu.js";
 
 class GameViewModel {
     // Model
@@ -40,7 +41,7 @@ class GameViewModel {
         this.dialogueBoxCharacterLeft = document.querySelector('.dialogueBoxCharacter-left') as HTMLElement;
         this.dialogueBoxCharacterRight = document.querySelector('.dialogueBoxCharacter-right') as HTMLElement;
         this.battleReportBtn = document.getElementById('menu-battleReport') as HTMLElement;
-        this.planningBtn = document.getElementById('menu-action') as HTMLElement;
+        this.planningBtn = document.getElementById('menu-planning') as HTMLElement;
         this.skillsBtn = document.getElementById('menu-skills') as HTMLElement;
         this.questBtn = document.getElementById('menu-quest') as HTMLElement;
         this.inventoryBtn = document.getElementById('menu-inventory') as HTMLElement;
@@ -123,17 +124,52 @@ class GameViewModel {
             // TODO:
         });
 
-        // this.questBtn.addEventListener('click', () => {
-        //     // TODO:
-        // });
+        this.skillsBtn.addEventListener('click', () => {
+            if (!this.model?.playerCharacter) {
+                throw new Error('Player Character not found');
+            }
+            this.showSkillsMenu(this.model.playerCharacter);
+        });
 
         this.inventoryBtn.addEventListener('click', () => {
             if (!this.model?.playerCharacter) {
                 throw new Error('Player Character not found');
             }
-            this._gameMenu.showEquipmentsAndItemsMenu(this.model.playerCharacter);
+
+            this.showEquipmentsAndItemsMenu(this.model.playerCharacter);
         });
     }
+
+    showSkillsMenu(character: CharacterInterface) {
+        const popupScreen = getCharacterInfoPopupScreen();
+        popupScreen.innerHTML = '';        
+        popupScreen.classList.remove('hidden');
+        popupScreen.classList.add('visible');
+    
+        const learnedSkills = character.skills.concat(character.activeSkills);
+    
+        const skillMenu = new SkillMenu(
+            character, 
+            learnedSkills, 
+            character.activeSkills,
+            'mainGame'
+        )
+            
+        const skillMenuElement = skillMenu.skillMenu;
+        popupScreen.appendChild(skillMenuElement);
+    }
+
+    showEquipmentsAndItemsMenu(character: CharacterInterface) {
+        const popupScreen = getCharacterInfoPopupScreen();
+        popupScreen.innerHTML = '';
+        popupScreen.classList.remove('hidden');
+        popupScreen.classList.add('visible');
+
+        const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu(character, 'mainGame');
+        const equipmentsAndItemsMenuElement = equipmentsAndItemsMenu.menu;
+        popupScreen.appendChild(equipmentsAndItemsMenuElement);
+    }
+    
 
     showCharacterInfo(character: CharacterInterface, type: 'player' | 'companion') {
         if (!character) {
@@ -164,32 +200,44 @@ class GameViewModel {
             }
         })
 
-        screamerStation.on(K.SKILL_MENU_CLOSE, async (_: any) => {
-            const playerCharacter = this.model?.playerCharacter;
+        // screamerStation.on(K.SKILL_MENU_CLOSE, async (_: any) => {
+        //     const playerCharacter = this.model?.playerCharacter;
 
-            if (!playerCharacter) {
-                throw new Error('Player Character not found');
-            }
+        //     if (!playerCharacter) {
+        //         throw new Error('Player Character not found');
+        //     }
     
-            this.playerPortrait.addEventListener('click', () => {
-                this.showCharacterInfo(playerCharacter, 'player')
-            });
+        //     this.playerPortrait.addEventListener('click', () => {
+        //         this.showCharacterInfo(playerCharacter, 'player')
+        //     });
+        // })
+
+        screamerStation.on(K.SKILL_MENU_CLOSE, async (payload: any) => {
+            if (payload.comingFrom === 'gameMenu') {
+                const playerCharacter = this.model?.playerCharacter;
+                if (!playerCharacter) { throw new Error('Player Character not found')}
+                this.showCharacterInfo(playerCharacter, 'player');
+            } else {
+                const skillWindow = getCharacterInfoPopupScreen();
+                skillWindow.innerHTML = '';
+                skillWindow.classList.add('hidden');
+                skillWindow.classList.remove('visible');
+            }
         })
 
-        screamerStation.on(K.SKILL_MENU_CLOSE, async (_: any) => {
-            const playerCharacter = this.model?.playerCharacter;
-            if (!playerCharacter) {
-                throw new Error('Player Character not found');
+        screamerStation.on(K.EQUIPMENT_MENU_CLOSE, async (payload: any) => {
+            if (payload.comingFrom === 'gameMenu') {
+                const playerCharacter = this.model?.playerCharacter;
+                if (!playerCharacter) {
+                    throw new Error('Player Character not found');
+                }
+                this.showCharacterInfo(playerCharacter, 'player');
+            } else {
+                const equipmentWindow = getCharacterInfoPopupScreen();
+                equipmentWindow.innerHTML = '';
+                equipmentWindow.classList.add('hidden');
+                equipmentWindow.classList.remove('visible');
             }
-    
-            this.showCharacterInfo(playerCharacter, 'player');
-        })
-
-        screamerStation.on(K.EQUIPMENT_MENU_CLOSE, async (_: any) => {
-            const equipmentWindow = getCharacterInfoPopupScreen();
-            equipmentWindow.innerHTML = '';
-            equipmentWindow.classList.add('hidden');
-            equipmentWindow.classList.remove('visible');
         })
     } 
 }

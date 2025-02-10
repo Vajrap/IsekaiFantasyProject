@@ -11,6 +11,8 @@ import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
 import { GameMenu } from "../../../Client/classes/GameMenu/GameMenu.js";
 import { screamer } from "../../../Client/Screamer/Screamer.js";
 import { K } from "../../../Common/Constant.js";
+import { EquipmentsAndItemsMenu } from "../../../Client/classes/GameMenu/EquipmentsAndItemsMenu/EquipementsAndItemsMenu.js";
+import { SkillMenu } from "../../../Client/classes/GameMenu/SkillMenu/SkillMenu.js";
 class GameViewModel {
     // ViewModel
     constructor() {
@@ -27,7 +29,7 @@ class GameViewModel {
         this.dialogueBoxCharacterLeft = document.querySelector('.dialogueBoxCharacter-left');
         this.dialogueBoxCharacterRight = document.querySelector('.dialogueBoxCharacter-right');
         this.battleReportBtn = document.getElementById('menu-battleReport');
-        this.planningBtn = document.getElementById('menu-action');
+        this.planningBtn = document.getElementById('menu-planning');
         this.skillsBtn = document.getElementById('menu-skills');
         this.questBtn = document.getElementById('menu-quest');
         this.inventoryBtn = document.getElementById('menu-inventory');
@@ -102,16 +104,39 @@ class GameViewModel {
         this.planningBtn.addEventListener('click', () => {
             // TODO:
         });
-        // this.questBtn.addEventListener('click', () => {
-        //     // TODO:
-        // });
+        this.skillsBtn.addEventListener('click', () => {
+            var _a;
+            if (!((_a = this.model) === null || _a === void 0 ? void 0 : _a.playerCharacter)) {
+                throw new Error('Player Character not found');
+            }
+            this.showSkillsMenu(this.model.playerCharacter);
+        });
         this.inventoryBtn.addEventListener('click', () => {
             var _a;
             if (!((_a = this.model) === null || _a === void 0 ? void 0 : _a.playerCharacter)) {
                 throw new Error('Player Character not found');
             }
-            this._gameMenu.showEquipmentsAndItemsMenu(this.model.playerCharacter);
+            this.showEquipmentsAndItemsMenu(this.model.playerCharacter);
         });
+    }
+    showSkillsMenu(character) {
+        const popupScreen = getCharacterInfoPopupScreen();
+        popupScreen.innerHTML = '';
+        popupScreen.classList.remove('hidden');
+        popupScreen.classList.add('visible');
+        const learnedSkills = character.skills.concat(character.activeSkills);
+        const skillMenu = new SkillMenu(character, learnedSkills, character.activeSkills, 'mainGame');
+        const skillMenuElement = skillMenu.skillMenu;
+        popupScreen.appendChild(skillMenuElement);
+    }
+    showEquipmentsAndItemsMenu(character) {
+        const popupScreen = getCharacterInfoPopupScreen();
+        popupScreen.innerHTML = '';
+        popupScreen.classList.remove('hidden');
+        popupScreen.classList.add('visible');
+        const equipmentsAndItemsMenu = new EquipmentsAndItemsMenu(character, 'mainGame');
+        const equipmentsAndItemsMenuElement = equipmentsAndItemsMenu.menu;
+        popupScreen.appendChild(equipmentsAndItemsMenuElement);
     }
     showCharacterInfo(character, type) {
         if (!character) {
@@ -139,29 +164,47 @@ class GameViewModel {
                     console.error('Error updating party:', error);
                 }
             }));
-            screamerStation.on(K.SKILL_MENU_CLOSE, (_) => __awaiter(this, void 0, void 0, function* () {
+            // screamerStation.on(K.SKILL_MENU_CLOSE, async (_: any) => {
+            //     const playerCharacter = this.model?.playerCharacter;
+            //     if (!playerCharacter) {
+            //         throw new Error('Player Character not found');
+            //     }
+            //     this.playerPortrait.addEventListener('click', () => {
+            //         this.showCharacterInfo(playerCharacter, 'player')
+            //     });
+            // })
+            screamerStation.on(K.SKILL_MENU_CLOSE, (payload) => __awaiter(this, void 0, void 0, function* () {
                 var _a;
-                const playerCharacter = (_a = this.model) === null || _a === void 0 ? void 0 : _a.playerCharacter;
-                if (!playerCharacter) {
-                    throw new Error('Player Character not found');
-                }
-                this.playerPortrait.addEventListener('click', () => {
+                console.log('SKILL_MENU_CLOSE', payload);
+                if (payload.comingFrom === 'gameMenu') {
+                    const playerCharacter = (_a = this.model) === null || _a === void 0 ? void 0 : _a.playerCharacter;
+                    if (!playerCharacter) {
+                        throw new Error('Player Character not found');
+                    }
                     this.showCharacterInfo(playerCharacter, 'player');
-                });
-            }));
-            screamerStation.on(K.SKILL_MENU_CLOSE, (_) => __awaiter(this, void 0, void 0, function* () {
-                var _a;
-                const playerCharacter = (_a = this.model) === null || _a === void 0 ? void 0 : _a.playerCharacter;
-                if (!playerCharacter) {
-                    throw new Error('Player Character not found');
                 }
-                this.showCharacterInfo(playerCharacter, 'player');
+                else {
+                    const skillWindow = getCharacterInfoPopupScreen();
+                    skillWindow.innerHTML = '';
+                    skillWindow.classList.add('hidden');
+                    skillWindow.classList.remove('visible');
+                }
             }));
-            screamerStation.on(K.EQUIPMENT_MENU_CLOSE, (_) => __awaiter(this, void 0, void 0, function* () {
-                const equipmentWindow = getCharacterInfoPopupScreen();
-                equipmentWindow.innerHTML = '';
-                equipmentWindow.classList.add('hidden');
-                equipmentWindow.classList.remove('visible');
+            screamerStation.on(K.EQUIPMENT_MENU_CLOSE, (payload) => __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                if (payload.comingFrom === 'gameMenu') {
+                    const playerCharacter = (_a = this.model) === null || _a === void 0 ? void 0 : _a.playerCharacter;
+                    if (!playerCharacter) {
+                        throw new Error('Player Character not found');
+                    }
+                    this.showCharacterInfo(playerCharacter, 'player');
+                }
+                else {
+                    const equipmentWindow = getCharacterInfoPopupScreen();
+                    equipmentWindow.innerHTML = '';
+                    equipmentWindow.classList.add('hidden');
+                    equipmentWindow.classList.remove('visible');
+                }
             }));
         });
     }

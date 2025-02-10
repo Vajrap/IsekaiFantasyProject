@@ -4,11 +4,12 @@ import { ItemType } from "../../../../Common/DTOsEnumsInterfaces/Item/Enums.js";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier.js";
 import { K } from "../../../../Common/Constant.js";
 export class EquipmentsAndItemsMenu {
-    constructor(character) {
+    constructor(character, comingFrom) {
         this.character = character;
         this.equipments = character.equipment;
         this.itemsBag = character.itemsBag;
         this.menu = this.createMenu();
+        this.comingFrom = comingFrom;
     }
     createMenu() {
         const menuContainer = document.createElement('div');
@@ -132,7 +133,9 @@ export class EquipmentsAndItemsMenu {
         returnButton.classList.add('equipmentsAndItems-menu-returnButton');
         returnButton.textContent = 'กลับ';
         returnButton.addEventListener('click', () => {
-            screamer.scream(K.EQUIPMENT_MENU_CLOSE, {});
+            screamer.scream(K.EQUIPMENT_MENU_CLOSE, {
+                comingFrom: this.comingFrom
+            });
         });
         buttonContainer.appendChild(returnButton);
         return buttonContainer;

@@ -12,12 +12,14 @@ export class EquipmentsAndItemsMenu {
     equipments: CharacterEquipmentsInterface;
     itemsBag: ItemInterface[];
     menu: HTMLDivElement;
+    comingFrom: 'gameMenu' | 'mainGame';
 
-    constructor(character: CharacterInterface) {
+    constructor(character: CharacterInterface, comingFrom: 'gameMenu' | 'mainGame') {
         this.character = character;
         this.equipments = character.equipment;
         this.itemsBag = character.itemsBag;
         this.menu = this.createMenu();
+        this.comingFrom = comingFrom;
     }
 
     createMenu() {
@@ -175,7 +177,9 @@ export class EquipmentsAndItemsMenu {
         returnButton.addEventListener('click', () => {
             screamer.scream(
                 K.EQUIPMENT_MENU_CLOSE,
-                {}
+                {
+                    comingFrom: this.comingFrom
+                }
             )
         });
         buttonContainer.appendChild(returnButton);

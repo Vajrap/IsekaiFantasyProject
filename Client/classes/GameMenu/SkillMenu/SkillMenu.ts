@@ -12,6 +12,7 @@ export class SkillMenu {
     beforeChangeBattleSkills: CharacterSkillInterface[];
     showingSkill: CharacterSkillInterface | null;
     skillMenu: HTMLDivElement;
+    comingFrom: 'gameMenu' | 'mainGame';
 
     screamer = screamer;
     
@@ -40,9 +41,11 @@ export class SkillMenu {
         playerCharacter: CharacterInterface,
         learnedSkills: CharacterSkillInterface[],
         battleSkills: CharacterSkillInterface[],
+        comingFrom: 'gameMenu' | 'mainGame'
     ) {
         this.character = playerCharacter;
         this.learnedSkills = playerCharacter.skills;
+        this.comingFrom = comingFrom;
         // this.battleSkills = playerCharacter.activeSkills;
         this.beforeChangeLearnedSKills = [...playerCharacter.skills];
         this.beforeChangeBattleSkills = [...playerCharacter.activeSkills];
@@ -441,7 +444,10 @@ export class SkillMenu {
             popupScreen.innerHTML = '';
             screamer.scream(
                 K.SKILL_MENU_UPDATE,
-                {updateMessage},
+                {
+                    updateMessage, 
+                    comingFrom: this.comingFrom
+                },
             )
         });
         buttonsContainer.appendChild(backButton);
@@ -456,7 +462,8 @@ export class SkillMenu {
                 K.SKILL_MENU_CLOSE,
                 {
                     skills: this.beforeChangeLearnedSKills,
-                    activeSkills: this.beforeChangeBattleSkills, 
+                    activeSkills: this.beforeChangeBattleSkills,
+                    comingFrom: this.comingFrom 
                 }
             );
             
