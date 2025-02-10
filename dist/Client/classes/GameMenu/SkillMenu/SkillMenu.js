@@ -34,7 +34,6 @@ export class SkillMenu {
             slot7: battleSkills[6],
         };
         this.skillMenu = this.createSkillMenu();
-        console.log(this.comingFrom);
     }
     getCharacterInfoPopupScreen() {
         let popupScreen = document.getElementById('gameMenu-popup');

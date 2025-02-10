@@ -175,7 +175,6 @@ class GameViewModel {
             // })
             screamerStation.on(K.SKILL_MENU_CLOSE, (payload) => __awaiter(this, void 0, void 0, function* () {
                 var _a;
-                console.log('SKILL_MENU_CLOSE', payload);
                 if (payload.comingFrom === 'gameMenu') {
                     const playerCharacter = (_a = this.model) === null || _a === void 0 ? void 0 : _a.playerCharacter;
                     if (!playerCharacter) {
