@@ -935,6 +935,7 @@ export class Character {
 		character: Character;
 		response: SuccessResponse | ErrorResponse;
 	}> {
+		console.log(`Moving skill with id ${skillID} to skills`);
 		const skillObject = await skillRepository.getSkill(skillID);
 		if (skillObject.isAuto) {
 			let autoCardCount = 0;
@@ -3318,3 +3319,4 @@ export function processSpecialEffect(
     }
     return undefined;
 }
+
