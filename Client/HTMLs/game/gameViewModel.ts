@@ -195,6 +195,10 @@ class GameViewModel {
         screamerStation.on('GAME_MODEL_UPDATE', async () => {
             try {
                 this.updatePortraits();
+                const popupWindow = getCharacterInfoPopupScreen();
+                popupWindow.innerHTML = '';
+                popupWindow.classList.add('hidden');
+                popupWindow.classList.remove('visible');
             } catch (error) {
                 console.error('Error updating party:', error);
             }

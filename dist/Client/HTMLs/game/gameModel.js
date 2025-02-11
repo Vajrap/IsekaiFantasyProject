@@ -125,12 +125,44 @@ export class GameModel {
                 this.playerCharacter.skills = payload.skills;
                 this.playerCharacter.activeSkills = payload.activeSkills;
             }));
-            screamerStation.on(K.SKILL_MENU_CLOSE, (payload) => __awaiter(this, void 0, void 0, function* () {
-                webSocketManager.send({
-                    type: K.SKILL_MENU_CLOSE,
-                    skills: payload.skills,
-                    battleCards: payload.battleCards
+            screamerStation.on(K.SKILL_MENU_UPDATE, (payload) => __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                if (!this.playerCharacter || this.playerCharacter === null) {
+                    throw new Error('Player Character not found');
+                }
+                const request = {
+                    type: 'CHANGE_SKILL_DECK_REQUEST',
+                    characterID: (_a = this.playerCharacter) === null || _a === void 0 ? void 0 : _a.id,
+                    skills: payload.updateMessage.skills,
+                    battleCards: payload.updateMessage.battleCards
+                };
+                const response = yield restAPI.send({
+                    path: 'changeSkillDeck',
+                    data: request
                 });
+                for (const res in response) {
+                    console.log(res);
+                }
+                if (!response) {
+                    console.error('Error changing skill deck:');
+                    return;
+                }
+                const responseData = response;
+                if (responseData.characterID !== this.playerCharacter.id) {
+                    console.error('Character ID mismatch:', responseData.characterID, this.playerCharacter.id);
+                    return;
+                }
+                this.playerCharacter.skills = responseData.skills;
+                this.playerCharacter.activeSkills = [
+                    responseData.battleCards.slot1,
+                    responseData.battleCards.slot2,
+                    responseData.battleCards.slot3,
+                    responseData.battleCards.slot4,
+                    responseData.battleCards.slot5,
+                    responseData.battleCards.slot6,
+                    responseData.battleCards.slot7
+                ].filter((skill) => skill !== undefined);
+                this.screamer.scream('GAME_MODEL_UPDATE', null);
             }));
         });
     }

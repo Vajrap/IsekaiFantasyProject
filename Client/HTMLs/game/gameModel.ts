@@ -6,6 +6,7 @@ import { restAPI } from "../../../Client/API/Rest/RestAPI.js";
 import { screamer } from "../../../Client/Screamer/Screamer.js";
 import { Result, success } from "../../../Common/Lib/Result.js";
 import { K } from "../../../Common/Constant.js";
+import { ChangeSkillDeckRequest, ChangeSkillDeckResponse } from "../../../Common/DTOsEnumsInterfaces/Character/ChangeSkillREQRES.js";
 
 export class GameModel {
     playerCharacter: CharacterInterface | null;
@@ -146,23 +147,61 @@ export class GameModel {
             this.playerCharacter.activeSkills = payload.activeSkills;
         })
         
-        screamerStation.on(K.SKILL_MENU_CLOSE, async (payload: {
-            skills: CharacterSkillInterface[]
-            battleCards: {
-                slot1: CharacterSkillInterface | undefined,
-                slot2: CharacterSkillInterface | undefined,
-                slot3: CharacterSkillInterface | undefined,
-                slot4: CharacterSkillInterface | undefined,
-                slot5: CharacterSkillInterface | undefined,
-                slot6: CharacterSkillInterface | undefined,
-                slot7: CharacterSkillInterface | undefined,
+        screamerStation.on(K.SKILL_MENU_UPDATE, async (payload: {
+            comingFrom: string,
+            updateMessage: {
+                skills: CharacterSkillInterface[]
+                battleCards: {
+                    slot1: CharacterSkillInterface | undefined,
+                    slot2: CharacterSkillInterface | undefined,
+                    slot3: CharacterSkillInterface | undefined,
+                    slot4: CharacterSkillInterface | undefined,
+                    slot5: CharacterSkillInterface | undefined,
+                    slot6: CharacterSkillInterface | undefined,
+                    slot7: CharacterSkillInterface | undefined,
+                }
             }
         }) => {
-            webSocketManager.send({
-                type: K.SKILL_MENU_CLOSE,
-                skills: payload.skills,
-                battleCards: payload.battleCards
+            if (!this.playerCharacter || this.playerCharacter === null) {
+                throw new Error('Player Character not found');
+            }
+
+            const request: ChangeSkillDeckRequest = {
+                type: 'CHANGE_SKILL_DECK_REQUEST',
+                characterID: this.playerCharacter?.id,
+                skills: payload.updateMessage.skills,
+                battleCards: payload.updateMessage.battleCards
+            }
+
+            const response = await restAPI.send({
+                path: 'changeSkillDeck',
+                data: request
             })
+            
+            if (!response) {
+                console.error('Error changing skill deck:');
+                return;
+            }
+
+            const responseData = response as unknown as ChangeSkillDeckResponse;
+
+            if (responseData.characterID !== this.playerCharacter.id) {
+                console.error('Character ID mismatch:', responseData.characterID, this.playerCharacter.id);
+                return;
+            }
+
+            this.playerCharacter.skills = responseData.skills;
+            this.playerCharacter.activeSkills = [
+                responseData.battleCards.slot1,
+                responseData.battleCards.slot2,
+                responseData.battleCards.slot3,
+                responseData.battleCards.slot4,
+                responseData.battleCards.slot5,
+                responseData.battleCards.slot6,
+                responseData.battleCards.slot7
+            ].filter((skill): skill is CharacterSkillInterface => skill !== undefined);
+
+            this.screamer.scream('GAME_MODEL_UPDATE', null);
         })
     } 
 }

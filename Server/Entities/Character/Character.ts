@@ -915,10 +915,10 @@ export class Character {
 		return { type: "SUCCESS", message: "Your Battle deck is Good to go!" };
 	}
 
-	moveCardToBattle(skillID: string): {
+	async moveCardToBattle(skillID: string): Promise<{
 		character: Character;
 		response: SuccessResponse;
-	} {
+	}> {
 		const skillIndex = this.skills.findIndex((s) => s.skill.id === skillID);
 		if (skillIndex === -1) {
 			throw new Error(`Skill not learned`);
@@ -935,7 +935,6 @@ export class Character {
 		character: Character;
 		response: SuccessResponse | ErrorResponse;
 	}> {
-		console.log(`Moving skill with id ${skillID} to skills`);
 		const skillObject = await skillRepository.getSkill(skillID);
 		if (skillObject.isAuto) {
 			let autoCardCount = 0;
