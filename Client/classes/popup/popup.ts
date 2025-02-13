@@ -100,3 +100,20 @@ export class Popup {
 }
 
 export const popup = new Popup()
+
+export function getPopupMenu() {
+    let popupScreen = document.getElementById('gameMenu-popup');
+    if (!popupScreen) {
+        popupScreen = createPopupMenu();
+    }
+    return popupScreen;
+}
+
+function createPopupMenu() {
+    const popupScreen = document.createElement('div');
+    popupScreen.classList.add('gameMenu-popup', 'hidden');
+    popupScreen.id = 'gameMenu-popup';
+    
+    document.body.appendChild(popupScreen);
+    return popupScreen;
+}

@@ -30,6 +30,7 @@
 .gameMenu-popup-buttonsContainer {
     height: 5vw;
     width: 5vw;
+    margin-top: 1vh;
     background-color: rgba(0, 0, 0, 0);
 }
 

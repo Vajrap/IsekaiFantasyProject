@@ -12,7 +12,6 @@ import { Dice } from "../../Utility/Dice";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
-import { TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 export class Battle {
     isOngoing: boolean;
@@ -154,73 +153,6 @@ export class Battle {
         }
     }
     
-    // private async battleLoop() {
-    //     this.isOngoing = true;
-    //     let turnCount = 0;
-    //     console.log(`Start Battle Loop for turn: ${turnCount}`);
-    
-    //     while (this.isOngoing) {
-    //         // Loop through all participants to update their AB gauge
-    //         for (const actor of this.allParticipants) {
-    //             // Skip if the actor is not valid or is dead
-    //             if (!actor || actor.isDead) {
-    //                 continue;
-    //             }
-    
-    //             // Update AB gauge for the actor
-    //             this.updateabGauge(actor);
-    
-    //             // Check if the actor is ready to act (AB gauge >= 100)
-    //             if (actor.abGauge >= 100) {
-    //                 turnCount++;
-    //                 console.log(`Turn: ${turnCount}`);
-    
-    //                 // Turn limit condition (Optional, if there's a max turn rule)
-    //                 if (turnCount >= 100) {
-    //                     console.log('Turn limit reached. Ending battle.');
-    //                     this.isOngoing = false;
-    //                     break;
-    //                 }
-    
-    //                 // Reset the AB gauge after the actor's turn starts
-    //                 actor.abGauge = 0;
-    
-    //                 // Move actor to the end of the participant queue
-    //                 const index = this.allParticipants.indexOf(actor);
-    //                 this.allParticipants.push(this.allParticipants.splice(index, 1)[0]);
-    
-    //                 // Check if actor can resolve effect (e.g., skip turn if stunned)
-    //                 if (actor.resolveEffect()) {
-    //                     console.log(`Effect Resolved: ${actor.name} takes turn.`);
-    //                     await this.startActorTurn(actor); // Handle the actor's turn
-    //                 } else {
-    //                     console.log(`${actor.name} is unable to take turn.`);
-    //                 }
-    
-    //                 // After the actor takes the turn, check if the battle should end
-    //                 const isBattleEnd = this.checkBattleEnd();
-    //                 switch (isBattleEnd) {
-    //                     case 'End':
-    //                         this.isOngoing = false;
-    //                         break;
-    //                     case 'Continue':
-    //                         this.isOngoing = true;
-    //                         break;
-    //                 }
-    //             }
-    //         }
-    
-    //         // If the battle is no longer ongoing or the turn limit is reached, exit the loop
-    //         if (!this.isOngoing) {
-    //             break;
-    //         }
-    //     }
-    
-    //     // End turn and check battle outcome
-    //     // this.endTurnCheck();
-    //     this.emit("battleEnd", this.battleReport); // Emit the final report at the end of the battle
-    // }
-
     updateabGauge(actor: Character) {
         let abGaugeIncrement = Math.max(actor.status.agility(), 1);
         const hasteBuff = actor.buffsAndDebuffs.haste;
