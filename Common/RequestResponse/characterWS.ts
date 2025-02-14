@@ -1,5 +1,7 @@
 import { ItemType } from "Common/DTOsEnumsInterfaces/Item/Enums";
 import { ItemCost } from "Common/DTOsEnumsInterfaces/Item/ItemCost";
+import { LocationActionEnum } from "Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { PlanningActionEnum } from "Common/DTOsEnumsInterfaces/PlanningActionEnum";
 import { SkillConsumeInterface, SkillProduceInterface } from "Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
 
 export interface GetPartyRequest {
@@ -19,8 +21,8 @@ export interface PartyInterface {
     location: string;
     isTraveling: boolean;
     characters: (CharacterInterface | "none")[]; // Simplified character data for each party member
-    actionsSequence: string[]; // List of action names or enums
-    actionsList: { [time: number]: string | null }; // Action schedule
+    actionsList: LocationActionEnum[]; // List of action names or enums
+    actionSequence: { [time: number]: LocationActionEnum | null };
 }
 
 export interface UpdatePartyActionsRequest {

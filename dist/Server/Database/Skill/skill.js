@@ -457,7 +457,12 @@ const skillSeed = [
             elements: []
         }),
         produce: new SkillProduce({
-            elements: []
+            elements: [
+                new ElementProduce({
+                    element: FundamentalElementTypes.none,
+                    amountRange: [[1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]
+                })
+            ]
         }),
         tier: Tier.common,
         isWeaponAttack: true,

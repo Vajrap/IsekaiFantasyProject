@@ -1,10 +1,11 @@
-import { CharacterInterface } from "../../../Common/RequestResponse/characterWS.js";
+import { CharacterInterface, PartyInterface } from "../../../Common/RequestResponse/characterWS.js";
 import { GameModel } from "../../../Client/HTMLs/game/gameModel.js";
 import { GameMenu } from "../../../Client/classes/GameMenu/GameMenu.js";
 import { screamer } from "../../../Client/Screamer/Screamer.js";
 import { K } from "../../../Common/Constant.js";
 import { EquipmentsAndItemsMenu } from "../../../Client/classes/GameMenu/EquipmentsAndItemsMenu/EquipementsAndItemsMenu.js";
 import { SkillMenu } from "../../../Client/classes/GameMenu/SkillMenu/SkillMenu.js";
+import { PlanningMenu } from "../../../Client/classes/GameMenu/PlanningMenu/PlanningMenu.js";
 
 class GameViewModel {
     // Model
@@ -74,17 +75,17 @@ class GameViewModel {
 
     updatePortraits() {
         const model = this.ensureModel();
-        if (!model.playerCharacter) {
-            console.error('Player Character not found');
-            return;
-        }
-        this.playerPortrait.src = `../../assets/portrait/${model.playerCharacter.portrait}.png`;
 
-        if (model.companionCharacters.length === 0) {
+        const playerCharacter = model.getPlayerCharacter();
+        
+        this.playerPortrait.src = `../../assets/portrait/${playerCharacter.portrait}.png`;
+
+        const companionCharacters = model.getAllCompanionCharacters();
+        if (companionCharacters.length === 0) {
             return;
         } else {
-            for (let i = 0; i < model.companionCharacters.length; i++) {
-                this.companionPortraits[i].src = model.companionCharacters[i].portrait;
+            for (let i = 0; i < companionCharacters.length; i++) {
+                this.companionPortraits[i].src = companionCharacters[i].portrait;
             }
         }
     }
@@ -92,7 +93,7 @@ class GameViewModel {
     addEventListener() {
         const model = this.ensureModel();
 
-        const playerCharacter = model.playerCharacter;
+        const playerCharacter = model.getPlayerCharacter();
 
         if (!playerCharacter) {
             throw new Error('Player Character not found');
@@ -102,12 +103,13 @@ class GameViewModel {
             this.showCharacterInfo(playerCharacter, 'player')
         });
 
+        const companionCharacters = model.getAllCompanionCharacters();
         this.companionPortraits.forEach((portrait, index) => {
             if (!portrait) {
                 return;
             }
             portrait.addEventListener('click', () => {
-                this.showCharacterInfo(model.companionCharacters[index], 'companion')
+                this.showCharacterInfo(companionCharacters[index], 'companion')
             });
         });
         this.battleReportBtn.addEventListener('click', () => {
@@ -121,23 +123,26 @@ class GameViewModel {
         //     });
         // });
         this.planningBtn.addEventListener('click', () => {
-            // TODO:
+            if (model.party === null || model.party === undefined) { throw new Error('Party not found'); }
+            this.showPlanningMenu(model.party);
         });
 
         this.skillsBtn.addEventListener('click', () => {
-            if (!this.model?.playerCharacter) {
-                throw new Error('Player Character not found');
-            }
-            this.showSkillsMenu(this.model.playerCharacter);
+            this.showSkillsMenu(playerCharacter);
         });
 
         this.inventoryBtn.addEventListener('click', () => {
-            if (!this.model?.playerCharacter) {
-                throw new Error('Player Character not found');
-            }
-
-            this.showEquipmentsAndItemsMenu(this.model.playerCharacter);
+            this.showEquipmentsAndItemsMenu(playerCharacter);
         });
+    }
+
+    showPlanningMenu(party: PartyInterface) {
+        const popupScreen = getCharacterInfoPopupScreen();
+        popupScreen.innerHTML = '';
+        popupScreen.classList.remove('hidden');
+        popupScreen.classList.add('visible');
+
+        new PlanningMenu(party)
     }
 
     showSkillsMenu(character: CharacterInterface) {
@@ -218,7 +223,7 @@ class GameViewModel {
 
         screamerStation.on(K.SKILL_MENU_CLOSE, async (payload: any) => {
             if (payload.comingFrom === 'gameMenu') {
-                const playerCharacter = this.model?.playerCharacter;
+                const playerCharacter = this.model?.getPlayerCharacter()
                 if (!playerCharacter) { throw new Error('Player Character not found')}
                 this.showCharacterInfo(playerCharacter, 'player');
             } else {
@@ -231,7 +236,7 @@ class GameViewModel {
 
         screamerStation.on(K.EQUIPMENT_MENU_CLOSE, async (payload: any) => {
             if (payload.comingFrom === 'gameMenu') {
-                const playerCharacter = this.model?.playerCharacter;
+                const playerCharacter = this.model?.getPlayerCharacter();
                 if (!playerCharacter) {
                     throw new Error('Player Character not found');
                 }

@@ -17,8 +17,8 @@ export class Party {
 		"none",
 		"none",
 	];
-	// actionsList = 7 days object, each day with 4 slots
-	actionsList: {
+	// actionSequence = 7 days object, each day with 4 slots
+	actionSequence: {
 		day1: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
 		day2: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
 		day3: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
@@ -1206,14 +1206,14 @@ export class Party {
 	toDatabase(): {
         partyID: string;
         characters: string[];
-        actionsList: string;
+        actionSequence: string;
         isTraveling: boolean;
         location: string;
     } {
         return {
             partyID: this.partyID,
 			characters: this.characters.map(character =>  character === "none" ? "none" : character.id),            
-			actionsList: JSON.stringify(this.actionsList),
+			actionSequence: JSON.stringify(this.actionSequence),
             isTraveling: this.isTraveling,
             location: this.location,
         };
@@ -1226,8 +1226,8 @@ export class Party {
 			isTraveling: this.isTraveling,
 			characters: this.characters.map(character => character === "none" ? "none" : character.intoInterface()),
 			// TODO: Implement actionsSequence
-			actionsSequence: [],
-			actionsList: this.actionsList,
+			actionSequence: this.actionSequence,
+			actionsList: [],
 		}
 	}
 }

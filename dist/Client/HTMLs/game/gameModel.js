@@ -19,8 +19,8 @@ export class GameModel {
         this.webSocketManager = webSocketManager;
         this.restAPI = restAPI;
         this.screamer = screamer;
-        this.playerCharacter = null;
-        this.companionCharacters = [];
+        this.party = null;
+        this.playerCharacterID = null;
         this.eventManager = null;
         this.user_id = null;
     }
@@ -88,18 +88,18 @@ export class GameModel {
                 console.error('Invalid party payload:', payload);
                 throw new Error('Invalid party data received');
             }
+            this.party = payload;
             if (this.user_id) {
                 let userCharacter = payload.characters.find(character => character !== 'none' && character.id === this.user_id);
                 if (userCharacter !== undefined && userCharacter !== 'none') {
                     //TODO: Proxy image for testing
                     userCharacter.portrait = 'test_port';
-                    this.playerCharacter = userCharacter;
+                    this.playerCharacterID = userCharacter.id;
                 }
                 else {
                     console.error('User Character not found in party data:', payload.characters);
                     throw new Error('User Character not found');
                 }
-                this.companionCharacters = payload.characters.filter((character) => character !== 'none' && character.id !== this.user_id);
                 this.screamer.scream('GAME_MODEL_UPDATE', null);
             }
             else {
@@ -119,20 +119,20 @@ export class GameModel {
                 }
             }));
             screamerStation.on(K.SKILL_MENU_CLOSE, (payload) => __awaiter(this, void 0, void 0, function* () {
-                if (!this.playerCharacter || this.playerCharacter === null) {
+                if (!this.playerCharacterID || this.playerCharacterID === null) {
                     throw new Error('Player Character not found');
                 }
-                this.playerCharacter.skills = payload.skills;
-                this.playerCharacter.activeSkills = payload.activeSkills;
+                const character = this.getPlayerCharacter();
+                character.skills = payload.skills;
+                character.activeSkills = payload.activeSkills;
             }));
             screamerStation.on(K.SKILL_MENU_UPDATE, (payload) => __awaiter(this, void 0, void 0, function* () {
-                var _a;
-                if (!this.playerCharacter || this.playerCharacter === null) {
+                if (!this.playerCharacterID || this.playerCharacterID === null) {
                     throw new Error('Player Character not found');
                 }
                 const request = {
                     type: 'CHANGE_SKILL_DECK_REQUEST',
-                    characterID: (_a = this.playerCharacter) === null || _a === void 0 ? void 0 : _a.id,
+                    characterID: this.playerCharacterID,
                     skills: payload.updateMessage.skills,
                     battleCards: payload.updateMessage.battleCards
                 };
@@ -140,20 +140,18 @@ export class GameModel {
                     path: 'changeSkillDeck',
                     data: request
                 });
-                for (const res in response) {
-                    console.log(res);
-                }
                 if (!response) {
                     console.error('Error changing skill deck:');
                     return;
                 }
                 const responseData = response;
-                if (responseData.characterID !== this.playerCharacter.id) {
-                    console.error('Character ID mismatch:', responseData.characterID, this.playerCharacter.id);
+                if (responseData.characterID !== this.playerCharacterID) {
+                    console.error('Character ID mismatch:', responseData.characterID, this.playerCharacterID);
                     return;
                 }
-                this.playerCharacter.skills = responseData.skills;
-                this.playerCharacter.activeSkills = [
+                const character = this.getPlayerCharacter();
+                character.skills = responseData.skills;
+                character.activeSkills = [
                     responseData.battleCards.slot1,
                     responseData.battleCards.slot2,
                     responseData.battleCards.slot3,
@@ -165,5 +163,32 @@ export class GameModel {
                 this.screamer.scream('GAME_MODEL_UPDATE', null);
             }));
         });
+    }
+    getPlayerCharacter() {
+        var _a;
+        if (!this.playerCharacterID) {
+            throw new Error('Player Character not found');
+        }
+        const playerCharacter = (_a = this.party) === null || _a === void 0 ? void 0 : _a.characters.find(character => character !== "none" && character.id === this.playerCharacterID);
+        if (playerCharacter === "none" || playerCharacter === undefined) {
+            throw new Error('Player Character not found');
+        }
+        return playerCharacter;
+    }
+    getCharacter(characterID) {
+        if (!this.party) {
+            throw new Error('Party data not found');
+        }
+        const character = this.party.characters.find(character => character !== "none" && character.id === characterID);
+        if (character === "none" || character === undefined) {
+            throw new Error('Character not found');
+        }
+        return character;
+    }
+    getAllCompanionCharacters() {
+        if (!this.party) {
+            throw new Error('Party data not found');
+        }
+        return this.party.characters.filter((character) => character !== "none" && character.id !== this.playerCharacterID);
     }
 }

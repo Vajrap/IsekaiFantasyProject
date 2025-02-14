@@ -180,7 +180,7 @@ async function createAndSaveParty(character: Character): Promise<Result<Party>> 
         [
             { dataKey: 'partyID', value: dbObject.partyID },
             { dataKey: 'characters', value: dbObject.characters },
-            { dataKey: 'actionsList', value: dbObject.actionsList },
+            { dataKey: 'actionSequence', value: dbObject.actionSequence },
             { dataKey: 'isTraveling', value: dbObject.isTraveling },
             { dataKey: 'location', value: dbObject.location },
         ]

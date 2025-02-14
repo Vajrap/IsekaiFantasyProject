@@ -383,7 +383,7 @@ export class Game {
                     newParty.characters[5] = character;
                 }
                 newParty.isTraveling = party.isTraveling;
-                newParty.actionsList = party.actionsList;
+                newParty.actionSequence = party.actionSequence;
                 
                 this.partyManager.addParty(newParty);
             }
