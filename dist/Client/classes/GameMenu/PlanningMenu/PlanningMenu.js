@@ -9,27 +9,24 @@ export class PlanningMenu {
     createPlanningMenu() {
         const gameMenuPopup = getPopupMenu();
         // create the planning menu
-        const planningMenu = document.createElement('div');
-        planningMenu.classList.add('planning-menu');
+        const planningMenu = document.createElement("div");
+        planningMenu.classList.add("planning-menu");
         gameMenuPopup.appendChild(planningMenu);
-        // here we need to create 2 sections and append them to the planning menu
-        const characterPositionSection = this.createCharacterPositionSection();
-        planningMenu.appendChild(characterPositionSection);
-        this.updateCharacterPositionSection();
         /*
-        
-        This is a planning menu that player can.
-            1. Swap party members positions.
-            2. Assign actions to party
-        
+                
+            This is a planning menu that player can.
+                1. Swap party members positions.
+                2. Assign actions to party
+                
             So we need 2 sections:
-            1. Party members section
-                - Just list all the positions and characters in the position, drag and drop to swap positions
-            2. Action section
-                - We need to list all the actions that player can assign to the party, this might appeared as a list of buttons
-                - Time slots to assign the actions
-
+                1. Party members section
+                    - Just list all the positions and characters in the position, drag and drop to swap positions
+                2. Action section
+                    - We need to list all the actions that player can assign to the party, this might appeared as a list of buttons
+                    - Time slots to assign the actions
+        
             Party Interface looks like this
+
             export interface PartyInterface {
                 partyID: string;
                 location: string;
@@ -40,26 +37,76 @@ export class PlanningMenu {
             }
         */
         // lastly append the planning menu to the popup screen
+        // here we need to create 2 sections and append them to the planning menu
+        const characterPositionSection = this.createCharacterPositionSection();
+        planningMenu.appendChild(characterPositionSection);
+        this.updateCharacterPositionSection();
+        const actionsSection = this.createActionsSection();
+        planningMenu.appendChild(actionsSection);
+        // another section for actions
+        const actionButtons = this.createActionButtons();
+        planningMenu.appendChild(actionButtons);
         return planningMenu;
+    }
+    createActionsSection() {
+        // Ingame calendar consist of
+        // 6 days per week
+        // 24 days per month
+        // 14 months per year
+        // 4 time slots per day
+        // In this section, we listed week/time slots, meaning we have 6 days * 4 time slots = 24 slots
+        const actionSection = document.createElement("div");
+        actionSection.classList.add("actions-section");
+        // Create all possible actions list
+        const actionListSection = document.createElement("div");
+        actionListSection.classList.add("actions-section");
+        actionListSection.appendChild(this.createAllPossibleActions());
+        actionSection.appendChild(actionListSection);
+        const actionScheduleSection = document.createElement("div");
+        actionScheduleSection.classList.add("action-schedule-section");
+        // Create 24 slots
+        for (let i = 0; i < 24; i++) {
+            const actionSlot = document.createElement("div");
+            actionSlot.classList.add("action-slot");
+            actionSlot.setAttribute("data-time", i.toString());
+            actionSlot.addEventListener("drop", this.drop);
+            actionSlot.addEventListener("dragover", this.allowDrop);
+            actionScheduleSection.appendChild(actionSlot);
+        }
+        actionSection.appendChild(actionScheduleSection);
+        return actionSection;
+    }
+    createAllPossibleActions() {
+        const allPossibleActions = document.createElement("div");
+        allPossibleActions.classList.add("all-possible-actions");
+        // List all possible actions
+        // For now, just list all possible actions
+        // Later, we can make this dynamic based on the character's class, level, etc
+        for (const action of this.party.actionsList) {
+            const actionButton = document.createElement("button");
+            actionButton.textContent = action;
+            allPossibleActions.appendChild(actionButton);
+        }
+        return allPossibleActions;
     }
     createCharacterPositionSection() {
         // A section of 6 slots, 2 columns, 3 rows, right column for front row, left column for back row
         // Each slot contains a character
-        const characterPositionSection = document.createElement('div');
-        characterPositionSection.classList.add('character-position-section');
-        const frontRow = document.createElement('div');
-        frontRow.classList.add('front-row');
-        const backRow = document.createElement('div');
-        backRow.classList.add('back-row');
+        const characterPositionSection = document.createElement("div");
+        characterPositionSection.classList.add("character-position-section");
+        const frontRow = document.createElement("div");
+        frontRow.classList.add("front-row");
+        const backRow = document.createElement("div");
+        backRow.classList.add("back-row");
         characterPositionSection.appendChild(frontRow);
         characterPositionSection.appendChild(backRow);
         // Create slots
         for (let i = 0; i < 6; i++) {
-            const slot = document.createElement('div');
-            slot.classList.add('slot');
-            slot.setAttribute('data-position', i.toString());
-            slot.addEventListener('drop', this.drop);
-            slot.addEventListener('dragover', this.allowDrop);
+            const slot = document.createElement("div");
+            slot.classList.add("slot");
+            slot.setAttribute("data-position", i.toString());
+            slot.addEventListener("drop", this.drop);
+            slot.addEventListener("dragover", this.allowDrop);
             if (i < 3) {
                 frontRow.appendChild(slot);
             }
@@ -72,23 +119,23 @@ export class PlanningMenu {
     updateCharacterPositionSection() {
         let iterator = 0;
         for (const character of this.party.characters) {
-            console.log('Mapping slot', iterator);
+            console.log("Mapping slot", iterator);
             const slot = document.querySelector(`.slot[data-position="${iterator}"]`);
             if (!slot) {
-                throw new Error('Slot not found');
+                throw new Error("Slot not found");
             }
-            if (character === 'none') {
+            if (character === "none") {
                 iterator++;
                 continue;
             }
-            slot.innerHTML = '';
+            slot.innerHTML = "";
             slot.appendChild(this.createCharacterSmallCard(character));
             iterator++;
         }
     }
     createCharacterSmallCard(character) {
-        const characterSmallCard = document.createElement('div');
-        characterSmallCard.classList.add('character-small-card');
+        const characterSmallCard = document.createElement("div");
+        characterSmallCard.classList.add("character-small-card");
         characterSmallCard.innerHTML = `
             <div class="character-portrait">
                 <img src="${character.portrait}" alt="${character.name}">
@@ -101,8 +148,27 @@ export class PlanningMenu {
         `;
         return characterSmallCard;
     }
-    drop() {
+    createActionButtons() {
+        const buttonContainer = document.createElement('div');
+        buttonContainer.classList.add('planning-menu-actionButtons-container');
+        // Accept Button
+        const acceptButton = document.createElement('button');
+        acceptButton.classList.add('planning-menu-acceptButton');
+        acceptButton.textContent = 'Accept';
+        acceptButton.addEventListener('click', () => {
+            screamer.scream("PLANNING_MENU_ACCEPT", null);
+        });
+        // Cancel Button
+        const cancelButton = document.createElement('button');
+        cancelButton.classList.add('planning-menu-cancelButton');
+        cancelButton.textContent = 'Cancel';
+        cancelButton.addEventListener('click', () => {
+            screamer.scream("PLANNING_MENU_CANCEL", null);
+        });
+        buttonContainer.appendChild(acceptButton);
+        buttonContainer.appendChild(cancelButton);
+        return buttonContainer;
     }
-    allowDrop() {
-    }
+    drop() { }
+    allowDrop() { }
 }

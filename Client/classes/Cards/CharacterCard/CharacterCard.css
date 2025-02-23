@@ -6,7 +6,8 @@
     grid-template-areas: "characterCard-front characterCard-back";
     margin-top: 1vh;
     margin-left: 5vw;
-    border: 1px solid rgb(230, 230, 170);
+    border: 0.2vh solid rgb(230, 230, 170);
+    border-radius: 0.5vh;
 }
 
 .characterCard-front {
@@ -64,7 +65,7 @@
     margin-left: 0.5vw;
     margin-right: 0.5vw;
     background-color: darkslategrey;
-    border-radius: 5px;
+    border-radius: 0.5vh;
     overflow-y: auto;
     color: white;
 }
@@ -139,15 +140,14 @@
 .characterCard-panel-label {
     color: midnightblue;
     font-weight: bold;
-    font-size: 2vh;
+    font-size: medium;
 }
 
 .characterCard-item-label {
     padding-top: 0.3vh;
     padding-left: 0.5vw;
     color: beige;
-    font-weight: bold;
-    font-size: 1.5vh;
+    font-size: small;
 }
 
 .characterCard-panel-label-Active-Internal, .characterCard-panel-label-Equipments, .characterCard-panel-label-Traits, .characterCard-panel-label-Skill-Sequence, .characterCard-panel-label-Party-Position, .characterCard-panel-label-Attributes, .characterCard-panel-label-Battlers, .characterCard-panel-label-Elements, .characterCard-panel-label-Artisans, .characterCard-panel-label-Learned-Skills, .characterCard-panel-label-Proficiencies, .characterCard-panel-label-Learned-Internal {
@@ -158,9 +158,8 @@
 .characterCard-item-value {
     padding-top: 0.3vh;
     padding-left: 0.5vw;
-    color: blanchedalmond;
-    font-weight: normal;
-    font-size: 1.5vh;
+    color: beige;
+    font-size: small;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

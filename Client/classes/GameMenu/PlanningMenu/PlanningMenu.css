@@ -1,0 +1,128 @@
+.planning-menu {
+    width: 90vw;
+    height: 90vh;
+    display: block;
+    gap: 2vw;
+    background-color: rgba(224, 224, 224, 0.2);
+    border-radius: 5px;
+    padding: 2vh;
+}
+
+.planning-menu .character-position-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 1vw;
+    padding: 2vh;
+    background-color: rgba(157, 135, 107, 0.4);
+    border-radius: 5px;
+    height: 30vh;
+}
+
+.planning-menu .slot {
+    width: 8vw;
+    height: 8vw;
+    background-color: rgba(45, 131, 133, 0.4);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid palegoldenrod;
+}
+
+.planning-menu .slot:hover {
+    background-color: rgba(45, 131, 133, 0.6);
+}
+
+.planning-menu .character-small-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1vh;
+    background-color: rgba(40, 130, 130, 0.5);
+    border-radius: 5px;
+    text-align: center;
+}
+
+.planning-menu .character-portrait img {
+    width: 6vw;
+    height: 6vw;
+    border-radius: 50%;
+}
+
+.planning-menu .actions-section {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(224, 224, 224, 0.2);
+    border-radius: 5px;
+    padding: 2vh;
+}
+
+.planning-menu .all-possible-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1vw;
+}
+
+.planning-menu .all-possible-actions button {
+    background-color: rgba(45, 131, 133, 0.4);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 1vh 2vh;
+    font-size: 16px;
+}
+
+.planning-menu .all-possible-actions button:hover {
+    background-color: rgba(45, 131, 133, 0.7);
+    transition: 0.3s;
+}
+
+.planning-menu .action-schedule-section {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 0.5vw;
+    margin-top: 2vh;
+}
+
+.planning-menu .action-slot {
+    width: 6vw;
+    height: 6vw;
+    background-color: rgba(157, 135, 107, 0.4);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid palegoldenrod;
+}
+
+.planning-menu .action-slot:hover {
+    background-color: rgba(157, 135, 107, 0.6);
+}
+
+.planning-menu .planning-menu-actionButtons-container {
+    display: flex;
+    justify-content: center;
+    gap: 2vw;
+    margin-top: 2vh;
+}
+
+.planning-menu .planning-menu-acceptButton, .planning-menu .planning-menu-cancelButton {
+    background-color: rgba(45, 131, 133, 0.4);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 1vh 3vh;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.planning-menu .planning-menu-acceptButton:hover {
+    background-color: rgba(45, 131, 133, 0.7);
+}
+
+.planning-menu .planning-menu-cancelButton:hover {
+    background-color: rgba(157, 135, 107, 0.7);
+}

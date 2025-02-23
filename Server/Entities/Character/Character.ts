@@ -3275,8 +3275,6 @@ export function getCriticalModifiedDamage(
 	return damage * baseModifier;
 }
 
-
-
 export function processSpecialEffect(
     actor: Character,
     damageObject: {

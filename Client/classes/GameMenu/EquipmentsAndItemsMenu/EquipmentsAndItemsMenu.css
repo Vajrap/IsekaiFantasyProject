@@ -61,7 +61,7 @@
     color: #fff;
     border: none;
     border-radius: 5px;
-    font-size: 20px;
+    font-size: small;
     margin-left: 15vw;
 }
 
@@ -74,7 +74,7 @@
     padding-bottom: 1vh;
     padding-left: 1vh;
     background-color: darkslategray;
-    font-size: 24px;
+    font-size: medium;
     font-weight: bold;
     color: rgb(214, 224, 224);
 }
@@ -90,7 +90,7 @@
 
 .equipmentsAndItems-menu-equipmentLabel {
     background-color: darkslategray;
-    font-size: 18px;
+    font-size: medium;
     font-weight: bold;
     padding-left: 10px;
     color: rgb(214, 224, 224);
@@ -115,8 +115,8 @@
 }
 
 .equipmentsAndItems-menu-inventoryBar-size {
-    font-size: 18px;
-    margin-left: 30vw;
+    font-size: smaller;
+    margin-left: 32vw;
 }
 
 .equipmentsAndItems-menu-itemCard-container {
@@ -141,14 +141,13 @@
     color: #fff;
     border: none;
     border-radius: 5px;
-    font-size: 20px;
     margin-left: 1vw;
     margin-top: 5vh;
-    font-size: medium;
+    font-size: small;
 }
 
 .equipmentsAndItems-menu-itemCard-button:hover {
     background-color: rgb(40, 130, 130);
-    font-size: large;
+    font-size: small;
     transition-duration: 0.5s;
 }

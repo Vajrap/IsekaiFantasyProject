@@ -3,7 +3,7 @@ body, h1, h2, h3, p {
     margin: 0;
     padding: 0;
     border: 0;
-    font-size: 100%;
+    font-size:medium;
     font-family: Arial, sans-serif;
     vertical-align: baseline;
     box-sizing: border-box;
@@ -25,7 +25,7 @@ body, h1, h2, h3, p {
     padding-bottom: 23.5vh;
     padding-right: 24vw;
     color: white;
-    font-size: 2vh;
+    font-size: medium;
 }
 
 .textNextButton{
@@ -96,7 +96,7 @@ body, h1, h2, h3, p {
 }
 
 .actions-container {
-    font-size: 16px;
+    font-size: small;
     display: grid;
     grid-template-areas: 
     "daySun dayMon dayTue dayWed dayThu dayFri daySat"
@@ -146,7 +146,7 @@ body, h1, h2, h3, p {
     background-color: transparent;
     border: white solid 1px;
     color: white;
-    font-size: 13px;
+    font-size: small;
     cursor: pointer;
 }
 
@@ -157,7 +157,7 @@ body, h1, h2, h3, p {
     border: none;
     color: white; /* Text color */
     text-align: center;
-    font-size: 16px;
+    font-size: small;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Box shadow */
     transition: background-color 0.3s, box-shadow 0.3s; /* Smooth transitions */
@@ -206,7 +206,7 @@ body, h1, h2, h3, p {
 }
 
 .companion-label {
-    font-size: 1.5vh;
+    font-size: small;
     color: #DAA520;
 }
 
@@ -256,7 +256,7 @@ body, h1, h2, h3, p {
 .user-screen {
     display: grid;
     grid-template-columns: 70% 30%;
-    font-size: 1.8vh;
+    font-size: small;
 }
 
 .middle {
@@ -282,12 +282,12 @@ body, h1, h2, h3, p {
 }
 
 .dialogueBoxCharacterName{
-    font-size: 25px;
+    font-size: small;
     font-weight: bold;
 }
 
 .dialogueBoxText {
-    font-size: 20px;
+    font-size: small;
 }
 
 .dialogueBoxOptions {
@@ -297,7 +297,7 @@ body, h1, h2, h3, p {
 
 .dialogueBoxOption {
     align-items: flex-start;
-    font-size: 20px;
+    font-size: small;
     border: 2px solid #529d96;
     padding: 5px;
     margin: 5px;
@@ -325,7 +325,7 @@ body, h1, h2, h3, p {
     color: rgba(255, 255, 255, 1);
     border: none;
     border-radius: 5px;
-    font-size: 1em;
+    font-size: small;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
@@ -362,7 +362,7 @@ body, h1, h2, h3, p {
     height: 10.6vh;
     background-color: #000000;
     border: none;
-    font-size: 2vh;
+    font-size: small;
     cursor: pointer;
   }
 
@@ -390,6 +390,7 @@ body, h1, h2, h3, p {
     display: grid;
     grid-auto-flow: row;
     gap: 0px;
+    margin-left: 3vw;
 }
 
 .bottom-right button {
@@ -399,7 +400,7 @@ body, h1, h2, h3, p {
     color: rgba(255, 255, 255, 1);
     border: none;
     border-radius: 5px;
-    font-size: 1em;
+    font-size: small;
     margin-left: 1vw;
     cursor: pointer;
     transition: background-color 0.3s ease;
