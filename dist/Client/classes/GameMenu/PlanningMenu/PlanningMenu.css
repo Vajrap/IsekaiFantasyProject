@@ -1,10 +1,10 @@
 .planning-menu {
-    width: 100vw;
-    height: 100vh;
+    width: 90vw;
+    height: 90vh;
     display: block;
     gap: 2vw;
-    background-color: rgb(92, 82, 82, 0.4);
-    border-radius: 0.5vh;
+    background-color: rgba(224, 224, 224, 0.2);
+    border-radius: 5px;
     padding: 2vh;
 }
 
@@ -14,20 +14,20 @@
     grid-template-rows: repeat(3, 1fr);
     gap: 1vw;
     padding: 2vh;
-    background-color: rgba(0, 0, 0, 0.4);
-    border-radius: 0.5vh;
+    background-color: rgba(157, 135, 107, 0.4);
+    border-radius: 5px;
     height: 30vh;
-    width: 30vw;
 }
 
 .planning-menu .slot {
-    width: 10vh;
-    height: 10vh;
+    width: 8vw;
+    height: 8vw;
     background-color: rgba(45, 131, 133, 0.4);
-    border-radius: 0.2vh;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    border: 0.2vh solid palegoldenrod;
-    display: grid;
+    border: 1px solid palegoldenrod;
 }
 
 .planning-menu .slot:hover {
@@ -40,7 +40,7 @@
     align-items: center;
     padding: 1vh;
     background-color: rgba(40, 130, 130, 0.5);
-    border-radius: 0.5vh;
+    border-radius: 5px;
     text-align: center;
 }
 
@@ -54,7 +54,7 @@
     display: flex;
     flex-direction: column;
     background-color: rgba(224, 224, 224, 0.2);
-    border-radius: 0.5vh;
+    border-radius: 5px;
     padding: 2vh;
 }
 
@@ -68,9 +68,9 @@
     background-color: rgba(45, 131, 133, 0.4);
     color: #fff;
     border: none;
-    border-radius: 0.5vh;
+    border-radius: 5px;
     padding: 1vh 2vh;
-    font-size: small;
+    font-size: 16px;
 }
 
 .planning-menu .all-possible-actions button:hover {
@@ -83,7 +83,7 @@
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(4, 1fr);
     gap: 0.5vw;
-    margin-top: 0.2vh;
+    margin-top: 2vh;
 }
 
 .planning-menu .action-slot {
@@ -94,7 +94,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 0.2vh solid palegoldenrod;
+    border: 1px solid palegoldenrod;
 }
 
 .planning-menu .action-slot:hover {
