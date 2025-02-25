@@ -30,15 +30,44 @@ export class SkillRepository {
             return AutoAttackSkills.skill_auto_magical;
         }
 
-        let skill = this.skills[id];
+        let skill = new Skill (
+            this.skills[id].id,
+            this.skills[id].name,
+            this.skills[id].baseDescription,
+            this.skills[id].requirement,
+            this.skills[id].equipmentNeeded,
+            this.skills[id].activeEffect,
+            this.skills[id].consume,
+            this.skills[id].produce,
+            this.skills[id].tier,
+            this.skills[id].isSpell,
+            this.skills[id].isAuto,
+            this.skills[id].isWeaponAttack,
+            this.skills[id].isReaction
+        )
 
         if (skill === null || skill === undefined) {
             const dbSkill = await db.getSkill(id);
 
+            console.log(dbSkill);
+
             if (dbSkill !== null) {
-                skill = dbSkill;
+                skill = new Skill(
+                    dbSkill.id,
+                    dbSkill.name,
+                    dbSkill.baseDescription,
+                    dbSkill.requirement,
+                    dbSkill.equipmentNeeded,
+                    dbSkill.activeEffect,
+                    dbSkill.consume,
+                    dbSkill.produce,
+                    dbSkill.tier,
+                    dbSkill.isSpell,
+                    dbSkill.isAuto,
+                    dbSkill.isWeaponAttack,
+                    dbSkill.isReaction
+                );
             }
-            
         }
         
         if (skill === null || skill === undefined) {
