@@ -142,7 +142,9 @@ class GameViewModel {
         popupScreen.classList.remove('hidden');
         popupScreen.classList.add('visible');
 
-        new PlanningMenu(party)
+        const planningMenu = new PlanningMenu(party);
+        const planningMenuElement = planningMenu.planningMenu;
+        popupScreen.appendChild(planningMenuElement);
     }
 
     showSkillsMenu(character: CharacterInterface) {
@@ -191,7 +193,7 @@ class GameViewModel {
     }
 
     showBattleReport() {
-        battleReportMenu.showBattleReportMenu();
+        // battleReportMenu.showBattleReportMenu();
     }
 
     private async initializeEventListeners() {

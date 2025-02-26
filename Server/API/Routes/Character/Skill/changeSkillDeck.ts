@@ -1,4 +1,3 @@
-import { Skill } from "../../../../Entities/Skills/Skill";
 import { game } from "../../../../Game/Game";
 import { ChangeSkillDeckRequest, ChangeSkillDeckResponse } from "../../../../../Common/DTOsEnumsInterfaces/Character/ChangeSkillREQRES";
 

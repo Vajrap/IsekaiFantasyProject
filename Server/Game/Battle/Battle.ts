@@ -1,6 +1,6 @@
 import { Party } from "../../Entities/Party/Party";
 import { BattleReport } from "./BattleReport";
-import { ActionDetails, ActorSkillEffect, TargetSkillEffect } from "../../API/BattleReportDTO";
+import { ActorSkillEffect, TargetSkillEffect, ActionDetailsInterface, CharacterDataInterface } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { skillRepository } from "../../Entities/Skills/SkillRepository";
 import { Skill } from "../../Entities/Skills/Skill";
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
@@ -13,6 +13,7 @@ import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
+import { createActionDetailsInterface } from "../../API/BattleReportDTO";
 export class Battle {
     isOngoing: boolean;
     partyA: Party;
@@ -267,7 +268,7 @@ export class Battle {
     ): Promise<{
         skill: {skillID: string, level: number},
         skillObject: Skill | null, 
-        actionDetails: ActionDetails | null,
+        actionDetails: ActionDetailsInterface | null,
     }> {
         let weapons = [];
         if (actor.equipments.mainHand && actor.equipments.mainHand.weaponSpecificType != null) { weapons.push(actor.equipments.mainHand.weaponSpecificType) };
@@ -326,7 +327,7 @@ export class Battle {
 
         this.actorAddResource(actor, skill, skillLevel);
 
-        let actionDetails = new ActionDetails(
+        let actionDetails = createActionDetailsInterface(
             actor,
             negativeTargets,
             positiveTargets,
@@ -347,7 +348,7 @@ export class Battle {
     async actorMoveToNextActiveSkill(actor: Character, skillPosition: number, selfParty: Party, oppositeParty: Party, targets: Character[]): Promise<{
         skill: {skillID: string, level: number},
         skillObject: Skill | null, 
-        actionDetails: ActionDetails | null 
+        actionDetails: ActionDetailsInterface | null 
     }> {
         skillPosition++;
 

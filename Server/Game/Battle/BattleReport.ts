@@ -1,11 +1,12 @@
 import { Party } from "../../Entities/Party/Party";
-import { CharacterData, ActionDetails } from "../../API/BattleReportDTO";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
+import { CharacterDataInterface, ActionDetailsInterface } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
+import { createCharacterDataInterface } from "../../API/BattleReportDTO";
 
 export class BattleReport {
-    startingPartyAMembers: CharacterData[] = [];
-    startingPartyBMembers: CharacterData[] = [];
-    battleTurn: ActionDetails[] = [];
+    startingPartyAMembers: CharacterDataInterface[] = [];
+    startingPartyBMembers: CharacterDataInterface[] = [];
+    battleTurn: ActionDetailsInterface[] = [];
     //TODO: Implementation of location, environment, gameTime on battle.
     //may not effect battle but would used to determine the BG in FE
     location: string;
@@ -23,13 +24,14 @@ export class BattleReport {
     ) {
         for (const character of partyA.characters) {
             if (character && character != "none") {
-                const characterData = new CharacterData(character);
+                const characterData = createCharacterDataInterface(character);
+                // const characterData = new CharacterData(character);
                 this.startingPartyAMembers.push(characterData);
             }
         }
         for (const character of partyB.characters) {
             if (character && character != "none") {
-                const characterData = new CharacterData(character);
+                const characterData = createCharacterDataInterface(character);
                 this.startingPartyBMembers.push(characterData);
             }
         }
@@ -38,7 +40,7 @@ export class BattleReport {
         this.environment = environment;
     }
 
-    addTurn(actionDetails: ActionDetails) {
+    addTurn(actionDetails: ActionDetailsInterface) {
         this.battleTurn.push(actionDetails);
     }
 
@@ -46,8 +48,7 @@ export class BattleReport {
         return {
             startingPartyAMembers: this.startingPartyAMembers,
             startingPartyBMembers: this.startingPartyBMembers,
-            battleTurn: this.battleTurn.map(actionDetails => actionDetails.toJSON()),
+            battleTurn: this.battleTurn,
         };
     }
 }
-

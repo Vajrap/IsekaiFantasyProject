@@ -115,6 +115,8 @@ import { EquipmentType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipmen
 import { AccessoryType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
 import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
+import { weaponAttackAdditionalEffect } from "./weaponAttackAdditionalEffect";
+import { BattleDamageObject } from "./BattleDamageObject";
 
 export class Character {
 	id: string;
@@ -1066,56 +1068,7 @@ export class Character {
 		isWeaponAttack,
 	}: {
 		target: Character;
-		damageObject: {
-			baseDamage: number;
-			type: DamageTypes;
-			crit: boolean;
-			hit: number;
-			trueHit: boolean;
-			trueHitDice: DiceEnum;
-			trueHitDC: number;
-			trueHitFailDamageMultiplier: number;
-			saveStat: CharacterStatusEnum;
-			applyEffect: SkillApplyEffect[];
-			skillActionSubType: SkillActionSubType;
-			traitBasedModifier: {
-				trait: TraitEnum;
-				modifier: number;
-			};
-			buffBasedModifier: {
-				buff: BuffsAndDebuffsEnum;
-				stackNeeded: number;
-				value: number;
-			};
-			specialEffect: {
-				condition: {
-					actor?: {
-						stat: {
-							type: CharacterStatusEnum;
-							value: number;
-						};
-						trait: TraitEnum;
-						buff: {
-							type: BuffsAndDebuffsEnum;
-							stack: number;
-						};
-					};
-					target?: {
-						stat: {
-							type: CharacterStatusEnum;
-							value: number;
-						};
-						trait: TraitEnum;
-						buff: {
-							type: BuffsAndDebuffsEnum;
-							stack: number;
-						};
-					};
-					skillLevel?: number;
-				};
-				effect: SpecialEffectResult;
-			};
-		};
+		damageObject: BattleDamageObject;
 		skillLevel: number;
 		isWeaponAttack: boolean;
 	}): {
@@ -1133,12 +1086,12 @@ export class Character {
 		console.log(
 			`${this.name} is attacking ${target.name}(HP:${
 				target.currentHP
-			}/${target.maxHP()}) with ${damageObject.type} damage`
+			}/${target.maxHP()}) with ${damageObject.baseDamage} ${damageObject.type} damage`
 		);
 
 		let isHit = false;
 		let isCrit = damageObject.crit;
-		let finalDamage = 0;
+		let finalDamage = damageObject.baseDamage;
 		let effectResults: EffectReturnObject[] = [];
 		let damageType: DamageTypes[] = [];
 
@@ -1152,13 +1105,6 @@ export class Character {
 		// Check for a critical miss
 		if (damageObject.hit === 1 && !damageObject.trueHit) {
 			console.log(`Critical Miss!`);
-			// No damage is dealt on a critical miss
-			target.receiveDamage({
-				attacker: this,
-				damage: 0,
-				hitChance: 0,
-				damageType: damageObject.type,
-			});
 			return {
 				actor: this,
 				target: target,
@@ -1175,11 +1121,7 @@ export class Character {
 
 		// Check for a critical hit
 		if (isCrit && !damageObject.trueHit) {
-			isCrit = true;
-			damageObject.baseDamage = getCriticalModifiedDamage(
-				this,
-				damageObject.baseDamage
-			); // Critical hit multiplier
+			finalDamage = getCriticalModifiedDamage(this, finalDamage); 
 			console.log(`Critical Hit!`);
 		}
 
@@ -1192,167 +1134,104 @@ export class Character {
 			}
 		}
 
-		let damageWithModifier =
-			damageObject.baseDamage * traitModifier * buffModifier;
-
+		finalDamage *= traitModifier * buffModifier;
+		
+		// Special Effect Condition
 		let additionalApplyEffect:
 			| { type: BuffsAndDebuffsEnum; duration: number }
 			| undefined = undefined;
 
 		if (damageObject.specialEffect !== undefined) {
-			let specialEffect = damageObject.specialEffect;
-			let isSkillLevelMet = true;
-			if (specialEffect !== undefined) {
-				if (specialEffect.condition !== undefined) {
-					isSkillLevelMet =
-						skillLevel >= (specialEffect.condition?.skillLevel ?? 1);
-				}
-			}
-
-			let specialEffectConditionMet =
+			const specialEffect = damageObject.specialEffect;
+			const isSkillLevelMet = skillLevel >= (specialEffect.condition?.skillLevel ?? 1);
+			
+			if (				
 				this.checkSpecialEffectCondition(
 					specialEffect.condition.actor?.stat,
 					specialEffect.condition.actor?.trait,
 					specialEffect.condition.actor?.buff
-				) && isSkillLevelMet;
-
-			if (specialEffectConditionMet) {
-				let result = specialEffect.effect;
-
-				if (result.damage !== undefined) {
-					damageWithModifier += result.damage;
-				}
-				if (result.damageMultiplier !== undefined) {
-					damageWithModifier *= result.damageMultiplier;
-				}
-				if (result.buffsOrDebuffs !== undefined) {
+				) && isSkillLevelMet
+			) {
+				console.log(`Special Effect Condition Met`);
+				if (specialEffect.effect.damage) finalDamage += specialEffect.effect.damage;
+				if (specialEffect.effect.damageMultiplier) finalDamage *= specialEffect.effect.damageMultiplier;
+				if (specialEffect.effect.buffsOrDebuffs) {
 					additionalApplyEffect = {
-						type: result.buffsOrDebuffs.type,
-						duration: result.buffsOrDebuffs.duration,
+						type: specialEffect.effect.buffsOrDebuffs.type,
+						duration: specialEffect.effect.buffsOrDebuffs.duration,
 					};
-				}
-			}
-
-			// Attempt to deal damage to the target
-			console.log(
-				`Damage: ${damageObject.baseDamage}, type: ${damageObject.type}, hit: ${damageObject.hit}`
-			);
-
-			const afterAttackResult = target.receiveDamage({
-				attacker: this,
-				damage: damageWithModifier,
-				hitChance: damageObject.hit,
-				damageType: damageObject.type,
-			});
-
-			isHit = afterAttackResult.dHit;
-			finalDamage = afterAttackResult.damage;
-			damageType.push(damageObject.type);
-
-			// Record effects applied
-			// Attacking skill that applied some buff also needed to be done her
-			// *Apply Buffs Effect that create Debuff to target hits
-			// TODO: ADD is weaponAttack flag to check if the attack is from weapon
-			if (isWeaponAttack) {
-				// Poison Coating 1
-				if (this.buffsAndDebuffs.poisonCoating_1 > 0) {
-					let effectResult = this.inflictEffect(
-						target,
-						new SkillApplyEffect({
-							applyWithoutHit: [false],
-							effectName: [BuffsAndDebuffsEnum.poison],
-							effectHitBase: [9999],
-							effectHitBonus: [],
-							effectDuration: [3],
-							effectDurationBonus: [],
-							effectStatForResistance: CharacterStatusEnum.none,
-						}),
-						skillLevel
-					);
-					effectResults.push(effectResult);
-				}
-				// Poison Coating 2
-				if (this.buffsAndDebuffs.poisonCoating_2 > 0) {
-					let effectResult = this.inflictEffect(
-						target,
-						new SkillApplyEffect({
-							applyWithoutHit: [false],
-							effectName: [BuffsAndDebuffsEnum.poison],
-							effectHitBase: [9999],
-							effectHitBonus: [],
-							effectDuration: [4],
-							effectDurationBonus: [],
-							effectStatForResistance: CharacterStatusEnum.none,
-						}),
-						skillLevel
-					);
-					effectResults.push(effectResult);
-				}
-				// Poison Coating 3
-				if (this.buffsAndDebuffs.poisonCoating_3 > 0) {
-					let effectResult = this.inflictEffect(
-						target,
-						new SkillApplyEffect({
-							applyWithoutHit: [false],
-							effectName: [BuffsAndDebuffsEnum.poison],
-							effectHitBase: [9999],
-							effectHitBonus: [],
-							effectDuration: [5],
-							effectDurationBonus: [],
-							effectStatForResistance: CharacterStatusEnum.none,
-						}),
-						skillLevel
-					);
-					effectResults.push(effectResult);
-				}
-			}
-
-			if (additionalApplyEffect !== undefined) {
-				let effectResult = this.inflictEffect(
-					target,
-					new SkillApplyEffect({
-						applyWithoutHit: [false],
-						effectName: [additionalApplyEffect.type],
-						effectHitBase: [9999],
-						effectHitBonus: [],
-						effectDuration: [additionalApplyEffect.duration],
-						effectDurationBonus: [],
-						effectStatForResistance: CharacterStatusEnum.none,
-					}),
-					skillLevel
-				);
-				effectResults.push(effectResult);
-			}
-
-			if (damageObject.applyEffect !== undefined) {
-				let applyEffect = false;
-				for (const effect of damageObject.applyEffect) {
-					if (
-						effect.applyWithoutHit !== undefined &&
-						effect.applyWithoutHit.length != 0
-					) {
-						if (effect.applyWithoutHit.length === 1) {
-							if (effect.applyWithoutHit[0] === true) {
-								applyEffect = true;
-							} else {
-								applyEffect = isHit;
-							}
-						} else {
-							if (effect.applyWithoutHit[skillLevel - 1] === true) {
-								applyEffect = true;
-							} else {
-								applyEffect = isHit;
-							}
-						}
-					}
-					if (applyEffect) {
-						const effectResult = this.inflictEffect(target, effect, skillLevel);
-						effectResults.push(effectResult);
-					}
 				}
 			}
 		}
 
+		// Attempt to deal damage to the target
+		console.log(`Damage: ${finalDamage}, type: ${damageObject.type}, hit: ${damageObject.hit}`);
+
+		const afterAttackResult = target.receiveDamage({
+			attacker: this,
+			damage: finalDamage,
+			hitChance: damageObject.hit,
+			damageType: damageObject.type,
+		});
+
+		isHit = afterAttackResult.dHit;
+		finalDamage = afterAttackResult.damage;
+		damageType.push(damageObject.type);
+
+		// Record effects applied
+		// Attacking skill that applied some buff also needed to be done her
+		// *Apply Buffs Effect that create Debuff to target hits
+		// TODO: ADD is weaponAttack flag to check if the attack is from weapon
+		if (isWeaponAttack) {
+			let effectResult = weaponAttackAdditionalEffect(this, target, skillLevel);
+			effectResults.push(...effectResult)
+		}
+
+		if (additionalApplyEffect !== undefined) {
+			let effectResult = this.inflictEffect(
+				target,
+				new SkillApplyEffect({
+					applyWithoutHit: [false],
+					effectName: [additionalApplyEffect.type],
+					effectHitBase: [9999],
+					effectHitBonus: [],
+					effectDuration: [additionalApplyEffect.duration],
+					effectDurationBonus: [],
+					effectStatForResistance: CharacterStatusEnum.none,
+				}),
+				skillLevel
+			);
+			effectResults.push(effectResult);
+		}
+
+		if (damageObject.applyEffect !== undefined) {
+			let applyEffect = false;
+			for (const effect of damageObject.applyEffect) {
+				if (
+					effect.applyWithoutHit !== undefined &&
+					effect.applyWithoutHit.length != 0
+				) {
+					if (effect.applyWithoutHit.length === 1) {
+						if (effect.applyWithoutHit[0] === true) {
+							applyEffect = true;
+						} else {
+							applyEffect = isHit;
+						}
+					} else {
+						if (effect.applyWithoutHit[skillLevel - 1] === true) {
+							applyEffect = true;
+						} else {
+							applyEffect = isHit;
+						}
+					}
+				}
+				if (applyEffect) {
+					const effectResult = this.inflictEffect(target, effect, skillLevel);
+					effectResults.push(effectResult);
+				}
+			}
+		}
+		
 		console.log(`target HP after attack: ${target.currentHP}`);
 
 		return {
@@ -2605,6 +2484,7 @@ export async function setCharacterStatus(
 					];
 			}
 			for (const skill of characterClass.skills) {
+				console.log("Learning Skill: " + skill);
 				await character.learnSkill(skill);
 			}
 			for (let i = character.skills.length - 1; i >= 0; i--) {
@@ -3054,7 +2934,7 @@ export function calculateCritAndHit(
 		level
 	);
 	const totalHitScore = hitRoll + averageHitModifier;
-
+	
 	return [totalHitScore, totalHitScore >= requiredCritScore];
 }
 
@@ -3085,7 +2965,7 @@ function calculateRequiredCritScore(
 		skillActionObject.critBase[
 			skillActionObject.critBase.length === 1 ? 0 : level - 1
 		];
-
+	
 	const critBonusStats =
 		skillActionObject.critStat.length === 1
 			? skillActionObject.critStat[0]
@@ -3102,7 +2982,9 @@ function calculateRequiredCritScore(
 		baseCritScore += critStatsSum / critStatsCount;
 	}
 
-	return baseCritScore;
+	baseCritScore = Math.max(baseCritScore, 0);
+	
+	return 20 - baseCritScore;
 }
 
 export function getArmorPenaltyForSpellCastingDamage(

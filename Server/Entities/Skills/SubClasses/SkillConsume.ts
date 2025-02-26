@@ -22,31 +22,6 @@ export class SkillConsume {
         this.elements = elements
     }
         
-    validateConsume(
-        level: number, 
-        userElements: { 
-            "none": number,
-            "order": number,
-            "chaos": number,
-            "geo": number,
-            "water": number,
-            "air": number,
-            "fire": number
-        },
-        userHp: number,
-        userMp: number,
-        userSp: number
-    ): boolean
-    {
-        if (this.hp[level - 1] > userHp) return false;
-        if (this.mp[level - 1] > userMp) return false;
-        if (this.sp[level - 1] > userSp) return false;
-        for (const element of this.elements) {
-            if (element.amount[level - 1] > userElements[element.element]) return false;
-        }
-        return true;
-    }
-
     intoInterface(): {
         hp: number[],
         mp: number[],

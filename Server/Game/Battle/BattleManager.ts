@@ -1,3 +1,4 @@
+import { BattleReportInterface } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
@@ -23,18 +24,19 @@ export class BattleManager {
         location: LocationName,
         environment: GameEnvironment,
         gameTime: GameTimeInterface
-    ): Promise<BattleReport> {
+    ): Promise<BattleReportInterface> {
         const newBattle = new Battle(partyA, partyB, location, environment, gameTime);
         this.activeBattles.push(newBattle);
 
         try {
             // Await the battle to complete and get the result
-            const result = await newBattle.startBattle();
+            const battle = await newBattle.startBattle();
+            const result = this.makeReportInterface(battle);
             
             // Remove the battle from active battles once it's over
             this.endBattle(newBattle);
             
-            return result; // Return the battle result
+            return result; // Return the battle result as BattleReport
         } catch (error) {
             console.error("Error during battle:", error);
             this.endBattle(newBattle); // Ensure cleanup in case of error
@@ -47,5 +49,16 @@ export class BattleManager {
         if (index !== -1) {
             this.activeBattles.splice(index, 1);
         }
+    }
+
+    makeReportInterface(battle: BattleReport): BattleReportInterface {
+        return {
+            startingPartyAMembers: battle.startingPartyAMembers,
+            startingPartyBMembers: battle.startingPartyBMembers,
+            battleTurn: battle.battleTurn,
+            location: battle.location,
+            environment: battle.environment,
+            gameTime: battle.gameTime
+        };
     }
 }
