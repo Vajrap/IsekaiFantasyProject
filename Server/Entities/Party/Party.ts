@@ -88,7 +88,6 @@ export class Party {
 	}
 
 	async addCharacterToParty(character: Character, position?: number) {
-		console.log(`Adding ${character.name} to party`);
 		if (this.isPartyFull()) {
 			return "Party is full";
 		}
@@ -99,7 +98,6 @@ export class Party {
 			for (let i = 0; i < 6; i++) {
 				const currentIndex = (position + i) % 6; // Wrap around using modulo
 				if (this.characters[currentIndex] === "none") {
-					console.log(`Replacing slot ${currentIndex} with ${character.name}`);
 					this.characters[currentIndex] = character;
 					character.position = currentIndex;
 					character.partyID = this.partyID;
@@ -108,9 +106,7 @@ export class Party {
 			}
 		} else {
 			for (let i = 0; i < 6; i++) {
-				console.log(`Checking slot ${i}`);
 				if (this.characters[i] === "none") {
-					console.log(`Replacing slot ${i} with ${character.name}`);
 					this.characters[i] = character;
 					character.position = i;
 					character.partyID = this.partyID;
@@ -1108,7 +1104,6 @@ export class Party {
 		if (possibleTargets[randomIndex]?.buffsAndDebuffs?.stealth >= 1) {
 			// If there is only one possible target, return it, else we'll check forever
 			if (possibleTargets.length === 1) {
-				console.log(`Target Stealth and is only one`)
 				return possibleTargets[randomIndex];
 			}
 			if (this.stealthVisibleRollCheck(actor, possibleTargets[randomIndex])) {

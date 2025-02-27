@@ -64,10 +64,10 @@ export class Battle {
         });
     }
 
-    startBattle(): Promise<BattleReport> {
-        return new Promise((resolve, reject) => {
+    async startBattle(): Promise<BattleReport> {
+        return new Promise(async (resolve, reject) => {
             try {
-                this.battleLoop();
+                await this.battleLoop();
                 resolve(this.battleReport); // Resolve the promise when the battle is over
             } catch (error) {
                 reject(error);
@@ -494,7 +494,6 @@ export class Battle {
     isAllPartyADead() {
         const ifAllPartyADead = this.partyA.characters.every(actor => {
             if (!actor || actor === "none" || actor.isDead) {
-                console.log(`${actor && actor !== "none" ? actor.name : 'None'} is dead or invalid. Current HP: ${actor && actor !== "none" ? actor.currentHP : 'N/A'}`);
                 return true;
             } else {
                 return false;
@@ -506,7 +505,6 @@ export class Battle {
     isAllPartyBDead() {
         const ifAllPartyBDead = this.partyB.characters.every(actor => {
             if (!actor || actor === "none" || actor.isDead) {
-                console.log(`${actor && actor !== "none" ? actor.name : 'None'} is dead or invalid. Current HP: ${actor && actor !== "none" ? actor.currentHP : 'N/A'}`);
                 return true;
             } else {
                 return false;
