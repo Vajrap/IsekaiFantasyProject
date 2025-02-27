@@ -65,14 +65,12 @@ export class Battle {
     }
 
     async startBattle(): Promise<BattleReport> {
-        return new Promise(async (resolve, reject) => {
-            try {
-                await this.battleLoop();
-                resolve(this.battleReport); // Resolve the promise when the battle is over
-            } catch (error) {
-                reject(error);
-            }
-        });
+        try {
+            await this.battleLoop();
+            return this.battleReport;
+        } catch (error) {
+            throw error;
+        }
     }
 
     /*
