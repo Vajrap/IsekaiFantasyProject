@@ -1,6 +1,6 @@
 import { Dice } from "../../Utility/Dice";
 import { Character } from "../Character/Character";
-import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
+import { TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetTauntConsideration, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
@@ -173,6 +173,12 @@ export class Party {
 		character.position = newPosition;
 	}
 
+	getPosssibleTargetsAsCharacterArray(): Character[] {
+		return this.characters.filter(
+			(character): character is Character => character !== "none"
+		);
+	}
+
 	//Travel Methods
 	// initiateTravel(travelMethod: TravelMethod) {
 	//     const playerCharacter = this.getPlayerCharacter();
@@ -193,1004 +199,313 @@ export class Party {
 	//         }
 	//     }
 	// }
+	
+// export class TargetType {
+// 	targetPartyOrSelf: TargetPartyType;
+// 	targetScope: TargetSelectionScope | 'none';
+// 	targetConditionFilter: TargetConditionFilters | 'none';
+// 	targetSortingOption: TargetSortingOptions | 'none';
+// 	tauntConsideration: TargetTauntConsideration | 'none';
+// 	targetBuffOrDebuffCondition: { buffOrDebuff: BuffsAndDebuffsEnum, value: number} | 'none';
 
-	getAllTauntingCharacters(): Character[] {
-		let characters = [];
-		for (const character of this.characters) {
-			if (character !== "none" && character.buffsAndDebuffs.taunt >= 1) {
-				characters.push(character);
-			}
-		}
-		return characters;
-	}
+	// getTargetsFromTargetType(
+	// 	targetType: TargetType,
+	// 	actor: Character,
+	// 	exception: Character[]
+	// ): Character[] {
+	// 	// Check for taunt first
+	// 	let targets;
+	// 	if (targetType.tauntConsideration === TargetTauntConsideration.TauntCount) {
+	// 		targets = this.getAllTauntingCharacters();
+	// 	} else {
+	// 		targets = this.getPossibleTargetsAsCharacterArray();
+	// 	}
 
-	// getTargetsFromTargetType(targetType: TargetType, actor: Character, exception: Character[]): Character[] {
-	//     console.log(`getTargetsFromTargetType called for ${actor.name}`);
-	//     let tauntingTargets = this.getAllTauntingCharacters();
-	//     if (tauntingTargets.length === 1) { return tauntingTargets; }
-	//     if (tauntingTargets.length > 1 ) {
-	//         let frontTaunting = tauntingTargets.filter((character) => character.position < 3);
-	//         let backTaunting = tauntingTargets.filter((character) => character.position > 2);
-	//         let sortedTaunting = frontTaunting.concat(backTaunting);
-	//         let diceRoll = Dice.roll(DiceEnum.OneD20).sum;
-	//         let count = 0;
-	//         for (const character of sortedTaunting) {
-	//             if (character.position < 3) {
-	//                 count += 2;
-	//             } else {
-	//                 count += 1;
-	//             }
-	//             if (diceRoll <= count) {
-	//                 return [character];
-	//             }
-	//         }
-	//     }
+	// 	// If only 1 target possible, return it
+	// 	if (targets.length === 1) { 
+	// 		return targets; 
+	// 	}
 
-	//     if (targetType.targetScope === TargetSelectionScope.All) {
-	//         if (targetType.targetConditionFilter === TargetConditionFilters.IsDead) {
-	//             return this.getDeadTargets().intoCharacterArray();
-	//         }
-	//         return this.getPossibleTargetsAsCharacterArray();
-	//     }
+	// 	// Handling different target scopes and conditions
+	// 	if (targetType.targetScope === TargetSelectionScope.All) {
+	// 		if (targetType.targetConditionFilter === TargetConditionFilters.IsDead) {
+	// 			return this.getDeadTargets().intoCharacterArray();
+	// 		}
+	// 		return this.getPossibleTargetsAsCharacterArray();
+	// 	}
 
-	//     if (targetType.targetScope === TargetSelectionScope.FrontRow) {
-	//         return this.getAllFrontRowTargets();
-	//     }
+	// 	if (targetType.targetScope === TargetSelectionScope.AllFrontRow) {
+	// 		return this.getAllFrontRowTargets();
+	// 	}
 
-	//     if (targetType.targetScope === TargetSelectionScope.BackRow) {
-	//         return this.getAllBackRowTargets();
-	//     }
+	// 	if (targetType.targetScope === TargetSelectionScope.AllBackRow) {
+	// 		return this.getAllBackRowTargets();
+	// 	}
 
-	//     if (targetType.targetScope === TargetSelectionScope.FrontRowShiftable) {
-	//         let row = this.getAllFrontRowTargets();
-	//         if (row.length === 0) {
-	//             row = this.getAllBackRowTargets();
-	//         }
-	//         return row;
-	//     }
+	// 	if (targetType.targetScope === TargetSelectionScope.AllFrontRowShiftable) {
+	// 		let row = this.getAllFrontRowTargets();
+	// 		if (row.length === 0) {
+	// 			row = this.getAllBackRowTargets();
+	// 		}
+	// 		return row;
+	// 	}
 
-	//     if (targetType.targetScope === TargetSelectionScope.BackRowShiftable) {
-	//         let row = this.getAllBackRowTargets();
-	//         if (row.length === 0) {
-	//             row = this.getAllFrontRowTargets();
-	//         }
-	//         return row;
-	//     }
+	// 	if (targetType.targetScope === TargetSelectionScope.AllBackRowShiftable) {
+	// 		let row = this.getAllBackRowTargets();
+	// 		if (row.length === 0) {
+	// 			row = this.getAllFrontRowTargets();
+	// 		}
+	// 		return row;
+	// 	}
 
-	//     if (targetType.targetScope === TargetSelectionScope.Single) {
-	//         if (targetType.targetConditionFilter === TargetConditionFilters.IsDead) {
-	//             let deadTarget = this.getOneDeadTarget(actor);
-	//             return deadTarget ? [deadTarget] : [];
-	//         }
-	//     }
+	// 	if (targetType.targetScope === TargetSelectionScope.Single) {
+	// 		if (targetType.targetConditionFilter === TargetConditionFilters.IsDead) {
+	// 			let deadTarget = this.getOneDeadTarget(actor);
+	// 			return deadTarget ? [deadTarget] : [];
+	// 		}
 
-	//     //Other Cases
-	//     let possibleTargets = this.getPossibleTargetsExceptExceptions(exception).intoCharacterArray();
-	//     switch (targetType.targetConditionFilter) {
-	//         case TargetConditionFilters.HasTrait:
-	//             //TODO: Trait filtering
-	//             // possibleTargets.filter((character) => character.traits.includes());
-	//             break;
-	//         case TargetConditionFilters.HasBuffOrDebuff:
-	//             possibleTargets.filter((character) => {
-	//                 if (targetType.targetBuffOrDebuffCondition !== 'none') {
-	//                     return character.buffsAndDebuffs[targetType.targetBuffOrDebuffCondition.buffOrDebuff] ?? 0 > 0;
-	//                 }
-	//                 return false;
-	//             });
-	//             break;
-	//         case TargetConditionFilters.IsDead:
-	//             possibleTargets = this.getDeadTargets().intoCharacterArray();
-	//             break;
-	//         case TargetConditionFilters.None:
-	//             possibleTargets = this.getPossibleTargets().intoCharacterArray();
-	//             break;
-	//     }
+	// 		if (targetType.targetConditionFilter === TargetConditionFilters.IsSummoned) {
+	// 			let summonedTarget = this.getOneSummonedTarget(actor);
+	// 			return summonedTarget ? [summonedTarget] : [];
+	// 		}
+	// 	}
 
-	//     if (!possibleTargets) { return []; }
+	// 	// Get possible targets and filter exceptions
+	// 	let possibleTargets =
+	// 		this.getPossibleTargetsExceptExceptions(exception).intoCharacterArray();
 
-	//     //The Edge sorting only return the first target.
-	//     switch (targetType.targetSortingOption) {
-	//         case TargetSortingOptions.HighestHP:
-	//             possibleTargets.sort((a, b) => b.currentHP - a.currentHP);
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.LowestHP:
-	//             possibleTargets.sort((a, b) => a.currentHP - b.currentHP);
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.HighestMP:
-	//             possibleTargets.sort((a, b) => b.currentMP - a.currentMP);
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.LowestMP:
-	//             possibleTargets.sort((a, b) => a.currentMP - b.currentMP);
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.HighestSP:
-	//             possibleTargets.sort((a, b) => b.currentSP - a.currentSP);
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.LowestSP:
-	//             possibleTargets.sort((a, b) => a.currentSP - b.currentSP);
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.Fastest:
-	//             possibleTargets.sort((a, b) => b.attribute("agility") - a.attribute("agility"));
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.Slowest:
-	//             possibleTargets.sort((a, b) => a.attribute("agility") - b.attribute("agility"));
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.HighestPhysicalAttack:
-	//             possibleTargets.sort((a, b) => b.battler("pATK") - a.battler("pATK"));
-	//             return [possibleTargets[0]]
-	//         case TargetSortingOptions.LowestPhysicalAttack:
-	//             possibleTargets.sort((a, b) => a.battler("pATK") - b.battler("pATK"));
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.HighestMagicalAttack:
-	//             possibleTargets.sort((a, b) => b.battler("mATK") - a.battler("mATK"));
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.LowestMagicalAttack:
-	//             possibleTargets.sort((a, b) => a.battler("mATK") - b.battler("mATK"));
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.HighestPhysicalDefense:
-	//             possibleTargets.sort((a, b) => b.battler("pDEF") - a.battler("pDEF"));
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.LowestPhysicalDefense:
-	//             possibleTargets.sort((a, b) => a.battler("pDEF") - b.battler("pDEF"));
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.HighestMagicalDefense:
-	//             possibleTargets.sort((a, b) => b.battler("mDEF") - a.battler("mDEF"));
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.LowestMagicalDefense:
-	//             possibleTargets.sort((a, b) => a.battler("mDEF") - b.battler("mDEF"));
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.HighestLevel:
-	//             possibleTargets.sort((a, b) => b.level - a.level);
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.LowestLevel:
-	//             possibleTargets.sort((a, b) => a.level - b.level);
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.PreferredFrontRow:
-	//             possibleTargets = this.getPreferredRowTargets('front').intoCharacterArray();
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.PreferredBackRow:
-	//             possibleTargets = this.getPreferredRowTargets('back').intoCharacterArray();
-	//             return [possibleTargets[0]];
-	//         case TargetSortingOptions.None:
-	//             let diceRoll = Dice.roll(DiceEnum.OneD20).sum;
-	//             let count = 0;
-	//             for (const character of possibleTargets) {
-	//                 if (character.position < 3) {
-	//                     count += 3;
-	//                 } else {
-	//                     count += 1;
-	//                 }
-	//                 if (diceRoll <= count) {
-	//                     return [character];
-	//                 }
-	//             }
-	//     }
+	// 	if (possibleTargets.length === 0) {
+	// 		return [];
+	// 	}
 
-	//     return [this.getOneRandomTargetTauntNotCount(actor)];
+	// 	if (targetType.targetSortingOption !== "none") {
+	// 		possibleTargets = this.sortTargets(possibleTargets, targetType.targetSortingOption);
+	// 	}
+
+	// 	return [this.getOneRandomTargetTauntNotCount(actor)];
 	// }
 
-	getTargetsFromTargetType(
-		targetType: TargetType,
-		actor: Character,
-		exception: Character[]
-	): Character[] {
 
-		// Check for taunt first
-		let tauntingTargets = this.getAllTauntingCharacters();
+	// private getAllTauntingCharacters(): Character[] {
+	// 	let characters = [];
+	// 	for (const character of this.characters) {
+	// 		if (character !== "none" && character.buffsAndDebuffs.taunt >= 1) {
+	// 			characters.push(character);
+	// 		}
+	// 	}
+	// 	return characters;
+	// }
 
-		if (tauntingTargets.length === 1) {
-			return tauntingTargets;
-		}
-		if (tauntingTargets.length > 1) {
-			let frontTaunting = tauntingTargets.filter(
-				(character) => character.position < 3
-			);
-			let backTaunting = tauntingTargets.filter(
-				(character) => character.position > 2
-			);
-			let sortedTaunting = frontTaunting.concat(backTaunting);
-			let diceRoll = Dice.roll(DiceEnum.OneD20).sum;
-			let count = 0;
-			for (const character of sortedTaunting) {
-				if (character.position < 3) {
-					count += 2;
-				} else {
-					count += 1;
-				}
-				if (diceRoll <= count) {
-					return [character];
-				}
-			}
-		}
+	// private isEdgeSelection(sortingOption: TargetSortingOptions): boolean {
+	// 	return sortingOption != TargetSortingOptions.None &&
+	// 		sortingOption != TargetSortingOptions.PreferredFrontRow &&
+	// 		sortingOption != TargetSortingOptions.PreferredBackRow;
+	// }
 
-		// Handling different target scopes and conditions
-		if (targetType.targetScope === TargetSelectionScope.All) {
-			if (targetType.targetConditionFilter === TargetConditionFilters.IsDead) {
-				return this.getDeadTargets().intoCharacterArray();
-			}
-			return this.getPossibleTargetsAsCharacterArray();
-		}
+	// private sortTargets(targets: Character[], sortingOption: TargetSortingOptions): Character[] {
+	// 	if (sortingOption === TargetSortingOptions.None) return targets;
+	// 	let isEdge = this.isEdgeSelection(sortingOption);
 
-		if (targetType.targetScope === TargetSelectionScope.AllFrontRow) {
-			return this.getAllFrontRowTargets();
-		}
+	// 	const sortingMap: { [key in TargetSortingOptions]: (a: Character, b: Character) => number } = {
+	// 		[TargetSortingOptions.HighestHP]: (a: Character, b: Character) => b.currentHP - a.currentHP,
+	// 		[TargetSortingOptions.LowestHP]: (a: Character, b: Character) => a.currentHP - b.currentHP,
+	// 		[TargetSortingOptions.HighestMP]: (a: Character, b: Character) => b.currentMP - a.currentMP,
+	// 		[TargetSortingOptions.LowestMP]: (a: Character, b: Character) => a.currentMP - b.currentMP,
+	// 		[TargetSortingOptions.HighestSP]: (a: Character, b: Character) => b.currentSP - a.currentSP,
+	// 		[TargetSortingOptions.LowestSP]: (a: Character, b: Character) => a.currentSP - b.currentSP,
+	// 		[TargetSortingOptions.Fastest]: (a: Character, b: Character) => b.attribute("agility") - a.attribute("agility"),
+	// 		[TargetSortingOptions.Slowest]: (a: Character, b: Character) => a.attribute("agility") - b.attribute("agility"),
+	// 		[TargetSortingOptions.HighestPhysicalAttack]: (a: Character, b: Character) => b.battler("pATK") - a.battler("pATK"),
+	// 		[TargetSortingOptions.LowestPhysicalAttack]: (a: Character, b: Character) => a.battler("pATK") - b.battler("pATK"),
+	// 		[TargetSortingOptions.HighestMagicalAttack]: (a: Character, b: Character) => b.battler("mATK") - a.battler("mATK"),
+	// 		[TargetSortingOptions.LowestMagicalAttack]: (a: Character, b: Character) => a.battler("mATK") - b.battler("mATK"),
+	// 		[TargetSortingOptions.HighestPhysicalDefense]: (a: Character, b: Character) => b.battler("pDEF") - a.battler("pDEF"),
+	// 		[TargetSortingOptions.LowestPhysicalDefense]: (a: Character, b: Character) => a.battler("pDEF") - b.battler("pDEF"),
+	// 		[TargetSortingOptions.HighestMagicalDefense]: (a: Character, b: Character) => b.battler("mDEF") - a.battler("mDEF"),
+	// 		[TargetSortingOptions.LowestMagicalDefense]: (a: Character, b: Character) => a.battler("mDEF") - b.battler("mDEF"),
+	// 		[TargetSortingOptions.HighestLevel]: (a: Character, b: Character) => b.level - a.level,
+	// 		[TargetSortingOptions.LowestLevel]: (a: Character, b: Character) => a.level - b.level,
+	// 		[TargetSortingOptions.PreferredFrontRow]: (a, b) => a.position - b.position,
+	// 		[TargetSortingOptions.PreferredBackRow]: (a, b) => b.position - a.position,
+	// 		[TargetSortingOptions.None]: () => 0
+	// 	};
 
-		if (targetType.targetScope === TargetSelectionScope.AllBackRow) {
-			return this.getAllBackRowTargets();
-		}
+	// 	if (sortingOption in sortingMap) {
+	// 		return targets.sort(sortingMap[sortingOption]);
+	// 	}
 
-		if (targetType.targetScope === TargetSelectionScope.AllFrontRowShiftable) {
-			let row = this.getAllFrontRowTargets();
-			if (row.length === 0) {
-				row = this.getAllBackRowTargets();
-			}
-			return row;
-		}
+	// 	if (isEdge) {
+	// 		return [targets[0]];
+	// 	}
 
-		if (targetType.targetScope === TargetSelectionScope.AllBackRowShiftable) {
-			let row = this.getAllBackRowTargets();
-			if (row.length === 0) {
-				row = this.getAllFrontRowTargets();
-			}
-			return row;
-		}
+	// 	return [this.getWeightedRandomTarget(targets)];
+	// }
 
-		if (targetType.targetScope === TargetSelectionScope.Single) {
-			if (targetType.targetConditionFilter === TargetConditionFilters.IsDead) {
-				let deadTarget = this.getOneDeadTarget(actor);
-				return deadTarget ? [deadTarget] : [];
-			}
+	// private getRandomTarget(targets: Character[]): Character {
+	// 	if (targets.length === 0) throw new Error("No valid targets found!");
+	
+	// 	const roll = Dice.rollTwenty();
+	// 	const targetIndex = roll % targets.length;
+	
+	// 	return targets[targetIndex];
+	// }
 
-			if (targetType.targetConditionFilter === TargetConditionFilters.IsSummoned) {
-				let summonedTarget = this.getOneSummonedTarget(actor);
-				return summonedTarget ? [summonedTarget] : [];
-			}
-		}
+	// private getWeightedRandomTarget(targets: Character[]): Character {
+	// 	if (targets.length === 0) throw new Error("No valid targets found!");
+	
+	// 	let totalWeight = 0;
+	// 	const weightMap: number[] = [];
+	
+	// 	for (let i = 0; i < targets.length; i++) {
+	// 		let weight = targets.length - i; // Higher position = higher weight
+	// 		totalWeight += weight;
+	// 		weightMap.push(totalWeight);
+	// 	}
+	
+	// 	const roll = Math.floor(Math.random() * totalWeight) + 1;
+	
+	// 	for (let i = 0; i < weightMap.length; i++) {
+	// 		if (roll <= weightMap[i]) {
+	// 			return targets[i];
+	// 		}
+	// 	}
+	
+	// 	return targets[targets.length - 1];
+	// }
 
+	// //one random target taunting not count
+	// private getOneRandomTargetTauntNotCount(actor: Character): Character {
+	// 	return this.getPossibleTargets().getTargetRandomlyFor(actor);
+	// }
+	
+	// private getOneDeadTarget(actor: Character): Character | null {
+	// 	const deadTargets = this.getDeadTargets().characters;
+	// 	if (deadTargets.length === 0) {
+	// 		return null;
+	// 	}
+	// 	return this.getDeadTargets().getTargetRandomlyFor(actor);
+	// }
 
-		// Get possible targets and filter exceptions
-		let possibleTargets =
-			this.getPossibleTargetsExceptExceptions(exception).intoCharacterArray();
+	// private getOneSummonedTarget(actor: Character): Character | null {
+	// 	const summonedTargets = this.characters.filter(
+	// 		(character): character is Character =>
+	// 			character !== "none" && character.isSummoned
+	// 	);
+	// 	if (summonedTargets.length === 0) {
+	// 		return null;
+	// 	}
+	// 	return new Party(summonedTargets, true).getTargetRandomlyFor(actor);
+	// }
 
-		if (possibleTargets.length === 0) {
-			return [];
-		}
+	// private getAllFrontRowTargets(): Character[] {
+	// 	return this.getFrontRowAsCharacterArray().filter(
+	// 		(character): character is Character => !character.isDead
+	// 	);
+	// }
 
-		// The Edge sorting only returns the first target.
-		switch (targetType.targetSortingOption) {
-			case TargetSortingOptions.HighestHP:
-				possibleTargets.sort((a, b) => b.currentHP - a.currentHP);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.LowestHP:
-				possibleTargets.sort((a, b) => a.currentHP - b.currentHP);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.HighestMP:
-				possibleTargets.sort((a, b) => b.currentMP - a.currentMP);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.LowestMP:
-				possibleTargets.sort((a, b) => a.currentMP - b.currentMP);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.HighestSP:
-				possibleTargets.sort((a, b) => b.currentSP - a.currentSP);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.LowestSP:
-				possibleTargets.sort((a, b) => a.currentSP - b.currentSP);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.Fastest:
-				possibleTargets.sort(
-					(a, b) => b.attribute("agility") - a.attribute("agility")
-				);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.Slowest:
-				possibleTargets.sort(
-					(a, b) => a.attribute("agility") - b.attribute("agility")
-				);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.HighestPhysicalAttack:
-				possibleTargets.sort((a, b) => b.battler("pATK") - a.battler("pATK"));
-				return [possibleTargets[0]];
-			case TargetSortingOptions.LowestPhysicalAttack:
-				possibleTargets.sort((a, b) => a.battler("pATK") - b.battler("pATK"));
-				return [possibleTargets[0]];
-			case TargetSortingOptions.HighestMagicalAttack:
-				possibleTargets.sort((a, b) => b.battler("mATK") - a.battler("mATK"));
-				return [possibleTargets[0]];
-			case TargetSortingOptions.LowestMagicalAttack:
-				possibleTargets.sort((a, b) => a.battler("mATK") - b.battler("mATK"));
-				return [possibleTargets[0]];
-			case TargetSortingOptions.HighestPhysicalDefense:
-				possibleTargets.sort((a, b) => b.battler("pDEF") - a.battler("pDEF"));
-				return [possibleTargets[0]];
-			case TargetSortingOptions.LowestPhysicalDefense:
-				possibleTargets.sort((a, b) => a.battler("pDEF") - b.battler("pDEF"));
-				return [possibleTargets[0]];
-			case TargetSortingOptions.HighestMagicalDefense:
-				possibleTargets.sort((a, b) => b.battler("mDEF") - a.battler("mDEF"));
-				return [possibleTargets[0]];
-			case TargetSortingOptions.LowestMagicalDefense:
-				possibleTargets.sort((a, b) => a.battler("mDEF") - b.battler("mDEF"));
-				return [possibleTargets[0]];
-			case TargetSortingOptions.HighestLevel:
-				possibleTargets.sort((a, b) => b.level - a.level);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.LowestLevel:
-				possibleTargets.sort((a, b) => a.level - b.level);
-				return [possibleTargets[0]];
-			case TargetSortingOptions.PreferredFrontRow:
-				possibleTargets =
-					this.getPreferredRowTargets("front").intoCharacterArray();
-				return [possibleTargets[0]];
-			case TargetSortingOptions.PreferredBackRow:
-				possibleTargets =
-					this.getPreferredRowTargets("back").intoCharacterArray();
-				return [possibleTargets[0]];
-			case TargetSortingOptions.None:
-				let diceRoll = Dice.roll(DiceEnum.OneD20).sum;
-				let count = 0;
-				for (const character of possibleTargets) {
-					if (character.position < 3) {
-						count += 3;
-					} else {
-						count += 1;
-					}
-					if (diceRoll <= count) {
-						return [character];
-					}
-				}
-		}
+	// private getAllBackRowTargets(): Character[] {
+	// 	return this.getBackRowAsCharacterArray().filter(
+	// 		(character): character is Character => !character.isDead
+	// 	);
+	// }
 
-		return [this.getOneRandomTargetTauntNotCount(actor)];
-	}
+	// private getPossibleTargetsAsCharacterArray(): Character[] {
+	// 	const targets = this.characters.filter(
+	// 		(character): character is Character => {
+	// 			const isNotNone = character !== "none";
+	// 			const isNotDead = character !== "none" && !character.isDead;
+	// 			const isNotNull = character !== null;
+	// 			return isNotNone && isNotDead && isNotNull;
+	// 		}
+	// 	);
 
-	//one random target taunting count
-	getOneRandomTargetTauntCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.getTargetRandomlyFor(actor);
-	}
-	//one random target taunting not count
-	getOneRandomTargetTauntNotCount(actor: Character): Character {
-		return this.getPossibleTargets().getTargetRandomlyFor(actor);
-	}
-	//one random target except exceptions taunting count
-	getOneRandomTargetExceptExceptionsTauntCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.getTargetRandomlyFor(actor);
-	}
-	//one random target except exceptions taunting not count
-	getOneRandomTargetExceptExceptionsTauntNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.getTargetRandomlyFor(actor);
-	}
-	//one target with least current hp taunting count
-	getRandomTargetWithLeastCurrentHPTauntCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.sortedBy("least", "currentHP")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with least current hp taunting not count
-	getRandomTargetWithLeastCurrentHPNotTauntCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.sortedBy("least", "currentHP")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with least current hp except exceptions taunting count
-	getRandomTargetWithLeastCurrentHPExceptExceptionsTauntCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.sortedBy("least", "currentHP")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with least current hp except exceptions taunting not count
-	getRandomTargetWithLeastCurrentHPExceptExceptionsTauntNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.sortedBy("least", "currentHP")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most current hp taunting count
-	getRandomTargetWithMostCurrentHPTauntCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.sortedBy("most", "currentHP")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most current hp taunting not count
-	getRandomTargetWithMostCurrentHPNotTauntCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.sortedBy("most", "currentHP")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most current hp except exceptions taunting count
-	getRandomTargetWithMostCurrentHPExceptExceptionsTauntCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.sortedBy("most", "currentHP")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most current hp except exceptions taunting not count
-	getRandomTargetWithMostCurrentHPExceptExceptionsTauntNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.sortedBy("most", "currentHP")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target preferred front row taunting count
-	getOnePreferredFrontRowTauntCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.getPreferredRowTargets("front")
-			.getTargetRandomlyFor(actor);
-	}
-	//one target preferred front row taunting not count
-	getOnePreferredFrontRowTauntNotCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.getPreferredRowTargets("front")
-			.getTargetRandomlyFor(actor);
-	}
-	//one target preferred front row except exceptions taunting count
-	getOnePreferredFrontRowExceptExceptionsTauntCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.getPreferredRowTargets("front")
-			.getTargetRandomlyFor(actor);
-	}
-	//one target preferred front row except exceptions taunting not count
-	getOnePreferredFrontRowExceptExceptionsTauntNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.getPreferredRowTargets("front")
-			.getTargetRandomlyFor(actor);
-	}
-	//one target preferred back row taunting count
-	getOnePreferredBackRowTauntCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.getPreferredRowTargets("back")
-			.getTargetRandomlyFor(actor);
-	}
-	//one target preferred back row taunting not count
-	getOnePreferredBackRowTauntNotCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.getPreferredRowTargets("back")
-			.getTargetRandomlyFor(actor);
-	}
-	//one target preferred back row except exceptions taunting count
-	getOnePreferredBackRowExceptExceptionsTauntCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.getPreferredRowTargets("back")
-			.getTargetRandomlyFor(actor);
-	}
-	//one target preferred back row except exceptions taunting not count
-	getOnePreferredBackRowExceptExceptionsTauntNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.getPreferredRowTargets("back")
-			.getTargetRandomlyFor(actor);
-	}
-	//one target that is slowest taunting count
-	getOneSlowestTauntingCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.sortedBy("least", "attribute", "agility")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target that is slowest taunting not count
-	getOneSlowestTauntingNotCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.sortedBy("least", "attribute", "agility")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target that is slowest except exceptions taunting count
-	getOneSlowestExceptExceptionsTauntingCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.sortedBy("least", "attribute", "agility")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target that is slowest except exceptions taunting not count
-	getOneSlowestExceptExceptionsTauntingNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.sortedBy("least", "attribute", "agility")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target that is fastest taunting count
-	getOneFastestTauntingCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.sortedBy("most", "attribute", "agility")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target that is fastest taunting not count
-	getOneFastestTauntingNotCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.sortedBy("most", "attribute", "agility")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target that is fastest except exceptions taunting count
-	getOneFastestExceptExceptionsTauntingCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.sortedBy("most", "attribute", "agility")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target that is fastest except exceptions taunting not count
-	getOneFastestExceptExceptionsTauntingNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.sortedBy("most", "attribute", "agility")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most physical attack taunting count
-	getOneMostPhysicalAttackTauntingCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.sortedBy("most", "battler", "pATK")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most physical attack taunting not count
-	getOneMostPhysicalAttackTauntingNotCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.sortedBy("most", "battler", "pATK")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most physical attack except exceptions taunting count
-	getOneMostPhysicalAttackExceptExceptionsTauntingCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.sortedBy("most", "battler", "pATK")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most physical attack except exceptions taunting not count
-	getOneMostPhysicalAttackExceptExceptionsTauntingNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.sortedBy("most", "battler", "pATK")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most magical attack taunting count
-	getOneMostMagicalAttackTauntingCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.sortedBy("most", "battler", "mATK")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most magical attack taunting not count
-	getOneMostMagicalAttackTauntingNotCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.sortedBy("most", "battler", "mATK")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most magical attack except exceptions taunting count
-	getOneMostMagicalAttackExceptExceptionsTauntingCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.sortedBy("most", "battler", "mATK")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most magical attack except exceptions taunting not count
-	getOneMostMagicalAttackExceptExceptionsTauntingNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.sortedBy("most", "battler", "mATK")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most physical defense taunting count
-	getOneMostPhysicalDefenseTauntingCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.sortedBy("most", "battler", "pDEF")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most physical defense taunting not count
-	getOneMostPhysicalDefenseTauntingNotCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.sortedBy("most", "battler", "pDEF")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most physical defense except exceptions taunting count
-	getOneMostPhysicalDefenseExceptExceptionsTauntingCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.sortedBy("most", "battler", "pDEF")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most physical defense except exceptions taunting not count
-	getOneMostPhysicalDefenseExceptExceptionsTauntingNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.sortedBy("most", "battler", "pDEF")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most magical defense taunting count
-	getOneMostMagicalDefenseTauntingCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.filterForTauntTargets()
-			.sortedBy("most", "battler", "mDEF")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most magical defense taunting not count
-	getOneMostMagicalDefenseTauntingNotCount(actor: Character): Character {
-		return this.getPossibleTargets()
-			.sortedBy("most", "battler", "mDEF")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most magical defense except exceptions taunting count
-	getOneMostMagicalDefenseExceptExceptionsTauntingCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.filterForTauntTargets()
-			.sortedBy("most", "battler", "mDEF")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target with most magical defense except exceptions taunting not count
-	getOneMostMagicalDefenseExceptExceptionsTauntingNotCount(
-		actor: Character,
-		exceptions: Character[]
-	): Character {
-		return this.getPossibleTargets()
-			.filterOutExceptions(exceptions)
-			.sortedBy("most", "battler", "mDEF")
-			.getTargetFromSortedTargetsFor(actor);
-	}
-	//one target that is dead
-	getOneDeadTarget(actor: Character): Character | null {
-		const deadTargets = this.getDeadTargets().characters;
-		if (deadTargets.length === 0) {
-			return null;
-		}
-		return this.getDeadTargets().getTargetRandomlyFor(actor);
-	}
+	// 	return targets;
+	// }
 
-	getOneSummonedTarget(actor: Character): Character | null {
-		const summonedTargets = this.characters.filter(
-			(character): character is Character =>
-				character !== "none" && character.isSummoned
-		);
-		if (summonedTargets.length === 0) {
-			return null;
-		}
-		return new Party(summonedTargets, true).getTargetRandomlyFor(actor);
-	}
+	// private getPossibleTargets(): Party {
+	// 	const possibleTargets = this.getPossibleTargetsAsCharacterArray();
+	// 	return new Party(possibleTargets, true);
+	// }
 
-	getAllFrontRowTargets(): Character[] {
-		return this.getFrontRowAsCharacterArray().filter(
-			(character): character is Character => !character.isDead
-		);
-	}
+	// private getPossibleTargetsExceptExceptions(exceptions: Character[]): Party {
+	// 	const possibleTargets = this.getPossibleTargetsAsCharacterArray().filter(
+	// 		(character) => !exceptions.includes(character)
+	// 	);
+	// 	return new Party(possibleTargets, true);
+	// }
 
-	getAllBackRowTargets(): Character[] {
-		return this.getBackRowAsCharacterArray().filter(
-			(character): character is Character => !character.isDead
-		);
-	}
+	// private getDeadTargets(): Party {
+	// 	const deadTargets = this.characters.filter(
+	// 		(character): character is Character =>
+	// 			character !== "none" && character.isDead
+	// 	);
+	// 	return new Party(deadTargets, true);
+	// }
 
-	getAllPossibleTargetsAsParty(): Party {
-		return this.getPossibleTargets();
-	}
+	// private getFrontRowAsCharacterArray(): Character[] {
+	// 	let frontRow: Character[] = [];
+	// 	for (const character of this.characters) {
+	// 		if (character != "none" && character.position < 3) {
+	// 			frontRow.push(character);
+	// 		}
+	// 	}
+	// 	return frontRow;
+	// }
 
-	getAllPossibleTargets(): Character[] {
-		return this.getPossibleTargetsAsCharacterArray();
-	}
+	// private getBackRowAsCharacterArray(): Character[] {
+	// 	let backRow: Character[] = [];
+	// 	for (const character of this.characters) {
+	// 		if (character != "none" && character.position > 2) {
+	// 			backRow.push(character);
+	// 		}
+	// 	}
+	// 	return backRow;
+	// }
 
-	getPossibleTargetsAsCharacterArray(): Character[] {
-		const targets = this.characters.filter(
-			(character): character is Character => {
-				const isNotNone = character !== "none";
-				const isNotDead = character !== "none" && !character.isDead;
-				const isNotNull = character !== null;
-				return isNotNone && isNotDead && isNotNull;
-			}
-		);
-
-		return targets;
-	}
-
-	getPossibleTargets(): Party {
-		const possibleTargets = this.getPossibleTargetsAsCharacterArray();
-		return new Party(possibleTargets, true);
-	}
-
-	getPossibleTargetsExceptExceptions(exceptions: Character[]): Party {
-		const possibleTargets = this.getPossibleTargetsAsCharacterArray().filter(
-			(character) => !exceptions.includes(character)
-		);
-		return new Party(possibleTargets, true);
-	}
-
-	getDeadTargets(): Party {
-		const deadTargets = this.characters.filter(
-			(character): character is Character =>
-				character !== "none" && character.isDead
-		);
-		return new Party(deadTargets, true);
-	}
-
-	getFrontRowAsCharacterArray(): Character[] {
-		let frontRow: Character[] = [];
-		for (const character of this.characters) {
-			if (character != "none" && character.position < 3) {
-				frontRow.push(character);
-			}
-		}
-		return frontRow;
-	}
-
-	getFrontRow(): Party {
-		return new Party(this.getFrontRowAsCharacterArray(), true);
-	}
-
-	getBackRowAsCharacterArray(): Character[] {
-		let backRow: Character[] = [];
-		for (const character of this.characters) {
-			if (character != "none" && character.position > 2) {
-				backRow.push(character);
-			}
-		}
-		return backRow;
-	}
-
-	getBackRow(): Party {
-		return new Party(this.getBackRowAsCharacterArray(), true);
-	}
-
-	getPreferredRowTargets(rowType: "front" | "back"): Party {
-		const possibleTargets = this.getPossibleTargets();
-		const possibleFrontRowTargets =
-			possibleTargets.getFrontRowAsCharacterArray();
-		const isFrontRowContainTaunt = possibleFrontRowTargets.some(
-			(character) => character.buffsAndDebuffs?.taunt ?? 0 > 0
-		);
-		const possibleBackRowTargets = possibleTargets.getBackRowAsCharacterArray();
-		const isBackRowContainTaunt = possibleBackRowTargets.some(
-			(character) => character.buffsAndDebuffs?.taunt ?? 0 > 0
-		);
-
-		if (isFrontRowContainTaunt) {
-			return new Party(possibleFrontRowTargets, true);
-		} else if (isBackRowContainTaunt) {
-			return new Party(possibleBackRowTargets, true);
-		}
-
-		const roll = Dice.roll(DiceEnum.OneD20).sum;
-
-		const preferredRowTargets =
-			rowType === "front" ? possibleFrontRowTargets : possibleBackRowTargets;
-		const alternativeRowTargets =
-			rowType === "front" ? possibleBackRowTargets : possibleFrontRowTargets;
-
-		if (roll > 15) {
-			return alternativeRowTargets.length > 0
-				? new Party(alternativeRowTargets, true)
-				: new Party(preferredRowTargets, true);
-		} else {
-			return preferredRowTargets.length > 0
-				? new Party(preferredRowTargets, true)
-				: new Party(alternativeRowTargets, true);
-		}
-
-		throw new Error(
-			`unexpected error in getPreferredRowTargets method. rowType: ${rowType}, roll: ${roll}`
-		);
-	}
-
-	filterOutExceptions(exceptions: Character[]): Party {
-		const filteredCharacters = this.characters.filter(
-			(character): character is Character =>
-				character !== "none" && !exceptions.includes(character)
-		);
-		return new Party(filteredCharacters, true);
-	}
-
-	filterOutExceptionsAndReturnAsCharacterArray(
-		exceptions: Character[]
-	): Character[] {
-		const filteredCharacters = this.characters.filter(
-			(character): character is Character =>
-				character !== "none" && !exceptions.includes(character)
-		);
-		return filteredCharacters;
-	}
-
-	filterForTauntTargets(): Party {
-		return new Party(
-			this.filterForTauntTargetsAndReturnAsCharacterArray(),
-			true
-		);
-	}
-
-	filterForTauntTargetsAndReturnAsCharacterArray(): Character[] {
-		let tauntTargets: Character[] = [];
-		for (const character of this.characters) {
-			if (character != "none" && (character.buffsAndDebuffs?.taunt ?? 0) > 0) {
-				tauntTargets.push(character);
-			}
-		}
-		if (tauntTargets.length > 0) {
-			return tauntTargets;
-		} else {
-			return this.characters as Character[];
-		}
-	}
-
-	//Last method to get single target
-	getTargetRandomlyFor(actor: Character): Character {
-		const possibleTargets = this.getPossibleTargetsAsCharacterArray();
+	// private getTargetRandomlyFor(actor: Character): Character {
+	// 	const possibleTargets = this.getPossibleTargetsAsCharacterArray();
 		
-		let randomIndex = Math.floor(Math.random() * possibleTargets.length);
+	// 	let randomIndex = Math.floor(Math.random() * possibleTargets.length);
 
-		if (possibleTargets[randomIndex] === undefined) {
-			throw new Error("Randomly selected target is undefined!");
-		}
+	// 	if (possibleTargets[randomIndex] === undefined) {
+	// 		throw new Error("Randomly selected target is undefined!");
+	// 	}
 
-		if (possibleTargets[randomIndex]?.buffsAndDebuffs?.stealth >= 1) {
-			// If there is only one possible target, return it, else we'll check forever
-			if (possibleTargets.length === 1) {
-				return possibleTargets[randomIndex];
-			}
-			if (this.stealthVisibleRollCheck(actor, possibleTargets[randomIndex])) {
-				return possibleTargets[randomIndex];
-			} else {
-				return this.getTargetRandomlyFor(actor);
-			}
-		}
+	// 	if (possibleTargets[randomIndex]?.buffsAndDebuffs?.stealth >= 1) {
+	// 		// If there is only one possible target, return it, else we'll check forever
+	// 		if (possibleTargets.length === 1) {
+	// 			return possibleTargets[randomIndex];
+	// 		}
 
-		return possibleTargets[randomIndex];
-	}
+	// 		// If there are more than one possible target, we'll try 5 times to find a visible target
+	// 		let attempts = 5;
+	// 		while (
+	// 			!this.stealthVisibleRollCheck(actor, possibleTargets[randomIndex]) &&
+	// 			attempts > 0
+	// 		) {
+	// 			randomIndex = Math.floor(Math.random() * possibleTargets.length);
+	// 			attempts--;
+	// 		} // If we still can't find a visible
+	// 		if (attempts === 0) {
+	// 			return this.getWeightedRandomTarget(possibleTargets
+	// 				.filter((target) => target !== possibleTargets[randomIndex]));
+	// 			}
+	// 	}
 
-	getTargetFromSortedTargetsFor(actor: Character): Character {
-		for (const target of this.characters) {
-			if (target != "none" && target.buffsAndDebuffs?.stealth >= 1) {
-				if (this.stealthVisibleRollCheck(actor, target)) {
-					return target;
-				}
-			}
-		}
-		return this.characters[0] as Character;
-	}
+	// 	return possibleTargets[randomIndex];
+	// }
 
-	sortedBy(
-		magnitude: "least" | "most",
-		property: keyof Character,
-		propertyArgument?: string
-	): Party {
-		return new Party(
-			this.sortedByAndReturnAsCharacterArray(
-				magnitude,
-				property,
-				propertyArgument
-			),
-			true
-		);
-	}
-
-	sortedByAndReturnAsCharacterArray(
-		magnitude: "least" | "most",
-		property: keyof Character,
-		propertyArgument?: string
-	): Character[] {
-		return this.characters
-			.filter((character): character is Character => character !== null) // Filter out null values
-			.sort((a, b) => {
-				let aValue, bValue;
-
-				if (propertyArgument) {
-					aValue = a[property](propertyArgument);
-					bValue = b[property](propertyArgument);
-				} else if (typeof a[property] === "function") {
-					aValue = (a[property] as Function)();
-					bValue = (b[property] as Function)();
-				} else {
-					aValue = a[property];
-					bValue = b[property];
-				}
-
-				if (magnitude === "least") {
-					return aValue - bValue || 0;
-				} else if (magnitude === "most") {
-					return bValue - aValue || 0;
-				}
-
-				return 0;
-			});
-	}
-
-	stealthVisibleRollCheck(actor: Character, target: Character): Boolean {
-		const roll = Dice.roll(DiceEnum.OneD20).sum;
-		const actorBonus = actor.getModifier(CharacterStatusEnum.intelligence);
-		const targetBonus = target.getModifier(CharacterStatusEnum.dexterity);
-		if (roll === 20 || roll + actorBonus >= 14 + targetBonus) {
-			return true;
-		} else if (roll === 1 || roll + actorBonus < 14 + targetBonus) {
-			return false;
-		}
-		return false;
-	}
-
-	getPosssibleTargetsAsCharacterArray(): Character[] {
-		return this.characters.filter(
-			(character): character is Character =>
-				character !== "none" && !character.isDead
-		);
-	}
+	// private stealthVisibleRollCheck(actor: Character, target: Character): Boolean {
+	// 	const roll = Dice.roll(DiceEnum.OneD20).sum;
+	// 	const actorBonus = actor.getModifier(CharacterStatusEnum.intelligence);
+	// 	const targetBonus = target.getModifier(CharacterStatusEnum.dexterity);
+	// 	if (roll === 20 || roll + actorBonus >= 14 + targetBonus) {
+	// 		return true;
+	// 	} else if (roll === 1 || roll + actorBonus < 14 + targetBonus) {
+	// 		return false;
+	// 	}
+	// 	return false;
+	// }
 
 	intoCharacterArray(): Character[] {
 		return this.characters.filter(
@@ -1225,4 +540,168 @@ export class Party {
 			actionsList: [],
 		}
 	}
+
+	getAvailableCharacters(): Character[] {
+		return this.characters.filter(character => character !== "none");
+	}
 }
+
+/*
+export class TargetType {
+    targetPartyOrSelf: TargetPartyType;
+    targetScope: TargetSelectionScope | 'none';
+    targetConditionFilter: TargetConditionFilters | 'none';
+    targetSortingOption: TargetSortingOptions | 'none';
+    tauntConsideration: TargetTauntConsideration | 'none';
+    targetBuffOrDebuffCondition: { buffOrDebuff: BuffsAndDebuffsEnum, value: number} | 'none';
+    constructor(
+        targetPartyOrSelf: TargetPartyType,
+        targetScope?: TargetSelectionScope,
+        targetConditionFilter?: TargetConditionFilters,
+        targetSortingOption?: TargetSortingOptions,
+        tauntConsideration?: TargetTauntConsideration,
+        targetBuffOrDebuffCondition?: {buffOrDebuff: BuffsAndDebuffsEnum, value: number}
+    ) 
+    {
+        this.targetPartyOrSelf = targetPartyOrSelf;
+        this.targetScope = targetScope || 'none';
+        this.targetConditionFilter = targetConditionFilter || 'none';
+        this.targetSortingOption = targetSortingOption || 'none';
+        this.tauntConsideration = tauntConsideration || 'none';
+        this.targetBuffOrDebuffCondition = targetBuffOrDebuffCondition || 'none';
+    }
+}
+
+  export enum TargetPartyType {
+    Self = 'self',
+    Ally = 'ally',
+    Enemy = 'enemy',
+  }
+  
+  No shifting means that the target selection will only consider the front row or back row
+  If used 'Single' the game mechanic will follow the default behavior which more likely to target the front row
+  When use 'SingleFrontRowShiftable' meaning that, it will only rolled for the front row, only if the front row is empty, it will shift to the back row
+  We also need an 'OppositeRow' ? meaning if user is in front row, it will target the back row, and vice versa?
+  
+  export enum TargetSelectionScope {
+    Single = 'single',
+    SingleFrontRowShiftable = 'frontRowShiftable', // Prioritize front row but shift to back row if empty
+    SingleBackRowShiftable = 'backRowShiftable',   // Prioritize back row but shift to front row if empty
+    SingleFrontRow = 'frontRow',                   // Only front row, no shifting
+    SingleBackRow = 'backRow',                     // Only back row, no shifting
+    All = 'all',
+    AllFrontRowShiftable = 'frontRowShiftable', // Prioritize front row but shift to back row if empty
+    AllBackRowShiftable = 'backRowShiftable',   // Prioritize back row but shift to front row if empty
+    AllFrontRow = 'frontRow',                   // Only front row, no shifting
+    AllBackRow = 'backRow',                     // Only back row, no shifting
+    OppositeRow = 'oppositeRow',                 // Target the opposite row
+	OppositeRowShiftable = 'oppositeRowShiftable', // Target the opposite row, but shift to the other row
+  }
+  
+  export enum TargetConditionFilters {
+    None = 'none',
+    HasTrait = 'hasTrait',
+    HasBuffOrDebuff = 'hasBuffOrDebuff',
+    IsDead = 'isDead',
+    IsSummoned = 'isSummonned'
+  }
+  
+  export enum TargetSortingOptions {
+    None = 'none',
+    LowestHP = 'lowestHP',
+    HighestHP = 'highestHP',
+    LowestMP = 'lowestMP',
+    HighestMP = 'highestMP',
+    LowestSP = 'lowestSP',
+    HighestSP = 'highestSP',
+    PreferredFrontRow = 'preferredFrontRow',
+    PreferredBackRow = 'preferredBackRow',
+    LowestPhysicalAttack = 'lowestPhysicalAttack',
+    HighestPhysicalAttack = 'highestPhysicalAttack',
+    LowestMagicalAttack = 'lowestMagicalAttack',
+    HighestMagicalAttack = 'highestMagicalAttack',
+    LowestPhysicalDefense = 'lowestPhysicalDefense',
+    HighestPhysicalDefense = 'highestPhysicalDefense',
+    LowestMagicalDefense = 'lowestMagicalDefense',
+    HighestMagicalDefense = 'highestMagicalDefense',
+    LowestLevel = 'lowestLevel',
+    HighestLevel = 'highestLevel',
+    Fastest = 'fastest',
+    Slowest = 'slowest',
+  }
+  
+  export enum TargetTauntConsideration {
+    TauntCount = 'tauntCount',     // Consider taunt count for targeting
+    NoTauntCount = 'noTauntCount', // Ignore taunt count
+  }
+
+  export enum BuffsAndDebuffsEnum {
+    none = 'none',
+    stun = 'stun',
+    blind = 'blind',
+    slow = 'slow',
+    bleed = 'bleed',
+    poison = 'poison',
+    bound = 'bound',
+    paralyse = 'paralyse',
+    burn = 'burn',
+    awed = 'awed',
+    cursed = 'cursed',
+    freeze = 'freeze',
+    confuse = 'confuse',
+    fear = 'fear',
+    entangled = 'entangled',
+    soaked = 'soaked',
+    stoneSkin = 'stoneSkin',
+    counterAttack_1 = 'counterAttack_1',
+    counterAttack_2 = 'counterAttack_2',
+    counterAttackCharge_1 = 'counterAttackCharge_1',
+    counterAttackCharge_2 = 'counterAttackCharge_2',
+    cautious = 'cautious',
+    focus = 'focus',
+    defend = 'defend',
+    defensiveStance_1 = 'defensiveStance_1',
+    defensiveStance_2 = 'defensiveStance_2',
+    defensiveStance_3 = 'defensiveStance_3',
+    taunt = 'taunt',
+    arcaneShield = 'arcaneShield',
+    timeWarp = 'timeWarp',
+    weaponMagicalCoating = 'weaponMagicalCoating',
+    stealth = 'stealth',
+    bless = 'bless',
+    haste = 'haste',
+    shielded = 'shielded',
+    inspiration = 'inspiration',
+    fightingSpirit_1 = 'fightingSpirit_1',
+    fightingSpirit_2 = 'fightingSpirit_2',
+    fightingSpirit_3 = 'fightingSpirit_3',
+    divineShield = 'divineShield',
+    manaShield = 'manaShield',
+    zealotsFury = 'zealotsFury',
+    primalRoar_1 = 'primalRoar_1',
+    primalRoar_2 = 'primalRoar_2',
+    primalRoar_3 = 'primalRoar_3',
+    poisonCoating_1 = 'poisonCoating_1',
+    poisonCoating_2 = 'poisonCoating_2',
+    poisonCoating_3 = 'poisonCoating_3',
+    berserkerRage_1 = 'berserkerRage_1',
+    berserkerRage_2 = 'berserkerRage_2',
+    berserkerRage_3 = 'berserkerRage_3',
+    innerFocus_1 = 'innerFocus_1',
+    innerFocus_2 = 'innerFocus_2',
+    innerFocus_3 = 'innerFocus_3',
+    chiCirculation = 'chiCirculation',
+    battleCry_1 = 'battleCry_1',
+    battleCry_2 = 'battleCry_2',
+    battleCry_3 = 'battleCry_3',
+    isSummoned = 'isSummoned',
+    rejuvenate = 'rejuvenate',
+    cleanse = 'cleanse',
+    desperation = 'desperation',
+    mage_reflex = 'mage_reflex',
+    demonic_empowerment = 'demonic_empowerment',
+    frost_shield = 'frost_shield',
+  }
+
+*/
+

@@ -14,6 +14,25 @@ import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNa
 import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 import { createActionDetailsInterface } from "../../API/BattleReportDTO";
+import { Enemy } from "../../Entities/Character/Enemy/Enemy";
+import { TargetSelectionProcess } from "./TargetSelectionProcess";
+
+enum BattleStatus {
+    END = 'END',
+    DRAW_END = 'DRAW_END',
+    CONTINUE = 'CONTINUE'
+}
+
+enum BattleResult {
+    END = 'End',
+    CONTINUE = 'Continue'
+}
+
+enum BattleOutcome {
+    WIN = 'WIN',
+    DRAW = 'DRAW'
+}
+
 export class Battle {
     isOngoing: boolean;
     partyA: Party;
@@ -87,68 +106,68 @@ export class Battle {
     */
 
     private async battleLoop() {
+        if (this.allParticipants.length === 0) {
+            throw new Error('No participants found in the battle.');
+        }
+
         this.isOngoing = true;
         let turnCount = 0;
         console.log(`Start Battle Loop for turn: ${turnCount}`);
     
         while (this.isOngoing) {
+            if (turnCount >= 100) {
+                console.log('Turn limit reached. Ending battle.');
+                this.isOngoing = false;
+                break;
+            }
+
             for (const actor of this.allParticipants) {
                 if (!actor || actor.isDead) {
                     continue;
                 }
     
-                // Update AB gauge for the actor
                 this.updateabGauge(actor);
     
                 if (actor.abGauge >= 100) {
                     turnCount++;
                     console.log(`Turn: ${turnCount}`);
-    
-                    // Optional turn limit check
-                    if (turnCount >= 100) {
-                        console.log('Turn limit reached. Ending battle.');
-                        this.isOngoing = false;
-                        break;
-                    }
-    
-                    // Reset AB gauge and process the actor's turn
-                    actor.abGauge = 0;
-                    const index = this.allParticipants.indexOf(actor);
-                    this.allParticipants.push(this.allParticipants.splice(index, 1)[0]);
-    
-                    if (actor.resolveEffect().success === true) {
-                        console.log(`${actor.name} takes turn.`);
-                        await this.startActorTurn(actor); // Actor takes their turn
-                    } else {
-                        console.log(`${actor.name} is unable to take turn.`);
-                    }
-    
+
                     // Check for battle end after the actor's turn
                     const battleStatus = this.checkBattleEnd();
-                    if (battleStatus.result === 'End') {
+                    if (battleStatus.status === BattleStatus.END || battleStatus.status === BattleStatus.DRAW_END) {
                         this.isOngoing = false;
-
-                        for (const actor of this.allParticipants) {
-                            actor.setAllBattleBonusToZero()
-                                .clearBuffsAndDebuffs();
-                        }
-    
-                        if (battleStatus.outcome === 'WIN') {
-                            console.log(`Winner: ${battleStatus.winner?.partyID}, Defeated: ${battleStatus.defeated?.partyID}`);
-                            this.emit("battleEnd", this.battleReport);
-                        } else if (battleStatus.outcome === 'DRAW') {
-                            console.log('Battle ended in a draw.');
-                            this.emit("battleEnd", this.battleReport);
-                        }
+                        this.handleBattleEnd(battleStatus);
                         break;
+                    }
+
+                    // Reset AB gauge and process the actor's turn
+                    actor.abGauge = 0;
+                    this.allParticipants.push(this.allParticipants.shift() as Character)
+    
+                    if (actor.resolveEffect().success) {
+                        console.log(`${actor.name} takes turn.`);
+                        await this.startActorTurn(actor);
+                    } else {
+                        console.log(`${actor.name} is unable to take turn.`);
                     }
                 }
             }
     
-            // End battle if not ongoing
-            if (!this.isOngoing) {
-                break;
-            }
+            if (!this.isOngoing) { break }
+        }
+    }
+
+    private handleBattleEnd(battleStatus: { status: BattleStatus, winner?: Party, defeated?: Party }) {
+        for (const actor of this.allParticipants) {
+            actor.setAllBattleBonusToZero().clearBuffsAndDebuffs();
+        }
+    
+        if (battleStatus.status === BattleStatus.END) {
+            console.log(`Winner: ${battleStatus.winner?.partyID}, Defeated: ${battleStatus.defeated?.partyID}`);
+            this.emit("battleEnd", this.battleReport);
+        } else if (battleStatus.status === BattleStatus.DRAW_END) {
+            console.log('Battle ended in a draw.');
+            this.emit("battleEnd", this.battleReport);
         }
     }
     
@@ -186,7 +205,8 @@ export class Battle {
         //2. Loop through skills to get a skill that can be played this must return Skill, 
         //even if there is no valid skill in the set, this still must return auto attack skill.
         let {skillThatCanBePlay, skillLevel, skillPosition} = await actor.getSkillThatCanBePlay();
-        
+        if (skillThatCanBePlay.activeEffect.length === 0) { throw new Error(`No active effect found for ${actor.name}`) }
+
         //3. Determine consumeActionObject
         const target = this.getTargetFromTargetType(
             actor, 
@@ -222,34 +242,18 @@ export class Battle {
     private getTargetFromTargetType(actor: Character, targetType: TargetType, selfGroup: Party, oppositeGroup: Party, exception: Character[] = []): Character[] {
         const isConfused = actor.buffsAndDebuffs.confuse > 0;
 
-        let mustTargetOpposite = false;
-
-        if (isConfused) {
-            console.log (`${actor.name} is confused and must roll a D2 to determine the target group.`);
-            const roll = Dice.roll(DiceEnum.OneD2).sum;
-            console.log(`${actor.name} rolled a ${roll} for confusion check.`);
-            if (roll === 1) {
-                mustTargetOpposite = true;
-            } else {
-                mustTargetOpposite = false;
-            }
-        }
+        const mustTargetOpposite = isConfused ? Dice.roll(DiceEnum.OneD2).sum === 1 : false;
 
         switch (targetType.targetPartyOrSelf) {
             case TargetPartyType.Self:
                 return [actor];
             case TargetPartyType.Ally:
-                if (mustTargetOpposite) {
-                    return oppositeGroup.getTargetsFromTargetType(targetType, actor, exception);
-                } else {
-                    return selfGroup.getTargetsFromTargetType(targetType, actor, exception);
-                }
             case TargetPartyType.Enemy:
-                if (mustTargetOpposite) {
-                    return selfGroup.getTargetsFromTargetType(targetType, actor, exception);
-                } else {
-                    return oppositeGroup.getTargetsFromTargetType(targetType, actor, exception);
-                }
+                const targetGroup = mustTargetOpposite ? 
+                    (targetType.targetPartyOrSelf === TargetPartyType.Ally ? oppositeGroup : selfGroup): 
+                    (targetType.targetPartyOrSelf === TargetPartyType.Ally ? selfGroup : oppositeGroup);
+                let targetSelection = new TargetSelectionProcess(targetGroup, actor, targetType, exception);
+                return targetSelection.targets;
             default:
                 throw new Error(`TargetType ${targetType.targetPartyOrSelf} is not implemented`);
         }
@@ -414,28 +418,28 @@ export class Battle {
         }
     }
 
-    checkBattleEnd(): { result: 'End' | 'Continue', outcome?: 'WIN' | 'DRAW', winner?: Party, defeated?: Party } {
+    checkBattleEnd(): { status: BattleStatus, winner?: Party, defeated?: Party } {
         const allPartyADead = this.isAllPartyADead();
         const allPartyBDead = this.isAllPartyBDead();
     
         if (allPartyADead && allPartyBDead) {
             console.log(`Both parties are dead. The battle ends in a draw.`);
-            return { result: 'End', outcome: 'DRAW' };
+            return { status: BattleStatus.DRAW_END };
         }
     
         if (allPartyADead) {
             console.log(`Party A is dead. Party B wins.`);
             this.battleEndedCalc(this.partyB, this.partyA);
-            return { result: 'End', outcome: 'WIN', winner: this.partyB, defeated: this.partyA };
+            return { status: BattleStatus.END, winner: this.partyB, defeated: this.partyA };
         }
     
         if (allPartyBDead) {
             console.log(`Party B is dead. Party A wins.`);
             this.battleEndedCalc(this.partyA, this.partyB);
-            return { result: 'End', outcome: 'WIN', winner: this.partyA, defeated: this.partyB };
+            return { status: BattleStatus.END, winner: this.partyA, defeated: this.partyB };
         }
     
-        return { result: 'Continue' };
+        return { status: BattleStatus.CONTINUE };
     }
 
     //MARK: Battle Ended

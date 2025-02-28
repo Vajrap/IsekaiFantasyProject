@@ -25,6 +25,12 @@ async function createPlayerCharacter(
         portrait: 'NONE',
     })
     character.setBodyValue();
+
+    for (const attribute in character.status.attributes) {
+        const key = attribute as keyof typeof character.status.attributes;
+        character.status.attributes[key].base = Math.floor(Math.random() * 8) + 8;
+    }
+
     character.isDead = false;
     
     if (selectedClass) {
@@ -168,7 +174,7 @@ async function testBattle() {
 
     try {
         const battleResult = await game.battles.startNewBattle(partyA, partyB, LocationName.WhiteOakEstate, GameEnvironment.cloudy, game.gameTime.getCurrentGameDate());
-        console.log('Turns of Battle:', battleResult.battleTurn.length);
+        return battleResult;
     } catch (error) {
         console.error('Error during battle:', error);
     }
@@ -177,11 +183,15 @@ async function testBattle() {
 // Main test runner
 (async function runTests() {
     await game.start();
+    // Make sure the character list is empty (normally it'll load from the databse, but we're not using the database here)
+    game.characterManager.characters = [];
+
     await setUpCharacters();  // Set up characters
     // Uncomment the tests you want to run
     // await testInternalLearningAndTraining();
     // await testSkillLearningAndTraining();
-    await testBattle();
+    const battleResult = await testBattle();
+    // console.log('Battle Result:', battleResult);
 
     // process.exit(0);
 })();

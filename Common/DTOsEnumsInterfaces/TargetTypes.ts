@@ -5,13 +5,15 @@ export class TargetType {
     targetSortingOption: TargetSortingOptions | 'none';
     tauntConsideration: TargetTauntConsideration | 'none';
     targetBuffOrDebuffCondition: { buffOrDebuff: BuffsAndDebuffsEnum, value: number} | 'none';
+    targetTraitCondition: { trait: string, value: number} | 'none';
     constructor(
         targetPartyOrSelf: TargetPartyType,
         targetScope?: TargetSelectionScope,
         targetConditionFilter?: TargetConditionFilters,
         targetSortingOption?: TargetSortingOptions,
         tauntConsideration?: TargetTauntConsideration,
-        targetBuffOrDebuffCondition?: {buffOrDebuff: BuffsAndDebuffsEnum, value: number}
+        targetBuffOrDebuffCondition?: {buffOrDebuff: BuffsAndDebuffsEnum, value: number},
+        targetTraitCondition?: { trait: string, value: number}
     ) 
     {
         this.targetPartyOrSelf = targetPartyOrSelf;
@@ -20,6 +22,7 @@ export class TargetType {
         this.targetSortingOption = targetSortingOption || 'none';
         this.tauntConsideration = tauntConsideration || 'none';
         this.targetBuffOrDebuffCondition = targetBuffOrDebuffCondition || 'none';
+        this.targetTraitCondition = targetTraitCondition || 'none';
     }
 }
 
@@ -45,6 +48,7 @@ export class TargetType {
     AllFrontRow = 'frontRow',                   // Only front row, no shifting
     AllBackRow = 'backRow',                     // Only back row, no shifting
     OppositeRow = 'oppositeRow',                 // Target the opposite row
+    OppositeRowShiftable = 'oppositeRowShiftable', // Target the opposite row, but shift to the other row if empty
   }
   
   export enum TargetConditionFilters {
