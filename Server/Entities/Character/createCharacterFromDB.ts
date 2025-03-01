@@ -6,7 +6,6 @@ import { CharacterAlignment } from "./Subclasses/CharacterAlignment";
 import { CharacterEquipments } from "./Subclasses/CharacterEquipments";
 import { CharacterStatus } from "./Subclasses/CharacterStatus";
 
-
 export async function createCharacterFromDB(dbCharacter: CharacterDB): Promise<Character> {
     const character = new Character({
         id: dbCharacter.id,

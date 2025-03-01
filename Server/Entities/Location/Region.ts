@@ -34,7 +34,6 @@ export class Region {
     getRandomEvent(action: string, bonusChance: number = 0): LocationEventEnum {
         const randomRollSum = Dice.rollTwenty() + bonusChance;
 
-
         for (const event of this.events[action as keyof Region["events"]]){
             if (randomRollSum <= event.chanceCeiling) {
                 return event.event
@@ -56,14 +55,16 @@ export class Region {
         }
     }
     
-    rollForEnemies(bonusRoll: number): MobCharacterEnum[] {
+    rollForEnemies(bonusRoll: number): {enemyList: MobCharacterEnum[], enemyCombatPolicy: "engage" | "strategic" | "evasive"} {
         const enemies: MobCharacterEnum[] = []
         const numberOfEnemies = this.rollNumberOfEnemies(bonusRoll)
         for (let i = 0; i < numberOfEnemies; i++) {
             const randomIndex = Math.floor(Math.random() * this.possibleEnemies.length)
             enemies.push(this.possibleEnemies[randomIndex])
         }
-        return enemies
+        let diceRoll = Dice.rollTwenty()
+        const enemyCombatPolicy = diceRoll < 7 ? "engage" : diceRoll < 15 ? "strategic" : "evasive"
+        return {enemyList: enemies, enemyCombatPolicy}
     }
 
     rollNumberOfEnemies(bonusRoll: number): number {

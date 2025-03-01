@@ -3,6 +3,8 @@ import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/Loca
 import { PartyInterface } from "../../../Common/RequestResponse/characterWS";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { PartyType } from "./PartyType";
+import { AttributeEnum } from "../Character/Subclasses/CharacterDataEnum";
+import { CharacterStatus } from "../Character/Subclasses/CharacterStatus";
 
 export class PartyBehavior {
 	partyType: PartyType;
@@ -274,14 +276,36 @@ export class Party {
 		}
 	}
 
-	getPartyMember(id: string): Character | undefined {
+	getPartyMember(id: string): Character {
 		for (const character of this.characters) {
 			if (character !== "none" && character.id === id) {
 				return character;
-			} else {
-				return undefined;
 			}
 		}
+		throw new Error("Character not found in party");
+	}
+
+	getPartyLeader(): Character {
+		for (const character of this.characters) {
+			if (character !== "none" && character.id === this.partyID) {
+				return character;
+			}
+		}
+		throw new Error("Party Leader not found in party");
+	}
+
+	getPartyMemberWithHighestAttr(attr: AttributeEnum): Character {
+		const highest = this.characters
+			.filter(c => c !== "none")
+			.reduce((max, character) => 
+				character.attribute(attr as keyof CharacterStatus["attributes"]) > max.attribute(attr as keyof CharacterStatus["attributes"]) ? character : max
+			);
+	
+		if (!highest) {
+			throw new Error("No valid characters in party");
+		}
+	
+		return highest;
 	}
 
 	changeCharacterPosition(character: Character, newPosition: number) {

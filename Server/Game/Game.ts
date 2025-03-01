@@ -18,7 +18,6 @@ import { webSocketEvents, wss } from "../API/WebSocket/WebSocketServer";
 import { WebSocketMessageType, WebSocketPartyData } from "../../Common/RequestResponse/webSocket";
 import { SkillRepository, skillRepository } from "../Entities/Skills/SkillRepository";
 import { screamer } from "../Utility/Screamer/Screamer";
-import { TravelManager } from "../Entities/Location/TravelManager";
 
 export class Game {
     characterManager: CharacterManager = new CharacterManager();
