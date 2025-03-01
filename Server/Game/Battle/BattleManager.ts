@@ -2,9 +2,7 @@ import { BattleReportInterface } from "../../../Common/DTOsEnumsInterfaces/Battl
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
-import { TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
 import { Party } from "../../Entities/Party/Party";
-import { GameTime } from "../TimeAndDate/GameTime";
 import { Battle } from "./Battle";
 import { BattleReport } from "./BattleReport";
 

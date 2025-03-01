@@ -132,23 +132,22 @@ export class Battle {
                     turnCount++;
                     console.log(`Turn: ${turnCount}`);
 
+                    // Reset AB gauge and process the actor's turn
+                    actor.abGauge = 0;
+                    if (actor.resolveEffect().success) {
+                        console.log(`${actor.name} takes turn.`);
+                        await this.startActorTurn(actor);
+                        this.allParticipants.push(this.allParticipants.shift() as Character)
+                    } else {
+                        console.log(`${actor.name} is unable to take turn.`);
+                    }
+
                     // Check for battle end after the actor's turn
                     const battleStatus = this.checkBattleEnd();
                     if (battleStatus.status === BattleStatus.END || battleStatus.status === BattleStatus.DRAW_END) {
                         this.isOngoing = false;
                         this.handleBattleEnd(battleStatus);
                         break;
-                    }
-
-                    // Reset AB gauge and process the actor's turn
-                    actor.abGauge = 0;
-                    this.allParticipants.push(this.allParticipants.shift() as Character)
-    
-                    if (actor.resolveEffect().success) {
-                        console.log(`${actor.name} takes turn.`);
-                        await this.startActorTurn(actor);
-                    } else {
-                        console.log(`${actor.name} is unable to take turn.`);
                     }
                 }
             }
@@ -172,24 +171,24 @@ export class Battle {
     }
     
     updateabGauge(actor: Character) {
-        let abGaugeIncrement = Math.max(actor.status.agility(), 1);
+        let abGaugeIncrement = Math.max(actor.status.agility(), 10);
         const hasteBuff = actor.buffsAndDebuffs.haste;
         const slowBuff = actor.buffsAndDebuffs.slow
         const timeWarpBuff = actor.buffsAndDebuffs.timeWarp;
         if (hasteBuff > 0) {
-            abGaugeIncrement *= 2;
+            abGaugeIncrement *= Math.pow(2, hasteBuff);
         }
         if (slowBuff > 0) {
-            abGaugeIncrement /= 2;
+            abGaugeIncrement /= Math.pow(2, slowBuff);
         }
         if (timeWarpBuff > 0) {
-            abGaugeIncrement += 25;
+            abGaugeIncrement += 25 * timeWarpBuff;
         }
         actor.abGauge += abGaugeIncrement;
     }
 
     //MARK: Start Actor Turn
-    async startActorTurn(actor: Character, iteration = 0) {
+    async startActorTurn(actor: Character) {
         /*
             when actor takes turn it,
             1. gains resources from elements modifier
@@ -204,7 +203,7 @@ export class Battle {
 
         //2. Loop through skills to get a skill that can be played this must return Skill, 
         //even if there is no valid skill in the set, this still must return auto attack skill.
-        let {skillThatCanBePlay, skillLevel, skillPosition} = await actor.getSkillThatCanBePlay();
+        let {skillThatCanBePlay, skillLevel } = await actor.getSkillThatCanBePlay();
         if (skillThatCanBePlay.activeEffect.length === 0) { throw new Error(`No active effect found for ${actor.name}`) }
 
         //3. Determine consumeActionObject
@@ -225,11 +224,8 @@ export class Battle {
         const actionDetails = await this.actorPlayActiveSkill(
             actor, 
             target, 
-            this.getSelfGroup(actor), 
-            this.getOppositeGroup(actor), 
             skillThatCanBePlay, 
             skillLevel,
-            skillPosition
         );
 
         //5th. Add actionDetails to battleReport: Battle Report will collect every events that happen in the battle
@@ -239,7 +235,13 @@ export class Battle {
         }
     }
 
-    private getTargetFromTargetType(actor: Character, targetType: TargetType, selfGroup: Party, oppositeGroup: Party, exception: Character[] = []): Character[] {
+    private getTargetFromTargetType(
+        actor: Character, 
+        targetType: TargetType, 
+        selfGroup: Party, 
+        oppositeGroup: Party, 
+        exception: Character[] = []
+    ): Character[] {
         const isConfused = actor.buffsAndDebuffs.confuse > 0;
 
         const mustTargetOpposite = isConfused ? Dice.roll(DiceEnum.OneD2).sum === 1 : false;
@@ -262,22 +264,25 @@ export class Battle {
     async actorPlayActiveSkill(
         actor: Character, 
         targets: Character[], 
-        selfParty: Party, 
-        oppositeParty: Party, 
         skill: Skill, 
         skillLevel: number,
-        skillPosition: number
     ): Promise<{
         skill: {skillID: string, level: number},
         skillObject: Skill | null, 
         actionDetails: ActionDetailsInterface | null,
     }> {
-        let weapons = [];
-        if (actor.equipments.mainHand && actor.equipments.mainHand.weaponSpecificType != null) { weapons.push(actor.equipments.mainHand.weaponSpecificType) };
-        if (actor.equipments.offHand && actor.equipments.offHand.weaponSpecificType != null) { weapons.push(actor.equipments.offHand.weaponSpecificType) };
 
+        if (targets.length === 0) {
+            console.log(`No target found for ${actor.name}`);
+            return { 
+                skill:{skillID: skill.id, level: skillLevel}, 
+                skillObject: skill, 
+                actionDetails: null 
+            };
+        }
+        
         console.log(`${actor.name} is using ${skill.name}`);
-        this.actorRemoveResource(actor, skill, skillLevel);
+        
         let positiveTargets: Character[] = [];
         let negativeTargets: Character[] = [];
         let castMessage = `${actor.name} ${skill.isSpell ?"is casting" : "is using"} ${skill.name}`;
@@ -288,19 +293,7 @@ export class Battle {
         let positiveTargetSkillEffects: TargetSkillEffect[] = []
         let negativeTargetSkillEffects: TargetSkillEffect[] = []
 
-        for (const activeEffect of skill.activeEffect) {
-            if (targets === null) {
-                console.log(`No target found for ${actor.name}`);
-                // skill: {skillID: string, level: number},
-                // skillObject: Skill | null, 
-                // actionDetails: ActionDetails | null,
-                return { 
-                    skill:{skillID: skill.id, level: skillLevel}, 
-                    skillObject: skill, 
-                    actionDetails: null 
-                };
-            }
-        
+        for (const activeEffect of skill.activeEffect) {        
             for (const actionObject of activeEffect.skillActionObjects) {
                 for (const target of targets) {
                     let consumedResult = consumeActionObject(
@@ -312,22 +305,21 @@ export class Battle {
                         skill.isWeaponAttack,
                         skill.isAuto
                     );
-                        
-                    switch (actionObject.type) {
-                        case SkillActionType.Negative:
-                            negativeTargets.push(target);
-                            sequenceMessages.push(`${actor.name} deals ${consumedResult.damageObjectResult.baseDamage} ${consumedResult.damageObjectResult.damageType} damage to ${target.name} ${consumedResult.damageObjectResult.isHit ? '' : 'but missed'} ${consumedResult.damageObjectResult.isCrit ? 'Critical Hit!' : ''}`);
-                            break;
-                        case SkillActionType.Positive:
-                            positiveTargets.push(target);
-                            sequenceMessages.push(`${actor.name} heals ${consumedResult.damageObjectResult.baseDamage} ${consumedResult.damageObjectResult.damageType} damage to ${target.name} ${consumedResult.damageObjectResult.isHit ? '' : 'but missed'} ${consumedResult.damageObjectResult.isCrit ? 'Critical Heal!' : ''}`);
-                            break;
-                    }
+                    
+                    const isHealing = actionObject.type === SkillActionType.Positive;
+                    const actionVerb = isHealing ? "heals" : "deals";
+                    const criticalVerb = isHealing ? "Critical Heal!" : "Critical Hit!";
+
+                    sequenceMessages.push(`${actor.name} ${actionVerb} ${consumedResult.damageObjectResult.baseDamage} ${consumedResult.damageObjectResult.damageType} damage to ${target.name} ${consumedResult.damageObjectResult.isHit ? '' : 'but missed'} ${consumedResult.damageObjectResult.isCrit ? criticalVerb : ''}`);
                 }
             }
         }
 
-        this.actorAddResource(actor, skill, skillLevel);
+        try {
+            this.actorRemoveResource(actor, skill, skillLevel);
+        } finally {
+            this.actorAddResource(actor, skill, skillLevel);
+        }
 
         let actionDetails = createActionDetailsInterface(
             actor,
@@ -364,22 +356,16 @@ export class Battle {
             return await this.actorPlayActiveSkill(
                 actor,
                 targets,
-                selfParty,
-                oppositeParty,
                 await skillObject,
                 1,
-                -1
             );
         } else {
             let skill = actor.activeSkills[skillPosition];
             return await this.actorPlayActiveSkill(
                 actor, 
                 targets, 
-                selfParty, 
-                oppositeParty,
                 skill.skill,
                 skill.level,
-                skillPosition
             );
         }
     }

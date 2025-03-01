@@ -2758,6 +2758,8 @@ function calculateBaseDamage(
 		}
 	}
 
+	// TODO: ADD Triatsbased Damage Modifier and BuffBased Damage Modifier
+
 	// isSpell? character is damage penalty if wearing armor
 
 	return baseDamage;
@@ -2801,33 +2803,20 @@ export function consumeActionObject(
 	effectRecorded: EffectReturnObject[];
 	skillActionSubType: SkillActionSubType;
 } {
-	let damageType =
-		skillActionObject.damageType.length === 1
+	let damageType = skillActionObject.damageType.length === 1
 			? skillActionObject.damageType[0]
 			: skillActionObject.damageType[level - 1];
 
-	if (isWeaponAttack === true) {
-		if (isSpell === true) {
-			damageType =
-				character.equipments.mainHand?.attackStats?.magicalType ||
-				DamageTypes.arcane;
-		} else {
-			damageType =
-				character.equipments.mainHand?.attackStats?.physicalType ||
-				DamageTypes.blunt;
-		}
+	if (isWeaponAttack) {
+		damageType = isSpell
+			? character.equipments.mainHand?.attackStats?.magicalType || DamageTypes.arcane
+			: character.equipments.mainHand?.attackStats?.physicalType || DamageTypes.blunt;
 	}
 
-	if (isAuto === true) {
-		if (isSpell === true) {
-			damageType =
-				character.equipments.mainHand?.attackStats?.magicalType ||
-				DamageTypes.arcane;
-		} else {
-			damageType =
-				character.equipments.mainHand?.attackStats?.physicalType ||
-				DamageTypes.blunt;
-		}
+	if (isAuto) {
+		damageType = isSpell
+			? character.equipments.mainHand?.attackStats?.magicalType || DamageTypes.arcane
+			: character.equipments.mainHand?.attackStats?.physicalType || DamageTypes.blunt;
 	}
 
 	let baseDamage = calculateBaseDamage(
@@ -2920,6 +2909,7 @@ export function calculateCritAndHit(
 	if (skillActionObject.trueHit) return [9999, false];
 
 	const hitRoll = Dice.rollTwenty();
+	// Critical Rolls
 	if (hitRoll === 20) return [20, true];
 	if (hitRoll === 1) return [1, false];
 
@@ -2940,12 +2930,10 @@ export function calculateCritAndHit(
 
 function calculateAverageHitModifier(
 	character: Character,
-	hitStat: CharacterStatusEnum[][], // assuming hitStat is an array of arrays of stats
+	hitStat: CharacterStatusEnum[][],
 	level: number
 ): number {
 	if (hitStat.length === 0) return 0;
-
-	// Use the single set if provided, otherwise use the one corresponding to the level.
 	const selectedStats = hitStat.length === 1 ? hitStat[0] : hitStat[level - 1];
 	const totalModifier = selectedStats.reduce(
 		(sum, stat) => sum + character.getModifier(stat),
