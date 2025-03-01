@@ -131,8 +131,12 @@ const gameEvent_rest = new GameEvent<LocationEventEnum.RestEvent>(
             character.hpUp(character.maxHP()! * (Dice.rollTwenty() / 15) + character.getModifier(CharacterStatusEnum.vitality));
             character.mpUp(character.maxMP()! * (Dice.rollTwenty() / 15) + character.getModifier(CharacterStatusEnum.intelligence));
             character.spUp(character.maxSP()! * (Dice.rollTwenty() / 15) + character.getModifier(CharacterStatusEnum.endurance));
-            character.moodUp((Dice.rollTwenty() * 1.5) + character.attribute('willpower'));
-            character.energyUp((Dice.rollTwenty()) + character.attribute('vitality') + 50);
+            character.moodUp(Math.max(Math.floor(
+                (Dice.rollTwenty()) + (character.attribute('willpower')/2)), 0) + 10
+            );
+            character.energyUp(Math.max(Math.floor(
+                (Dice.rollTwenty()/5) + (character.attribute('vitality')/2)),0) + 50
+            );
         }
 
         return true;
@@ -151,8 +155,12 @@ const gameEvent_innRest = new GameEvent<LocationEventEnum.InnRest>(
             character.hpUp((character.maxHP()! * (Dice.rollTwenty() / 10)) + character.getModifier(CharacterStatusEnum.vitality));
             character.mpUp((character.maxMP()! * (Dice.rollTwenty() / 10)) + character.getModifier(CharacterStatusEnum.intelligence));
             character.spUp((character.maxSP()! * (Dice.rollTwenty() / 10)) + character.getModifier(CharacterStatusEnum.endurance));
-            character.moodUp((Dice.rollTwenty() * 2.5) + character.attribute('willpower'));
-            character.energyUp((Dice.rollTwenty()) + character.attribute('vitality') + 65);
+            character.moodUp(Math.max(Math.floor(
+                (Dice.rollTwenty()/5) + (character.attribute('willpower')/2)), 0) + 25
+            );
+            character.energyUp(Math.max(Math.floor(
+                (Dice.rollTwenty()/5) + (character.attribute('vitality')/2)),0) + 65
+            );
         }
 
         return true;
@@ -171,8 +179,12 @@ const gameEvent_houseRest = new GameEvent<LocationEventEnum.HouseRest>(
             character.hpUp((character.maxHP()! * (Dice.rollTwenty() / 5)) + character.getModifier(CharacterStatusEnum.vitality));
             character.mpUp((character.maxMP()! * (Dice.rollTwenty() / 5)) + character.getModifier(CharacterStatusEnum.intelligence));
             character.spUp((character.maxSP()! * (Dice.rollTwenty() / 5)) + character.getModifier(CharacterStatusEnum.endurance));
-            character.moodUp((Dice.rollTwenty() * 3) + character.attribute('willpower'));
-            character.energyUp((Dice.rollTwenty()) + character.attribute('vitality') + 70);
+            character.moodUp(Math.max(Math.floor(
+                (Dice.rollTwenty()/5) + (character.attribute('willpower')/2)), 0) + 30
+            );
+            character.energyUp(Math.max(Math.floor(
+                (Dice.rollTwenty()/5) + (character.attribute('vitality')/2)),0) + 70
+            );
         }
 
         return true;
@@ -192,8 +204,12 @@ const gameEvent_campRest = new GameEvent<LocationEventEnum.CampRest>(
             character.hpUp((character.maxHP()! * (Dice.rollTwenty() / (useItem ? 20 : 15))) + character.getModifier(CharacterStatusEnum.vitality));
             character.mpUp((character.maxMP()! * (Dice.rollTwenty() / (useItem ? 20 : 15))) + character.getModifier(CharacterStatusEnum.intelligence));
             character.spUp((character.maxSP()! * (Dice.rollTwenty() / (useItem ? 20 : 15))) + character.getModifier(CharacterStatusEnum.endurance));
-            character.moodUp((Dice.rollTwenty() * (useItem ? 2 : 1.5)) + character.attribute('willpower'));
-            character.energyUp((Dice.rollTwenty()) + character.attribute('vitality') + 55);
+            character.moodUp(Math.max(Math.floor(
+                (Dice.rollTwenty()/5) + (character.attribute('willpower')/2)), 0) + 15
+            );
+            character.energyUp(Math.max(Math.floor(
+                (Dice.rollTwenty()/5) + (character.attribute('vitality')/2)),0) + 55
+            );
         }
 
         return true;

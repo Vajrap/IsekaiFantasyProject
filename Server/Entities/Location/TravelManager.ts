@@ -16,6 +16,7 @@ import {
 } from "../../Game/GameEvent/GameEvent";
 import { LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { getEnemyFromRepository } from "../Character/Enemy/EnemyRepository";
+import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 
 //Party.travelManager = new TravelManager();
 //When Player start a travel, it's actually the party that start the travel
@@ -232,6 +233,15 @@ export class TravelManager {
 		} else {
 			console.log("Travel event failed");
 		}
+
+		// Mood and energy decrease
+		for (const character of travelingParty.party.characters) {
+			let pace = travelingParty.party.behavior.travelPace;
+			if (character !== "none") {
+				character.moodDown((Dice.roll(DiceEnum.OneD4).sum + (pace === 'fast' ? 8 : pace === 'normal' ? 5 : 2)))
+				character.energyDown((Dice.roll(DiceEnum.OneD6).sum + (pace === 'fast' ? 20 : pace === 'normal' ? 15 : 10)))
+			}
+		}
 	}
 
 	getSpeedModifierFromRegion(
@@ -369,7 +379,6 @@ export class TravelManager {
 
 		const enemyParty = new Party(
 			[enemies[0]],
-			false,
 			travelingParty.currentLocation.id,
 			chosenPosition
 		);
@@ -427,11 +436,16 @@ function getTravelSpeedAndAverageLuckModifier(party: travelingParty): {
 
 	const region = getRegionFromName(party.currentLocation.region);
 
+	let paceModifier = 0;
+	switch (party.party.behavior.travelPace) {
+		case 'fast': paceModifier = 20; break;
+		case 'normal': paceModifier = 0; break;
+		case 'slow': paceModifier = -20; break;
+		default: paceModifier = 0;
+	}
+
 	return {
-		travelSpeed:
-			100 +
-			StatMod.value(totalAgility / numberOfCharacter) +
-			region.getSpeedBonusModifire(party.currentTravelMethod),
+		travelSpeed: 100 + StatMod.value(totalAgility / numberOfCharacter) + region.getSpeedBonusModifire(party.currentTravelMethod) + paceModifier,
 		averageLuckModifier: StatMod.value(totalLuck / numberOfCharacter),
 	};
 }
