@@ -23,16 +23,6 @@ enum BattleStatus {
     CONTINUE = 'CONTINUE'
 }
 
-enum BattleResult {
-    END = 'End',
-    CONTINUE = 'Continue'
-}
-
-enum BattleOutcome {
-    WIN = 'WIN',
-    DRAW = 'DRAW'
-}
-
 export class Battle {
     isOngoing: boolean;
     partyA: Party;
