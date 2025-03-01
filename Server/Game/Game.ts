@@ -124,14 +124,17 @@ export class Game {
         const hourNow = now.getHours();
 
         console.log(`Current time: ${now.toLocaleTimeString()}`);
-        // Schedule the next game loop to run at the next quarter hour, should be 15 minutes from now        
         let nextQuarterMinute = 0;
         let nextQuarterHour = hourNow;
 
         if (minuteNow >= 0 && minuteNow < 14) { nextQuarterMinute = 15};
         if (minuteNow >= 15 && minuteNow < 29) { nextQuarterMinute = 30};
         if (minuteNow >= 30 && minuteNow < 44) { nextQuarterMinute = 45};
-        if (minuteNow >= 45) { nextQuarterMinute = 0; nextQuarterHour += 1};
+        if (minuteNow >= 45) { 
+            nextQuarterMinute = 0; 
+            nextQuarterHour += 1
+            if (nextQuarterHour >= 24) { nextQuarterHour = 0 }
+        };
 
         const nextScheduledTime = new Date(
             now.getFullYear(),
@@ -142,11 +145,16 @@ export class Game {
             0
         );
 
-        const timeUntilNextQuarter = nextScheduledTime.getTime() - now.getTime();
+        let timeUntilNextQuarter = nextScheduledTime.getTime() - now.getTime();
+
+        if (timeUntilNextQuarter < 5000) {
+            console.warn(`⚠️ Next execution time is too close (${timeUntilNextQuarter}ms). Adding buffer...`);
+            timeUntilNextQuarter = 5000;
+        }
+        
         console.log(`Next game loop scheduled for ${nextScheduledTime.toLocaleTimeString()}`);
 
         setTimeout(async () => {
-            // await this.runGameLoop();
             await this._scheduleNextGameLoop();
         }, timeUntilNextQuarter);
     }
@@ -167,9 +175,11 @@ export class Game {
                     // const gameData = { partyData, worldData };
                     // broadcastGameStatus(client, gameData);
                 // }
+                // let clientParty = this.partyManager.getPartyByID(client.id);
             })
             // broadcastGameStatus();
-            // await this.saveGameData();
+            await this.saveGameStateToDB();
+
             console.log(`Game loop executed at ${new Date().toLocaleTimeString()}`);
         } catch (error) {
             console.error('Error during game loop:', error);
