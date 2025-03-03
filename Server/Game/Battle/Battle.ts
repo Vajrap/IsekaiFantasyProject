@@ -14,8 +14,8 @@ import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNa
 import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 import { createActionDetailsInterface } from "../../API/BattleReportDTO";
-import { Enemy } from "../../Entities/Character/Enemy/Enemy";
 import { TargetSelectionProcess } from "./TargetSelectionProcess";
+import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 
 enum BattleStatus {
     END = 'END',
@@ -32,6 +32,9 @@ export class Battle {
     UID: string;
     battlePromiseResolve!: (value: boolean | PromiseLike<boolean>) => void;
     battlePromiseReject!: (reason?: any) => void;
+    // Battle Ended with winner party and losing party 'BOTH' gain experience
+    // 
+
     private eventEmitter = new EventEmitter();
 
     constructor(
@@ -420,42 +423,81 @@ export class Battle {
 
     //MARK: Battle Ended
     battleEndedCalc(winnerParty: Party, defeatedParty: Party) {
-        // Commented out because unSummon is not implemented yet
-        // for (const character of [...winnerParty.characters]) {
-        //     if (character != "none" && character.isSummoned === true) {
-        //         const summon = character as Summon;
-        //         summon.unSummon(winnerParty);
-        //     }
-        // }
-        // for (const character of [...defeatedParty.characters]) {
-        //     if (character != "none" && character.isSummoned === true) {
-        //         const summon = character as Summon;
-        //         summon.unSummon(defeatedParty);
-        //     }
-        // }
-
-        this.victoryPartyGainEXP(winnerParty, defeatedParty);
+        const possibleAttributesToBeTrained = [
+            CharacterStatusEnum.strength, 
+            CharacterStatusEnum.agility, 
+            CharacterStatusEnum.endurance, 
+            CharacterStatusEnum.breath, 
+            CharacterStatusEnum.planar, 
+            CharacterStatusEnum.dexterity
+        ];
+        
+        const timesOfTraining = 3;
+        const { winnerExp, loserExp } = this.experienceCalculation(winnerParty, defeatedParty);
+    
+        const trainCharacters = (party: Party, exp: number) => {
+            for (const character of party.characters.filter(c => c !== "none")) {
+                for (let i = 0; i < timesOfTraining; i++) {
+                    let trainedAttribute = possibleAttributesToBeTrained[
+                        Math.floor(Math.random() * possibleAttributesToBeTrained.length)
+                    ];
+                    character.train(trainedAttribute, exp);
+                }
+            }
+        };
+    
+        trainCharacters(winnerParty, winnerExp);
+        trainCharacters(defeatedParty, loserExp);
+    
+        // TODO: Implement looting system
     }
 
-    victoryPartyGainEXP(vicrotiedParty: Party, defeatedParty: Party) {
-        let allVictoriedPartyEXPValue:number = 0;
-        let allVictoriedPartyNumber:number = 0;
-        for (const actor of vicrotiedParty.getPosssibleTargetsAsCharacterArray()) {
-            if (actor!==null) { allVictoriedPartyEXPValue += actor.level; allVictoriedPartyNumber++}
+    getPartyStrength(party: Party): number {
+        let partyLevel = 0;
+        let partyLength = 0;
+        for (let i = 0; i < party.characters.length; i++) {
+            if (party.characters[i] !== "none") {
+                break;
+            } else {        
+                if (party.characters[i] !== "none") {
+                    partyLevel += (party.characters[i] as Character).level;
+                    partyLength++;
+                }
+            }
         }
-        const victoriedPartyEXP = allVictoriedPartyEXPValue / allVictoriedPartyNumber;
+        return partyLevel / partyLength;
+    }
 
-        let allDefeatedPartyEXPValue:number = 0;
-        let allDefeatedPartyNumber:number = 0;
-        for (const actor of defeatedParty.getPosssibleTargetsAsCharacterArray()) {
-            if (actor!==null) { allDefeatedPartyEXPValue += actor.level; allDefeatedPartyNumber++}
-        }
-        const defeatedPartyEXP = allDefeatedPartyEXPValue / allDefeatedPartyNumber;
+    experienceCalculation(winner: Party, loser: Party): { winnerExp: number, loserExp: number } {
+        let baseExp = 30
 
-        const expGained = Math.max(victoriedPartyEXP - defeatedPartyEXP, 0) + (2 * allDefeatedPartyNumber);
-        for (const actor of vicrotiedParty.getPosssibleTargetsAsCharacterArray()) {
-            if (actor!==null && actor.isDead === false) { actor.statTracker += expGained; }
+        let winner_ps = this.getPartyStrength(winner);
+        let loser_ps = this.getPartyStrength(loser);
+    
+        let party_a_base_exp: number;
+        let party_b_base_exp: number;
+        let diff: number;
+    
+        if (winner_ps > loser_ps) {
+            diff = winner_ps - loser_ps;
+            let scale = diff * 0.05;
+            party_a_base_exp = Math.max(baseExp - (baseExp * scale), baseExp * 0.1);
+            party_b_base_exp = baseExp + (baseExp * scale);
+        } else if (winner_ps < loser_ps) {
+            diff = loser_ps - winner_ps;
+            let scale = diff * 0.05;
+            party_a_base_exp = baseExp + (baseExp * scale);
+            party_b_base_exp = Math.max(baseExp - (baseExp * scale), baseExp * 0.1);
+        } else {
+            party_a_base_exp = baseExp;
+            party_b_base_exp = baseExp;
         }
+    
+        let winnerExp = Math.floor(party_a_base_exp);
+        let loserExp = Math.floor(party_b_base_exp / 2);
+    
+        return { winnerExp, loserExp };
+
     }
 
     // isAllPartyADead() {
