@@ -11,7 +11,7 @@ const bow_long = new Bow_Long({
     name: 'Long Bow',
     description: 'A powerful bow for long-range attacks.',
     image: 'bow_long.jpg',
-    cost: new ItemCost(15, 0), // 1 Gold, 5 Silver
+    cost: new ItemCost(15, 0, 0.2), // 1 Gold, 5 Silver
     weight: 1500, // 1.5 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -37,7 +37,7 @@ const bow_short = new Bow_Short({
     name: 'Short Bow',
     description: 'A compact bow for quick attacks.',
     image: 'bow_short.jpg',
-    cost: new ItemCost(10, 0), // 1 Gold
+    cost: new ItemCost(10, 0, 0.2), // 1 Gold
     weight: 1200, // 1.2 kg
     tier: Tier.common,
     jewelSlots: 0,
@@ -63,7 +63,7 @@ const bow_cross = new Bow_Cross({
     name: 'Crossbow',
     description: 'A mechanically assisted bow for precise shots.',
     image: 'bow_cross.jpg',
-    cost: new ItemCost(20, 0), // 2 Gold
+    cost: new ItemCost(20, 0, 0.2), // 2 Gold
     weight: 2500, // 2.5 kg
     tier: Tier.common,
     jewelSlots: 1,

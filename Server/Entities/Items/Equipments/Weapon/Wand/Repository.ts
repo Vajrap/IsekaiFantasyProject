@@ -11,7 +11,7 @@ const wand_magic = new Wand_Magic({
     name: 'Magic Wand',
     description: 'A basic wand for novice spellcasters.',
     image: 'wand_magic.jpg',
-    cost: new ItemCost(5, 0), // 5 Silver
+    cost: new ItemCost(5, 0, 0.2), // 5 Silver
     weight: 200, // 0.2 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -37,7 +37,7 @@ const wand_scepter = new Wand_Scepter({
     name: 'Scepter',
     description: 'An ornate wand used by skilled spellcasters.',
     image: 'wand_scepter.jpg',
-    cost: new ItemCost(20, 0), // 2 Gold
+    cost: new ItemCost(20, 0, 0.2), // 2 Gold
     weight: 800, // 0.8 kg
     tier: Tier.uncommon,
     jewelSlots: 2,

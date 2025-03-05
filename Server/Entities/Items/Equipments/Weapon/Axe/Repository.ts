@@ -11,7 +11,7 @@ const axe_broad = new Axe_Broad({
     name: 'Broad Axe',
     description: 'A heavy axe designed for chopping and combat.',
     image: 'axe_broad.jpg',
-    cost: new ItemCost(15, 0), // 1 Gold, 5 Silver
+    cost: new ItemCost(15, 0, 0.2), // 1 Gold, 5 Silver
     weight: 2000, // 2 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -37,7 +37,7 @@ const axe_great = new Axe_Great({
     name: 'Great Axe',
     description: 'A massive axe used for devastating strikes.',
     image: 'axe_great.jpg',
-    cost: new ItemCost(25, 0), // 2 Gold, 5 Silver
+    cost: new ItemCost(25, 0, 0.2), // 2 Gold, 5 Silver
     weight: 3000, // 3 kg
     tier: Tier.common,
     jewelSlots: 1,

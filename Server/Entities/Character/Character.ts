@@ -117,6 +117,7 @@ import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/W
 import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
 import { weaponAttackAdditionalEffect } from "./weaponAttackAdditionalEffect";
 import { BattleDamageObject } from "./BattleDamageObject";
+import { RelationShipStatusEnum } from "./RelationshipStatusEnum";
 
 export class Character {
 	id: string;
@@ -171,7 +172,7 @@ export class Character {
 	bagSize: number = 20;
 	storyFlags: StoryFlags;
 	// Relationship to other characters, key = character ID, value = relation value from -100 to 100, and status is the relationship status enum
-	relation: { [key: string]: { value: number; status: number } } = {};
+	relation: { [key: string]: { value: number; status: RelationShipStatusEnum } } = {};
 	isPlayerCharacter: boolean = false;
 	constructor(data: {
 		id: string;

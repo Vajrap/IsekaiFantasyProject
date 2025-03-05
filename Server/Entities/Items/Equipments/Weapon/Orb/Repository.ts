@@ -11,7 +11,7 @@ const orb_metallic = new Orb_Metallic({
     name: 'Metal Orb',
     description: 'A dense metallic orb used for channeling magical energy.',
     image: 'orb_metallic.jpg',
-    cost: new ItemCost(20, 0), // 2 Gold
+    cost: new ItemCost(20, 0, 0.2), // 2 Gold
     weight: 1500, // 1.5 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -37,7 +37,7 @@ const orb_crystal = new Orb_Crystal({
     name: 'Crystal Orb',
     description: 'A pristine crystal orb for precise spellcasting.',
     image: 'orb_crystal.jpg',
-    cost: new ItemCost(30, 0), // 3 Gold
+    cost: new ItemCost(30, 0, 0.2), // 3 Gold
     weight: 1000, // 1 kg
     tier: Tier.uncommon,
     jewelSlots: 2,

@@ -7,7 +7,7 @@ const simple_band = new Ring({
     name: 'Simple Band',
     description: 'A plain band of iron or a similar cheap material.',
     image: 'simple_band.png',
-    cost: { baseCost: 50, bonusCost: 0 }, // 50 copper
+    cost: { baseCost: 50, bonusCost: 0, possibleDeviation: 0.2 }, // 50 copper
     weight: 10, // grams
     tier: Tier.common,
     material: 'Iron',
@@ -18,7 +18,7 @@ const gold_ring = new Ring({
     name: 'Gold Ring',
     description: 'A shiny gold ring, symbolic of wealth and status.',
     image: 'gold_ring.png',
-    cost: { baseCost: 10000, bonusCost: 0 }, // 10,000 copper = 1 gold
+    cost: { baseCost: 10000, bonusCost: 0, possibleDeviation: 0.2 }, // 10,000 copper = 1 gold
     weight: 20, // grams
     tier: Tier.rare,
     material: 'Gold',
@@ -29,7 +29,7 @@ const silver_ring = new Ring({
     name: 'Silver Ring',
     description: 'A sleek silver ring, elegant and understated.',
     image: 'silver_ring.png',
-    cost: { baseCost: 1000, bonusCost: 0 }, // 1,000 copper = 10 silver
+    cost: { baseCost: 1000, bonusCost: 0, possibleDeviation: 0.2 }, // 1,000 copper = 10 silver
     weight: 15, // grams
     tier: Tier.uncommon,
     material: 'Silver',
@@ -40,7 +40,7 @@ const signet_ring = new Ring({
     name: 'Signet Ring',
     description: 'A ring bearing an engraved symbol, used for seals or as a family crest.',
     image: 'signet_ring.png',
-    cost: { baseCost: 15000, bonusCost: 0 }, // 15,000 copper = 1.5 gold
+    cost: { baseCost: 15000, bonusCost: 0, possibleDeviation: 0.2 }, // 15,000 copper = 1.5 gold
     weight: 25, // grams
     tier: Tier.rare,
     material: 'Gold or Silver',

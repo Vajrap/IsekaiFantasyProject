@@ -11,7 +11,7 @@ const sword_short = new Sword_Short({
     name: 'Short Sword',
     description: 'A short sword.',
     image: 'sword_short.jpg',
-    cost: new ItemCost(5, 0), // 5 Silver
+    cost: new ItemCost(5, 0, 0.2), // 5 Silver
     weight: 1000, // 1 kg
     tier: Tier.common,
     jewelSlots: 0,
@@ -37,7 +37,7 @@ const sword_long = new Sword_Long({
     name: 'Long Sword',
     description: 'A longer blade for greater reach.',
     image: 'sword_long.jpg',
-    cost: new ItemCost(10, 0), // 1 Gold
+    cost: new ItemCost(10, 0, 0.2), // 1 Gold
     weight: 1500, // 1.5 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -63,7 +63,7 @@ const sword_great = new Sword_Great({
     name: 'Great Sword',
     description: 'A massive two-handed sword for devastating blows.',
     image: 'sword_great.jpg',
-    cost: new ItemCost(20, 0), // 2 Gold
+    cost: new ItemCost(20, 0, 0.2), // 2 Gold
     weight: 3000, // 3 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -90,7 +90,7 @@ const sword_rapier = new Sword_Rapier({
     name: 'Rapier',
     description: 'A thin, precise blade for quick thrusts.',
     image: 'sword_rapier.jpg',
-    cost: new ItemCost(15, 0), // 1 Gold, 5 Silver
+    cost: new ItemCost(15, 0, 0.2), // 1 Gold, 5 Silver
     weight: 1200, // 1.2 kg
     tier: Tier.common,
     jewelSlots: 1,

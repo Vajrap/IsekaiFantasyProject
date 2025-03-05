@@ -11,7 +11,7 @@ const blade_katana = new Blade_Katana({
     name: 'Katana',
     description: 'A finely crafted curved blade.',
     image: 'blade_katana.jpg',
-    cost: new ItemCost(30, 0), // 3 Gold
+    cost: new ItemCost(30, 0, 0.2), // 3 Gold
     weight: 2000, // 2 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -38,7 +38,7 @@ const blade_scimitar = new Blade_Scimitar({
     name: 'Scimitar',
     description: 'A curved blade for slicing.',
     image: 'blade_scimitar.jpg',
-    cost: new ItemCost(25, 0), // 2 Gold, 5 Silver
+    cost: new ItemCost(25, 0, 0.2), // 2 Gold, 5 Silver
     weight: 1500, // 1.5 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -64,7 +64,7 @@ const blade_cutlass = new Blade_Cutlass({
     name: 'Cutlass',
     description: 'A short, slightly curved blade.',
     image: 'blade_cutlass.jpg',
-    cost: new ItemCost(20, 0), // 2 Gold
+    cost: new ItemCost(20, 0, 0.2), // 2 Gold
     weight: 1400, // 1.4 kg
     tier: Tier.common,
     jewelSlots: 0,
@@ -90,7 +90,7 @@ const blade_falchion = new Blade_Falchion({
     name: 'Falchion',
     description: 'A heavy, broad, and curved blade.',
     image: 'blade_falchion.jpg',
-    cost: new ItemCost(35, 0), // 3 Gold, 5 Silver
+    cost: new ItemCost(35, 0, 0.2), // 3 Gold, 5 Silver
     weight: 3500, // 3.5 kg
     tier: Tier.common,
     jewelSlots: 1,

@@ -18,6 +18,8 @@ import { webSocketEvents, wss } from "../API/WebSocket/WebSocketServer";
 import { WebSocketMessageType, WebSocketPartyData } from "../../Common/RequestResponse/webSocket";
 import { SkillRepository, skillRepository } from "../Entities/Skills/SkillRepository";
 import { screamer } from "../Utility/Screamer/Screamer";
+import { TravelManager } from "../Entities/Location/TravelManager";
+import { DayOfWeek, TimeOfDay } from "../../Common/DTOsEnumsInterfaces/TimeOfDay";
 
 export class Game {
     characterManager: CharacterManager = new CharacterManager();
@@ -28,6 +30,7 @@ export class Game {
     db = db;
     webSocketServer: WebSocketServer = wss;
     skillRepository: SkillRepository = skillRepository;
+    travelManager: TravelManager = new TravelManager();
     screamer = screamer;
 
     constructor() {
@@ -162,7 +165,7 @@ export class Game {
         try {
             this.incrementGameTime();
             this.handleGameMilestones();
-            this.processEvents();
+            this.processEvents(this.gameTime.getCurrentGameDayOfWeek(), this.gameTime.getCurrentGamePhase());
             this.webSocketServer.clients.forEach(client => {
                 // TODO: Implement this
                 //broadcast game state to all clients
@@ -234,15 +237,15 @@ export class Game {
         ) console.log("Start of the new year");
     }
 
-    private processEvents() {
+    private async processEvents(day: DayOfWeek, phase: TimeOfDay) {
         // TODO: Add specific game events (e.g., travel updates, random encounters)
         // TODO: Random Events according to party's location.
         // TODO: Update Traveling Parties.
 
-        
-        // Might be things like 
-        // await this.partyManager.randomEncounter();
-        // await this.partyManager.updateTravelingParties();
+        await this.travelManager.allTravel(day, phase);
+        for (const party of this.partyManager.parties) {
+
+        }
     
         // Then, broadCastGameStatus, this one would send the game state to all the websocket clients.
 

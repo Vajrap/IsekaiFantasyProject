@@ -11,7 +11,7 @@ const spear_dory = new Spear_Dory({
     name: 'Dory',
     description: 'A traditional spear used by infantry soldiers.',
     image: 'spear_dory.jpg',
-    cost: new ItemCost(0, 5), // 5 Silver
+    cost: new ItemCost(5, 0, 0.2), // 5 Silver
     weight: 2000, // 2 kg
     tier: Tier.common,
     jewelSlots: 0,
@@ -37,7 +37,7 @@ const spear_javelin = new Spear_Javelin({
     name: 'Javelin',
     description: 'A lightweight spear designed for throwing.',
     image: 'spear_javelin.jpg',
-    cost: new ItemCost(0, 3), // 3 Silver
+    cost: new ItemCost(3, 0, 0.2), // 3 Silver
     weight: 1500, // 1.5 kg
     tier: Tier.common,
     jewelSlots: 0,
@@ -63,7 +63,7 @@ const spear_halberd = new Spear_Halberd({
     name: 'Halberd',
     description: 'A long polearm with an axe blade for versatile combat.',
     image: 'spear_halberd.jpg',
-    cost: new ItemCost(1, 0), // 1 Gold
+    cost: new ItemCost(10, 0, 0.2), // 1 Gold
     weight: 3500, // 3.5 kg
     tier: Tier.common,
     jewelSlots: 1,

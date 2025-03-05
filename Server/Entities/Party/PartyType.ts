@@ -12,6 +12,7 @@ export enum PartyType {
 	scholar = "scholar",
 	hermit = "hermit",
 	peasant = "peasant",
+	artisan = "artisan",
 	knight = "knight",
 	soldier = "soldier",
 	// Ocean Tide Kingdom
@@ -25,7 +26,7 @@ export enum PartyType {
 	jadintharKnight = "jadintharKnight",
 }
 
-export enum Hostility {
+export enum PartyRelation {
 	friendly = "friendly",
 	neutral = "neutral",
 	hostile = "hostile",
@@ -38,9 +39,9 @@ const hostilePairs: [PartyType, PartyType][] = [
 	[PartyType.rogue, PartyType.merchant]
 ];
 
-export function getHostility(partyA: PartyType, partyB: PartyType): Hostility {
+export function getPartiesRelation(partyA: PartyType, partyB: PartyType): PartyRelation {
 	if (partyA === partyB) {
-		return Hostility.friendly;
+		return PartyRelation.friendly;
 	};
 
 	if (
@@ -48,12 +49,12 @@ export function getHostility(partyA: PartyType, partyB: PartyType): Hostility {
 		partyA === PartyType.raider || partyB === PartyType.raider ||
 		partyA === PartyType.criminal || partyB === PartyType.criminal
 	) {
-		return Hostility.hostile;
+		return PartyRelation.hostile;
 	}
 
 	if (hostilePairs.some(([a, b]) => (a === partyA && b === partyB) || (a === partyB && b === partyA))) {		
-		return Hostility.hostile;
+		return PartyRelation.hostile;
 	}
 
-	return Hostility.neutral;
+	return PartyRelation.neutral;
 }

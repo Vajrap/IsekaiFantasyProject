@@ -7,7 +7,7 @@ const leather_necklace = new Necklace({
     name: 'Leather Necklace',
     description: 'A simple necklace made of leather cord.',
     image: 'leather_necklace.png',
-    cost: { baseCost: 30, bonusCost: 0 }, // 30 copper
+    cost: { baseCost: 30, bonusCost: 0, possibleDeviation: 0.2 }, // 30 copper
     weight: 50, // grams
     tier: Tier.common,
     material: 'Leather',
@@ -18,7 +18,7 @@ const gold_chain = new Necklace({
     name: 'Gold Chain',
     description: 'A luxurious gold chain, a mark of affluence.',
     image: 'gold_chain.png',
-    cost: { baseCost: 20000, bonusCost: 0 }, // 20,000 copper = 2 gold
+    cost: { baseCost: 20000, bonusCost: 0, possibleDeviation: 0.2 }, // 20,000 copper = 2 gold
     weight: 50, // grams
     tier: Tier.rare,
     material: 'Gold',
@@ -29,7 +29,7 @@ const silver_chain = new Necklace({
     name: 'Silver Chain',
     description: 'A beautiful silver chain with a subtle shine.',
     image: 'silver_chain.png',
-    cost: { baseCost: 5000, bonusCost: 0 }, // 5,000 copper = 50 silver
+    cost: { baseCost: 5000, bonusCost: 0, possibleDeviation: 0.2 }, // 5,000 copper = 50 silver
     weight: 45, // grams
     tier: Tier.uncommon,
     material: 'Silver',

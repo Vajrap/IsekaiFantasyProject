@@ -14,11 +14,13 @@ import {
 	gameEvent_proficiencyTrain,
 	gameEvent_skillTrain,
 } from "../../Game/GameEvent/GameEvent";
-import { LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { LocationActionEnum, LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { getEnemyFromRepository } from "../Character/Enemy/EnemyRepository";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { Enemy } from "../Character/Enemy/Enemy";
 import { AttributeEnum } from "../Character/Subclasses/CharacterDataEnum";
+import { DayOfWeek, TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
+import { checkIfCombatInitiated } from "../../Game/Battle/Calculators/checkIfCombatInitiated";
 
 //Party.travelManager = new TravelManager();
 //When Player start a travel, it's actually the party that start the travel
@@ -27,19 +29,21 @@ import { AttributeEnum } from "../Character/Subclasses/CharacterDataEnum";
 export interface travelingParty {
 	party: Party;
 	currentLocation: GameLocation;
-	currentLocationIndexZeroBase: number;
+	currentLocationIndex: number;
 	distanceCovered: number;
 	path: GameLocation[];
 	isTraveling: boolean;
 	currentTravelMethod: TravelMethodEnum;
 
-	nextLocation(): GameLocation | null;
+	getNextLocation(): GameLocation;
+	arrivedNextLocation(): void;
+	checkIfArrivingNextLocation(): boolean;
 }
 
 export class travelingPartyImpl implements travelingParty {
 	party: Party;
 	currentLocation: GameLocation;
-	currentLocationIndexZeroBase: number;
+	currentLocationIndex: number;
 	distanceCovered: number;
 	path: GameLocation[];
 	isTraveling: boolean;
@@ -52,20 +56,41 @@ export class travelingPartyImpl implements travelingParty {
 	) {
 		this.party = party;
 		this.currentLocation = path[0];
-		this.currentLocationIndexZeroBase = 0;
+		this.currentLocationIndex = 0;
 		this.distanceCovered = 0;
 		this.path = path;
 		this.isTraveling = false;
 		this.currentTravelMethod = currentTravelMethod;
 	}
 
-	nextLocation(): GameLocation | null {
-		// Ensure there is a next location within bounds.
-		if (this.currentLocationIndexZeroBase < this.path.length - 1) {
-			return this.path[this.currentLocationIndexZeroBase + 1];
+	getCurrentLocation(): GameLocation {
+		return this.currentLocation;
+	}
+
+	getNextLocation(): GameLocation {
+		return this.currentLocationIndex < this.path.length - 1 
+			? this.path[this.currentLocationIndex + 1] 
+			: this.currentLocation;
+	}
+
+	arrivedNextLocation(): void {
+		if (this.currentLocationIndex < this.path.length - 1) {
+			this.currentLocationIndex++;
+			this.currentLocation = this.path[this.currentLocationIndex];
+			this.distanceCovered = 0;
+
+			let location = this.currentLocation;
+			location.partyMoveIn(this.party);
 		}
-		// Return null if at the last location or path is invalid.
-		return null;
+	}
+
+	checkIfArrivingNextLocation(): boolean {
+		if (this.currentLocationIndex >= this.path.length - 1) {
+			return false;
+		}
+		const nextLocation = this.path[this.currentLocationIndex + 1];
+
+		return this.distanceCovered >= this.currentLocation.calculateDistanceTo(nextLocation);
 	}
 }
 
@@ -149,82 +174,115 @@ export class TravelManager {
 		}
 	}
 
-	async allTravel() {
-		for (const partyID in this.travelingParties) {
-			await this.travel(partyID);
+	async allTravel(day: DayOfWeek, phase: TimeOfDay) {
+		let travelingParties = Object.values(this.travelingParties).filter(party =>
+            party?.party?.actionSequence?.[day]?.[phase] === LocationActionEnum.Travel
+        );
+
+		if (travelingParties.length === 0) return;
+
+		travelingParties.sort ((a, b) => {
+			let aSpeed = a.party.getPartyAverageAgility();
+			let bSpeed = b.party.getPartyAverageAgility();
+			return bSpeed - aSpeed;
+		})
+
+		for (const travelingParty of travelingParties) {
+				await this.travel(travelingParty);
+				this.checkPartyArrived(travelingParty);
 		}
-		this.checkArrival();
 	}
 
-	async travel(partyID: string) {
-		const travelingParty = this.travelingParties[partyID];
-		if (travelingParty === undefined || travelingParty === null) {
-			throw new Error(`Party with id ${partyID} not found in travel`);
+	updateDistace(party: travelingParty) {
+		let region: Region;
+		if (party.distanceCovered < 100) {
+			region = getRegionFromName(party.currentLocation.mainRegion);
+		} else {
+			region = getRegionFromName(party.currentLocation.region);
 		}
 
-		if (travelingParty.path.length === 0) return;
-		if (travelingParty.currentLocationIndexZeroBase === travelingParty.path.length - 1) return;
+		const { travelSpeed, averageLuckModifier } = getTravelSpeedAndAverageLuckModifier(party);
 
-		const nextLocation = travelingParty.nextLocation();
-		if (nextLocation === null) return;
+		let deviation = Dice.roll(DiceEnum.OneD10).sum - 5;
 
-		travelingParty.isTraveling = true;
+		party.distanceCovered += Math.max(0, travelSpeed + deviation);
+	}
 
-		const { travelSpeed, averageLuckModifier } = getTravelSpeedAndAverageLuckModifier(travelingParty);
+	async travel(party: travelingParty) {
+		this.updateDistace(party);
+		// Unlikely to happen, but just in case, if happens, these are errors.
+		if (!party.checkIfArrivingNextLocation()) {
+			// Not arrived at next location, so might trigger random events
+		} else {
+			// Arrived at next location, might trigger encounter events
+			party.arrivedNextLocation();
+			const location = party.currentLocation;
+			let encounterEventHappened = location.checkAndTriggerEncounterEvent(party.party)
+			
+		}
+		// if (travelingParty.path.length === 0 || travelingParty.currentLocationIndex === travelingParty.path.length - 1) return;
+		
+		// travelingParty.isTraveling = true;
 
-		const randomEventChance = Dice.rollTwenty();
+		// const { travelSpeed, averageLuckModifier } = getTravelSpeedAndAverageLuckModifier(travelingParty);
+
+		// const randomEventChance = Dice.rollTwenty();
 	
-		let isRandomEventSuccess = true;
+		// let isRandomEventSuccess = true;
 
-		let regionToUse: Region;
-		if (travelingParty.distanceCovered < 100) {
-			regionToUse = getRegionFromName(travelingParty.currentLocation.mainRegion);
-		} else {
-			regionToUse = getRegionFromName(travelingParty.currentLocation.region);
-		}
+		// let regionToUse: Region;
+		// if (travelingParty.distanceCovered < 100) {
+		// 	regionToUse = getRegionFromName(travelingParty.currentLocation.mainRegion);
+		// } else {
+		// 	regionToUse = getRegionFromName(travelingParty.currentLocation.region);
+		// }
 
-		if (randomEventChance <= 5) {
-			const eventEnum = regionToUse.getRandomEvent("travel", averageLuckModifier);
+		// // Check if the party encounters 'other party' first, if none, then check for random events.
+		// // If the party encounters 'other party' NPC or Player, the party type flag will be used to determine the event that will be happen between the two parties.
+		// let isEncounterEventSuccess = true;
 
-            // TODO: Implement the rest of the random events
-			switch (eventEnum) {
-				case LocationEventEnum.AttributeTrain:
-					isRandomEventSuccess = true
-				case LocationEventEnum.ArtisanTrain:
-					isRandomEventSuccess = true
-				case LocationEventEnum.ProficiencyTrain:
-					isRandomEventSuccess = true
-				case LocationEventEnum.SkillTrain:
-					isRandomEventSuccess = true
-				case LocationEventEnum.BattleEvent:
-					isRandomEventSuccess = await this._executeBattleEvent(travelingParty, averageLuckModifier);
-				case LocationEventEnum.TravelEvent:
+		// if (randomEventChance <= 5) {
+		// 	const eventEnum = regionToUse.getRandomEvent("travel", averageLuckModifier);
 
-				// TODO: possible other casese
-				// case LocationEventEnum.QuestGiverEvent: event = gameE
-				// case LocationEventEnum.QuestUpdateEvent:
-				// case LocationEventEnum.ItemPickupEvent:
+        //     // TODO: Implement the rest of the random events
+		// 	switch (eventEnum) {
+		// 		case LocationEventEnum.AttributeTrain:
+		// 			isRandomEventSuccess = true
+		// 		case LocationEventEnum.ArtisanTrain:
+		// 			isRandomEventSuccess = true
+		// 		case LocationEventEnum.ProficiencyTrain:
+		// 			isRandomEventSuccess = true
+		// 		case LocationEventEnum.SkillTrain:
+		// 			isRandomEventSuccess = true
+		// 		case LocationEventEnum.BattleEvent:
+		// 			isRandomEventSuccess = await this._executeBattleEvent(travelingParty, averageLuckModifier);
+		// 		case LocationEventEnum.TravelEvent:
 
-				default:
-					break;
-			}
-        }
+		// 		// TODO: possible other casese
+		// 		// case LocationEventEnum.QuestGiverEvent: event = gameE
+		// 		// case LocationEventEnum.QuestUpdateEvent:
+		// 		// case LocationEventEnum.ItemPickupEvent:
 
-		if (isRandomEventSuccess) {
-			let deviation = Dice.roll(DiceEnum.OneD10).sum - 5;
-			travelingParty.distanceCovered += Math.max(0, travelSpeed + deviation);
-		} else {
-			console.log("Travel event failed");
-		}
+		// 		default:
+		// 			break;
+		// 	}
+        // }
 
-		// Mood and energy decrease
-		for (const character of travelingParty.party.characters) {
-			let pace = travelingParty.party.behavior.travelPace;
-			if (character !== "none") {
-				character.moodDown((Dice.roll(DiceEnum.OneD4).sum + (pace === 'fast' ? 8 : pace === 'normal' ? 5 : 2)))
-				character.energyDown((Dice.roll(DiceEnum.OneD6).sum + (pace === 'fast' ? 20 : pace === 'normal' ? 15 : 10)))
-			}
-		}
+		// if (isRandomEventSuccess) {
+		// 	let deviation = Dice.roll(DiceEnum.OneD10).sum - 5;
+		// 	travelingParty.distanceCovered += Math.max(0, travelSpeed + deviation);
+		// } else {
+		// 	console.log("Travel event failed");
+		// }
+
+		// // Mood and energy decrease
+		// for (const character of travelingParty.party.characters) {
+		// 	let pace = travelingParty.party.behavior.travelPace;
+		// 	if (character !== "none") {
+		// 		character.moodDown((Dice.roll(DiceEnum.OneD4).sum + (pace === 'fast' ? 8 : pace === 'normal' ? 5 : 2)))
+		// 		character.energyDown((Dice.roll(DiceEnum.OneD6).sum + (pace === 'fast' ? 20 : pace === 'normal' ? 15 : 10)))
+		// 	}
+		// }
 	}
 
 	getSpeedModifierFromRegion(
@@ -236,37 +294,23 @@ export class TravelManager {
 		return speedModifier;
 	}
 
-	checkArrival() {
-		for (const partyID in this.travelingParties) {
-			this.checkPartyArrived(partyID);
-		}
-	}
-
-	checkPartyArrived(partyID: string) {
-		const travelingParty = this.travelingParties[partyID];
-
-		const nextLocation = travelingParty.nextLocation();
-
-		if (travelingParty === null || travelingParty === undefined) {
-			throw new Error(
-				`traveling party ID and Entity mismatched for partyID ${partyID}`
-			);
-		}
+	checkPartyArrived(travelingParty: travelingParty) {
+		const nextLocation = travelingParty.getNextLocation();
 
 		if (travelingParty.isTraveling === false) {
 			return;
 		}
 
 		if (nextLocation === null) {
-			// Is this Error?
-			throw new Error(`Next location is null for partyID ${partyID}`);
+			// Shouldn't be happen?
+			throw new Error(`Next location is null, partyID: ${travelingParty.party.partyID}`);
 		}
 
 		if (
 			travelingParty.distanceCovered >=
 			travelingParty.currentLocation.calculateDistanceTo(nextLocation)
 		) {
-			travelingParty.currentLocationIndexZeroBase++;
+			travelingParty.currentLocationIndex++;
 			travelingParty.currentLocation = nextLocation;
 			travelingParty.distanceCovered = 0;
 
@@ -297,7 +341,7 @@ export class TravelManager {
 
 	getTravelProgress(partyID: string): number {
 		return (
-			this.travelingParties[partyID].currentLocationIndexZeroBase /
+			this.travelingParties[partyID].currentLocationIndex /
 			(this.travelingParties[partyID].path.length - 1)
 		);
 	}
@@ -307,7 +351,7 @@ export class TravelManager {
 		let travelingParty = this.travelingParties[partyID];
 
 		for (
-			let i = travelingParty.currentLocationIndexZeroBase;
+			let i = travelingParty.currentLocationIndex;
 			i < travelingParty.path.length - 1;
 			i++
 		) {
@@ -367,77 +411,7 @@ export class TravelManager {
 	}
 }
 
-function checkIfCombatInitiated(party: Party, enemyParty: Party, enemyCombatPolicy: string): boolean {
-	let policy_A = party.behavior.combatPolicy
-	let policy_B = enemyCombatPolicy
 
-	if (policy_A === "strategic") {
-		policy_A = evaluateAndDecide(party, enemyParty);
-	}
-	if (policy_B === "strategic") {
-		policy_B = evaluateAndDecide(enemyParty, party);
-	}
-
-	if (policy_A === "evasive" && policy_B === "evasive") {
-		return false;
-	}
-
-	if (policy_A === "engage" && policy_B === "engage") {
-		return true;
-	}
-
-	if (policy_A === "engage" && policy_B === "evasive") {
-		return resolveChase(party, enemyParty)
-	}
-
-	if (policy_A === "evasive" && policy_B === "engage") {
-		return resolveChase(enemyParty, party)
-	}
-
-	return false;
-}
-
-function resolveChase(chasingParty: Party, fleeingParty: Party): boolean {
-	let chaseInitiative = Dice.roll(DiceEnum.OneD6).sum;
-	let fleeInitiative = Dice.roll(DiceEnum.OneD6).sum;
-
-	for (const character of chasingParty.characters) {
-		if (character !== "none") {
-			chaseInitiative += StatMod.value(character.status.agility());
-		}
-	}
-	for (const character of fleeingParty.characters) {
-		if (character !== "none") {
-			fleeInitiative += StatMod.value(character.status.agility());
-		}
-	}
-
-	return chaseInitiative > fleeInitiative;
-}
-
-function evaluateAndDecide(party: Party, enemyParty: Party): "engage" | "evasive" {
-	let leader = party.getPartyMemberWithHighestAttr(AttributeEnum.INTELLIGENCE);
-	const intModifier = StatMod.value(leader.status.intelligence());
-	const intelligenceDeviation = 5 - Math.min(intModifier, 5);
-	let operation = Dice.rollTwenty() >= 10 ? "plus" : "minus";
-
-	let PS = assetPartyStrength(party);
-	let EPS = assetPartyStrength(enemyParty) + (operation === "plus" ? intelligenceDeviation : -intelligenceDeviation);
-
-	return EPS > PS ? "evasive" : "engage";
-}
-
-function assetPartyStrength(party: Party): number {
-	let totalLevel = 0;
-	let totalMember = 0;
-	for (const character of party.characters) {
-		if (character !== "none") {
-			totalLevel += character.level;
-			totalMember++;
-		}
-	}
-	return totalMember > 0 ? totalLevel / totalMember : 1;
-}
 
 function getTravelSpeedAndAverageLuckModifier(party: travelingParty): {
 	travelSpeed: number;

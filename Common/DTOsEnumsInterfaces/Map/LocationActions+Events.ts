@@ -33,7 +33,8 @@ export enum LocationActionEnum {
     CultOfNizarithMagicLearning = 'Cult of Nizarith Magic Learning',
     AdventureGuild = 'Adventure Guild',
     BountyBoard = 'Bounty Board',
-    Arena = 'Arena'
+    Arena = 'Arena',
+    Travel = 'Travel',
 }
 
 export enum LocationEventEnum {

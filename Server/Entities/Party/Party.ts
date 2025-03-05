@@ -5,6 +5,7 @@ import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNa
 import { PartyType } from "./PartyType";
 import { AttributeEnum } from "../Character/Subclasses/CharacterDataEnum";
 import { CharacterStatus } from "../Character/Subclasses/CharacterStatus";
+import { DayOfWeek, TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
 
 export class PartyBehavior {
 	partyType: PartyType;
@@ -96,13 +97,13 @@ export class PartyBehavior {
 			strategy: "sellSome" | "sellNone" | "sellAtMarkUp";
 			markupPercentage: number;
 			rarityThreshold: number;
-			itemList: { itemName: string, stockThreshold: number }[];
+			itemList: Record<string, number>;
 		};
 		buying: {
 			strategy: "buySome" | "buyNone" | "buyAtDiscount";
 			discountPercentage: number;
 			rarityThreshold: number;
-			itemList: { itemName: string, stockThreshold: number }[];
+			itemList: Record<string, number>;
 			autoBuyEssentials: boolean;
 		};
 	};
@@ -116,6 +117,7 @@ export class PartyBehavior {
 	// Event Response flags affect how the party reacts to events.
     eventResponse: "friendly" | "neutral" | "hostile";
 
+
     constructor(init?: Partial<PartyBehavior>) {
 		this.partyType = init?.partyType ?? PartyType.peasant;
         this.combatPolicy = init?.combatPolicy ?? "strategic";
@@ -125,13 +127,13 @@ export class PartyBehavior {
 				strategy: "sellNone",
 				markupPercentage: 0,
 				rarityThreshold: 0,
-				itemList: [],
+				itemList: {},
 			},
 			buying: {
 				strategy: "buyNone",
 				discountPercentage: 0,
 				rarityThreshold: 0,
-				itemList: [],
+				itemList: {},
 				autoBuyEssentials: false,
 			},
 		};
@@ -140,8 +142,6 @@ export class PartyBehavior {
         this.eventResponse = init?.eventResponse ?? "neutral";
     }
 }
-
-
 
 export class Party {
 	partyID: string;
@@ -153,28 +153,50 @@ export class Party {
 		"none",
 		"none",
 	];
-	// actionSequence = 7 days object, each day with 4 slots
-	actionSequence: {
-		day1: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
-		day2: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
-		day3: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
-		day4: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
-		day5: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
-		day6: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
-		day7: { slot_1: LocationActionEnum, slot_2: LocationActionEnum, slot_3: LocationActionEnum, slot_4: LocationActionEnum },
-	} = {
-		day1: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
-		day2: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
-		day3: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
-		day4: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
-		day5: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
-		day6: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
-		day7: { slot_1: LocationActionEnum.Rest, slot_2: LocationActionEnum.Rest, slot_3: LocationActionEnum.Rest, slot_4: LocationActionEnum.Rest },
+	actionSequence: Record<DayOfWeek, Record<TimeOfDay, LocationActionEnum>> = {
+		[DayOfWeek.laoh]: {
+			[TimeOfDay.morning]: LocationActionEnum.Rest,
+			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
+			[TimeOfDay.evening]: LocationActionEnum.Rest,
+			[TimeOfDay.night]: LocationActionEnum.Rest,
+		},
+		[DayOfWeek.rowana]: {
+			[TimeOfDay.morning]: LocationActionEnum.Rest,
+			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
+			[TimeOfDay.evening]: LocationActionEnum.Rest,
+			[TimeOfDay.night]: LocationActionEnum.Rest,
+		},
+		[DayOfWeek.aftree]: {
+			[TimeOfDay.morning]: LocationActionEnum.Rest,
+			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
+			[TimeOfDay.evening]: LocationActionEnum.Rest,
+			[TimeOfDay.night]: LocationActionEnum.Rest,
+		},
+		[DayOfWeek.udur]: {
+			[TimeOfDay.morning]: LocationActionEnum.Rest,
+			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
+			[TimeOfDay.evening]: LocationActionEnum.Rest,
+			[TimeOfDay.night]: LocationActionEnum.Rest,
+		},
+		[DayOfWeek.matris]: {
+			[TimeOfDay.morning]: LocationActionEnum.Rest,
+			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
+			[TimeOfDay.evening]: LocationActionEnum.Rest,
+			[TimeOfDay.night]: LocationActionEnum.Rest,
+		},
+		[DayOfWeek.seethar]: {
+			[TimeOfDay.morning]: LocationActionEnum.Rest,
+			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
+			[TimeOfDay.evening]: LocationActionEnum.Rest,
+			[TimeOfDay.night]: LocationActionEnum.Rest,
+		},
 	};
 	isTraveling: boolean = false;
 	location: LocationName = LocationName.None;
 	currentLocation: LocationName;
 	behavior: PartyBehavior;
+	inventory: Record<string, number> = {};
+	gold: number = 0;
 
 	constructor(
 		characters: Character[],
@@ -194,8 +216,23 @@ export class Party {
 		}
 		this.currentLocation = location ?? LocationName.None;
 		this.behavior = behavior ?? new PartyBehavior();
+		this.moveAllCharacterItemsToInventory(this.characters[0]);
 	}
 
+	moveAllCharacterItemsToInventory(character: Character) {
+		for (const item of character.itemsBag.items) {
+			if (this.inventory[item.item.id]) {
+				this.inventory[item.item.id] += 1;
+			} else {
+				this.inventory
+				this.inventory[item.item.id] = 1;
+		}
+		character.itemsBag.items = [];
+		this.gold += character.gold;
+		character.gold = 0;
+		}
+	}
+		
 	leader(): Character {
 		// leader is the character with the same id
 		return this.characters.find(
@@ -230,6 +267,7 @@ export class Party {
 					this.characters[currentIndex] = character;
 					character.position = currentIndex;
 					character.partyID = this.partyID;
+					this.moveAllCharacterItemsToInventory(character);
 					return;
 				}
 			}
@@ -239,6 +277,7 @@ export class Party {
 					this.characters[i] = character;
 					character.position = i;
 					character.partyID = this.partyID;
+					this.moveAllCharacterItemsToInventory(character);
 					break;
 				}
 			}
@@ -366,5 +405,11 @@ export class Party {
 
 	getAvailableCharacters(): Character[] {
 		return this.characters.filter(character => character !== "none");
+	}
+
+	getPartyAverageAgility(): number {
+		const characters = this.getAvailableCharacters();
+		const totalAgility = characters.reduce((total, character) => total + character.status.attributes.agility.base, 0);
+		return totalAgility / characters.length;
 	}
 }

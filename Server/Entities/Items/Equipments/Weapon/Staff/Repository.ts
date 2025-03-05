@@ -11,7 +11,7 @@ const staff_quarter = new Staff_Quarter({
     name: 'Quarterstaff',
     description: 'A simple wooden staff used for self-defense.',
     image: 'staff_quarter.jpg',
-    cost: new ItemCost(0, 5), // 5 Silver
+    cost: new ItemCost(5, 0, 0.2), // 5 Silver
     weight: 2000, // 2 kg
     tier: Tier.common,
     jewelSlots: 0,
@@ -37,7 +37,7 @@ const staff_long = new Staff_Long({
     name: 'Long Staff',
     description: 'A long staff for extended reach.',
     image: 'staff_long.jpg',
-    cost: new ItemCost(0, 8), // 8 Silver
+    cost: new ItemCost(8, 0, 0.2), // 8 Silver
     weight: 2500, // 2.5 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -63,7 +63,7 @@ const staff_magic = new Staff_Magic({
     name: 'Magic Staff',
     description: 'A staff imbued with magical energy.',
     image: 'staff_magic.jpg',
-    cost: new ItemCost(1, 5), // 1 Gold, 5 Silver
+    cost: new ItemCost(5, 0, 0.2), // 1 Gold, 5 Silver
     weight: 3000, // 3 kg
     tier: Tier.common,
     jewelSlots: 1,

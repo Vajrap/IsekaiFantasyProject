@@ -12,7 +12,7 @@ const dagger_stiletto = new Dagger_Stiletto({
     name: 'Stiletto',
     description: 'A slim, sharp dagger designed for piercing.',
     image: 'dagger_stiletto.jpg',
-    cost: new ItemCost(2, 0), // 2 Silver
+    cost: new ItemCost(2, 0, 0.2), // 2 Silver
     weight: 300, // 300 grams
     tier: Tier.common,
     jewelSlots: 0,
@@ -38,7 +38,7 @@ const dagger_knife = new Dagger_Knife({
     name: 'Knife',
     description: 'A versatile dagger suitable for slashing and cutting.',
     image: 'dagger_knife.jpg',
-    cost: new ItemCost(4, 0), // 4 Silver
+    cost: new ItemCost(4, 0, 0.2), // 4 Silver
     weight: 500, // 500 grams
     tier: Tier.common,
     jewelSlots: 0,

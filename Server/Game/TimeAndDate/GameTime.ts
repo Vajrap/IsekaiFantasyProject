@@ -1,8 +1,8 @@
-import { TimeOfDay } from '../../../Common/DTOsEnumsInterfaces/TimeOfDay';
+import { DayOfWeek, TimeOfDay } from '../../../Common/DTOsEnumsInterfaces/TimeOfDay';
 import { GameTimeInterface } from '../../../Common/DTOsEnumsInterfaces/GameTimeInterface';
 export class GameTime {
-    inGameHoursPerDay: number = 4; // 4 phases in a game day: morning, afternoon, evening, night
-    inGameDaysPerMonth: number = 24; // 24 days in a game month
+    inGameHoursPerDay: number = 4; // 4 phases in a game day: morning, afternoon, evening, night => 15 min per phase, 1 hour per day
+    inGameDaysPerMonth: number = 24; // 24 days in a game month => if we set 24 days per month, 1 month will be 1 real day, so if we separate in to week, 4 weeks per month, we should have 6 days per week; 6 days would go hand in hand with 6 firstborn gods!
     inGameMonthsPerYear: number = 14; // 14 months in a game year
 
     dayPassed: number;
@@ -44,4 +44,9 @@ export class GameTime {
         const phases = [TimeOfDay.night, TimeOfDay.morning, TimeOfDay.afternoon, TimeOfDay.evening];
         return phases[this.gameDateHour - 1]; // Adjusting for 0-indexed array
     } 
+
+    getCurrentGameDayOfWeek(): DayOfWeek {
+        const days = [DayOfWeek.laoh, DayOfWeek.rowana, DayOfWeek.aftree, DayOfWeek.udur, DayOfWeek.matris, DayOfWeek.seethar];
+        return days[this.gameDateDay % 6]; // Adjusting for 0-indexed array
+    }
 }

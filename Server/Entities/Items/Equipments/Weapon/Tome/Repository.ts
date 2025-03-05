@@ -11,7 +11,7 @@ const tome_bible = new Tome_Bible({
     name: 'Holy Bible',
     description: 'A sacred tome containing religious scriptures.',
     image: 'tome_bible.jpg',
-    cost: new ItemCost(2, 0), // 2 Gold
+    cost: new ItemCost(20, 0, 0.2), // 2 Gold
     weight: 500, // 0.5 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -37,7 +37,7 @@ const tome_grimoire = new Tome_Grimoire({
     name: 'Grimoire',
     description: 'A dark tome filled with forbidden knowledge.',
     image: 'tome_grimoire.jpg',
-    cost: new ItemCost(3, 0), // 3 Gold
+    cost: new ItemCost(30, 0, 0.2), // 3 Gold
     weight: 700, // 0.7 kg
     tier: Tier.uncommon,
     jewelSlots: 2,
@@ -63,7 +63,7 @@ const tome_codex = new Tome_Codex({
     name: 'Ancient Codex',
     description: 'A scholarly tome containing ancient wisdom.',
     image: 'tome_codex.jpg',
-    cost: new ItemCost(4, 0), // 4 Gold
+    cost: new ItemCost(40, 0, 0.2), // 4 Gold
     weight: 900, // 0.9 kg
     tier: Tier.rare,
     jewelSlots: 2,

@@ -11,7 +11,7 @@ const mace_morningstar = new Mace_Morningstar({
     name: 'Morningstar',
     description: 'A spiked mace combining blunt and piercing damage.',
     image: 'mace_morningstar.jpg',
-    cost: new ItemCost(10, 0), // 1 Gold
+    cost: new ItemCost(10, 0, 0.2), // 1 Gold
     weight: 2000, // 2 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -37,7 +37,7 @@ const mace_hammer = new Mace_Hammer({
     name: 'Hammer',
     description: 'A heavy hammer for delivering powerful strikes.',
     image: 'mace_hammer.jpg',
-    cost: new ItemCost(15, 0), // 1 Gold, 5 Silver
+    cost: new ItemCost(15, 0, 0.2), // 1 Gold, 5 Silver
     weight: 2500, // 2.5 kg
     tier: Tier.common,
     jewelSlots: 1,
@@ -64,7 +64,7 @@ const mace_warhammer = new Mace_Warhammer({
     name: 'Warhammer',
     description: 'A massive two-handed hammer for crushing foes.',
     image: 'mace_warhammer.jpg',
-    cost: new ItemCost(20, 0), // 2 Gold
+    cost: new ItemCost(20, 0, 0.2), // 2 Gold
     weight: 3000, // 3 kg
     tier: Tier.common,
     jewelSlots: 1,

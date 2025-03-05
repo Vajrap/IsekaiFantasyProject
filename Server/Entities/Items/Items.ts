@@ -29,7 +29,7 @@ export class Item {
         this.image = image;
         this.weight = weight;
         this.tier = tier;
-        this.cost = new ItemCost(cost.baseCost, cost.bonusCost);
+        this.cost = new ItemCost(cost.baseCost, cost.bonusCost, cost.possibleDeviation);
     }
 }
 
