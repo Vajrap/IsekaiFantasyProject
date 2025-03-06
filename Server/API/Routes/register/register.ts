@@ -1,4 +1,4 @@
-import { UserID, UserDBRow } from '../../../Authenticate/UserID';
+import { UserID } from '../../../Authenticate/UserID';
 import { db } from '../../../Database';
 import { RegisterReponseStatus, RegisterResponse  } from '../../../../Common/RequestResponse/register';
 import bcrypt from "bcrypt";

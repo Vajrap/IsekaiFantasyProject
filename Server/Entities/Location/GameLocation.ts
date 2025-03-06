@@ -3,11 +3,10 @@ import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNa
 import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { RegionNameEnum } from "../../../Common/DTOsEnumsInterfaces/Map/RegionNameEnum";
 import { Party } from "../Party/Party";
-import { getPartiesRelation, PartyType } from "../Party/PartyType";
+import { PartyType } from "../Party/PartyType";
 import { gameEvent_battleEvent } from "../../Game/GameEvent/GameEvent";
 import { checkIfCombatInitiated } from "../../Game/Battle/Calculators/checkIfCombatInitiated";
-import { Item } from "../Items/Items";
-import { getItem, itemRepository } from "../Items/Repository";
+import { getItem } from "../Items/Repository";
 
 export class GameLocation {
     id: LocationName;

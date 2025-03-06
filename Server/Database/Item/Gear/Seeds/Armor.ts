@@ -1,6 +1,3 @@
-import { Tier } from "../../../../../Common/DTOsEnumsInterfaces/Tier";
-import { TraitEnum } from "../../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
-
 // Armor would have specific type of at least light, medium, heavy: Cloth is just for shirt, pants
 export enum GearSeedArmorEnum {
     // Common

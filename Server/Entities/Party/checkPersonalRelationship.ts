@@ -1,5 +1,6 @@
 import { RelationShipStatusEnum } from "../Character/RelationshipStatusEnum";
 import { Party } from "./Party";
+
 const statusModifier: { [key in RelationShipStatusEnum]: number } = {
     // Core Relations
     LOVER: 3,

@@ -1,7 +1,6 @@
 import { ItemType } from "Common/DTOsEnumsInterfaces/Item/Enums";
 import { ItemCost } from "Common/DTOsEnumsInterfaces/Item/ItemCost";
 import { LocationActionEnum } from "Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
-import { PlanningActionEnum } from "Common/DTOsEnumsInterfaces/PlanningActionEnum";
 import { SkillConsumeInterface, SkillProduceInterface } from "Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
 
 export interface GetPartyRequest {

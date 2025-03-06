@@ -1,7 +1,6 @@
 import { PassiveStatusBonus } from '../BonusEffect/PassiveStatusBonus';
 import { BuffsAndDebuffs } from '../../Entities/Character/Subclasses/BuffsAndDebuffs';
 import { TraitEnum } from '../../../Common/DTOsEnumsInterfaces/Character/TraitEnums';
-import { CharacterTraitInterface } from '../../../Common/RequestResponse/characterWS';
 
 export class Trait {
     id: TraitEnum;

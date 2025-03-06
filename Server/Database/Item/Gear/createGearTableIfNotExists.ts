@@ -1,10 +1,4 @@
 import { createTableIfNotExists } from "../../Seeding";
-// import { GearSeedArmor } from "./Seeds/Armor";
-// import { GearSeedCloth } from "./Seeds/Cloth";
-// import { GearSeedHeadwear } from "./Seeds/HeadWear";
-// import { GearSeedNecklace } from "./Seeds/Necklace";
-// import { GearSeedRings } from "./Seeds/Ring";
-// import { GearSeedWeapon } from "./Seeds/Weapon";
 
 // Database table creation logic
 export async function createGearTableIfNotExists() {

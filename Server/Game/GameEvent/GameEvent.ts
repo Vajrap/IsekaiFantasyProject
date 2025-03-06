@@ -6,8 +6,6 @@ import { Character } from "../../Entities/Character/Character";
 import { Party } from "../../Entities/Party/Party";
 import { GameLocation } from "../../Entities/Location/GameLocation";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
-import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
-import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 import { LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { screamer } from "../../Utility/Screamer/Screamer";
 

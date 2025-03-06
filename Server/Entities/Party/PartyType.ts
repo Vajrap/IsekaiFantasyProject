@@ -1,4 +1,3 @@
-
 export enum PartyType {
 	wanderer = "wanderer",
 	merchant = "merchant",

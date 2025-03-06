@@ -1,7 +1,3 @@
-// Database Entity
-
-import { v4 as uuidv4 } from 'uuid';
-
 export class DBUser {
     username: string;
     password: string;

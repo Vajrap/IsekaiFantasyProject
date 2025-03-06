@@ -1,7 +1,6 @@
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { BuffsAndDebuffsEnum } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { EffectReturnObject } from "../../Game/Battle/EffectResolverAndAppender/EffectSend + Receive Objects";
-import { DamageObject } from "../../Utility/DamageObject";
 import { SkillApplyEffect } from "../Skills/SubClasses/SkillActiveEffect";
 import { Character } from "./Character";
 

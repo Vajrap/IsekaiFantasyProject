@@ -1,4 +1,4 @@
-import { AttributeEnum } from "../../../../Entities/Character/Subclasses/CharacterDataEnum";
+// import { AttributeEnum } from "../../../../Entities/Character/Subclasses/CharacterDataEnum";
 // import { GearType, WeaponType } from "../../../../../Common/Enums/Item/EquipmentTypes";
 // import { Tier } from "../../../../Utility/Tier";
 // import { GearInstance } from "../../../../Entities/Items/GearInstance/GearInstance";

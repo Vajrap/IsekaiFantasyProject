@@ -1,5 +1,3 @@
-import { StatMod } from "../../Utility/StatMod";
-
 export const calculateBaseHP = (baseValue: number, characterLevel: number, constitution: number): number => {
     return calculateBaseStat(baseValue, characterLevel, constitution);
 };

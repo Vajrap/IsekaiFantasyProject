@@ -15,7 +15,6 @@ import { CharacterType } from "./Subclasses/CharacterType";
 import { Trait, TraitRepository } from "../Traits/Trait";
 import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { ArmorDefense } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/interfaces";
-// import { SkillRepository } from "../Skills/SkillRepository.ts.bak";
 import { CharacterArcaneAptitude } from "./Subclasses/CharacterArcaneAptitude";
 import {
 	SuccessResponse,
@@ -30,7 +29,6 @@ import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Charact
 import {
 	ArtisanMap,
 	AttributeMap,
-	BattlerMap,
 	CoreElementMap,
 	ProficiencyMap,
 } from "./Subclasses/CharacterDataEnum";
@@ -106,8 +104,6 @@ import {
 } from "../../../Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
 import { SkillResponseType } from "../../API/ResponseTypes/Skill";
 import { getAutoSkill } from "../../Game/Battle/Calculators/getAutoSkill";
-import { validateSkillEquipment } from "../../Game/Battle/Calculators/validateSkillEquipment";
-import { validateSkillConsumable } from "../../Game/Battle/Calculators/validateSkillConsumable";
 import { isSkillPlayable } from "../../Game/Battle/Calculators/isSkillPlayable";
 import { calculateAttackModifiers } from "../../Game/Battle/Calculators/calculateAttckModifiers";
 import { CharacterBattleContext } from "./CharacterBattleContext";

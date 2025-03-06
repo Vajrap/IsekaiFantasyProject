@@ -4,10 +4,6 @@ import {
 	EffectResolverSendObject,
 	EffectReturnObject,
 } from "./EffectSend + Receive Objects";
-import {
-	EffectAppenderMethods,
-	EffectResolverMethods,
-} from "./EffectAppenderAndResolverInterface";
 import { BuffsAndDebuffs } from "../../../Entities/Character/Subclasses/BuffsAndDebuffs";
 import { Dice } from "../../../Utility/Dice";
 import { StatMod } from "../../../Utility/StatMod";

@@ -1,6 +1,6 @@
 import { Party } from "../../Entities/Party/Party";
 import { BattleReport } from "./BattleReport";
-import { ActorSkillEffect, TargetSkillEffect, ActionDetailsInterface, CharacterDataInterface } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
+import { ActorSkillEffect, TargetSkillEffect, ActionDetailsInterface } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { skillRepository } from "../../Entities/Skills/SkillRepository";
 import { Skill } from "../../Entities/Skills/Skill";
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";

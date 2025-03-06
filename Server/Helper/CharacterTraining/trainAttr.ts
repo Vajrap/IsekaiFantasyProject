@@ -1,6 +1,5 @@
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes"
-import { BackgroundEnum, ClassEnum, RaceEnum } from "../../../Common/RequestResponse/characterCreation"
-import { Character, setCharacterStatus } from "../../Entities/Character/Character"
+import { Character } from "../../Entities/Character/Character"
 import { game } from "../../Game/Game"
 
 async function main() {

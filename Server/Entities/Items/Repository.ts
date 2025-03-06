@@ -1,4 +1,3 @@
-import { db } from "../../Database";
 import { equipmentRepository } from "./Equipments/Repository";
 import { Item } from "./Items";
 

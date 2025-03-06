@@ -7,18 +7,11 @@ import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNa
 import { Party } from "../Party/Party";
 import { GameLocation } from "./GameLocation";
 import { getLocationByName } from "./Locations";
-import {
-	gameEvent_artisanTrain,
-	gameEvent_attributeTrain,
-	gameEvent_battleEvent,
-	gameEvent_proficiencyTrain,
-	gameEvent_skillTrain,
-} from "../../Game/GameEvent/GameEvent";
-import { LocationActionEnum, LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { gameEvent_battleEvent } from "../../Game/GameEvent/GameEvent";
+import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { getEnemyFromRepository } from "../Character/Enemy/EnemyRepository";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { Enemy } from "../Character/Enemy/Enemy";
-import { AttributeEnum } from "../Character/Subclasses/CharacterDataEnum";
 import { DayOfWeek, TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
 import { checkIfCombatInitiated } from "../../Game/Battle/Calculators/checkIfCombatInitiated";
 
@@ -410,8 +403,6 @@ export class TravelManager {
 		 }) as boolean;
 	}
 }
-
-
 
 function getTravelSpeedAndAverageLuckModifier(party: travelingParty): {
 	travelSpeed: number;

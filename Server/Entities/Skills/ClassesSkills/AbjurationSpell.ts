@@ -2,7 +2,6 @@ import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes"
 import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { BuffsAndDebuffsEnum, TargetPartyType, TargetType } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
-import { Dice } from "../../../Utility/Dice";
 import { NonAutoSpellNonWeapon } from "../Skill";
 import { SkillActionObject, SkillActionSubType, SkillActionType, SkillActiveEffect } from "../SubClasses/SkillActiveEffect";
 import { ElementConsume, ElementProduce, SkillConsume, SkillProduce } from "../SubClasses/SkillConsume";
