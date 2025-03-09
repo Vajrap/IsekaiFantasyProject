@@ -4,9 +4,8 @@ import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/Loca
 import { RegionNameEnum } from "../../../Common/DTOsEnumsInterfaces/Map/RegionNameEnum";
 import { Party } from "../Party/Party";
 import { PartyType } from "../Party/PartyType";
-import { gameEvent_battleEvent } from "../../Game/GameEvent/GameEvent";
 import { checkIfCombatInitiated } from "../../Game/Battle/Calculators/checkIfCombatInitiated";
-import { getItem } from "../Items/Repository";
+import { executeTradeEvent } from "../Event/Trade/executeTradeEvent";
 
 export class GameLocation {
     id: LocationName;
@@ -82,17 +81,21 @@ export class GameLocation {
         return this.actions;
     }
 
+    // Should separate into many checking functions, travelManager would check them one by one and execute the first one that returns true;
+    // That meas, the event handler needed to be push out of this class
     async checkAndTriggerEncounterEvent(party: Party): Promise<boolean> {
         if (!this.parties.includes(party)) { throw new Error('Party not in location'); }
         for (const otherParty of this.parties) {
             if (otherParty !== party) {
                 if (checkIfCombatInitiated(party, otherParty, otherParty.behavior.combatPolicy)) {
-                    gameEvent_battleEvent.execute({ 
-                        party: party, 
-                        enemyParty: otherParty, 
-                        location: this.id 
-                    });
-                    return true;
+                    // console.log('Combat initiated');
+                    // This should just send out the result of checking, not the battle itself
+                    // gameEvent_battleEvent.execute({ 
+                    //     party: party, 
+                    //     enemyParty: otherParty, 
+                    //     location: this.id 
+                    // });
+                    // return true;
                 } 
 
                 if (this.handleNeutralEncounter(party, otherParty)) {
@@ -160,92 +163,5 @@ export class GameLocation {
     }
 }
 
-function executeTradeEvent(partyA: Party, partyB: Party) {
-    if (partyA.behavior.trade.buying.strategy === "buyNone" && partyB.behavior.trade.buying.strategy === "buyNone") {
-        return;
-    }
-    if (partyA.behavior.trade.selling.strategy === "sellNone" && partyB.behavior.trade.selling.strategy === "sellNone") {
-        return;
-    }
 
-    if ((partyA.behavior.trade.buying.strategy === "buySome" || partyA.behavior.trade.buying.strategy === "buyAtDiscount") &&
-        (partyB.behavior.trade.selling.strategy === "sellSome" || partyB.behavior.trade.selling.strategy === "sellAtMarkUp")) {
 
-        for (const itemKey in partyA.behavior.trade.buying.itemList) {
-            const wantToBuy = { itemID: itemKey, stockThreshold: partyA.behavior.trade.buying.itemList[itemKey] };
-            
-            if (!isInventoryBelowThreshold(partyA, wantToBuy.itemID, wantToBuy.stockThreshold)) {
-                continue; // Buyer already has enough of this item
-            }
-
-            const wantToSell = { itemID: itemKey, stockThreshold: partyB.behavior.trade.selling.itemList[itemKey] };
-            if (!isInventoryAboveThreshold(partyB, wantToSell.itemID, wantToSell.stockThreshold)) {
-                continue; // Seller does not have enough stock to sell
-            }
-
-            // Get item reference for pricing calculations
-            const item = getItem(wantToBuy.itemID); 
-            if (!item) continue; // Skip if the item does not exist
-
-            // Calculate true cost deviation
-            const baseCost = item.cost.cost;
-            const marketCost = item.cost.marketCost;
-            const costDeviation = (marketCost - baseCost) / baseCost; // Percentage deviation
-
-            // Apply buyer's discount preference
-            let acceptableBuyPrice = marketCost;
-            if (partyA.behavior.trade.buying.strategy === "buyAtDiscount") {
-                let maxDiscount = partyA.behavior.trade.buying.discountPercentage / 100;
-                acceptableBuyPrice = baseCost * (1 - maxDiscount);
-            }
-
-            // Apply seller's markup preference
-            let requiredSellPrice = marketCost;
-            if (partyB.behavior.trade.selling.strategy === "sellAtMarkUp") {
-                let minMarkup = partyB.behavior.trade.selling.markupPercentage / 100;
-                requiredSellPrice = baseCost * (1 + minMarkup);
-            }
-
-            // Check if the trade can occur within acceptable price ranges
-            if (acceptableBuyPrice < requiredSellPrice) {
-                continue; // No deal if buyer and seller don't agree on a price
-            }
-
-            // Determine quantity to trade
-            let buyable = wantToBuy.stockThreshold - (partyA.inventory[wantToBuy.itemID] || 0);
-            let sellable = (partyB.inventory[wantToSell.itemID] || 0) - wantToSell.stockThreshold;
-            let quantity = Math.min(buyable, sellable);
-
-            // Calculate final transaction price per item
-            let tradePricePerItem = (acceptableBuyPrice + requiredSellPrice) / 2; // Middle ground
-
-            let totalCost = tradePricePerItem * quantity;
-
-            // Ensure buyer has enough funds
-            if (partyA.gold < totalCost) {
-                continue; // Buyer cannot afford the transaction
-            }
-
-            // Execute trade
-            tradeItems(partyA, partyB, wantToBuy.itemID, quantity, totalCost);
-        }
-    }
-}
-
-function isInventoryAboveThreshold(party: Party, itemID: string, threshold: number): boolean {
-    return (party.inventory[itemID] || 0) > threshold;
-}
-
-function isInventoryBelowThreshold(party: Party, itemID: string, threshold: number): boolean {
-    return (party.inventory[itemID] || 0) < threshold;
-}
-
-function tradeItems(partyA: Party, partyB: Party, itemID: string, quantity: number, totalCost: number) {
-    // Deduct money from buyer
-    partyA.gold -= totalCost;
-    partyB.gold += totalCost;
-
-    // Adjust inventory
-    partyA.inventory[itemID] = (partyA.inventory[itemID] || 0) + quantity;
-    partyB.inventory[itemID] = Math.max(0, (partyB.inventory[itemID] || 0) - quantity);
-}

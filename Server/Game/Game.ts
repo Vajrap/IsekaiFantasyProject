@@ -20,13 +20,13 @@ import { SkillRepository, skillRepository } from "../Entities/Skills/SkillReposi
 import { screamer } from "../Utility/Screamer/Screamer";
 import { TravelManager } from "../Entities/Location/TravelManager";
 import { DayOfWeek, TimeOfDay } from "../../Common/DTOsEnumsInterfaces/TimeOfDay";
+import { GameTimeInterface } from "../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 
 export class Game {
     characterManager: CharacterManager = new CharacterManager();
     partyManager: PartyManager = new PartyManager();
     locationManager: LocationManager = new LocationManager();
     battles: BattleManager = new BattleManager();
-    gameTime: GameTime = new GameTime(0);
     db = db;
     webSocketServer: WebSocketServer = wss;
     skillRepository: SkillRepository = skillRepository;
@@ -165,7 +165,7 @@ export class Game {
         try {
             this.incrementGameTime();
             this.handleGameMilestones();
-            this.processEvents(this.gameTime.getCurrentGameDayOfWeek(), this.gameTime.getCurrentGamePhase());
+            this.processEvents(GameTime.getCurrentGameDayOfWeek(), GameTime.getCurrentGamePhase());
             this.webSocketServer.clients.forEach(client => {
                 // TODO: Implement this
                 //broadcast game state to all clients
@@ -189,27 +189,27 @@ export class Game {
     }
 
     private incrementGameTime() {
-        this.gameTime.gameDateHour += 1;
+        GameTime.gameDateHour += 1;
     
-        if (this.gameTime.gameDateHour > this.gameTime.inGameHoursPerDay) {
-            this.gameTime.dayPassed += 1;
-            this.gameTime.gameDateHour = 1;
-            this.gameTime.gameDateDay += 1;
+        if (GameTime.gameDateHour > GameTime.inGameHoursPerDay) {
+            GameTime.dayPassed += 1;
+            GameTime.gameDateHour = 1;
+            GameTime.gameDateDay += 1;
         }
     
-        if (this.gameTime.gameDateDay > this.gameTime.inGameDaysPerMonth) {
-            this.gameTime.gameDateDay = 1;
-            this.gameTime.gameDateMonth += 1;
+        if (GameTime.gameDateDay > GameTime.inGameDaysPerMonth) {
+            GameTime.gameDateDay = 1;
+            GameTime.gameDateMonth += 1;
         }
     
-        if (this.gameTime.gameDateMonth > this.gameTime.inGameMonthsPerYear) {
-            this.gameTime.gameDateMonth = 1;
-            this.gameTime.gameDateYear += 1;
+        if (GameTime.gameDateMonth > GameTime.inGameMonthsPerYear) {
+            GameTime.gameDateMonth = 1;
+            GameTime.gameDateYear += 1;
         }
     }
 
     private handleGameMilestones() {
-        const { gameDateHour, gameDateDay, gameDateMonth } = this.gameTime;
+        const { gameDateHour, gameDateDay, gameDateMonth } = GameTime;
     
         // Handle hourly milestones
         switch (gameDateHour) {
@@ -225,11 +225,11 @@ export class Game {
             gameDateHour === 1
         ) console.log("Start of a new week");
         if (gameDateDay === 7 && 
-            gameDateHour === this.gameTime.inGameHoursPerDay
+            gameDateHour === GameTime.inGameHoursPerDay
         ) console.log("End of the week");
-        if (gameDateDay === this.gameTime.inGameDaysPerMonth && 
-            gameDateDay === this.gameTime.inGameDaysPerMonth && 
-            gameDateHour === this.gameTime.inGameHoursPerDay
+        if (gameDateDay === GameTime.inGameDaysPerMonth && 
+            gameDateDay === GameTime.inGameDaysPerMonth && 
+            gameDateHour === GameTime.inGameHoursPerDay
         ) console.log("End of the month");
         if (gameDateMonth === 1 &&
             gameDateDay === 1 &&
@@ -253,9 +253,9 @@ export class Game {
     
 
     private stopTiming() {
-        if (this.gameTime.timerInterval) {
-            clearInterval(this.gameTime.timerInterval);
-            this.gameTime.timerInterval = null;
+        if (GameTime.timerInterval) {
+            clearInterval(GameTime.timerInterval);
+            GameTime.timerInterval = null;
         }
     }
 
@@ -266,24 +266,23 @@ export class Game {
             await createGameTimeTableIfNotExists();
 
             // Attempt to read the game time from the database
-            const result = await db.read<GameTime>('GameTime', 'id', 1); // Always read the first (and only) row with id=1
+            const result = await db.read<GameTimeInterface>('GameTime', 'id', 1); // Always read the first (and only) row with id=1
     
             if (result) {
                 // If the game time exists in the database, initialize GameTime with the stored values
-                const { dayPassed, gameDateDay, gameDateHour, gameDateMonth, gameDateYear } = result;
-                this.gameTime = new GameTime(dayPassed);
-                this.gameTime.gameDateDay = gameDateDay;
-                this.gameTime.gameDateHour = gameDateHour;
-                this.gameTime.gameDateMonth = gameDateMonth;
-                this.gameTime.gameDateYear = gameDateYear;
+                const { dayPassed, day, hour, month, year } = result;
+                GameTime.dayPassed = dayPassed;
+                GameTime.gameDateDay = day;
+                GameTime.gameDateHour = hour;
+                GameTime.gameDateMonth = month;
+                GameTime.gameDateYear = year;
             } else {
                 // If no game time is found in the database, initialize it with default values (1, 1, 1, 0)
                 console.log('No game time found in the database, initializing with default value (1-1-1-0).');
-                this.gameTime = new GameTime(0); // Initialize with dayPassed = 0
-                this.gameTime.gameDateDay = 1;
-                this.gameTime.gameDateHour = 1;
-                this.gameTime.gameDateMonth = 1;
-                this.gameTime.gameDateYear = 0;
+                GameTime.gameDateDay = 1;
+                GameTime.gameDateHour = 1;
+                GameTime.gameDateMonth = 1;
+                GameTime.gameDateYear = 0;
     
                 // Save this default game time to the database
                 await this.saveGameTimeToDB();
@@ -295,7 +294,7 @@ export class Game {
     
     private async saveGameTimeToDB() {
         try {
-            const { dayPassed, day, hour, month, year } = this.gameTime.getCurrentGameDate();
+            const { dayPassed, day, hour, month, year } = GameTime.getCurrentGameDate();
             
             console.log(dayPassed)
             

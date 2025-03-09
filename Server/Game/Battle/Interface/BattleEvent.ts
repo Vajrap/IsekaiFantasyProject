@@ -1,16 +1,16 @@
-interface BattleEvent {
+interface BattleEventInterface {
     type: string;
     data: any;
 }
 
-interface CharacterTurnEvent extends BattleEvent {
+interface CharacterTurnEvent extends BattleEventInterface {
     type: "characterTurn";
     data: {
         id: string;
     };
 }
 
-interface SkillUsedEvent extends BattleEvent {
+interface SkillUsedEvent extends BattleEventInterface {
     type: 'skill_used';
     data: {
         characterId: string;
@@ -19,14 +19,14 @@ interface SkillUsedEvent extends BattleEvent {
     };
 }
 
-interface CharacterDiedEvent extends BattleEvent {
+interface CharacterDiedEvent extends BattleEventInterface {
     type: 'character_died';
     data: {
         characterId: string;
     };
 }
 
-interface BattleEndedEvent extends BattleEvent {
+interface BattleEndedEvent extends BattleEventInterface {
     type: 'battle_ended';
     data: {
         winner: string;

@@ -111,7 +111,6 @@ import { EquipmentType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipmen
 import { AccessoryType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
 import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
-import { weaponAttackAdditionalEffect } from "./weaponAttackAdditionalEffect";
 import { BattleDamageObject } from "./BattleDamageObject";
 import { RelationShipStatusEnum } from "./RelationshipStatusEnum";
 
@@ -3184,3 +3183,74 @@ export function processSpecialEffect(
     return undefined;
 }
 
+export function weaponAttackAdditionalEffect(
+    actor: Character,
+    target: Character,
+    skillLevel: number,
+): EffectReturnObject [] {
+    let returnEffects: EffectReturnObject[] = [];
+
+    if (actor.buffsAndDebuffs.poisonCoating_1 > 0) {
+        let effectResult = actor.inflictEffect(
+            target,
+            new SkillApplyEffect({
+                applyWithoutHit: [false],
+                effectName: [BuffsAndDebuffsEnum.poison],
+                effectHitBase: [9999],
+                effectHitBonus: [],
+                effectDuration: [3],
+                effectDurationBonus: [],
+                effectStatForResistance: CharacterStatusEnum.none,
+            }),
+            skillLevel
+        );
+        returnEffects.push(effectResult);
+    }
+
+    if (actor.buffsAndDebuffs.poisonCoating_2 > 0) {
+        let effectResult = actor.inflictEffect(
+            target,
+            new SkillApplyEffect({
+                applyWithoutHit: [false],
+                effectName: [BuffsAndDebuffsEnum.poison],
+                effectHitBase: [9999],
+                effectHitBonus: [],
+                effectDuration: [4],
+                effectDurationBonus: [],
+                effectStatForResistance: CharacterStatusEnum.none,
+            }),
+            skillLevel
+        );
+        returnEffects.push(effectResult);
+    }
+
+    if (actor.buffsAndDebuffs.poisonCoating_3 > 0) {
+        let effectResult = actor.inflictEffect(
+            target,
+            new SkillApplyEffect({
+                applyWithoutHit: [false],
+                effectName: [BuffsAndDebuffsEnum.poison],
+                effectHitBase: [9999],
+                effectHitBonus: [],
+                effectDuration: [5],
+                effectDurationBonus: [],
+                effectStatForResistance: CharacterStatusEnum.none,
+            }),
+            skillLevel
+        );
+        returnEffects.push(effectResult);
+    }
+
+    return returnEffects
+}
+
+
+/*
+ตัวละคร
+skills
+Deck: [skill, skill, skill *7]
+skill.consume
+skill.produce
+
+
+*/

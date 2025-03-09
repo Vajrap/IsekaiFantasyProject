@@ -1,13 +1,8 @@
-import { Internal } from "../../Entities/Internal/Internal";
-import { Skill } from "../../Entities/Skills/Skill";
 import { Dice } from "../../Utility/Dice";
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
-import { Character } from "../../Entities/Character/Character";
-import { Party } from "../../Entities/Party/Party";
-import { GameLocation } from "../../Entities/Location/GameLocation";
-import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { screamer } from "../../Utility/Screamer/Screamer";
+import { GameEventParams } from "./type";
 
 export class GameEvent<T extends keyof GameEventParams> {
     name: T;
@@ -65,56 +60,6 @@ enum EventType {
     ItemPickupEvent = "itemPickupEvent", //Take character and item, add item to character inventory
     ItemShopEvent = "itemShopEvent", //Take character and shop, open shop interface, buy/sell items
 }
-
-type RandomEvent = {
-    party: Party;
-    actor: Character;
-}
-
-type RestEvent = {
-    party: Party;
-}
-
-type CampRestEvent = {
-    party: Party;
-    useItem: boolean;
-}
-
-type TrainEvent = {
-    actor: Character;
-    trainTarget: CharacterStatusEnum;
-    bonusTrainingExp?: number;
-}
-
-type SkillLearnEvent = {
-    actor: Character;
-    skillToLearn: Skill;
-}
-
-type InternalSkillLearnEvent = {
-    actor: Character;
-    internalToLearn: Internal;
-}
-
-type TravelEvent = {
-    party: Party;
-    player: Character;
-    startingLocation: GameLocation;
-    destination: GameLocation;
-}
-
-type StrollEvent = {
-    party: Party;
-    player: Character;
-    event: RandomEvent;
-}
-
-type BattleEvent = {
-    party: Party;
-    enemyParty: Party;
-    location: LocationName;
-}
-
 
 //These events are not include the random events chance, these are the base events themselves.
 const gameEvent_rest = new GameEvent<LocationEventEnum.RestEvent>(
@@ -313,25 +258,8 @@ const gameEvent_battleEvent = new GameEvent<LocationEventEnum.BattleEvent>(
     }
 )
 
-export { RestEvent, CampRestEvent, TrainEvent, SkillLearnEvent, InternalSkillLearnEvent, EventType, RandomEvent, TravelEvent, BattleEvent };
 export { gameEvent_rest, gameEvent_innRest, gameEvent_houseRest, gameEvent_campRest, gameEvent_attributeTrain, gameEvent_artisanTrain, gameEvent_proficiencyTrain, gameEvent_skillTrain, gameEvent_skillLearn, gameEvent_battleEvent };
 
 export const gameEvents = [
     gameEvent_rest, gameEvent_innRest, gameEvent_houseRest, gameEvent_campRest, gameEvent_attributeTrain, gameEvent_artisanTrain, gameEvent_proficiencyTrain, gameEvent_skillTrain, gameEvent_skillLearn, gameEvent_battleEvent
 ]
-
-export interface GameEventParams {
-    [LocationEventEnum.RestEvent]: RestEvent;
-    [LocationEventEnum.CampRest]: CampRestEvent;
-    [LocationEventEnum.InnRest]: RestEvent;
-    [LocationEventEnum.HouseRest]: RestEvent;
-    [LocationEventEnum.AttributeTrain]: TrainEvent;
-    [LocationEventEnum.ArtisanTrain]: TrainEvent;
-    [LocationEventEnum.ProficiencyTrain]: TrainEvent;
-    [LocationEventEnum.SkillTrain]: TrainEvent;
-    [LocationEventEnum.SkillLearn]: SkillLearnEvent;
-    [LocationEventEnum.InternalSkillLearn]: InternalSkillLearnEvent;
-    [LocationEventEnum.BattleEvent]: BattleEvent;
-    [LocationEventEnum.StrollEvent]: StrollEvent;
-    // Add all other event mappings here...
-}
