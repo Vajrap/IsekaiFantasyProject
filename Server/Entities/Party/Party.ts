@@ -197,6 +197,7 @@ export class Party {
 	behavior: PartyBehavior;
 	inventory: Record<string, number> = {};
 	gold: number = 0;
+	justArrived: boolean = false;
 
 	constructor(
 		characters: Character[],

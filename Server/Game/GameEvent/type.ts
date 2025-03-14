@@ -2,7 +2,6 @@ import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Charact
 import { LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { Character } from "../../Entities/Character/Character";
-import { GameLocation } from "../../Entities/Location/GameLocation";
 import { Party } from "../../Entities/Party/Party";
 import { Skill } from "../../Entities/Skills/Skill";
 
@@ -33,9 +32,6 @@ type SkillLearnEvent = {
 
 type TravelEvent = {
     party: Party;
-    player: Character;
-    startingLocation: GameLocation;
-    destination: GameLocation;
 }
 
 type StrollEvent = {

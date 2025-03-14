@@ -32,13 +32,19 @@ export class DB {
     private deserializeRow(row: any): any {
         if (!row) return null;
         const parsedRow: any = {};
+    
         for (const key in row) {
-            try {
-                parsedRow[key] = JSON.parse(row[key]);
-            } catch {
-                parsedRow[key] = row[key]; // Keep primitive values as-is
+            if (typeof row[key] === "string" && (row[key].trim().startsWith("{") || row[key].trim().startsWith("["))) {
+                try {
+                    parsedRow[key] = JSON.parse(row[key]);
+                } catch {
+                    parsedRow[key] = row[key];
+                }
+            } else {
+                parsedRow[key] = row[key];
             }
         }
+    
         return parsedRow;
     }
 

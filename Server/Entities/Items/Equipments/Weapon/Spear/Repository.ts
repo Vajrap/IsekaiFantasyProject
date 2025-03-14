@@ -2,7 +2,7 @@ import { AttributeEnum } from "../../../../../../Common/DTOsEnumsInterfaces/Char
 import { DamageTypes } from "../../../../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { DiceEnum } from "../../../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { PreferredPosition, WeaponEnum } from "../../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
-import { ItemCost } from "../../../../../../Common/DTOsEnumsInterfaces/Item/ItemCost";
+import { ItemCost } from "../../../ItemCost";
 import { Tier } from "../../../../../../Common/DTOsEnumsInterfaces/Tier";
 import { Spear_Dory, Spear_Halberd, Spear_Javelin } from "./Spear";
 

@@ -40,12 +40,8 @@ export class Game {
 
     public async start() {
         try {
-            // Ensure database is initialized before the game starts
             await this.initializeDatabase();
-
-            // Now that the DB is ready, initialize the game state
             await this.initialize();
-            
             console.log('Game has started successfully.');
         } catch (error) {
             console.error('Error during game initialization:', error);
@@ -70,7 +66,7 @@ export class Game {
             await skillRepository.loadSkillsFromDB();            
         } catch (error) {
             console.error('Error initializing database:', error);
-            throw error; // If DB init fails, we throw an error to stop game startup
+            throw error;
         }
     }
 
@@ -181,8 +177,6 @@ export class Game {
             })
             // broadcastGameStatus();
             await this.saveGameStateToDB();
-
-            console.log(`Game loop executed at ${new Date().toLocaleTimeString()}`);
         } catch (error) {
             console.error('Error during game loop:', error);
         }
@@ -213,10 +207,10 @@ export class Game {
     
         // Handle hourly milestones
         switch (gameDateHour) {
-            case 1: console.log("Morning Phase"); break;
-            case 2: console.log("Afternoon Phase"); break;
-            case 3: console.log("Evening Phase"); break;
-            case 4: console.log("Night Phase"); break;
+            case 1: console.log("GamePhase: Morning"); break;
+            case 2: console.log("GamePhase: Afternoon"); break;
+            case 3: console.log("GamePhase: Evening"); break;
+            case 4: console.log("GamePhase: Night"); break;
         }
     
         // Handle daily, weekly, monthly, and yearly milestones
@@ -241,12 +235,9 @@ export class Game {
         // TODO: Add specific game events (e.g., travel updates, random encounters)
         // TODO: Random Events according to party's location.
         // TODO: Update Traveling Parties.
-
+        this.locationManager.processEncounters(day, phase);
+        // await this.partyManager.processActions(gameDataDay, gameDateHour);
         await this.travelManager.allTravel(day, phase);
-        for (const party of this.partyManager.parties) {
-
-        }
-    
         // Then, broadCastGameStatus, this one would send the game state to all the websocket clients.
 
     }
@@ -262,29 +253,13 @@ export class Game {
     //MARK: DATABASE METHODS
     private async loadGameTimeFromDB() {
         try {
-            // Ensure the GameTime table exists; create it if it doesn't
             await createGameTimeTableIfNotExists();
-
-            // Attempt to read the game time from the database
-            const result = await db.read<GameTimeInterface>('GameTime', 'id', 1); // Always read the first (and only) row with id=1
-    
+            const result = await db.read<GameTimeInterface>('GameTime', 'id', 1);
             if (result) {
-                // If the game time exists in the database, initialize GameTime with the stored values
-                const { dayPassed, day, hour, month, year } = result;
-                GameTime.dayPassed = dayPassed;
-                GameTime.gameDateDay = day;
-                GameTime.gameDateHour = hour;
-                GameTime.gameDateMonth = month;
-                GameTime.gameDateYear = year;
+                const { dayPassed, gameDateDay, gameDateHour, gameDateMonth, gameDateYear } = result;
+                GameTime.setGameTime(dayPassed, gameDateDay, gameDateHour, gameDateMonth, gameDateYear);
             } else {
-                // If no game time is found in the database, initialize it with default values (1, 1, 1, 0)
-                console.log('No game time found in the database, initializing with default value (1-1-1-0).');
-                GameTime.gameDateDay = 1;
-                GameTime.gameDateHour = 1;
-                GameTime.gameDateMonth = 1;
-                GameTime.gameDateYear = 0;
-    
-                // Save this default game time to the database
+                GameTime.setGameTime(1, 1, 1, 1, 0);
                 await this.saveGameTimeToDB();
             }
         } catch (error) {
@@ -294,21 +269,17 @@ export class Game {
     
     private async saveGameTimeToDB() {
         try {
-            const { dayPassed, day, hour, month, year } = GameTime.getCurrentGameDate();
-            
-            console.log(dayPassed)
-            
+            const { dayPassed, gameDateDay, gameDateHour, gameDateMonth, gameDateYear } = GameTime.getCurrentGameDate();            
             await db.writeOver(
                 {tableName: 'GameTime', primaryKeyColumnName: 'id', primaryKeyValue: '1'},
                 [
                     {dataKey: 'dayPassed', value: dayPassed},
-                    {dataKey: 'gameDateDay', value: day},
-                    {dataKey: 'gameDateHour', value: hour},
-                    {dataKey: 'gameDateMonth', value: month},
-                    {dataKey: 'gameDateYear', value: year}
+                    {dataKey: 'gameDateDay', value: gameDateDay},
+                    {dataKey: 'gameDateHour', value: gameDateHour},
+                    {dataKey: 'gameDateMonth', value: gameDateMonth},
+                    {dataKey: 'gameDateYear', value: gameDateYear}
                 ]
             );
-    
             console.log('Successfully saved game time to the database');
         } catch (error) {
             console.error('Error saving game time to the database:', error);

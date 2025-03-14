@@ -1,4 +1,4 @@
-import { getRegionFromName, Region } from "./Region";
+import { getRegionFromName, Region, PartyActions } from "./Region";
 import { TravelMethodEnum } from "../../../Common/DTOsEnumsInterfaces/Map/TravelMethodEnum";
 import { Dice } from "../../Utility/Dice";
 import { StatMod } from "../../Utility/StatMod";
@@ -8,7 +8,7 @@ import { Party } from "../Party/Party";
 import { GameLocation } from "./GameLocation";
 import { getLocationByName } from "./Locations";
 import { gameEvent_battleEvent } from "../../Game/GameEvent/GameEvent";
-import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { LocationActionEnum, LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { getEnemyFromRepository } from "../Character/Enemy/EnemyRepository";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { Enemy } from "../Character/Enemy/Enemy";
@@ -186,7 +186,7 @@ export class TravelManager {
 		}
 	}
 
-	updateDistace(party: travelingParty) {
+	updateDistace(party: travelingParty, isEventHappened: boolean = false) {
 		let region: Region;
 		if (party.distanceCovered < 100) {
 			region = getRegionFromName(party.currentLocation.mainRegion);
@@ -198,84 +198,115 @@ export class TravelManager {
 
 		let deviation = Dice.roll(DiceEnum.OneD10).sum - 5;
 
-		party.distanceCovered += Math.max(0, travelSpeed + deviation);
+		let thisTravelDistance = Math.max(0, travelSpeed + deviation);
+
+		if (isEventHappened) {
+			let progressFactor = thisTravelDistance / 100;
+			let slowFactor = 1 - (Math.random() * progressFactor);
+			thisTravelDistance *= slowFactor;
+		}
+		
+		party.distanceCovered += thisTravelDistance;	
 	}
 
 	async travel(party: travelingParty) {
-		this.updateDistace(party);
-		// Unlikely to happen, but just in case, if happens, these are errors.
+		// Early return if the party has no path or already arrived at the last location in the path. Which shouldn't happen.
+		if (party.path.length === 0 || party.currentLocationIndex === party.path.length - 1) return;
+
+		/*
+			Game Phase Advancement:
+			
+			The game consists of **4 phases per day**, with each phase lasting **15 minutes in real life**. 
+			At the start of each phase, the following events occur **in order**:
+
+			1. Encounter Events:
+			   - Any party with a **'justArrived' flag** has recently entered a location.
+			   - **All 'justArrived' parties are shuffled randomly** to ensure fairness.
+			   - One by one, each **randomly picks** an encounter partner from **any party** at the same location (including stationary ones).
+			   - The selected pair resolves an **EncounterEvent** based on their relationship (battle, trade, or social interaction).
+			   - **If the paired party was also 'justArrived',** it will no longer be available for future encounters in this phase.
+			   - **This continues until all 'justArrived' parties are processed.**
+			   - After resolving encounters, **all 'justArrived' flags are removed**.
+
+			2. Stationary Actions:
+			   - Any party **not traveling** resolves its actions for this phase.
+			   - Examples: **Training, resting, trading, preparing for battle.**
+			   - Stationary parties **can still be chosen** for Encounter Events.
+
+			3. Travel:
+			   - **All traveling parties move forward in their path.**
+			   - **Order of movement:** Parties are sorted by **highest agility first.**
+			   - **For each traveling party:**
+			     1. **Determine if they will reach the next location** within this phase.
+			     2. If **NOT reaching** the next location:
+			        - Check for **random events** from the **current region's event pool.**
+			        - If an event occurs, resolve it **before** continuing travel.
+			        - The event **reduces the party’s travel distance**.
+			     3. If **reaching** the next location:
+			        - Check for **random events** from the **current region's event pool.**
+			        - If an event occurs, resolve it **before** finalizing arrival.
+			        - If the remaining distance **still allows reaching the next location** after the event, continue:
+			            - Check for **random events** from the **new region's event pool**.
+			            - If an event occurs, resolve it before the phase ends.
+			        - If **no event happens,** the party simply arrives.
+			   - **Upon arrival, the party is marked as 'justArrived'.**
+			
+			🔹 **Key Improvements in This System**
+			   - **Encounter Order is Fair & Chaotic** → No bias toward high-luck parties.
+			   - **Encounters Happen First** → Travel events don’t interfere with encounters.
+			   - **Random Events Adjust Travel Distance Properly** → Ensuring region accuracy.
+			   - **Agility Only Affects Travel Speed** → No impact on encounter order.
+		*/
+
+		// Check if random 'Event' happens during travel.
+		let regionToUse: Region;
+		if (party.distanceCovered < 100) {
+			regionToUse = getRegionFromName(party.currentLocation.mainRegion);
+		} else {
+			regionToUse = getRegionFromName(party.currentLocation.region);
+		}
+		
+		const randomEventChance = Dice.rollTwenty();
+		let eventEnum = regionToUse.getRandomEvent(PartyActions.TRAVEL, randomEventChance);
+		let isEventHappen = false;
+		
+		switch (eventEnum) {
+			case LocationEventEnum.AttributeTrain:
+				// TODO:
+			case LocationEventEnum.ArtisanTrain:
+				// TODO:
+			case LocationEventEnum.ProficiencyTrain:
+				// TODO:
+			case LocationEventEnum.SkillTrain:
+				// TODO:
+			case LocationEventEnum.BattleEvent:
+				const averageLuckModifier = getAverageLuckModifier(party);
+				isEventHappen = await this._executeBattleEvent(party, averageLuckModifier);
+				isEventHappen = true;
+			case LocationEventEnum.TravelEvent:
+				// TODO:
+		}
+		
+		this.updateDistace(party, isEventHappen);
+		
 		if (!party.checkIfArrivingNextLocation()) {
 			// Not arrived at next location, so might trigger random events
 		} else {
 			// Arrived at next location, might trigger encounter events
 			party.arrivedNextLocation();
 			const location = party.currentLocation;
-			let encounterEventHappened = location.checkAndTriggerEncounterEvent(party.party)
+			// let encounterEventHappened = location.checkAndTriggerEncounterEvent(party.party)
 			
 		}
-		// if (travelingParty.path.length === 0 || travelingParty.currentLocationIndex === travelingParty.path.length - 1) return;
-		
-		// travelingParty.isTraveling = true;
 
-		// const { travelSpeed, averageLuckModifier } = getTravelSpeedAndAverageLuckModifier(travelingParty);
-
-		// const randomEventChance = Dice.rollTwenty();
-	
-		// let isRandomEventSuccess = true;
-
-		// let regionToUse: Region;
-		// if (travelingParty.distanceCovered < 100) {
-		// 	regionToUse = getRegionFromName(travelingParty.currentLocation.mainRegion);
-		// } else {
-		// 	regionToUse = getRegionFromName(travelingParty.currentLocation.region);
-		// }
-
-		// // Check if the party encounters 'other party' first, if none, then check for random events.
-		// // If the party encounters 'other party' NPC or Player, the party type flag will be used to determine the event that will be happen between the two parties.
-		// let isEncounterEventSuccess = true;
-
-		// if (randomEventChance <= 5) {
-		// 	const eventEnum = regionToUse.getRandomEvent("travel", averageLuckModifier);
-
-        //     // TODO: Implement the rest of the random events
-		// 	switch (eventEnum) {
-		// 		case LocationEventEnum.AttributeTrain:
-		// 			isRandomEventSuccess = true
-		// 		case LocationEventEnum.ArtisanTrain:
-		// 			isRandomEventSuccess = true
-		// 		case LocationEventEnum.ProficiencyTrain:
-		// 			isRandomEventSuccess = true
-		// 		case LocationEventEnum.SkillTrain:
-		// 			isRandomEventSuccess = true
-		// 		case LocationEventEnum.BattleEvent:
-		// 			isRandomEventSuccess = await this._executeBattleEvent(travelingParty, averageLuckModifier);
-		// 		case LocationEventEnum.TravelEvent:
-
-		// 		// TODO: possible other casese
-		// 		// case LocationEventEnum.QuestGiverEvent: event = gameE
-		// 		// case LocationEventEnum.QuestUpdateEvent:
-		// 		// case LocationEventEnum.ItemPickupEvent:
-
-		// 		default:
-		// 			break;
-		// 	}
-        // }
-
-		// if (isRandomEventSuccess) {
-		// 	let deviation = Dice.roll(DiceEnum.OneD10).sum - 5;
-		// 	travelingParty.distanceCovered += Math.max(0, travelSpeed + deviation);
-		// } else {
-		// 	console.log("Travel event failed");
-		// }
-
-		// // Mood and energy decrease
-		// for (const character of travelingParty.party.characters) {
-		// 	let pace = travelingParty.party.behavior.travelPace;
-		// 	if (character !== "none") {
-		// 		character.moodDown((Dice.roll(DiceEnum.OneD4).sum + (pace === 'fast' ? 8 : pace === 'normal' ? 5 : 2)))
-		// 		character.energyDown((Dice.roll(DiceEnum.OneD6).sum + (pace === 'fast' ? 20 : pace === 'normal' ? 15 : 10)))
-		// 	}
-		// }
+		// Mood and energy decrease
+		for (const character of party.party.characters) {
+			let pace = party.party.behavior.travelPace;
+			if (character !== "none") {
+				character.moodDown((Dice.roll(DiceEnum.OneD4).sum + (pace === 'fast' ? 8 : pace === 'normal' ? 5 : 2)))
+				character.energyDown((Dice.roll(DiceEnum.OneD6).sum + (pace === 'fast' ? 20 : pace === 'normal' ? 15 : 10)))
+			}
+		}
 	}
 
 	getSpeedModifierFromRegion(
@@ -402,6 +433,21 @@ export class TravelManager {
 			 location: travelingParty.currentLocation.id 
 		 }) as boolean;
 	}
+}
+
+
+// MARK: Helper functions
+function getAverageLuckModifier(party: travelingParty): number {
+	let totalLuck = 0;
+	let allCharacters = 0;
+	for (const character of party.party.characters) {
+		if (character !== "none") {
+			totalLuck += character.status.luck();
+			allCharacters++;
+		}
+	}
+
+	return StatMod.value(totalLuck / allCharacters)
 }
 
 function getTravelSpeedAndAverageLuckModifier(party: travelingParty): {

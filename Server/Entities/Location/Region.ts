@@ -4,42 +4,54 @@ import { RegionNameEnum } from "../../../Common/DTOsEnumsInterfaces/Map/RegionNa
 import { MobCharacterEnum } from "../../../Common/DTOsEnumsInterfaces/Map/MobCharacterEnum";
 import { TravelMethodEnum } from "../../../Common/DTOsEnumsInterfaces/Map/TravelMethodEnum";
 
+export enum PartyActions {
+    BATTLE = 'battle',
+    TRAVEL = 'travel',
+    REST = 'rest',
+    TRADE = 'trade',
+    TRAIN = 'train',
+}
 export class Region {
     name: RegionNameEnum
-    events: {
-        rest: {event: LocationEventEnum, chanceCeiling: number}[],
-        stroll: {event: LocationEventEnum, chanceCeiling: number}[],
-        train: {event: LocationEventEnum, chanceCeiling: number}[],
+    // When we get event, we first check what kind of action the player is doing
+    // Example, travel, the possible events will be from array of eventsByAction.travel
+    // Then we roll a dice to get a random event
+    eventsByAction: {
+        battle: {event: LocationEventEnum, chanceCeiling: number}[],
         travel: {event: LocationEventEnum, chanceCeiling: number}[],
+        rest: {event: LocationEventEnum, chanceCeiling: number}[],
+        trade: {event: LocationEventEnum, chanceCeiling: number}[],
+        train: {event: LocationEventEnum, chanceCeiling: number}[],
     }
     possibleEnemies: MobCharacterEnum[]
     speedBonus: RegionSpeedBonus
     constructor(
         name: RegionNameEnum,
-        events: {
-            rest: {event: LocationEventEnum, chanceCeiling: number}[],
-            stroll: {event: LocationEventEnum, chanceCeiling: number}[],
-            train: {event: LocationEventEnum, chanceCeiling: number}[],
+        eventsByAction: {
+            battle: {event: LocationEventEnum, chanceCeiling: number}[],
             travel: {event: LocationEventEnum, chanceCeiling: number}[],
+            rest: {event: LocationEventEnum, chanceCeiling: number}[],
+            trade: {event: LocationEventEnum, chanceCeiling: number}[],
+            train: {event: LocationEventEnum, chanceCeiling: number}[],
         },
         possibleEnemies: MobCharacterEnum[],
         speedBonus: RegionSpeedBonus
     ) {
         this.name = name
-        this.events = events
+        this.eventsByAction = eventsByAction
         this.possibleEnemies = possibleEnemies
         this.speedBonus = speedBonus
     }
 
-    getRandomEvent(action: string, bonusChance: number = 0): LocationEventEnum {
+    getRandomEvent(action: PartyActions, bonusChance: number = 0): LocationEventEnum {
         const randomRollSum = Dice.rollTwenty() + bonusChance;
-
-        for (const event of this.events[action as keyof Region["events"]]){
+        const eventList = this.eventsByAction[action]
+        for (const event of eventList) {
             if (randomRollSum <= event.chanceCeiling) {
                 return event.event
             }
         }
-        throw new Error('No event found, The Region events are not set up correctly')
+        return LocationEventEnum.None;
     }
 
     getSpeedBonusModifire(travelMethod: TravelMethodEnum ): number {
@@ -145,18 +157,11 @@ function makeDummyRegion(): Region {
     const dummyRegion = new Region(
         RegionNameEnum.GrassLand_1,
         {
-            rest: [{ event: LocationEventEnum.RestEvent, chanceCeiling: 10 }],
-            stroll: [
-                { event: LocationEventEnum.StrollEvent, chanceCeiling: 10 },
-                { event: LocationEventEnum.RanomEvent, chanceCeiling: 10 }
-            ],
-            train: [
-                { event: LocationEventEnum.SkillTrain, chanceCeiling: 10 },
-                { event: LocationEventEnum.AttributeTrain, chanceCeiling: 10 },
-                { event: LocationEventEnum.ArtisanTrain, chanceCeiling: 10 },
-                { event: LocationEventEnum.ProficiencyTrain, chanceCeiling: 10 },
-            ],
-            travel: [{ event: LocationEventEnum.TravelEvent, chanceCeiling: 0 }]
+            battle: [{ event: LocationEventEnum.BattleEvent, chanceCeiling: 1 }],
+            travel: [{ event: LocationEventEnum.TravelEvent, chanceCeiling: 15 }],
+            rest: [{ event: LocationEventEnum.RestEvent, chanceCeiling: 20 }],
+            trade: [{ event: LocationEventEnum.TradeEvent, chanceCeiling: 20 }],
+            train: [{ event: LocationEventEnum.AttributeTrain, chanceCeiling: 20 }],
         },
         [],
         new RegionSpeedBonus(1, 3, 2),

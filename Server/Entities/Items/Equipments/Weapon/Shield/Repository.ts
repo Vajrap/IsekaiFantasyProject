@@ -1,6 +1,6 @@
 import { DiceEnum } from "../../../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { WeaponEnum } from "../../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
-import { ItemCost } from "../../../../../../Common/DTOsEnumsInterfaces/Item/ItemCost";
+import { ItemCost } from "../../../ItemCost";
 import { Tier } from "../../../../../../Common/DTOsEnumsInterfaces/Tier";
 import { Shield_Buckler, Shield_Kite, Shield_Round, Shield_Tower } from "./Shield";
 

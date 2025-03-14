@@ -77,5 +77,12 @@ export enum LocationEventEnum {
     ItemShopEvent = "itemShopEvent", //Take character and shop, open shop interface, buy/sell items
 
     //Travel events
-    TravelEvent = "travelEvent"
+    TravelEvent = "travelEvent",
+
+    TradeEvent = "tradeEvent", //Take 2 parties, execute trade event
+    QuestEvent = "questEvent", //Take 1 parties, execute quest event
+    ItemEvent = "itemEvent", //Take 1 parties, execute item event
+
+
+    None = "none",
 }

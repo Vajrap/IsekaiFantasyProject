@@ -2,9 +2,9 @@ import { AttributeEnum } from "../../../../../../Common/DTOsEnumsInterfaces/Char
 import { DamageTypes } from "../../../../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { DiceEnum } from "../../../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { PreferredPosition, WeaponEnum } from "../../../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
-import { ItemCost } from "../../../../../../Common/DTOsEnumsInterfaces/Item/ItemCost";
 import { Tier } from "../../../../../../Common/DTOsEnumsInterfaces/Tier";
 import { Axe_Broad, Axe_Great } from "./Axe";
+import { ItemCost } from "../../../ItemCost";
 
 const axe_broad = new Axe_Broad({
     id: WeaponEnum.axe_broad,

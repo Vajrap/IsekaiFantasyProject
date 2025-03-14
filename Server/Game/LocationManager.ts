@@ -1,3 +1,4 @@
+import { DayOfWeek, TimeOfDay } from "../../Common/DTOsEnumsInterfaces/TimeOfDay";
 import { GameLocation } from "../Entities/Location/GameLocation";
 import { 
     location_OceanTide,
@@ -144,6 +145,12 @@ export class LocationManager {
     addConnection(location1: GameLocation, location2: GameLocation, distance: number) {
         location1.addConnection(location2, distance);
         location2.addConnection(location1, distance);
+    }
+
+    processEncounters(day: DayOfWeek, phase: TimeOfDay) {
+        this.locations.forEach(location => {
+            location.processEncounter(day, phase);
+        });
     }
 }
 

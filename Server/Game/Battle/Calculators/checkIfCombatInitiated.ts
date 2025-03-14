@@ -6,7 +6,9 @@ import { getPartiesRelation, PartyRelation } from "../../../Entities/Party/Party
 import { Dice } from "../../../Utility/Dice";
 import { StatMod } from "../../../Utility/StatMod";
 
-export function checkIfCombatInitiated(party: Party, enemyParty: Party, enemyCombatPolicy: string): boolean {
+export function checkIfCombatInitiated(party: Party, enemyParty: Party, enemyCombatPolicy?: string): boolean {
+    if (enemyCombatPolicy === undefined) { enemyCombatPolicy = enemyParty.behavior.combatPolicy }
+
     const personalRelationScore = checkPersonalRelations(party, enemyParty);
     const partyRelation = getPartiesRelation(party.behavior.partyType, enemyParty.behavior.partyType);
 

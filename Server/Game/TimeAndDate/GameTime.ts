@@ -5,10 +5,10 @@ export class GameTime {
     static inGameDaysPerMonth: number = 24; // 24 days in a game month => if we set 24 days per month, 1 month will be 1 real day, so if we separate in to week, 4 weeks per month, we should have 6 days per week; 6 days would go hand in hand with 6 firstborn gods!
     static inGameMonthsPerYear: number = 14; // 14 months in a game year
 
-    static dayPassed: number;
-    static gameDateDay: number = 1; // 1-indexed
-    static gameDateHour: number = 1; // 1-indexed
-    static gameDateMonth: number = 1; // 1-indexed
+    static dayPassed: number = 0;
+    static gameDateDay: number = 1;
+    static gameDateHour: number = 1;
+    static gameDateMonth: number = 1;
     static gameDateYear: number = 0;
     static timerInterval: NodeJS.Timeout | null = null;
     // game: Game;
@@ -30,10 +30,10 @@ export class GameTime {
     static getCurrentGameDate(): GameTimeInterface {
         return {
             dayPassed: GameTime.dayPassed,
-            day: GameTime.gameDateDay,
-            hour: GameTime.gameDateHour,
-            month: GameTime.gameDateMonth,
-            year: GameTime.gameDateYear,
+            gameDateDay: GameTime.gameDateDay,
+            gameDateHour: GameTime.gameDateHour,
+            gameDateMonth: GameTime.gameDateMonth,
+            gameDateYear: GameTime.gameDateYear,
             phase: GameTime.getCurrentGamePhase()
         };
     }

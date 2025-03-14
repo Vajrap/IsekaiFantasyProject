@@ -6,6 +6,8 @@ import { Party } from "../Party/Party";
 import { PartyType } from "../Party/PartyType";
 import { checkIfCombatInitiated } from "../../Game/Battle/Calculators/checkIfCombatInitiated";
 import { executeTradeEvent } from "../Event/Trade/executeTradeEvent";
+import { DayOfWeek, TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
+import { gameEvent_battleEvent } from "../../Game/GameEvent/GameEvent";
 
 export class GameLocation {
     id: LocationName;
@@ -81,32 +83,23 @@ export class GameLocation {
         return this.actions;
     }
 
-    // Should separate into many checking functions, travelManager would check them one by one and execute the first one that returns true;
-    // That meas, the event handler needed to be push out of this class
-    async checkAndTriggerEncounterEvent(party: Party): Promise<boolean> {
-        if (!this.parties.includes(party)) { throw new Error('Party not in location'); }
-        for (const otherParty of this.parties) {
-            if (otherParty !== party) {
-                if (checkIfCombatInitiated(party, otherParty, otherParty.behavior.combatPolicy)) {
-                    // console.log('Combat initiated');
-                    // This should just send out the result of checking, not the battle itself
-                    // gameEvent_battleEvent.execute({ 
-                    //     party: party, 
-                    //     enemyParty: otherParty, 
-                    //     location: this.id 
-                    // });
-                    // return true;
-                } 
-
-                if (this.handleNeutralEncounter(party, otherParty)) {
-                    return true;
-                }
-            }
+    // No need to return result, each will just use screamer and send the result directly to game web socket
+    checkAndTriggerEncounterEvent(partyA: Party, partyB: Party) {
+        if (!this.parties.includes(partyA) && !this.parties.includes(partyB)) { throw new Error('Party not in location'); }
+        if (checkIfCombatInitiated(partyA, partyB)) {
+            gameEvent_battleEvent.execute({ 
+                party: partyA, 
+                enemyParty: partyB, 
+                location: this.id 
+            });
+            return;
         }
-        return false;
+        this.handleNeutralEncounter(partyA, partyB);
+        return;
     }
+    
 
-    private handleNeutralEncounter(partyA: Party, partyB: Party): boolean {
+    private handleNeutralEncounter(partyA: Party, partyB: Party) {
         const merchantTypes = new Set([PartyType.merchant]);
         const scholarTypes = new Set([PartyType.scholar, PartyType.hermit]);
         const militaryTypes = new Set([PartyType.knight, PartyType.soldier, PartyType.nobleRetinue]);
@@ -120,46 +113,94 @@ export class GameLocation {
             (merchantTypes.has(partyB.behavior.partyType) && !this.isHostile(partyA))
         ) {
             executeTradeEvent(partyA, partyB);
-            return true;
+            return;
         }
     
         if (scholarTypes.has(partyA.behavior.partyType) && scholarTypes.has(partyB.behavior.partyType)) {
             //TODO: Implement knowledge exchange (increase intelligence, gain skills, share lore)
-            return true;
+            return;
         }
     
         if (militaryTypes.has(partyA.behavior.partyType) && militaryTypes.has(partyB.behavior.partyType)) {
             //TODO: Implement friendly duels, combat training, or tactical discussions
-            return true;
+            return;
         }
     
         if (nobleTypes.has(partyA.behavior.partyType) && militaryTypes.has(partyB.behavior.partyType)) {
             //TODO: Implement recruitment event where nobles hire knights or mercenaries
-            return true;
+            return;
         }
     
         if (rogueTypes.has(partyA.behavior.partyType) && rogueTypes.has(partyB.behavior.partyType)) {
             //TODO: Implement underworld deals (black market trades, secretive missions, bounties)
-            return true;
+            return;
         }
     
         if (religiousTypes.has(partyA.behavior.partyType) && religiousTypes.has(partyB.behavior.partyType)) {
             //TODO: Implement blessings, confessions, or divine favor system
-            return true;
+            return;
         }
     
         if (laborTypes.has(partyA.behavior.partyType) && merchantTypes.has(partyB.behavior.partyType)) {
             //TODO: Implement crafting offers, trade deals, or job assignments
-            return true;
+            return;
         }
     
         //TODO: Handle situations where no action occurs but relations improve slightly over time
-    
-        return false;
+        return;
     }
     
     private isHostile(party: Party): boolean {
         return [PartyType.bandit, PartyType.raider, PartyType.criminal].includes(party.behavior.partyType);
+    }
+
+    processEncounter(day: DayOfWeek, phase: TimeOfDay) {
+        if (this.parties.length === 0) return;
+
+        let justArrivedParties = this.parties
+            .filter(party => party.justArrived)
+            .sort(() => Math.random() - 0.5);
+
+        if (justArrivedParties.length === 0) return
+
+        let otherParties = this.parties.filter(party => !party.justArrived);
+
+        if (otherParties.length === 0 && justArrivedParties.length <= 1) return;
+
+        let encounteredParties = new Set<Party>();
+
+        if (justArrivedParties.length === 1 && otherParties.length === 1) {
+            this.checkAndTriggerEncounterEvent(justArrivedParties[0], otherParties[0])
+            justArrivedParties[0].justArrived = false;
+            return;
+        }
+
+        if (otherParties.length === 0 && justArrivedParties.length === 2) {
+            this.checkAndTriggerEncounterEvent(justArrivedParties[0], justArrivedParties[1])
+            justArrivedParties[0].justArrived = false;
+            justArrivedParties[1].justArrived = false;
+            return;
+        }
+
+        for (let party of justArrivedParties) {
+            if (encounteredParties.has(party)) continue;
+
+            let potentialPartners = [
+                ...otherParties.filter(other => !encounteredParties.has(other)),
+                ...justArrivedParties.filter(other => other !== party && !encounteredParties.has(other))
+            ];
+
+            if (potentialPartners.length === 0) continue;
+
+            let partner = potentialPartners[Math.floor(Math.random() * potentialPartners.length)];
+
+            this.checkAndTriggerEncounterEvent(party, partner);
+
+            encounteredParties.add(party);
+            encounteredParties.add(partner);
+            party.justArrived = false;
+            partner.justArrived = false;
+        }
     }
 }
 
