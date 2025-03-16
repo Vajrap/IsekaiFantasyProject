@@ -252,7 +252,6 @@ export interface BattleReportInterface {
     startingPartyBMembers: CharacterDataInterface[];
     battleTurn: ActionDetailsInterface[];
     location: string;
-    environment: string;
     gameTime: GameTimeInterface;
 }
 

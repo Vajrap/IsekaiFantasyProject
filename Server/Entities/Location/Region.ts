@@ -5,10 +5,8 @@ import { MobCharacterEnum } from "../../../Common/DTOsEnumsInterfaces/Map/MobCha
 import { TravelMethodEnum } from "../../../Common/DTOsEnumsInterfaces/Map/TravelMethodEnum";
 
 export enum PartyActions {
-    BATTLE = 'battle',
     TRAVEL = 'travel',
     REST = 'rest',
-    TRADE = 'trade',
     TRAIN = 'train',
 }
 export class Region {
@@ -17,10 +15,8 @@ export class Region {
     // Example, travel, the possible events will be from array of eventsByAction.travel
     // Then we roll a dice to get a random event
     eventsByAction: {
-        battle: {event: LocationEventEnum, chanceCeiling: number}[],
         travel: {event: LocationEventEnum, chanceCeiling: number}[],
         rest: {event: LocationEventEnum, chanceCeiling: number}[],
-        trade: {event: LocationEventEnum, chanceCeiling: number}[],
         train: {event: LocationEventEnum, chanceCeiling: number}[],
     }
     possibleEnemies: MobCharacterEnum[]
@@ -28,10 +24,8 @@ export class Region {
     constructor(
         name: RegionNameEnum,
         eventsByAction: {
-            battle: {event: LocationEventEnum, chanceCeiling: number}[],
             travel: {event: LocationEventEnum, chanceCeiling: number}[],
             rest: {event: LocationEventEnum, chanceCeiling: number}[],
-            trade: {event: LocationEventEnum, chanceCeiling: number}[],
             train: {event: LocationEventEnum, chanceCeiling: number}[],
         },
         possibleEnemies: MobCharacterEnum[],
@@ -157,10 +151,8 @@ function makeDummyRegion(): Region {
     const dummyRegion = new Region(
         RegionNameEnum.GrassLand_1,
         {
-            battle: [{ event: LocationEventEnum.BattleEvent, chanceCeiling: 1 }],
-            travel: [{ event: LocationEventEnum.TravelEvent, chanceCeiling: 15 }],
-            rest: [{ event: LocationEventEnum.RestEvent, chanceCeiling: 20 }],
-            trade: [{ event: LocationEventEnum.TradeEvent, chanceCeiling: 20 }],
+            travel: [{ event: LocationEventEnum.None, chanceCeiling: 15 }],
+            rest: [{ event: LocationEventEnum.RestCamp, chanceCeiling: 20 }],
             train: [{ event: LocationEventEnum.AttributeTrain, chanceCeiling: 20 }],
         },
         [],

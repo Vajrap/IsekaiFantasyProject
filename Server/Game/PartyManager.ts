@@ -1,3 +1,4 @@
+import { DayOfWeek, TimeOfDay } from "../../Common/DTOsEnumsInterfaces/TimeOfDay";
 import { Party } from "../Entities/Party/Party";
 
 export class PartyManager {

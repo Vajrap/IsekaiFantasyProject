@@ -147,10 +147,16 @@ export class LocationManager {
         location2.addConnection(location1, distance);
     }
 
-    processEncounters(day: DayOfWeek, phase: TimeOfDay) {
-        this.locations.forEach(location => {
-            location.processEncounter(day, phase);
-        });
+    async processEncounters(day: DayOfWeek, phase: TimeOfDay) {
+        for (const location of this.locations) {
+            await location.processEncounters(day, phase);
+        }
+    }
+
+    async processActions(day: DayOfWeek, phase: TimeOfDay) {
+        for (const location of this.locations) {
+            await location.processActions(day, phase);
+        }
     }
 }
 

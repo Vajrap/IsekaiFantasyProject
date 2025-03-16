@@ -41,14 +41,13 @@ export class Battle {
         partyA: Party, 
         partyB: Party,
         location: LocationName,
-        environment: GameEnvironment,
         gameTime: GameTimeInterface
     ) {
         this.isOngoing = true;
         this.partyA = partyA;
         this.partyB = partyB;
         this.allParticipants = [...partyA.getPosssibleTargetsAsCharacterArray(), ...partyB.getPosssibleTargetsAsCharacterArray()];
-        this.battleReport = new BattleReport(partyA, partyB, location, environment, gameTime);
+        this.battleReport = new BattleReport(partyA, partyB, location, gameTime);
         this.sortParticipantsBySpeed();
         this.UID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     }

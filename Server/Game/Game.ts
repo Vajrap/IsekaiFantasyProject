@@ -21,6 +21,9 @@ import { screamer } from "../Utility/Screamer/Screamer";
 import { TravelManager } from "../Entities/Location/TravelManager";
 import { DayOfWeek, TimeOfDay } from "../../Common/DTOsEnumsInterfaces/TimeOfDay";
 import { GameTimeInterface } from "../../Common/DTOsEnumsInterfaces/GameTimeInterface";
+import { BattlePayload } from "./GameEvent/enums/battlePayload";
+import { LocationName } from "../../Common/DTOsEnumsInterfaces/Map/LocationNames";
+import { PartyType } from "../Entities/Party/PartyType";
 
 export class Game {
     characterManager: CharacterManager = new CharacterManager();
@@ -35,7 +38,6 @@ export class Game {
 
     constructor() {
         this.initializeWebSocketListeners();
-        screamer.listenToMe();
     }
 
     public async start() {
@@ -102,6 +104,8 @@ export class Game {
         
         this.startTiming();
 
+        await this.initializeEventListeners();
+
         console.log(`Server is up and running at ${new Date().toLocaleString()}`);
         console.log(`In game characters loaded: ${this.characterManager.characters.length} characters`);
         console.log(`In game parties loaded: ${this.partyManager.parties.length} parties`);
@@ -109,13 +113,14 @@ export class Game {
 
     private startTiming() {
         console.log('Game Time Started');
-        this._scheduleNextGameLoop();
+        // this._scheduleNextGameLoop();
         // For testing purposes, we can use the following mock method to run the game loop every 10 seconds
-        // this.mockScheduleNextGameLoop();
+        this.mockScheduleNextGameLoop();
+        this.testBattleAndListener();
     }
     
-    private async _scheduleNextGameLoop() {
-        await this.runGameLoop();
+    private _scheduleNextGameLoop() {
+        this.runGameLoop();
 
         const now = new Date();
         const minuteNow = now.getMinutes();
@@ -161,7 +166,7 @@ export class Game {
         try {
             this.incrementGameTime();
             this.handleGameMilestones();
-            this.processEvents(GameTime.getCurrentGameDayOfWeek(), GameTime.getCurrentGamePhase());
+            await this.processEvents(GameTime.getCurrentGameDayOfWeek(), GameTime.getCurrentGamePhase());
             this.webSocketServer.clients.forEach(client => {
                 // TODO: Implement this
                 //broadcast game state to all clients
@@ -232,22 +237,13 @@ export class Game {
     }
 
     private async processEvents(day: DayOfWeek, phase: TimeOfDay) {
-        // TODO: Add specific game events (e.g., travel updates, random encounters)
-        // TODO: Random Events according to party's location.
-        // TODO: Update Traveling Parties.
-        this.locationManager.processEncounters(day, phase);
-        // await this.partyManager.processActions(gameDataDay, gameDateHour);
+        console.log(`Processing encounters for ${day} ${phase}`);
+        await this.locationManager.processEncounters(day, phase);
+        console.log(`Processing actions for ${day} ${phase}`);
+        await this.locationManager.processActions(day, phase);
+        console.log(`Processing travel for ${day} ${phase}`);
         await this.travelManager.allTravel(day, phase);
         // Then, broadCastGameStatus, this one would send the game state to all the websocket clients.
-
-    }
-    
-
-    private stopTiming() {
-        if (GameTime.timerInterval) {
-            clearInterval(GameTime.timerInterval);
-            GameTime.timerInterval = null;
-        }
     }
 
     //MARK: DATABASE METHODS
@@ -430,8 +426,23 @@ export class Game {
         }
     }
 
+    private initializeEventListeners() {
+        const screamerStation = this.screamer.listenToMe();
+
+        screamerStation.on('EVENT_BATTLE', (payload: BattlePayload) => {
+            try {
+                this.battles.startNewBattle(payload.partyA, payload.partyB, payload.location, GameTime.getCurrentGameDate());
+            } catch (error) {
+                console.error('Error starting battle:', error);
+            }
+        });
+        
+    }
+
+
+
     // MARK: TESTING METHODS
-    private async mockScheduleNextGameLoop() {
+    private mockScheduleNextGameLoop() {
         const now = new Date();
         const secondNow = now.getSeconds();
         let minuteNow = now.getMinutes();
@@ -466,8 +477,19 @@ export class Game {
     
         setTimeout(async () => {
             await this.runGameLoop();
-            await this.mockScheduleNextGameLoop();
+            this.mockScheduleNextGameLoop();
         }, timeUntilNextInterval);
+    }
+
+    private testBattleAndListener() {
+        this.partyManager.parties[0].behavior.partyType = PartyType.bandit;
+        this.partyManager.parties[0].behavior.combatPolicy = 'engage';
+        this.partyManager.parties[0].justArrived = true;
+        this.partyManager.parties[1].behavior.partyType = PartyType.knight;
+        this.partyManager.parties[1].behavior.combatPolicy = 'engage';
+        this.partyManager.parties[1].justArrived = true;
+        this.locationManager.locations[0].partyMoveIn(this.partyManager.parties[0]);
+        this.locationManager.locations[0].partyMoveIn(this.partyManager.parties[1]);
     }
 }
 

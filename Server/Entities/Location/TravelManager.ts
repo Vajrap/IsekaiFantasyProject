@@ -7,13 +7,13 @@ import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNa
 import { Party } from "../Party/Party";
 import { GameLocation } from "./GameLocation";
 import { getLocationByName } from "./Locations";
-import { gameEvent_battleEvent } from "../../Game/GameEvent/GameEvent";
 import { LocationActionEnum, LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { getEnemyFromRepository } from "../Character/Enemy/EnemyRepository";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { Enemy } from "../Character/Enemy/Enemy";
 import { DayOfWeek, TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
 import { checkIfCombatInitiated } from "../../Game/Battle/Calculators/checkIfCombatInitiated";
+import { eventRepository } from "../../Game/GameEvent/Events";
 
 //Party.travelManager = new TravelManager();
 //When Player start a travel, it's actually the party that start the travel
@@ -182,7 +182,7 @@ export class TravelManager {
 
 		for (const travelingParty of travelingParties) {
 				await this.travel(travelingParty);
-				this.checkPartyArrived(travelingParty);
+				await this.checkPartyArrived(travelingParty);
 		}
 	}
 
@@ -271,19 +271,19 @@ export class TravelManager {
 		let isEventHappen = false;
 		
 		switch (eventEnum) {
-			case LocationEventEnum.AttributeTrain:
+			// case LocationEventEnum.AttributeTrain:
 				// TODO:
-			case LocationEventEnum.ArtisanTrain:
+			// case LocationEventEnum.ArtisanTrain:
 				// TODO:
-			case LocationEventEnum.ProficiencyTrain:
+			// case LocationEventEnum.ProficiencyTrain:
 				// TODO:
-			case LocationEventEnum.SkillTrain:
+			// case LocationEventEnum.SkillTrain:
 				// TODO:
 			case LocationEventEnum.BattleEvent:
 				const averageLuckModifier = getAverageLuckModifier(party);
 				isEventHappen = await this._executeBattleEvent(party, averageLuckModifier);
 				isEventHappen = true;
-			case LocationEventEnum.TravelEvent:
+			// case LocationEventEnum.TravelEvent:
 				// TODO:
 		}
 		
@@ -318,7 +318,7 @@ export class TravelManager {
 		return speedModifier;
 	}
 
-	checkPartyArrived(travelingParty: travelingParty) {
+	async checkPartyArrived(travelingParty: travelingParty) {
 		const nextLocation = travelingParty.getNextLocation();
 
 		if (travelingParty.isTraveling === false) {
@@ -427,11 +427,8 @@ export class TravelManager {
 			 possiblePositions = possiblePositions.filter(pos => pos !== enemyPosition);
 		 }
 	 
-		 return await gameEvent_battleEvent.execute({ 
-			 party: travelingParty.party, 
-			 enemyParty, 
-			 location: travelingParty.currentLocation.id 
-		 }) as boolean;
+		 eventRepository.battleEvent();
+		 return true;
 	}
 }
 

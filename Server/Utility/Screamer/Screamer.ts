@@ -8,8 +8,6 @@ class Screamer {
     }
 
     async scream(event: string, payload: any) {
-        // TODO: Remove log later
-        console.log(`Screamer is screaming ${event} with payload:`, payload);
         await this.yellStation.emit(event, payload);
     }
 

@@ -117,7 +117,8 @@ export class PartyBehavior {
 	// Event Response flags affect how the party reacts to events.
     eventResponse: "friendly" | "neutral" | "hostile";
 
-
+	useCampSupplies: boolean = false;
+	
     constructor(init?: Partial<PartyBehavior>) {
 		this.partyType = init?.partyType ?? PartyType.peasant;
         this.combatPolicy = init?.combatPolicy ?? "strategic";
@@ -413,4 +414,6 @@ export class Party {
 		const totalAgility = characters.reduce((total, character) => total + character.status.attributes.agility.base, 0);
 		return totalAgility / characters.length;
 	}
+
+	
 }

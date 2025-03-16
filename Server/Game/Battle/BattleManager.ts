@@ -20,10 +20,9 @@ export class BattleManager {
         partyA: Party,
         partyB: Party,
         location: LocationName,
-        environment: GameEnvironment,
         gameTime: GameTimeInterface
     ): Promise<BattleReportInterface> {
-        const newBattle = new Battle(partyA, partyB, location, environment, gameTime);
+        const newBattle = new Battle(partyA, partyB, location, gameTime);
         this.activeBattles.push(newBattle);
 
         try {
@@ -55,7 +54,6 @@ export class BattleManager {
             startingPartyBMembers: battle.startingPartyBMembers,
             battleTurn: battle.battleTurn,
             location: battle.location,
-            environment: battle.environment,
             gameTime: battle.gameTime
         };
     }
