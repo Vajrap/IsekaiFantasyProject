@@ -1,5 +1,5 @@
 import { Character } from "../Character/Character";
-import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { LocationActionEnum, UserInputAction } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { PartyInterface } from "../../../Common/RequestResponse/characterWS";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { PartyType } from "./PartyType";
@@ -154,42 +154,42 @@ export class Party {
 		"none",
 		"none",
 	];
-	actionSequence: Record<DayOfWeek, Record<TimeOfDay, LocationActionEnum>> = {
+	actionSequence: Record<DayOfWeek, Record<TimeOfDay, UserInputAction>> = {
 		[DayOfWeek.laoh]: {
-			[TimeOfDay.morning]: LocationActionEnum.Rest,
-			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
-			[TimeOfDay.evening]: LocationActionEnum.Rest,
-			[TimeOfDay.night]: LocationActionEnum.Rest,
+			[TimeOfDay.morning]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.afternoon]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.evening]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.night]: new UserInputAction(LocationActionEnum.None),
 		},
 		[DayOfWeek.rowana]: {
-			[TimeOfDay.morning]: LocationActionEnum.Rest,
-			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
-			[TimeOfDay.evening]: LocationActionEnum.Rest,
-			[TimeOfDay.night]: LocationActionEnum.Rest,
+			[TimeOfDay.morning]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.afternoon]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.evening]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.night]: new UserInputAction(LocationActionEnum.None),
 		},
 		[DayOfWeek.aftree]: {
-			[TimeOfDay.morning]: LocationActionEnum.Rest,
-			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
-			[TimeOfDay.evening]: LocationActionEnum.Rest,
-			[TimeOfDay.night]: LocationActionEnum.Rest,
+			[TimeOfDay.morning]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.afternoon]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.evening]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.night]: new UserInputAction(LocationActionEnum.None),
 		},
 		[DayOfWeek.udur]: {
-			[TimeOfDay.morning]: LocationActionEnum.Rest,
-			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
-			[TimeOfDay.evening]: LocationActionEnum.Rest,
-			[TimeOfDay.night]: LocationActionEnum.Rest,
+			[TimeOfDay.morning]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.afternoon]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.evening]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.night]: new UserInputAction(LocationActionEnum.None),
 		},
 		[DayOfWeek.matris]: {
-			[TimeOfDay.morning]: LocationActionEnum.Rest,
-			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
-			[TimeOfDay.evening]: LocationActionEnum.Rest,
-			[TimeOfDay.night]: LocationActionEnum.Rest,
+			[TimeOfDay.morning]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.afternoon]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.evening]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.night]: new UserInputAction(LocationActionEnum.None),
 		},
 		[DayOfWeek.seethar]: {
-			[TimeOfDay.morning]: LocationActionEnum.Rest,
-			[TimeOfDay.afternoon]: LocationActionEnum.Rest,
-			[TimeOfDay.evening]: LocationActionEnum.Rest,
-			[TimeOfDay.night]: LocationActionEnum.Rest,
+			[TimeOfDay.morning]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.afternoon]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.evening]: new UserInputAction(LocationActionEnum.None),
+			[TimeOfDay.night]: new UserInputAction(LocationActionEnum.None),
 		},
 	};
 	isTraveling: boolean = false;

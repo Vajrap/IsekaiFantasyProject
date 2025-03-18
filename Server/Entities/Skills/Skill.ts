@@ -17,7 +17,6 @@ export class Skill {
     activeEffect: SkillActiveEffect[];
     consume: SkillConsume;
     produce: SkillProduce;
-    growth: SkillGrowth;
     tier: Tier;
     isSpell: boolean;
     isAuto: boolean = false;
@@ -46,7 +45,6 @@ export class Skill {
         this.activeEffect = activeEffect;
         this.consume = consume;
         this.produce = produce;
-        this.growth = SkillGrowthManager.getGrowth(tier);
         this.tier = tier;
         this.isSpell = isSpell;
         this.isAuto = isAuto || false;
@@ -148,52 +146,6 @@ export class Skill {
             }
         }
         return true
-    }
-
-
-    neededExp(level: number) {
-        return level < this.growth.expNeeded.length ? this.growth.expNeeded[level - 1] : Infinity;
-    }
-}
-
-export class SkillGrowth {
-    maxLevel: number;
-    expNeeded: number[];
-
-    constructor(maxLevel: number, expNeeded: number[]) {
-        this.maxLevel = maxLevel;
-        this.expNeeded = expNeeded;
-    }
-}
-
-export class SkillGrowthManager {
-    static commonGrowth = new SkillGrowth(5, [50, 100, 150, 200, 250]);
-    static unCommonGrowth = new SkillGrowth(5, [70, 140, 210, 280, 350]);
-    static rareGrowth = new SkillGrowth(7, [200, 400, 600, 800, 1000, 1200, 1400]);
-    static epicGrowth = new SkillGrowth(7, [250, 500, 750, 1000, 1250, 1500, 1750]);
-    static legendaryGrowth = new SkillGrowth(10, [300, 600, 900, 1200, 1500, 1800, 2100, 2400, 2700, 3000]);
-    static uniqueGrowth = new SkillGrowth(10, [350, 700, 1050, 1400, 1750, 2100, 2450, 2800, 3150, 3500]);
-    static divineGrowth = new SkillGrowth(15, [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 11000, 12000, 13000, 14000, 15000]);
-
-    static getGrowth(tier: Tier): SkillGrowth {
-        switch (tier) {
-            case Tier.common:
-                return this.commonGrowth;
-            case Tier.uncommon:
-                return this.unCommonGrowth;
-            case Tier.rare:
-                return this.rareGrowth;
-            case Tier.epic:
-                return this.epicGrowth;
-            case Tier.legendary:
-                return this.legendaryGrowth;
-            case Tier.unique:
-                return this.uniqueGrowth;
-            case Tier.divine:
-                return this.divineGrowth;
-            default:
-                throw new Error('Invalid skill tier.');
-        }
     }
 }
 

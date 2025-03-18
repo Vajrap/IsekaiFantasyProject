@@ -1,72 +1,86 @@
 export var LocationActionEnum;
 (function (LocationActionEnum) {
-    LocationActionEnum["MoveIn"] = "Move In";
-    LocationActionEnum["MoveOut"] = "Move Out";
     LocationActionEnum["Rest"] = "Rest";
     LocationActionEnum["Inn"] = "Inn";
     LocationActionEnum["Camping"] = "Camping";
     LocationActionEnum["HouseRest"] = "House Rest";
-    LocationActionEnum["Blacksmith"] = "Blacksmith";
-    LocationActionEnum["Apothecary"] = "Apothecary";
-    LocationActionEnum["Tailor"] = "Tailor";
-    LocationActionEnum["Armorer"] = "Armorer";
-    LocationActionEnum["Jeweler"] = "Jeweler";
-    LocationActionEnum["Arcanist"] = "Arcanist";
-    LocationActionEnum["Grocery"] = "Grocery";
-    LocationActionEnum["Tavern"] = "Tavern";
-    LocationActionEnum["HeavensDecreeMeeting"] = "Heavens Decree Meeting";
-    LocationActionEnum["ChurchOfLaoh"] = "Church of Laoh";
-    LocationActionEnum["GreatTempleOfLaoh"] = "Great Temple of Laoh";
-    LocationActionEnum["CultOfNizarith"] = "Cult of Nizarith";
-    LocationActionEnum["ShrineOfGelthoran"] = "Shrine of Gelthoran";
-    LocationActionEnum["MajorShrineOfGelthoran"] = "Major Shrine of Gelthoran";
-    LocationActionEnum["ShrineOfAqorath"] = "Shrine of Aqorath";
-    LocationActionEnum["MajorShrineOfAqorath"] = "Major Shrine of Aqorath";
-    LocationActionEnum["ShrineOfValthoria"] = "Shrine of Valthoria";
-    LocationActionEnum["MajorShrineOfValthoria"] = "Major Shrine of Valthoria";
-    LocationActionEnum["ShrineOfPyrnthanas"] = "Shrine of Pyrnthanas";
-    LocationActionEnum["MajorShrineOfPyrnthanas"] = "Major Shrine of Pyrnthanas";
-    LocationActionEnum["Barrack"] = "Barrack";
-    LocationActionEnum["KnightOrder"] = "Knight Order";
-    LocationActionEnum["MagicSchool"] = "Magic School";
-    LocationActionEnum["MagicAcademy"] = "Magic Academy";
-    LocationActionEnum["ChurchOfLaohMagicLearning"] = "Church of Laoh Magic Learning";
-    LocationActionEnum["CultOfNizarithMagicLearning"] = "Cult of Nizarith Magic Learning";
-    LocationActionEnum["AdventureGuild"] = "Adventure Guild";
-    LocationActionEnum["BountyBoard"] = "Bounty Board";
-    LocationActionEnum["Arena"] = "Arena";
+    LocationActionEnum["Travel"] = "Travel";
+    LocationActionEnum["TrainAttribute"] = "Train Attribute";
+    LocationActionEnum["TrainProficiency"] = "Train Proficiency";
+    LocationActionEnum["TrainArtisan"] = "Train Artisan";
+    LocationActionEnum["TrainSkill"] = "Train Skill";
+    LocationActionEnum["LearnSkill"] = "Learn Skill";
+    // Blacksmith = 'Blacksmith',
+    // Apothecary = 'Apothecary',
+    // Tailor = 'Tailor',
+    // Armorer = 'Armorer',
+    // Jeweler = 'Jeweler',
+    // Arcanist = 'Arcanist',
+    // Grocery = 'Grocery',
+    // Tavern = 'Tavern',
+    // HeavensDecreeMeeting = 'Heavens Decree Meeting',
+    // ChurchOfLaoh = 'Church of Laoh',
+    // GreatTempleOfLaoh = 'Great Temple of Laoh',
+    // CultOfNizarith = 'Cult of Nizarith',
+    // ShrineOfGelthoran = 'Shrine of Gelthoran',
+    // MajorShrineOfGelthoran = 'Major Shrine of Gelthoran',
+    // ShrineOfAqorath = 'Shrine of Aqorath',
+    // MajorShrineOfAqorath = 'Major Shrine of Aqorath',
+    // ShrineOfValthoria = 'Shrine of Valthoria',
+    // MajorShrineOfValthoria = 'Major Shrine of Valthoria',
+    // ShrineOfPyrnthanas = 'Shrine of Pyrnthanas',
+    // MajorShrineOfPyrnthanas = 'Major Shrine of Pyrnthanas',
+    // Barrack = 'Barrack',
+    // KnightOrder = 'Knight Order',
+    // MagicSchool = 'Magic School',
+    // MagicAcademy = 'Magic Academy',
+    // ChurchOfLaohMagicLearning = 'Church of Laoh Magic Learning',
+    // CultOfNizarithMagicLearning = 'Cult of Nizarith Magic Learning',
+    // AdventureGuild = 'Adventure Guild',
+    // BountyBoard = 'Bounty Board',
+    // Arena = 'Arena',
+    LocationActionEnum["None"] = "None";
 })(LocationActionEnum || (LocationActionEnum = {}));
 export var LocationEventEnum;
 (function (LocationEventEnum) {
-    //Random event
-    LocationEventEnum["RanomEvent"] = "randomEvent";
-    //Resting events
-    LocationEventEnum["RestEvent"] = "rest";
-    LocationEventEnum["InnRest"] = "innRest";
-    LocationEventEnum["HouseRest"] = "houseRest";
-    LocationEventEnum["CampRest"] = "campRest";
-    //Training events
-    LocationEventEnum["AttributeTrain"] = "attributeTrain";
-    LocationEventEnum["ArtisanTrain"] = "artisanTrain";
-    LocationEventEnum["ProficiencyTrain"] = "proficiencyTrain";
-    LocationEventEnum["SkillTrain"] = "skillTrain";
-    LocationEventEnum["InternalSkillTrain"] = "internalSkillTrain";
-    //Learning events
-    LocationEventEnum["SkillLearn"] = "skillLearn";
-    LocationEventEnum["InternalSkillLearn"] = "internalSkillLearn";
-    //Explorations and Travel events
-    LocationEventEnum["StrollEvent"] = "strollEvent";
-    //Combat events
     LocationEventEnum["BattleEvent"] = "battleEvent";
+    //Resting events
+    LocationEventEnum["RestInnPoor"] = "restInnPoor";
+    LocationEventEnum["RestInnComfortable"] = "restInnComfortable";
+    LocationEventEnum["RestInnPremium"] = "restInnPremium";
+    LocationEventEnum["RestInnLuxury"] = "restInnLuxury";
+    LocationEventEnum["RestHouse"] = "restHouse";
+    LocationEventEnum["RestCamp"] = "restCamp";
+    //Training events
+    LocationEventEnum["TrainAttribute"] = "trainAttribute";
+    LocationEventEnum["TrainProficiency"] = "trainProficiency";
+    LocationEventEnum["TrainArtisan"] = "trainArtisan";
+    //Skill events
+    LocationEventEnum["SkillLearn"] = "skillLearn";
+    LocationEventEnum["SkillTrain"] = "skillTrain";
+    //Explorations and Travel events
+    // StrollEvent = "strollEvent", //Stroll event take 3 arguments, the party, the player, and the event() -> {} to execute, maybe about gaining insight or call a check to call for another event
+    //Combat events
+    // BattleEvent = "battleEvent", //Start combat, take party and pre-defined enemy party (needed implementation)
     //Dialogue events
-    LocationEventEnum["DialogueEvent"] = "dialogueEvent";
+    // DialogueEvent = "dialogueEvent", //Dialogue with NPC, take player character and NPCDialogue (needed implementation) -> NPC Dialogue class would be needed, determine the dialogue tree and the outcome
     //Quest events
-    LocationEventEnum["QuestGiverEvent"] = "questGiverEvent";
-    LocationEventEnum["QuestUpdateEvent"] = "questUpdateEvent";
-    LocationEventEnum["QuestCompleteEvent"] = "questCompleteEvent";
+    // QuestGiverEvent = "questGiverEvent", //Take character and quest, might check if the character has the quest already, if true -> update quest instead.
+    // QuestUpdateEvent = "questUpdateEvent",
+    // QuestCompleteEvent = "questCompleteEvent",
     //Item events
-    LocationEventEnum["ItemPickupEvent"] = "itemPickupEvent";
-    LocationEventEnum["ItemShopEvent"] = "itemShopEvent";
+    // ItemPickupEvent = "itemPickupEvent", //Take character and item, add item to character inventory
+    // ItemShopEvent = "itemShopEvent", //Take character and shop, open shop interface, buy/sell items
     //Travel events
-    LocationEventEnum["TravelEvent"] = "travelEvent";
+    // TravelEvent = "travelEvent",
+    // TradeEvent = "tradeEvent", //Take 2 parties, execute trade event
+    // QuestEvent = "questEvent", //Take 1 parties, execute quest event
+    // ItemEvent = "itemEvent", //Take 1 parties, execute item event
+    LocationEventEnum["None"] = "none";
 })(LocationEventEnum || (LocationEventEnum = {}));
+export class UserInputAction {
+    constructor(type, detail) {
+        this.type = type;
+        this.detail = detail ? detail : "";
+    }
+}

@@ -5,12 +5,24 @@ import { RegionNameEnum } from "../../../Common/DTOsEnumsInterfaces/Map/RegionNa
 import { Party } from "../Party/Party";
 import { PartyType } from "../Party/PartyType";
 import { checkIfCombatInitiated } from "../../Game/Battle/Calculators/checkIfCombatInitiated";
-import { executeTradeEvent } from "../Event/Trade/executeTradeEvent";
 import {
 	DayOfWeek,
 	TimeOfDay,
 } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
-import { eventRepository } from "../../Game/GameEvent/Events";
+import { event_rest_camp, event_rest_house, event_rest_inn_comfortable, event_rest_inn_luxury, event_rest_inn_poor, event_rest_inn_premium } from "../../Game/GameEvent/restEvents";
+import { BattleType, event_battle } from "../../Game/GameEvent/battleEvent";
+import { executeTradeEvent } from "../../Game/Trade/executeTradeEvent";
+import { event_train } from "../../Game/GameEvent/trains";
+import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
+import { Region } from "./Region";
+
+export enum LocationInnType {
+	Poor = "Poor",
+	Comfortable = "Comfortable",
+	Premium = "Premium",
+	Luxury = "Luxury",
+	None = "None",
+}
 
 export class GameLocation {
 	id: LocationName;
@@ -20,19 +32,22 @@ export class GameLocation {
 	mainRegion: RegionNameEnum;
 	region: RegionNameEnum;
 	parties: Party[] = [];
+	innType: LocationInnType = LocationInnType.None;
 
 	constructor(
 		id: LocationName,
 		description: string,
 		actions: LocationActionEnum[],
 		mainRegion: RegionNameEnum,
-		region: RegionNameEnum
+		region: RegionNameEnum,
+		innType?: LocationInnType
 	) {
 		this.id = id;
 		this.description = description;
 		this.actions = actions;
 		this.mainRegion = mainRegion;
 		this.region = region;
+		innType ? (this.innType = innType) : (this.innType = LocationInnType.None);
 	}
 
 	addConnection(location: GameLocation, distance: number) {
@@ -119,7 +134,7 @@ export class GameLocation {
 			throw new Error("Party not in location");
 		}
 		if (checkIfCombatInitiated(partyA, partyB)) {
-			eventRepository.battleEvent(partyA, partyB, this.id);
+			event_battle(partyA, partyB, this.id, BattleType.Encounter);
 			return;
 		}
 		this.handleNeutralEncounter(partyA, partyB);
@@ -227,7 +242,7 @@ export class GameLocation {
 		let encounteredParties = new Set<Party>();
 
 		if (justArrivedParties.length === 1 && otherParties.length === 1) {
-			await this.checkAndTriggerEncounterEvent(
+			this.checkAndTriggerEncounterEvent(
 				justArrivedParties[0],
 				otherParties[0]
 			);
@@ -236,7 +251,7 @@ export class GameLocation {
 		}
 
 		if (otherParties.length === 0 && justArrivedParties.length === 2) {
-			await this.checkAndTriggerEncounterEvent(
+			this.checkAndTriggerEncounterEvent(
 				justArrivedParties[0],
 				justArrivedParties[1]
 			);
@@ -273,22 +288,62 @@ export class GameLocation {
 		if (this.parties.length === 0) return;
 
         for (let party of this.parties) {
-            const action = party.actionSequence[day][phase];
+			const action = party.actionSequence[day][phase];
+ 
+            if (action.type === LocationActionEnum.Travel) return
 
-            if (action === LocationActionEnum.Travel) return
-
-            switch (action) {
+            switch (action.type) {
                 case LocationActionEnum.Camping:
+					event_rest_camp(party);
                     break;
                 case LocationActionEnum.HouseRest:
+					event_rest_house(party);
                     break;
                 case LocationActionEnum.Inn:
+					if (this.innType === LocationInnType.None) { 
+						console.warn(`Error: Inn type 'Non' for location ${this.id}, party ${party.partyID}`); 
+						return; 
+					}
+					switch (this.innType) {
+						case LocationInnType.Poor:
+							event_rest_inn_poor(party);
+							break
+						case LocationInnType.Comfortable:
+							event_rest_inn_comfortable(party);
+							break
+						case LocationInnType.Premium:
+							event_rest_inn_premium(party);
+							break
+						case LocationInnType.Luxury:
+							event_rest_inn_luxury(party);
+							break
+						default:
+							console.warn(`Error: Inn type '${this.innType}' not found for location ${this.id}, party ${party.partyID}`);
+							break
+					}
                     break;
                 case LocationActionEnum.Rest:
                     break;
+				case LocationActionEnum.TrainArtisan || LocationActionEnum.TrainAttribute || LocationActionEnum.TrainProficiency || LocationActionEnum.TrainSkill:
+					const statTrainingPlayerCharacter = party.getPlayerCharacter();
+					if (!statTrainingPlayerCharacter) return;
+					event_train(statTrainingPlayerCharacter, action.detail as CharacterStatusEnum);
+					break;	
+				case LocationActionEnum.LearnSkill:
+					const learningPlayerCharacter =party.getPlayerCharacter();
+					if (!learningPlayerCharacter) return;
+					learningPlayerCharacter.learnSkill(action.detail);
+					break;
+				case LocationActionEnum.TrainSkill:
+					const trainingPlayerCharacter =party.getPlayerCharacter();
+					if (!trainingPlayerCharacter) return;
+					trainingPlayerCharacter.trainSkill(action.detail);
+					break;
                 default:
                     break;
             }
         }
     }
+
+		
 }

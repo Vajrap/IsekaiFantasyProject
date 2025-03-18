@@ -1,11 +1,12 @@
 export class TargetType {
-    constructor(targetPartyOrSelf, targetScope, targetConditionFilter, targetSortingOption, tauntConsideration, targetBuffOrDebuffCondition) {
+    constructor(targetPartyOrSelf, targetScope, targetConditionFilter, targetSortingOption, tauntConsideration, targetBuffOrDebuffCondition, targetTraitCondition) {
         this.targetPartyOrSelf = targetPartyOrSelf;
         this.targetScope = targetScope || 'none';
         this.targetConditionFilter = targetConditionFilter || 'none';
         this.targetSortingOption = targetSortingOption || 'none';
         this.tauntConsideration = tauntConsideration || 'none';
         this.targetBuffOrDebuffCondition = targetBuffOrDebuffCondition || 'none';
+        this.targetTraitCondition = targetTraitCondition || 'none';
     }
 }
 export var TargetPartyType;
@@ -31,6 +32,7 @@ export var TargetSelectionScope;
     TargetSelectionScope["AllFrontRow"] = "frontRow";
     TargetSelectionScope["AllBackRow"] = "backRow";
     TargetSelectionScope["OppositeRow"] = "oppositeRow";
+    TargetSelectionScope["OppositeRowShiftable"] = "oppositeRowShiftable";
 })(TargetSelectionScope || (TargetSelectionScope = {}));
 export var TargetConditionFilters;
 (function (TargetConditionFilters) {

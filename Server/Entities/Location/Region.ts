@@ -153,7 +153,7 @@ function makeDummyRegion(): Region {
         {
             travel: [{ event: LocationEventEnum.None, chanceCeiling: 15 }],
             rest: [{ event: LocationEventEnum.RestCamp, chanceCeiling: 20 }],
-            train: [{ event: LocationEventEnum.AttributeTrain, chanceCeiling: 20 }],
+            train: [{ event: LocationEventEnum.TrainAttribute, chanceCeiling: 20 }],
         },
         [],
         new RegionSpeedBonus(1, 3, 2),

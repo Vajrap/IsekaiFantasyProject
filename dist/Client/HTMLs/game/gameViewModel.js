@@ -119,7 +119,9 @@ class GameViewModel {
         popupScreen.innerHTML = '';
         popupScreen.classList.remove('hidden');
         popupScreen.classList.add('visible');
-        new PlanningMenu(party);
+        const planningMenu = new PlanningMenu(party);
+        const planningMenuElement = planningMenu.planningMenu;
+        popupScreen.appendChild(planningMenuElement);
     }
     showSkillsMenu(character) {
         const popupScreen = getCharacterInfoPopupScreen();
@@ -153,7 +155,7 @@ class GameViewModel {
         }
     }
     showBattleReport() {
-        battleReportMenu.showBattleReportMenu();
+        // battleReportMenu.showBattleReportMenu();
     }
     initializeEventListeners() {
         return __awaiter(this, void 0, void 0, function* () {

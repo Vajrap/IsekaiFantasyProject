@@ -113,6 +113,8 @@ import { WeaponType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/W
 import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
 import { BattleDamageObject } from "./BattleDamageObject";
 import { RelationShipStatusEnum } from "./RelationshipStatusEnum";
+import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
+import { getExpNeededForSkill, getExpNeededForStatus, getLevelContribution } from "./getLevelContribution";
 
 export class Character {
 	id: string;
@@ -413,6 +415,23 @@ export class Character {
 		}
 
 		if (
+			status === CharacterStatusEnum.mining ||
+			status === CharacterStatusEnum.smithing ||
+			status === CharacterStatusEnum.woodcutting ||
+			status === CharacterStatusEnum.carpentry ||
+			status === CharacterStatusEnum.foraging ||
+			status === CharacterStatusEnum.weaving ||
+			status === CharacterStatusEnum.skinning ||
+			status === CharacterStatusEnum.tanning ||
+			status === CharacterStatusEnum.jewelry ||
+			status === CharacterStatusEnum.alchemy ||
+			status === CharacterStatusEnum.cooking ||
+			status === CharacterStatusEnum.enchanting
+		) {
+			stat = this.artisan(status);
+		}
+
+		if (
 			status === CharacterStatusEnum.pATK ||
 			status === CharacterStatusEnum.pHIT ||
 			status === CharacterStatusEnum.pCRT ||
@@ -444,23 +463,6 @@ export class Character {
 			stat = this.element(status);
 		}
 
-		if (
-			status === CharacterStatusEnum.mining ||
-			status === CharacterStatusEnum.smithing ||
-			status === CharacterStatusEnum.woodcutting ||
-			status === CharacterStatusEnum.carpentry ||
-			status === CharacterStatusEnum.foraging ||
-			status === CharacterStatusEnum.weaving ||
-			status === CharacterStatusEnum.skinning ||
-			status === CharacterStatusEnum.tanning ||
-			status === CharacterStatusEnum.jewelry ||
-			status === CharacterStatusEnum.alchemy ||
-			status === CharacterStatusEnum.cooking ||
-			status === CharacterStatusEnum.enchanting
-		) {
-			stat = this.artisan(status);
-		}
-
 		let mod = StatMod.value(stat);
 
 		if (this.buffsAndDebuffs.inspiration > 0) {
@@ -479,7 +481,6 @@ export class Character {
 	- BattleBonus: Bonus value, gained from buffs, debuffs, and other temporary effects. These will always be clear to 0 after battle.
 	- Exp: Experience value, used in training and leveling the Base value.
 	*/
-
 	statUp(stat: string, amount: number): void {
 		if (stat in this.status.attributes) {
 			this.status.attributes[
@@ -800,6 +801,7 @@ export class Character {
 			console.log(`Not eligible to learn skill with id ${skillID}`);
 		}
 
+		this.gainStatTracker(getLevelContribution(1, skill.tier));
 		this.skills.push({ skill: skill, level: 1, exp: 0 });
 	}
 
@@ -821,9 +823,7 @@ export class Character {
 
 	async trainSkill(
 		skillID: string,
-		expGained: number
 	): Promise<SkillResponseType> {
-		//We need to find first if the skill is in skills or in activeSkills?
 		let skill = this.skills.find((s) => s.skill.id === skillID);
 		if (!skill) {
 			skill = this.activeSkills.find((s) => s.skill.id === skillID);
@@ -832,13 +832,30 @@ export class Character {
 			throw new Error(`Skill with id ${skillID} not found in this character`);
 		}
 
-		let skillObject = await skillRepository.getSkill(skillID);
+		function tierToMaxLevel(tier: Tier) {
+			switch (tier) {
+				case Tier.common || Tier.uncommon: return 5 ;
+				case Tier.rare || Tier.epic: return 7;
+				case Tier.legendary || Tier.unique: return 10;
+				case Tier.divine: return 15;
+				default: return 5;
+			}
+		}
 
-		const expNeeded = skillObject.neededExp(skill.level);
+		let maxLevel = tierToMaxLevel(skill.skill.tier);
+
+		if (skill.level >= maxLevel) {
+			return SkillResponseType.SuccessButMaxLevelReached;
+		} 
+
+		const expNeeded = getExpNeededForSkill(skill.level, skill.skill.tier);
+
+		const expGained = Dice.rollTwenty() + StatMod.value(this.attribute(CharacterStatusEnum.intelligence));
 		skill.exp += expGained;
 		if (skill.exp >= expNeeded) {
 			skill.level++;
 			skill.exp -= expNeeded;
+			this.gainStatTracker(getLevelContribution(skill.level, skill.skill.tier));
 			return SkillResponseType.SuccessTrainingWithLevelUp;
 		}
 		return SkillResponseType.SuccessTrainingWithoutLevelUp;
@@ -1471,13 +1488,10 @@ export class Character {
 		effectRecorded: EffectReturnObject[];
 		skillActionSubType: SkillActionSubType;
 	} {
-		let isHit = true;
-		let isCrit = false;
 		let finalHealing = -damageObject.baseDamage;
 		let effectResults: EffectReturnObject[] = [];
 
 		if (damageObject.crit) {
-			isCrit = true;
 			finalHealing *= 1.5;
 			console.log(`Critical Heal!`);
 		}
@@ -1540,65 +1554,19 @@ export class Character {
 		applyEffect: SkillApplyEffect,
 		skillLevel: number
 	): EffectReturnObject {
-		let totalHitChance =
-			applyEffect.effectHitBase[
-				applyEffect.effectHitBase.length === 1 ? 0 : skillLevel - 1
-			];
-
-		const statBonuses =
-			applyEffect.effectHitBonus[
-				applyEffect.effectHitBonus.length === 1 ? 0 : skillLevel - 1
-			];
-
-		if (statBonuses.length > 0) {
-			for (const bonus of statBonuses) {
-				totalHitChance += this.getModifier(bonus);
-			}
-		}
-
-		if (
-			applyEffect.applyWithoutHit.length === 1 &&
-			applyEffect.applyWithoutHit[0] === true
-		) {
-			totalHitChance = 9999;
-		}
-
-		let duration =
-			applyEffect.effectDuration.length === 0
-				? 0
-				: applyEffect.effectDuration.length === 1
-				? applyEffect.effectDuration[0]
-				: applyEffect.effectDuration[skillLevel - 1];
-
-		const durationBonuses: CharacterStatusEnum[] = [];
-		if (applyEffect.effectDurationBonus.length > 0) {
-			if (applyEffect.effectDurationBonus.length === 1) {
-				durationBonuses.push(applyEffect.effectDurationBonus[0]);
-			} else {
-				durationBonuses.push(applyEffect.effectDurationBonus[skillLevel - 1]);
-			}
-		}
-
-		if (durationBonuses.length > 0) {
-			for (const bonus of durationBonuses) {
-				duration += this.getModifier(bonus);
-			}
-		}
+		const totalHitChance = this.calculateTotalHitChance(applyEffect, skillLevel);
+		const duration = this.calculateEffectDuration(applyEffect, skillLevel);
 
 		console.log(
 			`${this.name} is trying to inflict ${applyEffect.effectName} to ${target?.name} with DC ${totalHitChance}`
 		);
 
 		return target.effectInflicted(
-			applyEffect.effectName[
-				applyEffect.effectName.length === 1 ? 0 : skillLevel - 1
-			],
+			this.getEffectName(applyEffect, skillLevel),
 			totalHitChance,
 			duration,
 			applyEffect.effectStatForResistance,
-			applyEffect.applyWithoutHit[
-				applyEffect.applyWithoutHit.length === 1 ? 0 : skillLevel - 1
-			]
+			this.shouldApplyWithoutHit(applyEffect, skillLevel)
 		);
 	}
 
@@ -1610,124 +1578,36 @@ export class Character {
 		savingStatModifier: CharacterStatusEnum,
 		applyWithoutHit: boolean
 	): EffectReturnObject {
-		// Apply the effect directly if applyWithoutHit is true
-		if (applyWithoutHit === true) {
+		if (applyWithoutHit) {
 			return this.applyEffect(effect, effectDuration);
 		}
 
-		// Initial save roll
-		let [diceRoll, baseModifier, buffModifier] =
-			this.saveRoll(savingStatModifier);
+		let [diceRoll, baseModifier, buffModifier] = this.saveRoll(savingStatModifier);
 
-		// Natural 20 always save
-		if (diceRoll === 20) {
-			console.log(`${this.name} rolled a natural 20 and saved from ${effect}.`);
-			return {
-				enableTurnOrder: true,
-				buffsAndDebuffs: this.buffsAndDebuffs,
-				type: "buffsAndDebuffs",
-				damage: undefined,
-				status: this.status,
-			};
+		if (this.isNaturalSave(diceRoll, effect)) {
+			return this.createEffectReturnObject();
 		}
 
-		// Natural 1 always fail
-		if (diceRoll === 1) {
-			console.log(`${this.name} rolled a natural 1 and failed from ${effect}.`);
-			return this.applyEffect(effect, effectDuration);
+		let totalSaves = this.calculateTotalSaves(diceRoll, baseModifier, buffModifier);
+
+		if (this.shouldRerollSave(totalSaves, hitChance, diceRoll, "cursed")) {
+			[diceRoll, baseModifier, buffModifier] = this.saveRoll(savingStatModifier);
+			totalSaves = this.calculateTotalSaves(diceRoll, baseModifier, buffModifier);
 		}
 
-		let totalSaves = diceRoll + baseModifier + buffModifier;
-
-		console.log(
-			`${
-				this.name
-			} rolls ${diceRoll} for saving throw, plus ${baseModifier} modifier, and ${buffModifier} from Buff. Total: ${
-				diceRoll + baseModifier + buffModifier
-			}.`
-		);
-
-		// Reroll because of curse
-		if (
-			totalSaves >= hitChance &&
-			this.buffsAndDebuffs.cursed > 0 &&
-			diceRoll !== 20
-		) {
-			console.log(`${this.name} must reroll a saved throw because of curse.`);
-			this.buffsAndDebuffs.cursed -= 1;
-			[diceRoll, baseModifier, buffModifier] =
-				this.saveRoll(savingStatModifier);
-			totalSaves = diceRoll + baseModifier + buffModifier;
+		if (this.shouldRerollSave(totalSaves, hitChance, diceRoll, "bless")) {
+			[diceRoll, baseModifier, buffModifier] = this.saveRoll(savingStatModifier);
+			totalSaves = this.calculateTotalSaves(diceRoll, baseModifier, buffModifier);
 		}
 
-		// Reroll because of bless
-		if (
-			totalSaves < hitChance &&
-			this.buffsAndDebuffs.bless > 0 &&
-			diceRoll !== 1
-		) {
-			console.log(`${this.name} must reroll a failed throw because of bless.`);
-			this.buffsAndDebuffs.bless -= 1;
-			[diceRoll, baseModifier, buffModifier] =
-				this.saveRoll(savingStatModifier);
-			totalSaves = diceRoll + baseModifier + buffModifier;
-		}
+		totalSaves = this.applyBuffModifiers(totalSaves);
 
-		//*Inspiration and Desperation Buffs, give +2 or -2 to saving throw
-		if (this.buffsAndDebuffs.inspiration > 0) {
-			totalSaves += 2;
-		}
-		if (this.buffsAndDebuffs.desperation > 0) {
-			totalSaves -= 2;
-		}
-
-		// this one determine if the effect is applied or not
 		if (totalSaves >= hitChance) {
 			console.log(`${this.name} saved from ${effect}`);
-			return {
-				enableTurnOrder: true,
-				buffsAndDebuffs: this.buffsAndDebuffs,
-				type: "buffsAndDebuffs",
-				damage: undefined,
-				status: this.status,
-			};
+			return this.createEffectReturnObject();
 		}
 
 		return this.applyEffect(effect, effectDuration);
-	}
-
-	private applyEffect(effect: BuffsAndDebuffsEnum, effectDuration: number) {
-		console.log(`Effect ${effect} is applied to ${this.name}`);
-		const appenderFunction = EffectAppender[effect];
-
-		if (typeof appenderFunction !== "function") {
-			/*Panic!*/ throw new Error(
-				`Effect ${effect} not found in EffectAppender!`
-			);
-		}
-
-		const appenderObject = new EffectAppenderSendObject(
-			this.status,
-			this.buffsAndDebuffs,
-			effectDuration
-		);
-
-		const result: EffectReturnObject = appenderFunction(appenderObject);
-
-		//unwrapping result
-		this.buffsAndDebuffs = result.buffsAndDebuffs;
-		this.status = result.status;
-
-		if (result.damage !== undefined) {
-			this.receiveDamage({
-				attacker: this,
-				damage: result.damage.amount,
-				hitChance: 1000,
-				damageType: result.damage.type,
-			});
-		}
-
-		return result;
 	}
 
 	//MARK: RESOLVE EFFECT
@@ -2068,7 +1948,7 @@ export class Character {
 	}
 
 	//MARK: Training
-	train(status: CharacterStatusEnum, amount: number) {
+	train(status: CharacterStatusEnum) {
 		if (this.level >= 20) {
 			return;
 		}
@@ -2085,26 +1965,21 @@ export class Character {
 			throw new Error(`Invalid stat type: ${status}`);
 		}
 
-		// Get the current stat base value
 		const currentStat = statObject.base;
 
 		if (currentStat >= 30) {
 			return;
-		} // Max stat is 30
+		}
 
-		// Determine the amount of experience needed to level up based on the stat range
-		const expNeeded = 50 + (Math.max(StatMod.value(currentStat), 0) + 1) ** 2 * 20;
+		const expNeeded = getExpNeededForStatus(currentStat);
 
-		// Calculate the experience gained
-		const expGained = amount + Dice.rollTwenty();
+		const expGained = Dice.rollTwenty() + StatMod.value(this.attribute(CharacterStatusEnum.intelligence));
 
-		// Add the experience gained to the current stat's experience
 		statObject.exp += expGained;
 
-		// Check if the experience threshold for leveling up is met or exceeded
 		if (statObject.exp >= expNeeded) {
-			statObject.exp -= expNeeded; // Subtract the required experience from the current experience
-			statObject.base++; // Increment the base stat
+			statObject.exp -= expNeeded;
+			statObject.base++;
 			// Increase stat tracker for level up, 
 			const statTrackGain = Math.max(StatMod.value(statObject.base), 0) + 1; 
 
@@ -2265,6 +2140,176 @@ export class Character {
 			actorTraits: this.getTraits(),
 		};
 	}
+
+	// MARK: PRIVATE METHODS + HELPERS
+	private calculateTotalHitChance(
+		applyEffect: SkillApplyEffect,
+		skillLevel: number
+	): number {
+		let totalHitChance =
+			applyEffect.effectHitBase[
+				applyEffect.effectHitBase.length === 1 ? 0 : skillLevel - 1
+			];
+
+		const statBonuses =
+			applyEffect.effectHitBonus[
+				applyEffect.effectHitBonus.length === 1 ? 0 : skillLevel - 1
+			];
+
+		if (statBonuses.length > 0) {
+			for (const bonus of statBonuses) {
+				totalHitChance += this.getModifier(bonus);
+			}
+		}
+
+		if (this.shouldApplyWithoutHit(applyEffect, skillLevel)) {
+			totalHitChance = 9999;
+		}
+
+		return totalHitChance;
+	}
+
+	private calculateEffectDuration(
+		applyEffect: SkillApplyEffect,
+		skillLevel: number
+	): number {
+		let duration =
+			applyEffect.effectDuration.length === 0
+				? 0
+				: applyEffect.effectDuration.length === 1
+				? applyEffect.effectDuration[0]
+				: applyEffect.effectDuration[skillLevel - 1];
+
+		const durationBonuses =
+			applyEffect.effectDurationBonus.length === 1
+				? [applyEffect.effectDurationBonus[0]]
+				: applyEffect.effectDurationBonus.length > 0
+				? [applyEffect.effectDurationBonus[skillLevel - 1]]
+				: [];
+
+		for (const bonus of durationBonuses) {
+			duration += this.getModifier(bonus);
+		}
+
+		return duration;
+	}
+
+	private getEffectName(
+		applyEffect: SkillApplyEffect,
+		skillLevel: number
+	): BuffsAndDebuffsEnum {
+		return applyEffect.effectName[
+			applyEffect.effectName.length === 1 ? 0 : skillLevel - 1
+		];
+	}
+
+	private shouldApplyWithoutHit(
+		applyEffect: SkillApplyEffect,
+		skillLevel: number
+	): boolean {
+		return (
+			applyEffect.applyWithoutHit.length === 1
+				? applyEffect.applyWithoutHit[0]
+				: applyEffect.applyWithoutHit[skillLevel - 1]
+		) === true;
+	}
+
+
+	private isNaturalSave(diceRoll: number, effect: BuffsAndDebuffsEnum): boolean {
+		if (diceRoll === 20) {
+			console.log(`${this.name} rolled a natural 20 and saved from ${effect}.`);
+			return true;
+		}
+		if (diceRoll === 1) {
+			console.log(`${this.name} rolled a natural 1 and failed from ${effect}.`);
+			return false;
+		}
+		return false;
+	}
+
+	private calculateTotalSaves(
+		diceRoll: number,
+		baseModifier: number,
+		buffModifier: number
+	): number {
+		const total = diceRoll + baseModifier + buffModifier;
+		console.log(
+			`${this.name} rolls ${diceRoll} for saving throw, plus ${baseModifier} modifier, and ${buffModifier} from Buff. Total: ${total}.`
+		);
+		return total;
+	}
+
+	private shouldRerollSave(
+		totalSaves: number,
+		hitChance: number,
+		diceRoll: number,
+		buffType: "cursed" | "bless"
+	): boolean {
+		if (
+			(buffType === "cursed" && totalSaves >= hitChance && this.buffsAndDebuffs.cursed > 0 && diceRoll !== 20) ||
+			(buffType === "bless" && totalSaves < hitChance && this.buffsAndDebuffs.bless > 0 && diceRoll !== 1)
+		) {
+			console.log(`${this.name} must reroll a ${buffType === "cursed" ? "saved" : "failed"} throw because of ${buffType}.`);
+			this.buffsAndDebuffs[buffType] -= 1;
+			return true;
+		}
+		return false;
+	}
+
+	private applyBuffModifiers(totalSaves: number): number {
+		if (this.buffsAndDebuffs.inspiration > 0) {
+			totalSaves += 2;
+		}
+		if (this.buffsAndDebuffs.desperation > 0) {
+			totalSaves -= 2;
+		}
+		return totalSaves;
+	}
+
+	private createEffectReturnObject(): EffectReturnObject {
+		return {
+			enableTurnOrder: true,
+			buffsAndDebuffs: this.buffsAndDebuffs,
+			type: "buffsAndDebuffs",
+			damage: undefined,
+			status: this.status,
+		};
+	}
+
+	private applyEffect(effect: BuffsAndDebuffsEnum, effectDuration: number) {
+		console.log(`Effect ${effect} is applied to ${this.name}`);
+		const appenderFunction = EffectAppender[effect];
+
+		if (typeof appenderFunction !== "function") {
+			/*Panic!*/ throw new Error(
+				`Effect ${effect} not found in EffectAppender!`
+			);
+		}
+
+		const appenderObject = new EffectAppenderSendObject(
+			this.status,
+			this.buffsAndDebuffs,
+			effectDuration
+		);
+
+		const result: EffectReturnObject = appenderFunction(appenderObject);
+
+		//unwrapping result
+		this.buffsAndDebuffs = result.buffsAndDebuffs;
+		this.status = result.status;
+
+		if (result.damage !== undefined) {
+			this.receiveDamage({
+				attacker: this,
+				damage: result.damage.amount,
+				hitChance: 1000,
+				damageType: result.damage.type,
+			});
+		}
+
+		return result;
+	}
+
 }
 
 function turnConsumeIntoInterface(
