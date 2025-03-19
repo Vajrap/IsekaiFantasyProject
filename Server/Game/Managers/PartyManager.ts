@@ -1,5 +1,4 @@
-import { DayOfWeek, TimeOfDay } from "../../Common/DTOsEnumsInterfaces/TimeOfDay";
-import { Party } from "../Entities/Party/Party";
+import { Party } from "../../Entities/Party/Party";
 
 export class PartyManager {
     parties: Party[] = [];
@@ -18,3 +17,5 @@ export class PartyManager {
         this.parties.push(party);
     }
 }
+
+export const partyManager = new PartyManager();

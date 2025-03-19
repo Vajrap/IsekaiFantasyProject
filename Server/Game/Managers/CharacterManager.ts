@@ -1,4 +1,4 @@
-import { Character } from "../Entities/Character/Character";
+import { Character } from "../../Entities/Character/Character";
 
 export class CharacterManager {
     characters: Character[] = [];
@@ -16,3 +16,5 @@ export class CharacterManager {
         this.characters.push(character);
     }
 }
+
+export const characterManager = new CharacterManager();

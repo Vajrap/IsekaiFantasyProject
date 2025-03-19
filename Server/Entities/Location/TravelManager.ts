@@ -97,7 +97,7 @@ export class travelingPartyImpl implements travelingParty {
   }
 }
 
-export class TravelManager {
+class TravelManager {
   travelingParties: { [partyID: string]: travelingParty } = {};
 
   constructor() {}
@@ -567,3 +567,5 @@ function assignPreferredPosition(
     Math.floor(Math.random() * preferredPositions.length)
   ];
 }
+
+export const travelManager = new TravelManager();

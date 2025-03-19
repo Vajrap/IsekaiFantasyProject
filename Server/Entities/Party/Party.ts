@@ -415,5 +415,9 @@ export class Party {
 		return totalAgility / characters.length;
 	}
 
-	
+	getPartyAverageLuck(): number {
+		const characters = this.getAvailableCharacters();
+		const totalLuck = characters.reduce((total, character) => total + character.status.attributes.luck.base, 0);
+		return totalLuck / characters.length;
+	}
 }

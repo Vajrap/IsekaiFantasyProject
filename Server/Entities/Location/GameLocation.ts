@@ -1,6 +1,6 @@
 import { Character } from "../../Entities/Character/Character";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
-import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { LocationActionEnum, LocationEventEnum, UserInputAction } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { RegionNameEnum } from "../../../Common/DTOsEnumsInterfaces/Map/RegionNameEnum";
 import { Party } from "../Party/Party";
 import { PartyType } from "../Party/PartyType";
@@ -14,7 +14,9 @@ import { BattleType, event_battle } from "../../Game/GameEvent/battleEvent";
 import { executeTradeEvent } from "../../Game/Trade/executeTradeEvent";
 import { event_train } from "../../Game/GameEvent/trains";
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
-import { Region } from "./Region";
+import { getRegionFromName, Region } from "./Region";
+import { Dice } from "../../Utility/Dice";
+import { StatMod } from "../../Utility/StatMod";
 
 export enum LocationInnType {
 	Poor = "Poor",
@@ -294,15 +296,32 @@ export class GameLocation {
 
             switch (action.type) {
                 case LocationActionEnum.Camping:
-					event_rest_camp(party);
-                    break;
+					let camp_randomEvent = determineRandomEvent(this.region, party, "rest");
+					if (camp_randomEvent !== LocationEventEnum.None) {
+						executeRandomEventFromLocationEventEnum(camp_randomEvent);
+						break;
+					} else {
+						event_rest_camp(party);
+						break;
+					}
                 case LocationActionEnum.HouseRest:
-					event_rest_house(party);
-                    break;
+					let house_randomEvent = determineRandomEvent(this.region, party, "rest");
+					if (house_randomEvent !== LocationEventEnum.None) {
+						executeRandomEventFromLocationEventEnum(house_randomEvent);
+						break;
+					} else {
+						event_rest_camp(party);
+						break;
+					}
                 case LocationActionEnum.Inn:
 					if (this.innType === LocationInnType.None) { 
 						console.warn(`Error: Inn type 'Non' for location ${this.id}, party ${party.partyID}`); 
 						return; 
+					}
+					let inn_randomEvent = determineRandomEvent(this.region, party, "rest");
+					if (inn_randomEvent !== LocationEventEnum.None) {
+						executeRandomEventFromLocationEventEnum(inn_randomEvent);
+						break;
 					}
 					switch (this.innType) {
 						case LocationInnType.Poor:
@@ -323,6 +342,7 @@ export class GameLocation {
 					}
                     break;
                 case LocationActionEnum.Rest:
+					// Normally this one was forced when party have too little energy to travel;
                     break;
 				case LocationActionEnum.TrainArtisan || LocationActionEnum.TrainAttribute || LocationActionEnum.TrainProficiency || LocationActionEnum.TrainSkill:
 					const statTrainingPlayerCharacter = party.getPlayerCharacter();
@@ -343,7 +363,14 @@ export class GameLocation {
                     break;
             }
         }
-    }
+    }	
+}
 
-		
+function determineRandomEvent(regionName: RegionNameEnum, party: Party, action: "travel" | "rest" | "train" | "stroll"): LocationEventEnum {
+	return getRegionFromName(regionName).getRandomEvent(action, StatMod.value(party.getPartyAverageLuck()))
+}
+
+function executeRandomEventFromLocationEventEnum(eventEnum: LocationEventEnum): Function {
+
+	return () => {};
 }

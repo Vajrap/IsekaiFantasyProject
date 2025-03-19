@@ -18,6 +18,7 @@ export class Region {
         travel: {event: LocationEventEnum, chanceCeiling: number}[],
         rest: {event: LocationEventEnum, chanceCeiling: number}[],
         train: {event: LocationEventEnum, chanceCeiling: number}[],
+        stroll: {event: LocationEventEnum, chanceCeiling: number}[],
     }
     possibleEnemies: MobCharacterEnum[]
     speedBonus: RegionSpeedBonus
@@ -27,6 +28,7 @@ export class Region {
             travel: {event: LocationEventEnum, chanceCeiling: number}[],
             rest: {event: LocationEventEnum, chanceCeiling: number}[],
             train: {event: LocationEventEnum, chanceCeiling: number}[],
+            stroll: {event: LocationEventEnum, chanceCeiling: number}[],
         },
         possibleEnemies: MobCharacterEnum[],
         speedBonus: RegionSpeedBonus
@@ -37,7 +39,7 @@ export class Region {
         this.speedBonus = speedBonus
     }
 
-    getRandomEvent(action: PartyActions, bonusChance: number = 0): LocationEventEnum {
+    getRandomEvent(action: "travel" | "rest" | "train" | "stroll", bonusChance: number = 0): LocationEventEnum {
         const randomRollSum = Dice.rollTwenty() + bonusChance;
         const eventList = this.eventsByAction[action]
         for (const event of eventList) {
@@ -154,6 +156,7 @@ function makeDummyRegion(): Region {
             travel: [{ event: LocationEventEnum.None, chanceCeiling: 15 }],
             rest: [{ event: LocationEventEnum.RestCamp, chanceCeiling: 20 }],
             train: [{ event: LocationEventEnum.TrainAttribute, chanceCeiling: 20 }],
+            stroll: [{ event: LocationEventEnum.None, chanceCeiling: 15 }],
         },
         [],
         new RegionSpeedBonus(1, 3, 2),

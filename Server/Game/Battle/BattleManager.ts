@@ -6,7 +6,7 @@ import { Party } from "../../Entities/Party/Party";
 import { Battle } from "./Battle";
 import { BattleReport } from "./BattleReport";
 
-export class BattleManager {
+class BattleManager {
     activeBattles: Battle[];
     constructor() {
         this.activeBattles = []
@@ -58,3 +58,5 @@ export class BattleManager {
         };
     }
 }
+
+export const battleManager = new BattleManager();

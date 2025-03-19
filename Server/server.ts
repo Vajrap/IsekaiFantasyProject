@@ -46,8 +46,8 @@ server.on('upgrade', (request: any, socket: any, head: any) => {
         return;
     }
 
-    game.webSocketServer.handleUpgrade(request, socket, head, (ws) => {
-        game.webSocketServer.emit('connection', ws, request);
+    game.webSocketManager.wss.handleUpgrade(request, socket, head, (ws) => {
+        game.webSocketManager.wss.emit('connection', ws, request);
     });
 });
 

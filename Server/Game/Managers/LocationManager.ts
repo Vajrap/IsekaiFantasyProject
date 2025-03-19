@@ -1,5 +1,5 @@
-import { DayOfWeek, TimeOfDay } from "../../Common/DTOsEnumsInterfaces/TimeOfDay";
-import { GameLocation } from "../Entities/Location/GameLocation";
+import { DayOfWeek, TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
+import { GameLocation } from "../../Entities/Location/GameLocation";
 import { 
     location_OceanTide,
     location_MistGarde,
@@ -33,9 +33,9 @@ import {
     location_TheTrident,
     location_UmbralVeil,
     location_WhiteOakEstate
-} from "../Entities/Location/Locations";
+} from "../../Entities/Location/Locations";
 
-export class LocationManager {
+class LocationManager {
     locations: GameLocation[] = [];
     constructor(){
         this.initializeLocations();
@@ -160,3 +160,4 @@ export class LocationManager {
     }
 }
 
+export const locationManager = new LocationManager();

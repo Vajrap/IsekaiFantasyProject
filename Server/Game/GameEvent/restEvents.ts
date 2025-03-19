@@ -1,37 +1,68 @@
 import { Party } from "../../Entities/Party/Party";
 import { Dice } from "../../Utility/Dice";
+import { screamer } from "../../Utility/Screamer/Screamer";
+import { REST_EVENT, RestEventEnum } from "../../../Common/DTOsEnumsInterfaces/Events/RestEvents";
+
+function screamRestEvent(party: Party, restType: RestEventEnum): void {
+    screamer.scream(
+        REST_EVENT,
+        {
+            type: restType,
+            party: party.intoInterface(),
+        }
+    );
+}
+
+export function event_rest_force(party: Party): void {
+    apply_rest_benefits(party, 1.0);
+    screamRestEvent(party, RestEventEnum.REST);
+}
 
 export function event_rest_camp(party: Party): void {
     let useItem = false;
+    let restType = RestEventEnum.CAMP_NO_SUPPLY;
+
     if (party.behavior.useCampSupplies && party.inventory['campSupplies'] > 0) {
         party.inventory['campSupplies'] -= 1;
         useItem = true;
+        restType = RestEventEnum.CAMP_SUPPLY;
     }
-    apply_rest_benefits(party, useItem ? 1.1 : 1.0);
-}
-
-export function event_rest_house(party: Party): void {
-    apply_rest_benefits(party, 1.3);
+    apply_rest_benefits(party, useItem ? 1.2 : 1.0);
+    screamRestEvent(party, restType);
 }
 
 export function event_rest_inn_poor(party: Party): void {
     if (party.gold >= 5) {
         party.gold -= 5;
         apply_rest_benefits(party, 1.2);
+        screamRestEvent(party, RestEventEnum.INN_POOR);
+    } else {
+        event_rest_force(party);
     }
+}
+
+export function event_rest_house(party: Party): void {
+    apply_rest_benefits(party, 1.4);
+    screamRestEvent(party, RestEventEnum.HOUSE);
 }
 
 export function event_rest_inn_comfortable(party: Party): void {
     if (party.gold >= 15) {
         party.gold -= 15;
         apply_rest_benefits(party, 1.4);
+        screamRestEvent(party, RestEventEnum.INN_COMFORTABLE);
+    } else {
+        event_rest_force(party);
     }
 }
 
 export function event_rest_inn_luxury(party: Party): void {
     if (party.gold >= 30) {
         party.gold -= 30;
-        apply_rest_benefits(party, 1.6);
+        apply_rest_benefits(party, 1.7);
+        screamRestEvent(party, RestEventEnum.INN_LUXURY);
+    } else {
+        event_rest_force(party);
     }
 }
 
@@ -39,6 +70,9 @@ export function event_rest_inn_premium(party: Party): void {
     if (party.gold >= 50) {
         party.gold -= 50;
         apply_rest_benefits(party, 2.0);
+        screamRestEvent(party, RestEventEnum.INN_PREMIUM);
+    } else {
+        event_rest_force(party);
     }
 }
 

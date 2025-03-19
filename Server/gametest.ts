@@ -173,7 +173,7 @@ async function testBattle() {
     game.partyManager.parties.push(partyB);
 
     try {
-        const battleResult = await game.battles.startNewBattle(partyA, partyB, LocationName.WhiteOakEstate, GameEnvironment.cloudy, game.gameTime.getCurrentGameDate());
+        const battleResult = await game.battleManager.startNewBattle(partyA, partyB, LocationName.WhiteOakEstate, GameEnvironment.cloudy, game.gameTime.getCurrentGameDate());
         return battleResult;
     } catch (error) {
         console.error('Error during battle:', error);
