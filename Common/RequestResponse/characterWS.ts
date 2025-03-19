@@ -1,5 +1,5 @@
 import { ItemType } from "Common/DTOsEnumsInterfaces/Item/Enums";
-import { ItemCost } from "Common/DTOsEnumsInterfaces/Item/ItemCost";
+import { ItemCostInterface } from "Common/DTOsEnumsInterfaces/Item/ItemCost";
 import { LocationActionEnum } from "Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { SkillConsumeInterface, SkillProduceInterface } from "Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
 
@@ -161,7 +161,7 @@ export interface ItemInterface {
     name: string;
     description: string;
     quantity: number;
-    cost: ItemCost;
+    cost: ItemCostInterface;
     itemType: ItemType;
     weight: number;
 };
@@ -169,7 +169,7 @@ export interface ItemInterface {
 export interface EquipmentInterface {
     id: string,
     name: string,
-    cost: ItemCost,
+    cost: ItemCostInterface,
     weight: number,
     description: string,
 };
