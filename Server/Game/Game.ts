@@ -8,11 +8,12 @@ import { travelManager } from "../Entities/Location/TravelManager";
 import { webSocketManager } from "./Managers/WebSocketManager";
 
 import { screamer } from "../Utility/Screamer/Screamer";
-import { SkillRepository, skillRepository } from "../Entities/Skills/SkillRepository";
+import { echoChamber } from "./EchoChamber";
+import { skillRepository } from "../Entities/Skills/SkillRepository";
 
 import { PartyType } from "../Entities/Party/PartyType";
 import { initializeDatabase } from "./DatabaseFunctions";
-import { runGameLoop, runSchedule } from "./GameLoop";
+import { runGameLoop } from "./GameLoop";
 
 export class Game {
     characterManager = characterManager;
@@ -21,9 +22,10 @@ export class Game {
     battleManager = battleManager;
     webSocketManager = webSocketManager;
     db = db;
-    skillRepository: SkillRepository = skillRepository;
+    skillRepository = skillRepository;
     travelManager = travelManager;
     screamer = screamer;
+    echoChamber = echoChamber;
 
     constructor() { }
 
@@ -46,10 +48,10 @@ export class Game {
 
     private startTiming() {
         console.log('Game Time Started');
-        runSchedule();
+        // runSchedule();
         // For testing purposes, we can use the following mock method to run the game loop every 10 seconds
-        // this.mockScheduleNextGameLoop();
-        // this.testBattleAndListener();
+        this.mockScheduleNextGameLoop();
+        this.testBattleAndListener();
     }
 
     // MARK: TESTING METHODS

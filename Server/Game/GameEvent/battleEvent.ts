@@ -7,9 +7,11 @@ export enum BattleType {
     Encounter = 'Encounter',
 };
 
+export const EVENT_BATTLE = 'EVENT_BATTLE';
+
 export function event_battle(partyA: Party, partyB: Party, location: LocationName, battleType: BattleType): void {
     screamer.scream(
-        `EVENT_BATTLE`,
+        EVENT_BATTLE,
         {
             partyA: partyA,
             partyB: partyB,

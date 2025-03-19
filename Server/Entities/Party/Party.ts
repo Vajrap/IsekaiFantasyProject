@@ -1,11 +1,17 @@
 import { Character } from "../Character/Character";
-import { LocationActionEnum, UserInputAction } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import {
+	LocationActionEnum,
+	UserInputAction,
+} from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { PartyInterface } from "../../../Common/RequestResponse/characterWS";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { PartyType } from "./PartyType";
 import { AttributeEnum } from "../Character/Subclasses/CharacterDataEnum";
 import { CharacterStatus } from "../Character/Subclasses/CharacterStatus";
-import { DayOfWeek, TimeOfDay } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
+import {
+	DayOfWeek,
+	TimeOfDay,
+} from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
 
 export class PartyBehavior {
 	partyType: PartyType;
@@ -107,22 +113,54 @@ export class PartyBehavior {
 			autoBuyEssentials: boolean;
 		};
 	};
-	
+	/*
+	Crafting System Configuration:
+	The crafting system determines how a party will engage in crafting activities.
+	When the party has the 'craft' action set, at the designated time, the party will evaluate the `craftingList` to determine if crafting is possible.
+ 
+	- If the `craftingList` is empty, the party will not craft anything and will fall back to resting.
+	- If the `craftingList` contains items, the party will evaluate whether crafting is possible.
+ 
+	**Criteria for Crafting:**
+	1. The party must have enough resources to craft the item.
+	2. The crafting strategy must be met:
+	   - **"craftAll"**: Craft as many as possible with available resources.
+	   - **"craftInRange"**: Craft if the item quantity is below `quantityLow` but does not exceed `quantityHigh`.
+	   - **"craftOne"**: Craft a single item only if its quantity is 0.
+	3. If resources are insufficient but `allowTradeForMaterials` is `true`, the party will attempt to buy materials from the market. If materials are successfully acquired, crafting will proceed.
+ 
+	If none of the items in `craftingList` meet these criteria (including after trade attempts), the party will default to a rest action.
+ 
+	**Crafting Execution:**
+	- The party will assign crafting to the character with the highest skill in the required crafting category.
+	- Some blueprints may require specific facilities such as a **Blacksmith**, **Alchemy Lab**, or **Cooking Station**.
+	*/
+	craft: {
+		craftingList: {
+			[blueprintID: string]: {
+				quantityLow: number;
+				quantityHigh: number;
+				allowTradeForMaterials: boolean;
+				strategy: "craftInRange" | "craftAll" | "craftOne";
+			};
+		};
+	};
+
 	// During the game, many events may happened, the risk taking behavior of the party will be used as a modifier factor to determine the outcome of the event.
-    riskTaking: "reckless" | "cautious" | "balanced";
+	riskTaking: "reckless" | "cautious" | "balanced";
 
 	// Travel Pace affected the speed of the party when traveling on the map.
-    travelPace: "fast" | "normal" | "slow";
+	travelPace: "fast" | "normal" | "slow";
 
 	// Event Response flags affect how the party reacts to events.
-    eventResponse: "friendly" | "neutral" | "hostile";
+	eventResponse: "friendly" | "neutral" | "hostile";
 
 	useCampSupplies: boolean = false;
-	
-    constructor(init?: Partial<PartyBehavior>) {
+
+	constructor(init?: Partial<PartyBehavior>) {
 		this.partyType = init?.partyType ?? PartyType.peasant;
-        this.combatPolicy = init?.combatPolicy ?? "strategic";
-        this.trade = init?.trade ?? {
+		this.combatPolicy = init?.combatPolicy ?? "strategic";
+		this.trade = init?.trade ?? {
 			engagement: "noTrade",
 			selling: {
 				strategy: "sellNone",
@@ -138,10 +176,13 @@ export class PartyBehavior {
 				autoBuyEssentials: false,
 			},
 		};
-        this.riskTaking = init?.riskTaking ?? "balanced";
-        this.travelPace = init?.travelPace ?? "normal";
-        this.eventResponse = init?.eventResponse ?? "neutral";
-    }
+		this.riskTaking = init?.riskTaking ?? "balanced";
+		this.travelPace = init?.travelPace ?? "normal";
+		this.eventResponse = init?.eventResponse ?? "neutral";
+		this.craft = init?.craft ?? {
+			craftingList: {},
+		};
+	}
 }
 
 export class Party {
@@ -226,25 +267,25 @@ export class Party {
 			if (this.inventory[item.item.id]) {
 				this.inventory[item.item.id] += 1;
 			} else {
-				this.inventory
+				this.inventory;
 				this.inventory[item.item.id] = 1;
-		}
-		character.itemsBag.items = [];
-		this.gold += character.gold;
-		character.gold = 0;
+			}
+			character.itemsBag.items = [];
+			this.gold += character.gold;
+			character.gold = 0;
 		}
 	}
-		
+
 	leader(): Character {
 		// leader is the character with the same id
 		return this.characters.find(
-			character => character != "none" && character.id === this.partyID
+			(character) => character != "none" && character.id === this.partyID
 		) as Character;
 	}
 
 	getPlayerCharacter(): Character {
 		return this.characters.find(
-			character => character != "none" && character.isPlayerCharacter
+			(character) => character != "none" && character.isPlayerCharacter
 		) as Character;
 	}
 
@@ -337,15 +378,18 @@ export class Party {
 
 	getPartyMemberWithHighestAttr(attr: AttributeEnum): Character {
 		const highest = this.characters
-			.filter(c => c !== "none")
-			.reduce((max, character) => 
-				character.attribute(attr as keyof CharacterStatus["attributes"]) > max.attribute(attr as keyof CharacterStatus["attributes"]) ? character : max
+			.filter((c) => c !== "none")
+			.reduce((max, character) =>
+				character.attribute(attr as keyof CharacterStatus["attributes"]) >
+				max.attribute(attr as keyof CharacterStatus["attributes"])
+					? character
+					: max
 			);
-	
+
 		if (!highest) {
 			throw new Error("No valid characters in party");
 		}
-	
+
 		return highest;
 	}
 
@@ -378,46 +422,56 @@ export class Party {
 	}
 
 	toDatabase(): {
-        partyID: string;
-        characters: string[];
-        actionSequence: string;
-        isTraveling: boolean;
-        location: string;
-    } {
-        return {
-            partyID: this.partyID,
-			characters: this.characters.map(character =>  character === "none" ? "none" : character.id),            
+		partyID: string;
+		characters: string[];
+		actionSequence: string;
+		isTraveling: boolean;
+		location: string;
+	} {
+		return {
+			partyID: this.partyID,
+			characters: this.characters.map((character) =>
+				character === "none" ? "none" : character.id
+			),
 			actionSequence: JSON.stringify(this.actionSequence),
-            isTraveling: this.isTraveling,
-            location: this.location,
-        };
-    }
+			isTraveling: this.isTraveling,
+			location: this.location,
+		};
+	}
 
 	intoInterface(): PartyInterface {
 		return {
 			partyID: this.partyID,
 			location: this.location,
 			isTraveling: this.isTraveling,
-			characters: this.characters.map(character => character === "none" ? "none" : character.intoInterface()),
+			characters: this.characters.map((character) =>
+				character === "none" ? "none" : character.intoInterface()
+			),
 			// TODO: Implement actionsSequence
 			actionSequence: this.actionSequence,
 			actionsList: [],
-		}
+		};
 	}
 
 	getAvailableCharacters(): Character[] {
-		return this.characters.filter(character => character !== "none");
+		return this.characters.filter((character) => character !== "none");
 	}
 
 	getPartyAverageAgility(): number {
 		const characters = this.getAvailableCharacters();
-		const totalAgility = characters.reduce((total, character) => total + character.status.attributes.agility.base, 0);
+		const totalAgility = characters.reduce(
+			(total, character) => total + character.status.attributes.agility.base,
+			0
+		);
 		return totalAgility / characters.length;
 	}
 
 	getPartyAverageLuck(): number {
 		const characters = this.getAvailableCharacters();
-		const totalLuck = characters.reduce((total, character) => total + character.status.attributes.luck.base, 0);
+		const totalLuck = characters.reduce(
+			(total, character) => total + character.status.attributes.luck.base,
+			0
+		);
 		return totalLuck / characters.length;
 	}
 }

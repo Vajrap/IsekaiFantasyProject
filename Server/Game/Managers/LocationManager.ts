@@ -149,7 +149,7 @@ class LocationManager {
 
     async processEncounters(day: DayOfWeek, phase: TimeOfDay) {
         for (const location of this.locations) {
-            await location.processEncounters(day, phase);
+            await location.processEncounters();
         }
     }
 

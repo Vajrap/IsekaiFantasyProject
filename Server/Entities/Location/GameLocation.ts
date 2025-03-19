@@ -9,7 +9,7 @@ import {
 	DayOfWeek,
 	TimeOfDay,
 } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
-import { event_rest_camp, event_rest_house, event_rest_inn_comfortable, event_rest_inn_luxury, event_rest_inn_poor, event_rest_inn_premium } from "../../Game/GameEvent/restEvents";
+import { event_rest_camp, event_rest_force, event_rest_house, event_rest_inn_comfortable, event_rest_inn_luxury, event_rest_inn_poor, event_rest_inn_premium } from "../../Game/GameEvent/restEvents";
 import { BattleType, event_battle } from "../../Game/GameEvent/battleEvent";
 import { executeTradeEvent } from "../../Game/Trade/executeTradeEvent";
 import { event_train } from "../../Game/GameEvent/trains";
@@ -228,7 +228,7 @@ export class GameLocation {
 		);
 	}
 
-	async processEncounters(day: DayOfWeek, phase: TimeOfDay) {
+	async processEncounters() {
 		if (this.parties.length === 0) return;
 
 		let justArrivedParties = this.parties
@@ -310,7 +310,7 @@ export class GameLocation {
 						executeRandomEventFromLocationEventEnum(house_randomEvent);
 						break;
 					} else {
-						event_rest_camp(party);
+						event_rest_house(party);
 						break;
 					}
                 case LocationActionEnum.Inn:
@@ -343,6 +343,7 @@ export class GameLocation {
                     break;
                 case LocationActionEnum.Rest:
 					// Normally this one was forced when party have too little energy to travel;
+					event_rest_force(party);
                     break;
 				case LocationActionEnum.TrainArtisan || LocationActionEnum.TrainAttribute || LocationActionEnum.TrainProficiency || LocationActionEnum.TrainSkill:
 					const statTrainingPlayerCharacter = party.getPlayerCharacter();

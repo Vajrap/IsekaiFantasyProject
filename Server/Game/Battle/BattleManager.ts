@@ -1,10 +1,12 @@
 import { BattleReportInterface } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
-import { GameEnvironment } from "../../../Common/DTOsEnumsInterfaces/Map/GameEnvironment";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { Party } from "../../Entities/Party/Party";
+import { screamer } from "../../Utility/Screamer/Screamer";
 import { Battle } from "./Battle";
 import { BattleReport } from "./BattleReport";
+
+export const END_BATTLE = "EndBattle";
 
 class BattleManager {
     activeBattles: Battle[];
@@ -33,6 +35,7 @@ class BattleManager {
             // Remove the battle from active battles once it's over
             this.endBattle(newBattle);
             
+            screamer.scream(END_BATTLE, result);
             return result; // Return the battle result as BattleReport
         } catch (error) {
             console.error("Error during battle:", error);

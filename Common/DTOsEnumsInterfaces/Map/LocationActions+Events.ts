@@ -10,6 +10,7 @@ export enum LocationActionEnum {
   TrainSkill = "Train Skill",
   LearnSkill = "Learn Skill",
   
+  Craft = "Craft",
   // Blacksmith = 'Blacksmith',
   // Apothecary = 'Apothecary',
   // Tailor = 'Tailor',
@@ -61,6 +62,9 @@ export enum LocationEventEnum {
   //Skill events
   SkillLearn = "skillLearn",
   SkillTrain = "skillTrain",
+
+  //Crafting events
+  Craft = "craft",
 
   //Explorations and Travel events
   // StrollEvent = "strollEvent", //Stroll event take 3 arguments, the party, the player, and the event() -> {} to execute, maybe about gaining insight or call a check to call for another event

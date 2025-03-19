@@ -2,7 +2,7 @@ import { GameTime } from "./TimeAndDate/GameTime";
 import { locationManager } from "./Managers/LocationManager";
 import { travelManager } from "../Entities/Location/TravelManager";
 import { DayOfWeek, TimeOfDay } from "../../Common/DTOsEnumsInterfaces/TimeOfDay";
-import { webSocketManager } from "../API/WebSocket/WebSocketServer";
+import { webSocketManager } from "./Managers/WebSocketManager";
 import { partyManager } from "./Managers/PartyManager";
 
 export async function runSchedule() {
@@ -112,7 +112,6 @@ function handleGameMilestones() {
 }
 
 async function processEvents(day: DayOfWeek, phase:TimeOfDay) {
-    console.log(`Processing encounters for ${day} ${phase}`);
     await locationManager.processEncounters(day, phase);
     await locationManager.processActions(day, phase);
     await travelManager.allTravel(day, phase);

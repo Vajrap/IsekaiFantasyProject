@@ -26,5 +26,6 @@ const eventRepository: { [key in LocationEventEnum]: Function } = {
   [LocationEventEnum.TrainProficiency]: event_train,
   [LocationEventEnum.TrainArtisan]: event_train,
   [LocationEventEnum.SkillTrain]: event_battle,
-  [LocationEventEnum.SkillLearn]: event_skill_learn
+  [LocationEventEnum.SkillLearn]: event_skill_learn,
+  [LocationEventEnum.Craft]: () => { },
 };

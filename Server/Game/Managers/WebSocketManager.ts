@@ -7,7 +7,7 @@ import { partyManager, PartyManager } from "./PartyManager";
 
 class WebSocketManager {
 	public wss: WebSocketServer;
-	private userConnections: Map<string, WebSocket> = new Map();
+	public userConnections: Map<string, WebSocket> = new Map();
 	private partyManager: PartyManager;
 
 	constructor(partyManager: PartyManager) {
