@@ -1,6 +1,6 @@
 import { RaceEnum } from "../../../../Common/RequestResponse/characterCreation";
 import { ClassModifier } from "../../../Database/Character/ClassModifier";
-import { CharacterType } from "./CharacterType";
+import { CharacterType } from "../Enums/CharacterType";
 
 export class CharacterArchetype {
     name: string;

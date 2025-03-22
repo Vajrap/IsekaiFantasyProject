@@ -6,7 +6,7 @@ import { ItemResourceEnum } from "../../../Database/Item/Resource/resource";
 import { Character } from "../../../Entities/Character/Character";
 import { CharacterArchetype } from "../../../Entities/Character/Subclasses/CharacterArchetype";
 import { CharacterStatus } from "../Subclasses/CharacterStatus";
-import { CharacterType } from "../Subclasses/CharacterType";
+import { CharacterType } from "../Enums/CharacterType";
 
 // TODO: Add item dropList?
 

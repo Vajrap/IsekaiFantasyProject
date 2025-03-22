@@ -137,7 +137,8 @@ export class PartyBehavior {
 	*/
 	craft: {
 		craftingList: {
-			[blueprintID: string]: {
+			[order: number]: {
+				bluePrintID: string;
 				quantityLow: number;
 				quantityHigh: number;
 				allowTradeForMaterials: boolean;

@@ -1,6 +1,6 @@
 import { RelationEnum } from "../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
 import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
-import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType";
+import { CharacterType } from "../../Entities/Character/Enums/CharacterType";
 
 export type CharacterDB = {
 	id: string;
@@ -19,6 +19,7 @@ export type CharacterDB = {
 	};
 	mood: number;
 	energy: number;
+    satiety: number;
 	fame: number;
 	level: number;
 	gold: number;

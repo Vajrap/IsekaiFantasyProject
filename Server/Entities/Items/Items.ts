@@ -13,6 +13,8 @@ export class Item {
     weight: number;
     tier:Tier;
     cost: ItemCost;
+    isCraftable: boolean = false;
+    resource: Map<string, number> = new Map();
     constructor(
         id: string, 
         itemType: ItemType, 
@@ -49,7 +51,9 @@ export class ItemBag {
             quantity: item.quantity,
             cost: item.item.cost,
             itemType: item.item.itemType,
-            weight: item.item.weight
+            weight: item.item.weight,
+            isCraftable: item.item.isCraftable,
+            resource: item.item.resource
         }));
     }
 }

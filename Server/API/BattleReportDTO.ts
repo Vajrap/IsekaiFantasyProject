@@ -2,7 +2,7 @@ import { Character } from "../Entities/Character/Character";
 import { BuffsAndDebuffs } from "../Entities/Character/Subclasses/BuffsAndDebuffs";
 import { Skill } from "../Entities/Skills/Skill";
 import { SkillEquipmentRequirement } from "../Entities/Skills/SubClasses/SkillEquipmentRequirement";
-import { CharacterType } from "../Entities/Character/Subclasses/CharacterType";
+import { CharacterType } from "../Entities/Character/Enums/CharacterType";
 import { CharacterStatusEnum } from "../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { CharacterResources } from "../Entities/Character/Subclasses/CharacterResources";
 import { CharacterDataInterface, ActionDetailsInterface, ActorSkillEffect, TargetSkillEffect } from "../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";

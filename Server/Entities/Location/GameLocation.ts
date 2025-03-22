@@ -17,6 +17,7 @@ import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Charact
 import { getRegionFromName, Region } from "./Region";
 import { Dice } from "../../Utility/Dice";
 import { StatMod } from "../../Utility/StatMod";
+import { event_craft } from "../../Game/GameEvent/craftEvent";
 
 export enum LocationInnType {
 	Poor = "Poor",
@@ -342,7 +343,6 @@ export class GameLocation {
 					}
                     break;
                 case LocationActionEnum.Rest:
-					// Normally this one was forced when party have too little energy to travel;
 					event_rest_force(party);
                     break;
 				case LocationActionEnum.TrainArtisan || LocationActionEnum.TrainAttribute || LocationActionEnum.TrainProficiency || LocationActionEnum.TrainSkill:
@@ -359,6 +359,9 @@ export class GameLocation {
 					const trainingPlayerCharacter =party.getPlayerCharacter();
 					if (!trainingPlayerCharacter) return;
 					trainingPlayerCharacter.trainSkill(action.detail);
+					break;
+				case LocationActionEnum.Craft:
+					event_craft(party);
 					break;
                 default:
                     break;

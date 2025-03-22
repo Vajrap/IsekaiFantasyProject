@@ -26,6 +26,7 @@ export async function createCharacterFromDB(dbCharacter: CharacterDB): Promise<C
     });
     character.mood = dbCharacter.mood;
     character.energy = dbCharacter.energy;
+    character.satiety = dbCharacter.satiety;
     character.fame = dbCharacter.fame;
     character.level = dbCharacter.level;
     character.gold = dbCharacter.gold;

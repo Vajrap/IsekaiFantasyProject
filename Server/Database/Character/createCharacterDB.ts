@@ -1,5 +1,5 @@
 import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
-import { CharacterType } from "../../Entities/Character/Subclasses/CharacterType";
+import { CharacterType } from "../../Entities/Character/Enums/CharacterType";
 import { CharacterDB } from "./CharacterDB";
 
 export function createCharacterDB(overrides: Partial<CharacterDB> = {}): CharacterDB {

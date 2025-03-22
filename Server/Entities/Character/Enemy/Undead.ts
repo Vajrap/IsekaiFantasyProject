@@ -1,4 +1,4 @@
-import { CharacterType } from "../../../Entities/Character/Subclasses/CharacterType";
+import { CharacterType } from "../Enums/CharacterType";
 import { MobCharacterEnum } from "../../../../Common/DTOsEnumsInterfaces/Map/MobCharacterEnum";
 import { RaceEnum } from "../../../../Common/RequestResponse/characterCreation";
 import { Enemy } from "./Enemy";

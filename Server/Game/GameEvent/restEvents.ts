@@ -31,9 +31,15 @@ export function event_rest_camp(party: Party): void {
     screamRestEvent(party, restType);
 }
 
+export function event_rest_house(party: Party): void {
+    apply_rest_benefits(party, 1.4);
+    screamRestEvent(party, RestEventEnum.HOUSE);
+}
+
 export function event_rest_inn_poor(party: Party): void {
-    if (party.gold >= 5) {
-        party.gold -= 5;
+    const totalCost = calculateRoomCost(100, party); // Adjusted to 100 copper per room
+    if (party.gold >= totalCost) {
+        party.gold -= totalCost;
         apply_rest_benefits(party, 1.2);
         screamRestEvent(party, RestEventEnum.INN_POOR);
     } else {
@@ -41,14 +47,10 @@ export function event_rest_inn_poor(party: Party): void {
     }
 }
 
-export function event_rest_house(party: Party): void {
-    apply_rest_benefits(party, 1.4);
-    screamRestEvent(party, RestEventEnum.HOUSE);
-}
-
 export function event_rest_inn_comfortable(party: Party): void {
-    if (party.gold >= 15) {
-        party.gold -= 15;
+    const totalCost = calculateRoomCost(300, party); // Adjusted to 300 copper per room
+    if (party.gold >= totalCost) {
+        party.gold -= totalCost;
         apply_rest_benefits(party, 1.4);
         screamRestEvent(party, RestEventEnum.INN_COMFORTABLE);
     } else {
@@ -57,8 +59,9 @@ export function event_rest_inn_comfortable(party: Party): void {
 }
 
 export function event_rest_inn_luxury(party: Party): void {
-    if (party.gold >= 30) {
-        party.gold -= 30;
+    const totalCost = calculateRoomCost(2000, party); // Adjusted to 2000 copper per room
+    if (party.gold >= totalCost) {
+        party.gold -= totalCost;
         apply_rest_benefits(party, 1.7);
         screamRestEvent(party, RestEventEnum.INN_LUXURY);
     } else {
@@ -67,8 +70,9 @@ export function event_rest_inn_luxury(party: Party): void {
 }
 
 export function event_rest_inn_premium(party: Party): void {
-    if (party.gold >= 50) {
-        party.gold -= 50;
+    const totalCost = calculateRoomCost(5000, party); // Adjusted to 5000 copper per room
+    if (party.gold >= totalCost) {
+        party.gold -= totalCost;
         apply_rest_benefits(party, 2.0);
         screamRestEvent(party, RestEventEnum.INN_PREMIUM);
     } else {
@@ -86,4 +90,14 @@ function apply_rest_benefits(party: Party, restFactor: number): void {
         actor.moodUp(Math.max(Math.floor((Dice.rollTwenty() + actor.attribute("willpower") / 2) * restFactor), 0));
         actor.energyUp(Math.max(Math.floor((Dice.rollTwenty() / 5 + actor.attribute("vitality") / 2) * restFactor), 0));
     }
+}
+
+function calculateRoomCost(cost: number, party: Party): number {
+    let allCharacters = 0;
+    for (const character of party.characters) {
+        if (character !== "none") {
+            allCharacters++;
+        }
+    }
+    return Math.ceil(allCharacters / 2) * cost;
 }

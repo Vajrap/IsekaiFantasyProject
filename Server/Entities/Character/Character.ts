@@ -3,15 +3,12 @@ import { CharacterResources } from "./Subclasses/CharacterResources";
 import { CharacterEquipments } from "./Subclasses/CharacterEquipments";
 import { StatMod } from "../../Utility/StatMod";
 import { Dice } from "../../Utility/Dice";
-import {
-	EffectAppender,
-	EffectResolver,
-} from "../../Game/Battle/EffectResolverAndAppender/EffectAppenderAndResolver";
+import { EffectAppender } from "../../Game/Battle/EffectResolverAndAppender/EffectAppender";
+import { EffectResolver } from "../../Game/Battle/EffectResolverAndAppender/EffectResolver";
 import { BuffsAndDebuffs } from "./Subclasses/BuffsAndDebuffs";
-import { InternalBuffs } from "./Subclasses/InternalBuffs";
 import { ItemBag } from "../Items/Items";
 import { CharacterAlignment } from "./Subclasses/CharacterAlignment";
-import { CharacterType } from "./Subclasses/CharacterType";
+import { CharacterType } from "./Enums/CharacterType";
 import { Trait, TraitRepository } from "../Traits/Trait";
 import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { ArmorDefense } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/interfaces";
@@ -133,6 +130,7 @@ export class Character {
 	});
 	mood: number = 100;
 	energy: number = 100;
+	satiety: number = 100;
 	fame: number = 0;
 	level: number = 1;
 	gold: number = 0;
@@ -158,7 +156,6 @@ export class Character {
 	skills: { skill: Skill; level: number; exp: number }[] = [];
 	activeSkills: { skill: Skill; level: number; exp: number }[] = [];
 	buffsAndDebuffs: BuffsAndDebuffs = new BuffsAndDebuffs();
-	internalBuffs: InternalBuffs = new InternalBuffs();
 	resources: CharacterResources = new CharacterResources();
 	position: number = 0;
 	itemsBag: ItemBag = new ItemBag();
@@ -217,7 +214,6 @@ export class Character {
 		this.skills = [];
 		this.activeSkills = [];
 		this.buffsAndDebuffs = new BuffsAndDebuffs();
-		this.internalBuffs = new InternalBuffs();
 		this.resources = new CharacterResources();
 		this.position = 0;
 		this.itemsBag = new ItemBag();
@@ -628,6 +624,13 @@ export class Character {
 			buffModifier += blessRoll;
 			console.log(`${this.name} get +${blessRoll} from bless roll`);
 		}
+		
+		if (this.buffsAndDebuffs.cursed > 0) {
+			let cursedRoll = Dice.roll(DiceEnum.OneD4).sum;
+			buffModifier -= cursedRoll;
+			console.log(`${this.name} get -${cursedRoll} from cursed roll`);
+		}
+
 		if (this.buffsAndDebuffs.awed > 0) {
 			buffModifier -= 2;
 			console.log(`${this.name} get -2 from awed`);
@@ -1497,15 +1500,7 @@ export class Character {
 		}
 
 		let specialHealing = 0;
-		if (this.internalBuffs.lectioDivina_01 === true) {
-			specialHealing = 2;
-		}
-		if (this.internalBuffs.lectioDivina_02 === true) {
-			specialHealing = 4;
-		}
-		if (this.internalBuffs.lectioDivina_03 === true) {
-			specialHealing = 6;
-		}
+		// TODO: Special healing traits
 
 		finalHealing += specialHealing;
 
@@ -1628,6 +1623,7 @@ export class Character {
 		for (const effect in this.buffsAndDebuffs) {
 			const effectValue = this.buffsAndDebuffs[effect as keyof BuffsAndDebuffs];
 			if (typeof effectValue === "number" && effectValue > 0) {
+
 				const resolverFunction = EffectResolver[effect as BuffsAndDebuffsEnum];
 
 				console.log(`Trying to resolve ${effect}`);
@@ -1641,19 +1637,21 @@ export class Character {
 					this.buffsAndDebuffs
 				);
 
-				const result: EffectReturnObject = resolverFunction(resolverObject);
+				const result: EffectReturnObject = resolverFunction(this);
 				//Unwrapping result
 				this.buffsAndDebuffs = result.buffsAndDebuffs;
 				this.status = result.status;
 
-				if (result.damage !== undefined) {
-					this.receiveDamage({
-						attacker: this,
-						damage: result.damage.amount,
-						hitChance: 1000,
-						damageType: result.damage.type,
-					});
-				}
+				// if (result.damage !== undefined && result.type === 'hpDown') {
+				// 	this.receiveDamage({
+				// 		attacker: this,
+				// 		damage: result.damage.amount,
+				// 		hitChance: 1000,
+				// 		damageType: result.damage.type,
+				// 	});
+				// }
+
+				// Or should we just brute forcing health down buff here?
 
 				if (success === true && result.enableTurnOrder === false) {
 					success = false;
@@ -2047,7 +2045,6 @@ export class Character {
 			traits: this.traits,
 			skills: this.skills,
 			activeSkills: this.activeSkills,
-			internalBuffs: this.internalBuffs,
 			position: this.position,
 			itemsBag: this.itemsBag,
 			baseAC: this.baseAC,

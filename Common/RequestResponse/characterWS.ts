@@ -164,6 +164,8 @@ export interface ItemInterface {
     cost: ItemCostInterface;
     itemType: ItemType;
     weight: number;
+    isCraftable: boolean;
+    resource: Map<string, number>;
 };
 
 export interface EquipmentInterface {
