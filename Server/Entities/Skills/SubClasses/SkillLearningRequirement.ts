@@ -33,3 +33,4 @@ export class SkillLearningRequirement {
         this.preRequireCharacterTrait = preRequireCharacterTrait;
     }
 }
+

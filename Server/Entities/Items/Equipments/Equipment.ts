@@ -1,7 +1,6 @@
 import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
-import { AttributeEnum } from "../../Character/Subclasses/CharacterDataEnum";
 import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { ItemCostInterface } from "../../../../Common/DTOsEnumsInterfaces/Item/ItemCost";
 import { Item } from "../Items";
@@ -11,6 +10,7 @@ import { ArmorType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment
 import { AccessoryType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Accessory/Enums";
 import { EquipmentType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Enums";
 import { ItemType } from "../../../../Common/DTOsEnumsInterfaces/Item/Enums";
+import { AttributeEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/AttributeEnum";
 
 
 

@@ -1,4 +1,5 @@
 export enum RegionNameEnum {
+    None = 'None',
     GrassLand_1 = 'Grass Land 1',
     GrassLand_2 = 'Grass Land 2',
     GrassLand_3 = 'Grass Land 3',

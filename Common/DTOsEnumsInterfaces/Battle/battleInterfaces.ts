@@ -1,4 +1,58 @@
+import { CharacterStatusInterface, CharacterTraitInterface, ItemInterface } from "Common/RequestResponse/characterWS";
+import { SkillConsumeInterface, SkillProduceInterface } from "../Skill/Consume+Produce";
 import { GameTimeInterface } from "../GameTimeInterface";
+import { CharacterEquipmentInterface } from "../Character/CharacterEquipmentInterface";
+import { CharacterSkills, SkillMeta } from "../Character/SkillType";
+
+export interface CharacterInterface {
+    id: string;
+    partyID: string;
+    name: string;
+    type: string | undefined;
+    gender: "MALE" | "FEMALE" | "NONE" | undefined;
+    portrait: string;
+    background: string;
+    race: string;
+    alignment: string;
+    mood: number;
+    energy: number;
+    fame: number;
+    level: number;
+    gold: number;
+    isDead: boolean;
+    status: CharacterStatusInterface;
+    equipment: CharacterEquipmentInterface;
+    traits: CharacterTraitInterface[];
+    skills: CharacterSkills;
+    activeSkills: SkillMeta[];
+    position: number;
+    itemsBag: ItemInterface[];
+    arcaneAptitude: string;
+    bagSize: number;
+    currentHP: number;
+    maxHP: number;
+    currentMP: number;
+    maxMP: number;
+    currentSP: number;
+    maxSP: number;
+}
+
+
+interface TargetData {
+	character: CharacterInterface;
+	damageTaken: number;
+	effect: TargetSkillEffect | "none";
+}
+
+export interface TurnReport {
+    character: CharacterInterface;
+    skill: string;
+    actorSkillEffect: ActorSkillEffect;
+    consume: SkillConsumeInterface;
+    produce: SkillProduceInterface;
+    targets: TargetData[];
+    castString: string;
+}
 
 export interface CharacterDataInterface {
     characterID: string;
@@ -250,7 +304,7 @@ export enum TargetSkillEffect {
 export interface BattleReportInterface {
     startingPartyAMembers: CharacterDataInterface[];
     startingPartyBMembers: CharacterDataInterface[];
-    battleTurn: ActionDetailsInterface[];
+    battleTurn: TurnReport[];
     location: string;
     gameTime: GameTimeInterface;
 }

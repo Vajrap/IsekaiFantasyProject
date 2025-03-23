@@ -1,65 +1,38 @@
-export class TargetType {
-    targetPartyOrSelf: TargetPartyType;
-    targetScope: TargetSelectionScope | 'none';
-    targetConditionFilter: TargetConditionFilters | 'none';
-    targetSortingOption: TargetSortingOptions | 'none';
-    tauntConsideration: TargetTauntConsideration | 'none';
-    targetBuffOrDebuffCondition: { buffOrDebuff: BuffsAndDebuffsEnum, value: number} | 'none';
-    targetTraitCondition: { trait: string, value: number} | 'none';
-    constructor(
-        targetPartyOrSelf: TargetPartyType,
-        targetScope?: TargetSelectionScope,
-        targetConditionFilter?: TargetConditionFilters,
-        targetSortingOption?: TargetSortingOptions,
-        tauntConsideration?: TargetTauntConsideration,
-        targetBuffOrDebuffCondition?: {buffOrDebuff: BuffsAndDebuffsEnum, value: number},
-        targetTraitCondition?: { trait: string, value: number}
-    ) 
-    {
-        this.targetPartyOrSelf = targetPartyOrSelf;
-        this.targetScope = targetScope || 'none';
-        this.targetConditionFilter = targetConditionFilter || 'none';
-        this.targetSortingOption = targetSortingOption || 'none';
-        this.tauntConsideration = tauntConsideration || 'none';
-        this.targetBuffOrDebuffCondition = targetBuffOrDebuffCondition || 'none';
-        this.targetTraitCondition = targetTraitCondition || 'none';
-    }
-}
+export type TargetType = {
+    scope: TargetScope;
+    row?: TargetRow;
+    filter?: TargetConditionFilter;
+    sort?: TargetSortingOptions;
+    taunt?: TargetTauntConsideration;
+};
 
-  export enum TargetPartyType {
+export enum TargetPartyType {
     Self = 'self',
     Ally = 'ally',
     Enemy = 'enemy',
-  }
-  
-  // No shifting means that the target selection will only consider the front row or back row
-  // If used 'Single' the game mechanic will follow the default behavior which more likely to target the front row
-  // When use 'SingleFrontRowShiftable' meaning that, it will only rolled for the front row, only if the front row is empty, it will shift to the back row
-  // We also need an 'OppositeRow' ? meaning if user is in front row, it will target the back row, and vice versa?
-  export enum TargetSelectionScope {
+}
+
+export enum TargetScope {
     Single = 'single',
-    SingleFrontRowShiftable = 'frontRowShiftable', // Prioritize front row but shift to back row if empty
-    SingleBackRowShiftable = 'backRowShiftable',   // Prioritize back row but shift to front row if empty
-    SingleFrontRow = 'frontRow',                   // Only front row, no shifting
-    SingleBackRow = 'backRow',                     // Only back row, no shifting
     All = 'all',
-    AllFrontRowShiftable = 'frontRowShiftable', // Prioritize front row but shift to back row if empty
-    AllBackRowShiftable = 'backRowShiftable',   // Prioritize back row but shift to front row if empty
-    AllFrontRow = 'frontRow',                   // Only front row, no shifting
-    AllBackRow = 'backRow',                     // Only back row, no shifting
-    OppositeRow = 'oppositeRow',                 // Target the opposite row
-    OppositeRowShiftable = 'oppositeRowShiftable', // Target the opposite row, but shift to the other row if empty
-  }
-  
-  export enum TargetConditionFilters {
-    None = 'none',
-    HasTrait = 'hasTrait',
-    HasBuffOrDebuff = 'hasBuffOrDebuff',
-    IsDead = 'isDead',
-    IsSummoned = 'isSummonned'
-  }
-  
-  export enum TargetSortingOptions {
+}
+
+export enum TargetRow {
+    Front = 'front',
+    Back = 'back',
+    ShiftableFront = 'shiftableFront',
+    ShiftableBack = 'shiftableBack',
+    Opposite = 'opposite',
+    OppositeShiftable = 'oppositeShiftable',
+}
+
+export type TargetConditionFilter =
+    | { type: 'buffOrDebuff', buff: BuffsAndDebuffsEnum, value: number }
+    | { type: 'trait', trait: string, value: number }
+    | { type: 'isDead' }
+    | { type: 'isSummoned' };
+
+export enum TargetSortingOptions {
     None = 'none',
     LowestHP = 'lowestHP',
     HighestHP = 'highestHP',
@@ -81,14 +54,14 @@ export class TargetType {
     HighestLevel = 'highestLevel',
     Fastest = 'fastest',
     Slowest = 'slowest',
-  }
-  
-  export enum TargetTauntConsideration {
+}
+
+export enum TargetTauntConsideration {
     TauntCount = 'tauntCount',     // Consider taunt count for targeting
     NoTauntCount = 'noTauntCount', // Ignore taunt count
-  }
+}
 
-  export enum BuffsAndDebuffsEnum {
+export enum BuffsAndDebuffsEnum {
     // 💥 Debuffs
     stun = 'stun',
     blind = 'blind',
@@ -159,4 +132,4 @@ export class TargetType {
     choking = 'choking',
     corrupt = 'corrupt',
     wither = 'wither',
-  }
+}

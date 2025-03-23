@@ -18,6 +18,7 @@ import { getRegionFromName, Region } from "./Region";
 import { Dice } from "../../Utility/Dice";
 import { StatMod } from "../../Utility/StatMod";
 import { event_craft } from "../../Game/GameEvent/craftEvent";
+import { learnSkill, trainSkill } from "../Character/Utils/skillFunctions";
 
 export enum LocationInnType {
 	Poor = "Poor",
@@ -353,12 +354,12 @@ export class GameLocation {
 				case LocationActionEnum.LearnSkill:
 					const learningPlayerCharacter =party.getPlayerCharacter();
 					if (!learningPlayerCharacter) return;
-					learningPlayerCharacter.learnSkill(action.detail);
+					learnSkill(learningPlayerCharacter, action.detail);
 					break;
 				case LocationActionEnum.TrainSkill:
 					const trainingPlayerCharacter =party.getPlayerCharacter();
 					if (!trainingPlayerCharacter) return;
-					trainingPlayerCharacter.trainSkill(action.detail);
+					trainSkill(trainingPlayerCharacter, action.detail);
 					break;
 				case LocationActionEnum.Craft:
 					event_craft(party);

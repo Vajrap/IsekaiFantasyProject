@@ -1,10 +1,10 @@
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
-import { BuffsAndDebuffsEnum, TargetConditionFilters, TargetSelectionScope, TargetSortingOptions, TargetType } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
+import { TargetScope, TargetSortingOptions, TargetType, TargetRow, TargetTauntConsideration } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { Character } from "../../Entities/Character/Character";
 import { Party } from "../../Entities/Party/Party";
 import { Dice } from "../../Utility/Dice";
 
-export class TargetSelectionProcess {
+class TargetSelectionProcess {
 	private targetedParty: Party;
 	private actor: Character;
 	private targetType: TargetType;
@@ -26,16 +26,43 @@ export class TargetSelectionProcess {
 		targets = this.applyExceptions(targets);
         if (targets.length === 0) { return [] }
 
+		if (this.targetType.scope === TargetScope.All 
+			&& 
+			this.targetType.row === undefined
+		) { 
+			return targets 
+		}
+
+		let tauntTargets: Character[] = [];
+		if (this.targetType.taunt === TargetTauntConsideration.TauntCount) {
+			tauntTargets = targets.filter(target => target.buffsAndDebuffs.taunt > 0);
+		}
+		if (tauntTargets.length === 1) {
+			return tauntTargets;
+		}
+		if (tauntTargets.length > 1) {
+			targets = tauntTargets;
+		}
+
 		let filtered = this.applyRowFiltering(targets);
-        if (filtered.characters.length === 0) { return [] }	
-		if (filtered.isOfType === 'all') { return filtered.characters }
+        if (filtered.characters.length === 0) { return [] }
+		if (filtered.characters.length === 1) { return filtered.characters }
 
 		targets = this.applyConditionFiltering(filtered.characters);
         if (targets.length === 0) { return [] }	
+		if (targets.length === 1) { return targets }
+
+		if (this.targetType.scope === TargetScope.All) {
+			return targets;
+		}
+
+		// End of filtering, start sorting
 
 		targets = this.applySortingOptions(targets);
         if (targets.length === 0) { return [] }	
+		if (targets.length === 1) { return targets }
 
+		
 		return [this.pickTargetWithStealthCheck(targets)];
 	}
 
@@ -43,108 +70,55 @@ export class TargetSelectionProcess {
 		return targets.filter(target => !this.exceptions.includes(target));
 	}
 
-	private applyRowFiltering(targets: Character[]): { characters: Character[], isOfType: 'single' | 'all' } {
-		switch (this.targetType.targetScope) {
-			case TargetSelectionScope.AllFrontRow:
-				return { 
-					characters: targets.filter(target => target.position < 3),
-					isOfType: 'all' 
-				};
-			case TargetSelectionScope.AllBackRow:
-				return {
-					characters: targets.filter(target => target.position > 2),
-					isOfType: 'all'
-				};
-			case TargetSelectionScope.AllFrontRowShiftable: 
-				if (targets.filter(target => target.position < 3).length === 0) {
-					return {
-						characters: targets.filter(target => target.position > 2),
-						isOfType: 'all'
-					};
+	private applyRowFiltering(targets: Character[]): { characters: Character[] } {
+		switch (this.targetType.row) {
+			case TargetRow.Front:
+				return { characters: targets.filter(target => target.position <= 2)};
+			case TargetRow.Back:
+				return { characters: targets.filter(target => target.position >= 3)};
+			case TargetRow.ShiftableFront:
+				let shiftFrontTarget = targets.filter(target => target.position <= 2);
+				if (shiftFrontTarget.length === 0) {
+					shiftFrontTarget = targets.filter(target => target.position >= 3);
 				}
-				return {
-					characters: targets.filter(target => target.position < 3),
-					isOfType: 'all'
-				};
-			case TargetSelectionScope.AllBackRowShiftable: 
-				if (targets.filter(target => target.position > 2).length === 0) {
-					return {
-						characters: targets.filter(target => target.position < 3),
-						isOfType: 'all'
-					};
+				return { characters: shiftFrontTarget };
+			case TargetRow.ShiftableBack:
+				let shiftBackTarget = targets.filter(target => target.position >= 3);
+				if (shiftBackTarget.length === 0) {
+					shiftBackTarget = targets.filter(target => target.position <= 2);
 				}
-				return {
-					characters: targets.filter(target => target.position > 2),
-					isOfType: 'all'
+				return { characters: shiftBackTarget };
+			case TargetRow.Opposite:
+				const characterPosition: 'front' | 'back' = this.actor.position <= 2 ? 'back' : 'front';
+				let oppositeRowCharacters = targets.filter(target => target.position <= 2);
+				return { characters: oppositeRowCharacters };
+			case TargetRow.OppositeShiftable:
+				const characterPositionShiftable: 'front' | 'back' = this.actor.position <= 2 ? 'back' : 'front';
+				let oppositeRowShiftableCharacters = targets.filter(target => target.position <= 2);
+				if (oppositeRowShiftableCharacters.length === 0) {
+					oppositeRowShiftableCharacters = targets.filter(target => target.position >= 3);
 				}
-			case TargetSelectionScope.OppositeRow:
-				if (this.actor.position < 3) {
-					return {
-						characters: targets.filter(target => target.position > 2),
-						isOfType: 'single'
-					};
-				}
-				return {
-					characters: targets.filter(target => target.position < 3),
-					isOfType: 'single'
-				};
-			case TargetSelectionScope.OppositeRowShiftable:
-				if (this.actor.position < 3) {
-					if (targets.filter(target => target.position > 2).length === 0) {
-						return {
-							characters: targets.filter(target => target.position < 3),
-							isOfType: 'single'
-						};
-					}
-					return {
-						characters: targets.filter(target => target.position > 2),
-						isOfType: 'single'
-					};
-				}
-				if (targets.filter(target => target.position < 3).length === 0) {
-					return {
-						characters: targets.filter(target => target.position > 2),
-						isOfType: 'single'
-					};
-				}
-				return {
-					characters: targets.filter(target => target.position < 3),
-					isOfType: 'single'
-				};
-			case TargetSelectionScope.Single:
-				return { characters: targets, isOfType: 'single' };
-			case TargetSelectionScope.All:
-				return { characters: targets, isOfType: 'all' };
+				return { characters: oppositeRowShiftableCharacters };
 			default:
-				return { characters: targets, isOfType: 'all' };
+				return { characters: targets };
 		}
 	}
 
 	private applyConditionFiltering(targets: Character[]): Character[] {
-		switch (this.targetType.targetConditionFilter) {
-			case TargetConditionFilters.IsDead:
+		switch (this.targetType.filter?.type) {
+			case 'isDead':
 				return targets.filter(target => target.isDead);
-			case TargetConditionFilters.IsSummoned:
+			case 'isSummoned':
 				return targets.filter(target => target.isSummoned && !target.isDead);
-			case TargetConditionFilters.None:
-				return targets.filter(target => !target.isDead);
-			case TargetConditionFilters.HasBuffOrDebuff:
-                if (this.targetType.targetBuffOrDebuffCondition === 'none' ) {
-                    return targets.filter(target => !target.isDead);
-                } else if (this.targetType.targetBuffOrDebuffCondition.buffOrDebuff === BuffsAndDebuffsEnum.none) {
-                    return targets.filter(target => !target.isDead);
-                } else {
-                    let buffOrDebuff = this.targetType.targetBuffOrDebuffCondition.buffOrDebuff;
-                    let value = this.targetType.targetBuffOrDebuffCondition.value;
-                    return targets.filter(target => target.buffsAndDebuffs[buffOrDebuff] >= value && !target.isDead);
-                }
-			case TargetConditionFilters.HasTrait:
-                if (this.targetType.targetTraitCondition === 'none') {
-                    return targets.filter(target => !target.isDead);
-                } else if (this.targetType.targetTraitCondition.trait === 'none') {
+			case 'buffOrDebuff':
+                let buffOrDebuff = this.targetType.filter.buff;
+                let value = this.targetType.filter.value;
+                return targets.filter(target => target.buffsAndDebuffs[buffOrDebuff] >= value && !target.isDead);
+			case 'trait':
+                if (this.targetType.filter.trait === 'none') {
                     return targets.filter(target => !target.isDead);
                 } else {
-                    let value = this.targetType.targetTraitCondition.value;
+                    let value = this.targetType.filter.value;
                     let possibleTargets = []
                     for (let target of targets) {
                         if (target.traits.filter(trait => trait === trait).length >= value && !target.isDead) {
@@ -159,7 +133,7 @@ export class TargetSelectionProcess {
 	}
 
 	private applySortingOptions(targets: Character[]): Character[] {
-		switch (this.targetType.targetSortingOption) {
+		switch (this.targetType.sort) {
 			case TargetSortingOptions.None:
 				return targets;
 			case TargetSortingOptions.LowestHP:
@@ -258,4 +232,27 @@ export class TargetSelectionProcess {
 
 		return targets[targets.length - 1];
 	}
+}
+
+export function selectTargets(
+	targetedParty: Party,
+	actor: Character,
+	targetType: TargetType,
+	exceptions: Character[] = []
+  ): Character[] {
+	const process = new TargetSelectionProcess(targetedParty, actor, targetType, exceptions);
+	return process.targets;
+  }
+
+export function selectOneEnemy(actor: Character, enemyParty: Party, targetType: TargetType): Character | 'NO_TARGET' {
+	const targets = selectTargets(enemyParty, actor, targetType);
+	if (targets.length === 0) {
+		return targets[0];
+	} else {
+		return 'NO_TARGET';
+	}
+}
+
+export function selectEnemies(actor: Character, enemyParty: Party, targetType: TargetType): Character[] {
+	return selectTargets(enemyParty, actor, targetType);
 }

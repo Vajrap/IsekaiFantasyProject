@@ -3,6 +3,7 @@ import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Char
 import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { ElementTypes, FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes";
 import { CharacterStatusInterface } from "../../../../Common/RequestResponse/characterWS";
+import { AttributeEnum } from "./CharacterDataEnum";
 
 export class CharacterStatus {
 	attributes: {
