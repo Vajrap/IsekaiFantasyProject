@@ -1,4 +1,4 @@
-import { Skill, TurnReport } from "../Skill";
+import { Skill } from "../Skill";
 import {
 	ElementConsume,
 	SkillConsume,
@@ -18,7 +18,7 @@ import { AttributeEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/
 import { Dice } from "../../../Utility/Dice";
 import { selectOneEnemy } from "../../../Game/Battle/TargetSelectionProcess";
 import { Party } from "../../Party/Party";
-import { ActorSkillEffect } from "../../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
+import { ActorSkillEffect, TurnReport } from "../../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
 import {
 	applyOnHitEffects,

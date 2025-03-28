@@ -3,7 +3,7 @@ import { loginHandler, autoLoginHandler } from './login/login';
 import { registerHandler } from './register/register';
 import { createCharacterHandler } from './CreateCharacter/createCharacter';
 import { getPartyHandler } from './getParty/getParty';
-import { changeSkillDeck } from './Character/Skill/changeSkillDeck';
+// import { changeSkillDeck } from './Character/Skill/changeSkillDeck';
 
 export const router = express.Router();
 
@@ -41,6 +41,6 @@ router.post('/getParty', async (req: Request, res: Response) => {
 
 router.post('/changeSkillDeck', async (req: Request, res: Response) => {
     console.log('Change Skill Deck Route called');
-    const result = await changeSkillDeck(req.body);
-    res.json({ result });
+    // const result = await changeSkillDeck(req.body);
+    // res.json({ result });
 });

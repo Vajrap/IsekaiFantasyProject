@@ -1,11 +1,11 @@
 import { Character } from "../Entities/Character/Character";
 import { BuffsAndDebuffs } from "../Entities/Character/Subclasses/BuffsAndDebuffs";
 import { Skill } from "../Entities/Skills/Skill";
-import { SkillEquipmentRequirement } from "../Entities/Skills/SubClasses/SkillEquipmentRequirement";
 import { CharacterType } from "../Entities/Character/Enums/CharacterType";
 import { CharacterStatusEnum } from "../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { CharacterResources } from "../Entities/Character/Subclasses/CharacterResources";
 import { CharacterDataInterface, ActionDetailsInterface, ActorSkillEffect, TargetSkillEffect } from "../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
+import { WeaponSpecificType } from "../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 
 export function createCharacterDataInterface(character: Character): CharacterDataInterface {
     return {
@@ -66,7 +66,7 @@ export class SkillData {
         preRequireElements: { element: string, value: number }[];
         preRequireSkillID: string[];
     };
-    equipmentNeeded: SkillEquipmentRequirement;
+    equipmentNeeded: WeaponSpecificType[];
     consume: {
         hp: number[];
         mp: number[];
@@ -78,24 +78,24 @@ export class SkillData {
     };
 
     constructor(skill: Skill, actor: Character) {
-        this.id = skill.id;
-        this.name = skill.name;
+        this.id = skill.meta.id;
+        this.name = skill.meta.name;
         this.description = this.makeDescription(actor, skill);
         this.requirement = {
-            preRequireCharacterLevel: skill.requirement.preRequireCharacterLevel || 0,
-            preRequireCharacterTrait: skill.requirement.preRequireCharacterTrait || [],
-            preRequireElements: skill.requirement.preRequireElements || [],
-            preRequireSkillID: skill.requirement.preRequireSkillID || []
+            preRequireCharacterLevel: skill.meta.requirement.preRequireCharacterLevel || 0,
+            preRequireCharacterTrait: skill.meta.requirement.preRequireCharacterTrait || [],
+            preRequireElements: skill.meta.requirement.preRequireElements || [],
+            preRequireSkillID: skill.meta.requirement.preRequireSkillID || []
         };
-        this.equipmentNeeded = skill.equipmentNeeded || { weapon: [], armor: [], accessory: [] };
+        this.equipmentNeeded = skill.meta.equipmentNeeded || { weapon: [], armor: [], accessory: [] };
         this.consume = {
-            hp: skill.consume.hp,
-            mp: skill.consume.mp,
-            sp: skill.consume.sp,
-            elements: skill.consume.elements
+            hp: skill.meta.consume.hp,
+            mp: skill.meta.consume.mp,
+            sp: skill.meta.consume.sp,
+            elements: skill.meta.consume.elements
         };
         this.produce = {
-            elements: skill.produce.elements
+            elements: skill.meta.produce.elements
         };
     }
 
@@ -151,7 +151,7 @@ export class SkillData {
             // '{level}': this.level,
         };
 
-        let description = skill.baseDescription;
+        let description = skill.meta.description;
         for (const [key, value] of Object.entries(placeholders)) {
             description = description.replace(new RegExp(`\\${key}`, 'g'), value.toString());
         }

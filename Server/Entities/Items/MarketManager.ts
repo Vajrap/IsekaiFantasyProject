@@ -1,7 +1,7 @@
 import { GameTime } from "../../Game/TimeAndDate/GameTime";
 import { Item } from "./Items";
 
-export class ItemManager {
+export class MarketManager {
 	private static itemRegistry: Map<string, Item> = new Map();
 	private static globalStock: Map<string, number> = new Map();
 	private static itemWeeklySales: Map<string, number> = new Map();

@@ -2,8 +2,8 @@ import { Party } from "../../Entities/Party/Party";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
 import { CharacterDataInterface, ActionDetailsInterface } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { createCharacterDataInterface } from "../../API/BattleReportDTO";
-import { TurnReport } from "../../Entities/Skills/Skill";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
+import { TurnReport } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 
 export class BattleReport {
     startingPartyAMembers: CharacterDataInterface[] = [];

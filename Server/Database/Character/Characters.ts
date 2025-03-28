@@ -54,6 +54,8 @@ export async function createCharacterTableIfNotExists() {
         storyFlags: 'TEXT',
         relation: 'TEXT',
         isPlayerCharacter: "BOOLEAN",
+        satiety: "INTERGER",
+        skillLearningProgress: "TEXT"
     };
 
     const tableStructure = Object.entries(fieldTypes)

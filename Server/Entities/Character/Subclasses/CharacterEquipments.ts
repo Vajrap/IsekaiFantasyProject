@@ -47,6 +47,8 @@ export class CharacterEquipments {
 					  description: this.mainHand.description,
 					  quantity: 1,
 					  itemType: this.mainHand.itemType,
+					  isCraftable: this.mainHand.isCraftable,
+					  resource: this.mainHand.resource
 				  }
 				: undefined,
 			offHand: this.offHand
@@ -57,7 +59,9 @@ export class CharacterEquipments {
 					  weight: this.offHand.weight,
 					  description: this.offHand.description,
 					  quantity: 1,
-					  itemType: this.offHand.itemType
+					  itemType: this.offHand.itemType,
+					  isCraftable: this.offHand.isCraftable,
+					  resource: this.offHand.resource
 				  }
 				: undefined,
 			armor: this.armor
@@ -69,6 +73,8 @@ export class CharacterEquipments {
 					  description: this.armor.description,
 					  quantity: 1,
 					  itemType: this.armor.itemType,
+					  isCraftable: this.armor.isCraftable,
+					  resource: this.armor.resource
 				  }
 				: undefined,
 			headwear: this.headwear
@@ -80,6 +86,8 @@ export class CharacterEquipments {
 					  description: this.headwear.description,
 					  quantity: 1,
 					  itemType: this.headwear.itemType,
+					  isCraftable: this.headwear.isCraftable,
+					  resource: this.headwear.resource
 				  }
 				: undefined,
 			gloves: this.gloves
@@ -91,6 +99,8 @@ export class CharacterEquipments {
 					  description: this.gloves.description,
 					  quantity: 1,
 					  itemType: this.gloves.itemType,
+					  isCraftable: this.gloves.isCraftable,
+					  resource: this.gloves.resource
 				  }
 				: undefined,
 			boots: this.boots
@@ -102,6 +112,8 @@ export class CharacterEquipments {
 					  description: this.boots.description,
 					  quantity: 1,
 					  itemType: this.boots.itemType,
+					  isCraftable: this.boots.isCraftable,
+					  resource: this.boots.resource
 				  }
 				: undefined,
 			necklace: this.necklace
@@ -112,7 +124,9 @@ export class CharacterEquipments {
 					  weight: this.necklace.weight,
 					  description: this.necklace.description,
 					  quantity: 1,
-					  itemType: this.necklace.itemType
+					  itemType: this.necklace.itemType,
+					  isCraftable: this.necklace.isCraftable,
+					  resource: this.necklace.resource
 				  }
 				: undefined,
 			ring_R: this.ring_R
@@ -123,7 +137,9 @@ export class CharacterEquipments {
 					  weight: this.ring_R.weight,
 					  description: this.ring_R.description,
 					  quantity: 1,
-					  itemType: this.ring_R.itemType
+					  itemType: this.ring_R.itemType,
+					  isCraftable: this.ring_R.isCraftable,
+					  resource: this.ring_R.resource
 				  }
 				: undefined,
 			ring_L: this.ring_L
@@ -134,7 +150,9 @@ export class CharacterEquipments {
 					  weight: this.ring_L.weight,
 					  description: this.ring_L.description,
 					  quantity: 1,
-					  itemType: this.ring_L.itemType
+					  itemType: this.ring_L.itemType,
+					  isCraftable: this.ring_L.isCraftable,
+					  resource: this.ring_L.resource
 				  }
 				: undefined,
 		};

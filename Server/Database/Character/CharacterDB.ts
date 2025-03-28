@@ -41,8 +41,9 @@ export type CharacterDB = {
 	status: CharacterStatusDB; // Nested type placeholder
 	equipments: CharacterEquipmentDB; // Serialized or nested
 	traits: string[]; // List of trait ids
-	skills: { skill: string; level: number; exp: number }[]; //use id instead of the whole skill object
-	activeSkills: { skill: string; level: number; exp: number }[];
+	skills: SkillMetaDB[]; //use id instead of the whole skill object
+	activeSkills: SkillMetaDB[];
+    skillLearningProgress: SkillLearningProcessDB[];
 	position: number;
 	itemsBag: ItemBagDB; // used id match with qunatity
 	baseAC: number;
@@ -54,6 +55,17 @@ export type CharacterDB = {
 	relation: { [key: string]: { value: number; status: RelationEnum } }; // Relationship map
     isPlayerCharacter: boolean;
 };
+
+type SkillMetaDB = {
+    id: string;
+    level: number;
+    exp: number;
+}
+
+type SkillLearningProcessDB = {
+    id: string;
+    process: number;
+}
 
 export type CharacterStatusDB = {
     attributes: {

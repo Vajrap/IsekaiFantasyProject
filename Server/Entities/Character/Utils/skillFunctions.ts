@@ -39,8 +39,8 @@ export function learnSkill(
 			exp: 0,
 			description: skill.meta.description,
 			tier: skill.meta.tier,
-			equipmentNeeded: skill.meta.equipmentNeeded.weapon
-				? skill.meta.equipmentNeeded.weapon
+			equipmentNeeded: skill.meta.equipmentNeeded
+				? skill.meta.equipmentNeeded
 				: [],
 			consume: skill.meta.consume,
 			produce: skill.meta.produce,

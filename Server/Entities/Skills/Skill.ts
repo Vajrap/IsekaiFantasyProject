@@ -1,36 +1,13 @@
 import { SkillConsume, SkillProduce } from "./SubClasses/SkillConsume";
-import { SkillEquipmentRequirement } from "./SubClasses/SkillEquipmentRequirement";
 import { SkillLearningRequirement } from "./SubClasses/SkillLearningRequirement";
 import { Character } from "../Character/Character";
 import { GameTime } from "../../Game/TimeAndDate/GameTime";
-import {
-	ActorSkillEffect,
-	TargetSkillEffect,
-} from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
-import { CharacterInterface } from "../../../Common/RequestResponse/characterWS";
-import {
-	SkillConsumeInterface,
-	SkillProduceInterface,
-} from "../../../Common/DTOsEnumsInterfaces/Skill/Consume+Produce";
+import { TurnReport } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { Party } from "../Party/Party";
+import { WeaponSpecificType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 
-export interface TurnReport {
-	character: CharacterInterface;
-	skill: string;
-	actorSkillEffect: ActorSkillEffect;
-	consume: SkillConsumeInterface;
-	produce: SkillProduceInterface;
-	targets: TargetData[];
-	castString: string;
-}
-
-interface TargetData {
-	character: CharacterInterface;
-	damageTaken: number;
-	effect: TargetSkillEffect | "none";
-}
 
 export class Skill {
 	meta: {
@@ -39,7 +16,7 @@ export class Skill {
 		tier: Tier;
 		description: string;
 		requirement: SkillLearningRequirement;
-		equipmentNeeded: SkillEquipmentRequirement;
+		equipmentNeeded: WeaponSpecificType[];
 		castString: string;
 		consume: SkillConsume;
 		produce: SkillProduce;
@@ -61,7 +38,7 @@ export class Skill {
 			tier: Tier;
 			description: string;
 			requirement: SkillLearningRequirement;
-			equipmentNeeded: SkillEquipmentRequirement;
+			equipmentNeeded: WeaponSpecificType[];
 			castString: string;
 			consume: SkillConsume;
 			produce: SkillProduce;

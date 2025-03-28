@@ -98,6 +98,7 @@ export class Character {
 		[key: string]: { value: number; status: RelationShipStatusEnum };
 	} = {};
 	isPlayerCharacter: boolean = false;
+    character: any;
 	constructor(data: {
 		id: string;
 		name: string;

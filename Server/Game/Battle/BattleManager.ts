@@ -1,6 +1,8 @@
 import { BattleReportInterface } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
+import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { GameLocation } from "../../Entities/Location/GameLocation";
+import { getLocationByName } from "../../Entities/Location/Locations";
 import { Party } from "../../Entities/Party/Party";
 import { screamer } from "../../Utility/Screamer/Screamer";
 import { Battle } from "./Battle";
@@ -21,9 +23,10 @@ class BattleManager {
     async startNewBattle(
         partyA: Party,
         partyB: Party,
-        location: GameLocation,
+        locationName: LocationName,
         gameTime: GameTimeInterface
     ): Promise<BattleReportInterface> {
+        const location = getLocationByName(locationName)
         const newBattle = new Battle(partyA, partyB, location, gameTime);
         this.activeBattles.push(newBattle);
 

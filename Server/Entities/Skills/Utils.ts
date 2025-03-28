@@ -2,14 +2,13 @@ import { AttributeEnum } from "../../../Common/DTOsEnumsInterfaces/Character/Att
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { PreferredPosition } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
-import { SkillEquipmentRequirement } from "./SubClasses/SkillEquipmentRequirement";
 import { SkillLearningRequirement } from "./SubClasses/SkillLearningRequirement";
 import { Character } from "../Character/Character";
 import { ActorSkillEffect } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { Dice } from "../../Utility/Dice";
 import { StatMod } from "../../Utility/StatMod";
-import { TurnReport } from "./Skill";
 import { turnCharacterIntoInterface } from "../Character/Utils/turnCharacterIntoInterface";
+import { TurnReport } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 
 export enum DamageSourceType {
 	Physical,
@@ -26,9 +25,7 @@ export const noRequirementNeeded = new SkillLearningRequirement({
 	preRequireCharacterTrait: [],
 });
 
-export const noEquipmentNeeded = new SkillEquipmentRequirement({
-	weapon: [],
-});
+export const noEquipmentNeeded = [];
 
 export function extractWeaponStats(
 	character: Character,

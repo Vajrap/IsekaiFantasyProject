@@ -81,21 +81,39 @@ export async function createCharacterFromDB(dbCharacter: CharacterDB): Promise<C
     character.arcaneAptitude.aptitude = dbCharacter.arcaneAptitude;
     character.bagSize = dbCharacter.bagSize;
     character.storyFlags = dbCharacter.storyFlags;
-    for (const skill of dbCharacter.skills) {
-        const skillObj = await skillRepository.getSkill(skill.skill);
-        character.skills.push({
-            skill: skillObj,
-            level: skill.level,
-            exp: skill.exp,
-        })
+    for (const meta of dbCharacter.skills) {
+        const skill = skillRepository.getSkill(meta.id);
+        character.skills[meta.id] = {
+            id: meta.id,
+            name: skill.meta.name,
+            level: meta.level,
+            exp: meta.exp,
+            description: skill.meta.description,
+            tier: skill.meta.tier,
+            equipmentNeeded: skill.meta.equipmentNeeded,
+            consume: skill.meta.consume,
+            produce: skill.meta.produce,
+            isSpell: skill.meta.isSpell,
+            isReaction: skill.meta.isReaction,
+            isWeaponAttack: skill.meta.isWeaponAttack,
+        }
     };
 
-    for (const skill of dbCharacter.activeSkills) {
-        const skillObj = await skillRepository.getSkill(skill.skill);
+    for (const meta of dbCharacter.activeSkills) {
+        const skill = skillRepository.getSkill(meta.id);
         character.activeSkills.push({
-            skill: skillObj,
-            level: skill.level,
-            exp: skill.exp,
+            id: meta.id,
+            name: skill.meta.name,
+            level: meta.level,
+            exp: meta.exp,
+            description: skill.meta.description,
+            tier: skill.meta.tier,
+            equipmentNeeded: skill.meta.equipmentNeeded,
+            consume: skill.meta.consume,
+            produce: skill.meta.produce,
+            isSpell: skill.meta.isSpell,
+            isReaction: skill.meta.isReaction,
+            isWeaponAttack: skill.meta.isWeaponAttack,
         })
     }
 

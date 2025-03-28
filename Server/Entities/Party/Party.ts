@@ -12,6 +12,7 @@ import {
 	DayOfWeek,
 	TimeOfDay,
 } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
+import { turnCharacterIntoInterface } from "../Character/Utils/turnCharacterIntoInterface";
 
 export class PartyBehavior {
 	partyType: PartyType;
@@ -446,7 +447,7 @@ export class Party {
 			location: this.location,
 			isTraveling: this.isTraveling,
 			characters: this.characters.map((character) =>
-				character === "none" ? "none" : character.intoInterface()
+				character === "none" ? "none" : turnCharacterIntoInterface(character)
 			),
 			// TODO: Implement actionsSequence
 			actionSequence: this.actionSequence,

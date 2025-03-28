@@ -2,7 +2,6 @@ import { WeaponSpecificType, WeaponType } from "../../../../Common/DTOsEnumsInte
 import { CharacterStatus } from "../../../Entities/Character/Subclasses/CharacterStatus";
 import { Skill } from "../../../Entities/Skills/Skill";
 import { SkillConsume } from "../../../Entities/Skills/SubClasses/SkillConsume";
-import { SkillEquipmentRequirement } from "../../../Entities/Skills/SubClasses/SkillEquipmentRequirement";
 import { SkillLearningRequirement } from "../../../Entities/Skills/SubClasses/SkillLearningRequirement";
 import { Character } from "../../../Entities/Character/Character";
 
@@ -81,14 +80,14 @@ export function validateSkillLearning(character: Character, requirement: SkillLe
     return isValid;
 }
 
-export function validateEquipment(equipments: WeaponSpecificType[], equipmentNeeded: SkillEquipmentRequirement): boolean {
-    if (equipmentNeeded.weapon?.length === 0 && equipmentNeeded.weapon !== undefined) { 
+export function validateEquipment(equipments: WeaponSpecificType[], equipmentNeeded: WeaponSpecificType[]): boolean {
+    if (equipmentNeeded.length === 0) { 
         return true; 
     }
 
     // Case where the skill requires bare hands; user must 'NOT' equip any weapon
-    if (equipmentNeeded.weapon?.length === 1) {
-        if (equipmentNeeded.weapon[0] === WeaponType.bare_hand) {
+    if (equipmentNeeded.length === 1) {
+        if (equipmentNeeded[0] === WeaponSpecificType.bare_hand) {
             if (equipments.length === 0) {
                 return true;
             } else {
@@ -97,10 +96,9 @@ export function validateEquipment(equipments: WeaponSpecificType[], equipmentNee
         }
     }
 
-    if (equipmentNeeded.weapon) {
-        let weaponNeeded = equipmentNeeded.weapon
+    if (equipmentNeeded.length >= 1) {
         if (equipments.length === 0) { return false };
-        if (equipments.some((weapon) => weaponNeeded.includes(weapon))) {
+        if (equipments.some((weapon) => equipmentNeeded.includes(weapon))) {
             return true;
         } else {
             return false;

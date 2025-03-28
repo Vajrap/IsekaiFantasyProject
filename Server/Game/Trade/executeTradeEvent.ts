@@ -1,4 +1,4 @@
-import { ItemManager } from "../../Entities/Items/ItemManager";
+import { MarketManager } from "../../Entities/Items/MarketManager";
 import { getItem } from "../../Entities/Items/Repository";
 import { Party } from "../../Entities/Party/Party";
 
@@ -121,5 +121,5 @@ function tradeItems(
     (partyB.inventory[itemID] || 0) - quantity,
   );
 
-  ItemManager.recordSale(itemID, quantity);
+  MarketManager.recordSale(itemID, quantity);
 }

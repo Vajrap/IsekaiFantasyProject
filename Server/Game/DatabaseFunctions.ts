@@ -3,7 +3,6 @@ import { GameTimeInterface } from "../../Common/DTOsEnumsInterfaces/GameTimeInte
 import { createCharacterTableIfNotExists } from "../Database/Character/Characters";
 import { createUsersTableIfNotExist } from "../Database/User/CreateUsersTableIfNotExist";
 import { createGameTimeTableIfNotExists } from "../Database/GameTime/GameTime";
-import { createSkillTableIfNotExists } from "../Database/Skill/skill";
 import { createGearTableIfNotExists } from "../Database/Item/Gear/createGearTableIfNotExists";
 import { createPartyTableIfNotExist } from "../Database/Party/Party";
 import { skillRepository } from "../Entities/Skills/SkillRepository";
@@ -22,12 +21,10 @@ export async function initializeDatabase() {
 			createCharacterTableIfNotExists(),
 			createUsersTableIfNotExist(),
 			createGameTimeTableIfNotExists(),
-			createSkillTableIfNotExists(),
 			createGearTableIfNotExists(),
 			createPartyTableIfNotExist(),
 		]);
 		console.log(`All Database operation completed successfully.`);
-		await skillRepository.loadSkillsFromDB();
 		
         await loadGameStateFromDB();
         
@@ -48,7 +45,6 @@ export async function saveGameStateToDB(): Promise<void> {
             saveQuestsToDB(),
             saveDialoguesToDB(),
             savePartiesToDB(),
-            saveSkillsToDB(),
         ]);
         console.log("Successfully saved game state to database");
     } catch (error) {
@@ -66,7 +62,6 @@ async function loadGameStateFromDB() {
         await loadQuestsFromDB();
         await loadDialoguesFromDB();
         await loadPartiesFromDB();
-        await loadSkillsFromDB();
     } catch (error) {
         console.error("Error loading game state from database:", error);
     }
@@ -307,24 +302,5 @@ async function savePartiesToDB() {
         // Save parties from PartyManager to database?
     } catch (error) {
         console.error("Error saving parties to database:", error);
-    }
-}
-
-// =======================
-// Skill Functions
-// =======================
-async function loadSkillsFromDB() {
-    try {
-        // Load skills from database and put into SkillRepository?
-    } catch (error) {
-        console.error("Error loading skills from database:", error);
-    }
-}
-
-async function saveSkillsToDB() {
-    try {
-        // Save skills from SkillRepository to database?
-    } catch (error) {
-        console.error("Error saving skills to database:", error);
     }
 }
