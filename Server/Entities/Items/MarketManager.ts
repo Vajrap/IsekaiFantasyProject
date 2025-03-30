@@ -85,11 +85,11 @@ export class MarketManager {
      * newCost = baseCost + (baseCost * (seasonalPercentage + randomPercentage + trendPercentage + scarcityPercentage))
      * ```
      * 
-     * - **Seasonal Effect**: Defined per season, affecting supply and demand.
-     * - **Random Deviation**: Small weekly fluctuation.
-     * - **Trading Trend**: If an item is trending (increasing sales), price rises.
-     * - **Scarcity**: If an item is rare (low stock, high demand), price rises.
-     * - **Overstock**: If stock is high but sales are low, price drops.
+     * - Seasonal Effect: Defined per season, affecting supply and demand.
+     * - Random Deviation: Small weekly fluctuation.
+     * - Trading Trend: If an item is trending (increasing sales), price rises.
+     * - Scarcity: If an item is rare (low stock, high demand), price rises.
+     * - Overstock: If stock is high but sales are low, price drops.
      */
 	static updateMarketCosts() {
 		for (const [id, item] of this.itemRegistry) {

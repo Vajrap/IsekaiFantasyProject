@@ -29,6 +29,7 @@ export class Skill {
 		character: Character,
 		allies: Party,
 		enemies: Party,
+		skillLevel: number,
 		context: { time: GameTime; location: LocationName }
 	) => TurnReport;
 	constructor(
@@ -51,6 +52,7 @@ export class Skill {
 			character: Character,
 			allies: Party,
 			enemies: Party,
+			skillLevel: number,
 			context: { time: GameTime; location: LocationName }
 		) => TurnReport
 	) {

@@ -1,6 +1,6 @@
 import { Character } from "../../Entities/Character/Character";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
-import { LocationActionEnum, LocationEventEnum, UserInputAction } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { LocationActionEnum, LocationEventEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { RegionNameEnum } from "../../../Common/DTOsEnumsInterfaces/Map/RegionNameEnum";
 import { Party } from "../Party/Party";
 import { PartyType } from "../Party/PartyType";
@@ -14,8 +14,7 @@ import { BattleType, event_battle } from "../../Game/GameEvent/battleEvent";
 import { executeTradeEvent } from "../../Game/Trade/executeTradeEvent";
 import { event_train } from "../../Game/GameEvent/trains";
 import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
-import { getRegionFromName, Region } from "./Region";
-import { Dice } from "../../Utility/Dice";
+import { getRegionFromName } from "./Region";
 import { StatMod } from "../../Utility/StatMod";
 import { event_craft } from "../../Game/GameEvent/craftEvent";
 import { learnSkill, trainSkill } from "../Character/Utils/skillFunctions";

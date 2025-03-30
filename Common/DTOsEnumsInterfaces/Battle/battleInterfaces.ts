@@ -1,5 +1,5 @@
 import { CharacterInterface } from "../../RequestResponse/characterWS";
-import { SkillConsumeInterface, SkillProduceInterface } from "../Skill/Consume+Produce";
+import { SkillConsumeByTurnInterface, SkillProduceByTurnInterface } from "../Skill/Consume+Produce";
 import { GameTimeInterface } from "../GameTimeInterface";
 
 interface TargetData {
@@ -12,8 +12,6 @@ export interface TurnReport {
     character: CharacterInterface;
     skill: string;
     actorSkillEffect: ActorSkillEffect;
-    consume: SkillConsumeInterface;
-    produce: SkillProduceInterface;
     targets: TargetData[];
     castString: string;
 }

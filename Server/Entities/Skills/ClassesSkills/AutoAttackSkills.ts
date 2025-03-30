@@ -16,7 +16,7 @@ import { GameTime } from "../../../Game/TimeAndDate/GameTime";
 import { StatMod } from "../../../Utility/StatMod";
 import { AttributeEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/AttributeEnum";
 import { Dice } from "../../../Utility/Dice";
-import { selectOneEnemy } from "../../../Game/Battle/TargetSelectionProcess";
+import { selectOneTarget } from "../../../Game/Battle/TargetSelectionProcess";
 import { Party } from "../../Party/Party";
 import { ActorSkillEffect, TurnReport } from "../../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
@@ -115,6 +115,7 @@ function skill_auto_physical_exec(
 	character: Character,
 	allies: Party,
 	enemies: Party,
+	skillLevel: number,
 	context: { time: GameTime; location: LocationName }
 ): TurnReport {
 	const { damageDice, bonusStat, damageType, preferredPosition, bonus } =
@@ -125,7 +126,7 @@ function skill_auto_physical_exec(
 		taunt: TargetTauntConsideration.TauntCount,
 	};
 
-	const target = selectOneEnemy(character, enemies, targetType);
+	const target = selectOneTarget(character, enemies, targetType);
 
 	if (target === "NO_TARGET") {
 		return buildNoTargetReport(character);
@@ -174,8 +175,6 @@ function skill_auto_physical_exec(
 		character: turnCharacterIntoInterface(character),
 		skill: "skill_auto_physical",
 		actorSkillEffect: ActorSkillEffect.None,
-		consume: { hp: [], mp: [], sp: [], elements: [] },
-		produce: { elements: [] },
 		targets: [
 			{
 				character: turnCharacterIntoInterface(target),
@@ -191,6 +190,7 @@ function skill_auto_magical_exec(
 	character: Character,
 	allies: Party,
 	enemies: Party,
+	skillLevel: number,
 	context: { time: GameTime; location: LocationName }
 ): TurnReport {
 	const { damageDice, bonusStat, damageType, preferredPosition, bonus } =
@@ -201,7 +201,7 @@ function skill_auto_magical_exec(
 		taunt: TargetTauntConsideration.TauntCount,
 	};
 
-	const target = selectOneEnemy(character, enemies, targetType);
+	const target = selectOneTarget(character, enemies, targetType);
 
 	if (target === "NO_TARGET") {
 		return buildNoTargetReport(character);
@@ -250,8 +250,6 @@ function skill_auto_magical_exec(
 		character: turnCharacterIntoInterface(character),
 		skill: "skill_auto_physical",
 		actorSkillEffect: ActorSkillEffect.None,
-		consume: { hp: [], mp: [], sp: [], elements: [] },
-		produce: { elements: [] },
 		targets: [
 			{
 				character: turnCharacterIntoInterface(target),

@@ -244,8 +244,8 @@ export function selectTargets(
 	return process.targets;
   }
 
-export function selectOneEnemy(actor: Character, enemyParty: Party, targetType: TargetType): Character | 'NO_TARGET' {
-	const targets = selectTargets(enemyParty, actor, targetType);
+export function selectOneTarget(actor: Character, targetParty: Party, targetType: TargetType): Character | 'NO_TARGET' {
+	const targets = selectTargets(targetParty, actor, targetType);
 	if (targets.length === 0) {
 		return targets[0];
 	} else {
@@ -253,6 +253,6 @@ export function selectOneEnemy(actor: Character, enemyParty: Party, targetType: 
 	}
 }
 
-export function selectEnemies(actor: Character, enemyParty: Party, targetType: TargetType): Character[] {
-	return selectTargets(enemyParty, actor, targetType);
+export function selectMultipleTargets(actor: Character, targetParty: Party, targetType: TargetType): Character[] {
+	return selectTargets(targetParty, actor, targetType);
 }

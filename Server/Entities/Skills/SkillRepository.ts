@@ -1,4 +1,5 @@
 import { autoAttackSkills } from "./ClassesSkills/AutoAttackSkills";
+import { waterSpells } from "./MagicalSkills/Primary/Water/waterSkills";
 import { Skill } from "./Skill";
 
 class SkillRepository {
@@ -21,4 +22,7 @@ class SkillRepository {
 // 	...autoAttackSkills,
 // });
 
-export const skillRepository = new SkillRepository(Object.values(autoAttackSkills));
+export const skillRepository = new SkillRepository([
+	...autoAttackSkills,
+	...waterSpells,
+]);
