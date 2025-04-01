@@ -64,6 +64,7 @@ import {
 } from "../../../Utility/DamageMultiplierFromPosition";
 import { createCastString } from "../Utils/makeCastString";
 import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
+import { TraitRepository } from "../../Traits/Trait";
 
 const skill_smite = new Skill(
 	{
@@ -627,260 +628,254 @@ function skill_holy_water_exec(
 	};
 }
 
-// const skill_cleric_05 = new Skill(
-//     `skill_cleric_05`,
-//     `Ball of Light`,
-//     `Shoot a Ball of Light at the target, dealing 1d8 order damage at an enemy. If the target is in awed state, player may roll for 10DC if the roll is higher will attack again.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'order', value: 1}
-//         ],
-//         preRequireCharacterLevel: 3,
-//         preRequireCharacterTrait: [TraitRepository.trait_faithful]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const target = oppositeParty.getOnePreferredFrontRowTauntCount(actor);
-//             if (!target) throw new Error('Exceptional: No target found.');
+const skill_ball_of_light = new Skill(
+	{
+		id: "skill_ball_of_light",
+		name: "Ball of Light",
+		tier: Tier.uncommon,
+		description: "Shoot a Ball of Light at the target, dealing 1d8 order damage at an enemy. If the target is in awed state, player may roll for 12DC if the roll is higher will attack again. DC -1 per level",
+		requirement: new SkillLearningRequirement({
+			preRequireSkillID: [],
+			preRequireElements: [
+				{ element: FundamentalElementTypes.order, value: 1 }
+			],
+			preRequireCharacterLevel: 3,
+			preRequireCharacterTrait: [TraitRepository.trait_faithful.id]
+		}),
+		equipmentNeeded: noEquipmentNeeded,
+		castString: "cast ball of light",
+		consume: new SkillConsume({
+			mp: [5, 5, 5, 5, 5],
+			elements: [
+				new ElementConsume({
+					element: FundamentalElementTypes.order,
+					amount: [1, 1, 1, 1, 1]
+				}),
+				new ElementConsume({
+					element: FundamentalElementTypes.fire,
+					amount: [1, 1, 1, 1, 1]
+				})
+			]
+		}),
+		produce: new SkillProduce({
+			elements: [
+				new ElementProduce({
+					element: FundamentalElementTypes.none,
+					amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
+				})
+			]
+		}),
+		isSpell: true,
+		isAuto: false,
+		isWeaponAttack: false,
+		isReaction: false
+	},
+	skill_ball_of_light_exec
+);
 
-//             const castMessage = `(actor=${actor.name}) cast (skill=ball of light) at (target=${target.name}).`;
-//             const sequenceMessage = [];
+function skill_ball_of_light_exec(
+	character: Character,
+	allies: Party,
+	enemies: Party,
+	skillLevel: number,
+	context: { time: GameTime; location: LocationName }
+): TurnReport {
+	const targetType: TargetType = {
+		scope: TargetScope.Single,
+		taunt: TargetTauntConsideration.TauntCount
+	};
+	const target = selectOneTarget(character, enemies, targetType);
+	if (target === "NO_TARGET") {
+		return noTarget(character, "cast ball of light");
+	}
 
-//             let message = `(actor=${actor.name}) attack (target=${target.name}), `;
-//             const firstAttack = actor.attack({
-//                 actor: actor,
-//                 target: target,
-//                 damageDice: '1d8',
-//                 hitBonus: actor.getArmorPenaltyForSpellCastingHit(),
-//                 damageType: DamageTypes.order,
-//                 damageMultiplier: 1,
-//                 damageStatModifier: [new CharacterStatusModifier('charisma')],
-//                 penalty: actor.getArmorPentaltyForSpellCastingDamage()
-//             });
-//             firstAttack.dHit ? message += `dealing (damage=${firstAttack.damage}) order damage.` : message += `but Missed!`;
+	let castString = `${character.name} casts Ball of Light at ${target.name}.`;
+	let targets = [];
 
-//             let secondAttackResult = null;
-//             if (firstAttack.dHit && target.buffsAndDebuffs.awed > 0) {
-//                 const roll = Dice.roll('1d20').sum + level;
-//                 if (roll > 10) {
-//                     message += ` since (target=${target.name}) is in Awed state, (actor=${actor.name}) attacks again, `;
-//                     secondAttackResult = actor.attack({
-//                         actor: actor,
-//                         target: target,
-//                         damageDice: '1d8',
-//                         hitBonus: actor.getArmorPenaltyForSpellCastingHit(),
-//                         damageType: DamageTypes.order,
-//                         damageMultiplier: 1,
-//                         damageStatModifier: [new CharacterStatusModifier('charisma')]
-//                     });
-//                     secondAttackResult.dHit ? message += `dealing (damage=${secondAttackResult.damage}) order damage.` : message += `but Missed!`;
-//                 }
-//             }
-//             sequenceMessage.push(message);
+	const [crit, hitChance] = calculateCritAndHit(
+		character,
+		target,
+		AttributeEnum.intelligence,
+		AttributeEnum.luck
+	);
 
-//             return new ActionDetails(
-//                 actor,
-//                 [target],
-//                 [],
-//                 [ActorSkillEffect.Order_Cast],
-//                 [TargetSkillEffect.Order_1],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0],
-//         mp: [5,5,5,5,5],
-//         sp: [0,0,0,0,0],
-//         elements: [
-//             new ElementConsume({
-//                 element: 'order',
-//                 amount: [1,1,1,1,1]
-//             }),
-//             new ElementConsume({
-//                 element: 'fire',
-//                 amount: [1,1,1,1,1]
-//             })
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [new ElementProduce({
-//             element: 'none',
-//             amountRange: [[0, 1],[0, 1],[0, 1],[0, 1],[0, 1]]
-//         })]
-//     }),
-//     Tier.uncommon
-// )
+	let damage = Dice.roll(DiceEnum.OneD8).sum + StatMod.value(character.status.charisma());
+	if (crit) {
+		damage *= 2;
+	}
 
-// const skill_cleric_07 = new Skill(
-//     `skill_cleric_07`,
-//     `Divine's Fury`,
-//     `Deals 2d6 order damage to all enemies and has a 50% chance to inflict Awed for 2 turns.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'order', value: 1}
-//         ],
-//         preRequireCharacterLevel: 7,
-//         preRequireCharacterTrait: [TraitRepository.trait_faithful]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const possibleTargets = oppositeParty.getAllPossibleTargets();
+	let result = target.receiveDamage({
+		attacker: character,
+		damage: damage,
+		hitChance: hitChance,
+		damageType: DamageTypes.order,
+		locationName: context.location
+	});
 
-//             const castMessage = `(actor=${actor.name}) cast (skill=Divine's Fury) on all enemies.`;
-//             const sequenceMessage = [];
-//             const targets = [];
+	castString += `\n${target.name} ${result.dHit ? `takes ${result.damage} order damage.` : `avoided the attack.`}`;
 
-//             for (const target of possibleTargets) {
-//                 let message = `(actor=${actor.name}) attack (target=${target.name}) with Divine's Fury, `;
-//                 const attackResult = actor.attack({
-//                     actor: actor,
-//                     target: target,
-//                     damageDice: '2d6',
-//                     hitBonus: actor.getArmorPenaltyForSpellCastingHit(),
-//                     damageType: DamageTypes.order,
-//                     damageMultiplier: 1 + (level/20),
-//                     damageStatModifier: [new CharacterStatusModifier('charisma')],
-//                     penalty: actor.getArmorPentaltyForSpellCastingDamage()
-//                 });
+	if (result.dHit) {
+		targets.push({
+			character: turnCharacterIntoInterface(target),
+			damageTaken: result.damage,
+			effect: TargetSkillEffect.Order_1
+		});
 
-//                 if (attackResult.dHit) {targets.push(target)}
+		// Check for second attack if target is awed
+		if (target.buffsAndDebuffs.awed > 0) {
+			const roll = Dice.roll(DiceEnum.OneD20).sum + skillLevel;
+			if (roll > 12 - skillLevel) {
+				castString += `\nSince ${target.name} is in Awed state, ${character.name} attacks again!`;
+				
+				const secondResult = target.receiveDamage({
+					attacker: character,
+					damage: damage,
+					hitChance: hitChance,
+					damageType: DamageTypes.order,
+					locationName: context.location
+				});
 
-//                 attackResult.dHit ? message += `dealing (damage=${attackResult.damage}) order damage.` : message += `but Missed!`;
+				castString += `\n${target.name} ${secondResult.dHit ? `takes ${secondResult.damage} order damage.` : `avoided the second attack.`}`;
+				
+				if (secondResult.dHit) {
+					targets[0].damageTaken += secondResult.damage;
+				}
+			}
+		}
+	}
 
-//                 const effectHit = Math.random() < 0.5;
-//                 if (effectHit) {
-//                     actor.inflictEffect({
-//                         actor: actor,
-//                         target: target,
-//                         inflictEffect: K.buffsAndDebuffs.awed,
-//                         effectDuration: 2,
-//                         effectDC: 10 + actor.getArmorPenaltyForSpellCastingHit()
-//                     });
-//                     message += ` and inflicting Awed.`;
-//                 }
+	return {
+		character: turnCharacterIntoInterface(character),
+		skill: "skill_ball_of_light",
+		actorSkillEffect: ActorSkillEffect.Order_Cast,
+		targets,
+		castString
+	};
+}
 
-//                 sequenceMessage.push(message);
-//             }
+const skill_divines_fury = new Skill(
+	{
+		id: "skill_divines_fury",
+		name: "Divine's Fury",
+		tier: Tier.rare,
+		description: "Deals 2d6 order damage to all enemies, enemy then need to roll DC10 will power save or get Awed for 2 turns. Each level adds 1d2 to the damage roll.",
+		requirement: new SkillLearningRequirement({
+			preRequireSkillID: [],
+			preRequireElements: [
+				{ element: FundamentalElementTypes.order, value: 1 }
+			],
+			preRequireCharacterLevel: 7,
+			preRequireCharacterTrait: [TraitRepository.trait_faithful.id]
+		}),
+		equipmentNeeded: noEquipmentNeeded,
+		castString: "cast divine's fury",
+		consume: new SkillConsume({
+			mp: [7, 7, 7, 7, 10, 10, 10],
+			elements: [
+				new ElementConsume({
+					element: FundamentalElementTypes.order,
+					amount: [2, 2, 2, 2, 2, 2, 2]
+				}),
+				new ElementConsume({
+					element: FundamentalElementTypes.fire,
+					amount: [2, 2, 2, 2, 2, 2, 2]
+				})
+			]
+		}),
+		produce: new SkillProduce({
+			elements: [
+				new ElementProduce({
+					element: FundamentalElementTypes.geo,
+					amountRange: [[1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]
+				})
+			]
+		}),
+		isSpell: true,
+		isAuto: false,
+		isWeaponAttack: false,
+		isReaction: false
+	},
+	skill_divines_fury_exec
+);
 
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.Order_Cast],
-//                 [TargetSkillEffect.Order_3, TargetSkillEffect.awed],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0],
-//         mp: [7,7,7,7,10,10,10],
-//         sp: [0,0,0,0,0,0,0],
-//         elements: [
-//             new ElementConsume({
-//                 element: 'order',
-//                 amount: [2,2,2,2,2,2,2]
-//             }),
-//             new ElementConsume({
-//                 element: 'fire',
-//                 amount: [2,2,2,2,2,2,2]
-//             })
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [new ElementProduce({
-//             element: 'geo',
-//             amountRange: [[1, 1],[1, 1],[1, 1],[1, 1],[1, 1],[1, 1],[1, 1]]
-//         })]
-//     }),
-//     Tier.rare
-// )
+function skill_divines_fury_exec(
+	character: Character,
+	allies: Party,
+	enemies: Party,
+	skillLevel: number,
+	context: { time: GameTime; location: LocationName }
+): TurnReport {
+	const targetType: TargetType = {
+		scope: TargetScope.All,
+		taunt: TargetTauntConsideration.TauntCount
+	};
+	const availableTargets = selectMultipleTargets(character, enemies, targetType);
+	if (availableTargets.length === 0) {
+		return noTarget(character, "cast divine's fury");
+	}
 
-// const skill_cleric_08 = new Skill(
-//     `skill_cleric_08`,
-//     `Divine Shield`,
-//     `Create a Divine Shield for 3 turns, all damage taken will be reduced by 2 plus charisma modifier.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'order', value: 1}
-//         ],
-//         preRequireCharacterLevel: 5,
-//         preRequireCharacterTrait: [TraitRepository.trait_faithful]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
+	let castString = `${character.name} casts Divine's Fury on all enemies.`;
+	let targets = [];
 
-//             const castMessage = `(actor=${actor.name}) cast (skill=Divine Shield).`;
-//             const sequenceMessage = [];
-//             const targetsDetails = [];
+	// Base damage roll
+	let damage = Dice.roll(DiceEnum.TwoD6).sum + StatMod.value(character.status.charisma());
+	
+	// Additional damage dice per level
+	for (let i = 1; i <= skillLevel; i++) {
+		damage += Dice.roll(DiceEnum.OneD2).sum;
+	}
 
-//             actor.inflictEffect({
-//                 actor: actor,
-//                 target: actor,
-//                 inflictEffect: K.buffsAndDebuffs.divineShield,
-//                 effectDuration: 3
-//             });
+	for (const target of availableTargets) {
+		const [crit, hitChance] = calculateCritAndHit(
+			character,
+			target,
+			AttributeEnum.intelligence,
+			AttributeEnum.luck
+		);
 
-//             sequenceMessage.push(`(actor=${actor.name}) got (skill=Divine Shield) for 3 turns.`);
+		let finalDamage = damage;
+		if (crit) {
+			finalDamage *= 2;
+		}
 
-//             return new ActionDetails(
-//                 actor,
-//                 [],
-//                 [actor],
-//                 [ActorSkillEffect.Order_Cast],
-//                 [],
-//                 [TargetSkillEffect.divineShield],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0],
-//         mp: [4,3,3,3,2,2,2],
-//         sp: [4,4,3,3,2,2,2],
-//         elements: [
-//             new ElementConsume({element: 'order', amount: [2,2,2,2,2,2,2]}),
-//             new ElementConsume({element: 'geo', amount: [1,1,1,1,1,1,1]})
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({
-//                 element: 'water',
-//                 amountRange: [[1, 1],[1, 1],[1, 1],[1, 1],[1, 1],[1, 1],[1, 1]]
-//             }),
-//             new ElementProduce({
-//                 element: 'order',
-//                 amountRange: [[0,0],[0,0],[0,1],[0,1],[1,1],[1,1],[1,0]]
-//             })
-//         ]
-//     }),
-//     Tier.rare
-// )
+		let result = target.receiveDamage({
+			attacker: character,
+			damage: finalDamage,
+			hitChance: hitChance,
+			damageType: DamageTypes.order,
+			locationName: context.location
+		});
+
+		castString += `\n${target.name} ${result.dHit ? `takes ${result.damage} order damage.` : `avoided the attack.`}`;
+
+		if (result.dHit) {
+			targets.push({
+				character: turnCharacterIntoInterface(target),
+				damageTaken: result.damage,
+				effect: TargetSkillEffect.Order_3
+			});
+
+			// 50% chance to inflict Awed
+            const saveRolls = target.saveRoll(CharacterStatusEnum.willpower);
+            const save = saveRolls[0] + saveRolls[1] + saveRolls[2];
+			if (save < 10) {
+				const debuffResult = target.receiveDebuff(
+					BuffsAndDebuffsEnum.awed,
+					2
+				);
+				castString += debuffResult.message;
+			}
+		}
+	}
+
+	return {
+		character: turnCharacterIntoInterface(character),
+		skill: "skill_divines_fury",
+		actorSkillEffect: ActorSkillEffect.Order_Cast,
+		targets,
+		castString
+	};
+}
 
 // const skill_cleric_09 = new Skill(
 //     `skill_cleric_09`,
