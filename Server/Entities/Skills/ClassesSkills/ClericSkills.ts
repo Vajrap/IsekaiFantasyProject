@@ -14,7 +14,6 @@
 12. Laoh's Blessing
 13. Judgement of Laoh
 14. Holy Nova
-15. Smite Infidel
 */
 
 import {
@@ -33,7 +32,10 @@ import {
 	TargetType,
 } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
-import { selectMultipleTargets, selectOneTarget } from "../../../Game/Battle/TargetSelectionProcess";
+import {
+	selectMultipleTargets,
+	selectOneTarget,
+} from "../../../Game/Battle/TargetSelectionProcess";
 import { GameTime } from "../../../Game/TimeAndDate/GameTime";
 import { Skill } from "../Skill";
 import {
@@ -60,7 +62,6 @@ import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes"
 import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import {
 	DamageMultiplierFromBothPositions,
-	DamageMultiplierFromPosition,
 } from "../../../Utility/DamageMultiplierFromPosition";
 import { createCastString } from "../Utils/makeCastString";
 import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
@@ -485,7 +486,7 @@ function skill_blessing_exec(
 					damageTaken: 0,
 					effect: TargetSkillEffect.bless,
 				});
-			} 
+			}
 
 			castString += buffResult.message;
 		}
@@ -568,20 +569,24 @@ function skill_holy_water_exec(
 		scope: TargetScope.All,
 		taunt: TargetTauntConsideration.TauntCount,
 	};
-	const avaliableTargets = selectMultipleTargets(character, enemies, targetType);
+	const avaliableTargets = selectMultipleTargets(
+		character,
+		enemies,
+		targetType
+	);
 	if (avaliableTargets.length === 0) {
 		return noTarget(character, "cast holy water");
 	}
 
 	let castString = `${character.name} casts Holy Water, attacking all enemies.`;
-	
+
 	let targets = [];
 
 	let damage =
-			Dice.roll(DiceEnum.OneD3).sum +
-			StatMod.value(character.status.charisma()) +
-			skillLevel;
-	
+		Dice.roll(DiceEnum.OneD3).sum +
+		StatMod.value(character.status.charisma()) +
+		skillLevel;
+
 	for (const target of avaliableTargets) {
 		//Can't crit
 		const [_, hitChance] = calculateCritAndHit(
@@ -598,16 +603,19 @@ function skill_holy_water_exec(
 			damageType: DamageTypes.order,
 			locationName: context.location,
 		});
-	
-		castString += `\n${target.name} ${result.dHit ? `takes ${result.damage} order damage.` : `avoided the attack.`}`
-		
+
+		castString += `\n${target.name} ${
+			result.dHit
+				? `takes ${result.damage} order damage.`
+				: `avoided the attack.`
+		}`;
+
 		if (result.dHit) {
-			const [diceRoll, baseModifier, buffModifier] = target.saveRoll(CharacterStatusEnum.willpower)
+			const [diceRoll, baseModifier, buffModifier] = target.saveRoll(
+				CharacterStatusEnum.willpower
+			);
 			if (diceRoll + baseModifier + buffModifier < 10) {
-				const debuffResult = target.receiveDebuff(
-					BuffsAndDebuffsEnum.awed,
-					2
-				);
+				const debuffResult = target.receiveDebuff(BuffsAndDebuffsEnum.awed, 2);
 				castString += debuffResult.message;
 			}
 		}
@@ -616,7 +624,7 @@ function skill_holy_water_exec(
 			character: turnCharacterIntoInterface(target),
 			damageTaken: result.damage,
 			effect: TargetSkillEffect.Order_1,
-		})
+		});
 	}
 
 	return {
@@ -633,14 +641,15 @@ const skill_ball_of_light = new Skill(
 		id: "skill_ball_of_light",
 		name: "Ball of Light",
 		tier: Tier.uncommon,
-		description: "Shoot a Ball of Light at the target, dealing 1d8 order damage at an enemy. If the target is in awed state, player may roll for 12DC if the roll is higher will attack again. DC -1 per level",
+		description:
+			"Shoot a Ball of Light at the target, dealing 1d8 order damage at an enemy. If the target is in awed state, player may roll for 12DC if the roll is higher will attack again. DC -1 per level",
 		requirement: new SkillLearningRequirement({
 			preRequireSkillID: [],
 			preRequireElements: [
-				{ element: FundamentalElementTypes.order, value: 1 }
+				{ element: FundamentalElementTypes.order, value: 1 },
 			],
 			preRequireCharacterLevel: 3,
-			preRequireCharacterTrait: [TraitRepository.trait_faithful.id]
+			preRequireCharacterTrait: [TraitRepository.trait_faithful.id],
 		}),
 		equipmentNeeded: noEquipmentNeeded,
 		castString: "cast ball of light",
@@ -649,26 +658,32 @@ const skill_ball_of_light = new Skill(
 			elements: [
 				new ElementConsume({
 					element: FundamentalElementTypes.order,
-					amount: [1, 1, 1, 1, 1]
+					amount: [1, 1, 1, 1, 1],
 				}),
 				new ElementConsume({
 					element: FundamentalElementTypes.fire,
-					amount: [1, 1, 1, 1, 1]
-				})
-			]
+					amount: [1, 1, 1, 1, 1],
+				}),
+			],
 		}),
 		produce: new SkillProduce({
 			elements: [
 				new ElementProduce({
 					element: FundamentalElementTypes.none,
-					amountRange: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]]
-				})
-			]
+					amountRange: [
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+					],
+				}),
+			],
 		}),
 		isSpell: true,
 		isAuto: false,
 		isWeaponAttack: false,
-		isReaction: false
+		isReaction: false,
 	},
 	skill_ball_of_light_exec
 );
@@ -682,7 +697,7 @@ function skill_ball_of_light_exec(
 ): TurnReport {
 	const targetType: TargetType = {
 		scope: TargetScope.Single,
-		taunt: TargetTauntConsideration.TauntCount
+		taunt: TargetTauntConsideration.TauntCount,
 	};
 	const target = selectOneTarget(character, enemies, targetType);
 	if (target === "NO_TARGET") {
@@ -699,7 +714,8 @@ function skill_ball_of_light_exec(
 		AttributeEnum.luck
 	);
 
-	let damage = Dice.roll(DiceEnum.OneD8).sum + StatMod.value(character.status.charisma());
+	let damage =
+		Dice.roll(DiceEnum.OneD8).sum + StatMod.value(character.status.charisma());
 	if (crit) {
 		damage *= 2;
 	}
@@ -709,16 +725,18 @@ function skill_ball_of_light_exec(
 		damage: damage,
 		hitChance: hitChance,
 		damageType: DamageTypes.order,
-		locationName: context.location
+		locationName: context.location,
 	});
 
-	castString += `\n${target.name} ${result.dHit ? `takes ${result.damage} order damage.` : `avoided the attack.`}`;
+	castString += `\n${target.name} ${
+		result.dHit ? `takes ${result.damage} order damage.` : `avoided the attack.`
+	}`;
 
 	if (result.dHit) {
 		targets.push({
 			character: turnCharacterIntoInterface(target),
 			damageTaken: result.damage,
-			effect: TargetSkillEffect.Order_1
+			effect: TargetSkillEffect.Order_1,
 		});
 
 		// Check for second attack if target is awed
@@ -726,17 +744,21 @@ function skill_ball_of_light_exec(
 			const roll = Dice.roll(DiceEnum.OneD20).sum + skillLevel;
 			if (roll > 12 - skillLevel) {
 				castString += `\nSince ${target.name} is in Awed state, ${character.name} attacks again!`;
-				
+
 				const secondResult = target.receiveDamage({
 					attacker: character,
 					damage: damage,
 					hitChance: hitChance,
 					damageType: DamageTypes.order,
-					locationName: context.location
+					locationName: context.location,
 				});
 
-				castString += `\n${target.name} ${secondResult.dHit ? `takes ${secondResult.damage} order damage.` : `avoided the second attack.`}`;
-				
+				castString += `\n${target.name} ${
+					secondResult.dHit
+						? `takes ${secondResult.damage} order damage.`
+						: `avoided the second attack.`
+				}`;
+
 				if (secondResult.dHit) {
 					targets[0].damageTaken += secondResult.damage;
 				}
@@ -749,7 +771,7 @@ function skill_ball_of_light_exec(
 		skill: "skill_ball_of_light",
 		actorSkillEffect: ActorSkillEffect.Order_Cast,
 		targets,
-		castString
+		castString,
 	};
 }
 
@@ -758,14 +780,15 @@ const skill_divines_fury = new Skill(
 		id: "skill_divines_fury",
 		name: "Divine's Fury",
 		tier: Tier.rare,
-		description: "Deals 2d6 order damage to all enemies, enemy then need to roll DC10 will power save or get Awed for 2 turns. Each level adds 1d2 to the damage roll.",
+		description:
+			"Deals 2d6 order damage to all enemies, enemy then need to roll DC10 will power save or get Awed for 2 turns. Each level adds 1d2 to the damage roll.",
 		requirement: new SkillLearningRequirement({
 			preRequireSkillID: [],
 			preRequireElements: [
-				{ element: FundamentalElementTypes.order, value: 1 }
+				{ element: FundamentalElementTypes.order, value: 1 },
 			],
 			preRequireCharacterLevel: 7,
-			preRequireCharacterTrait: [TraitRepository.trait_faithful.id]
+			preRequireCharacterTrait: [TraitRepository.trait_faithful.id],
 		}),
 		equipmentNeeded: noEquipmentNeeded,
 		castString: "cast divine's fury",
@@ -774,26 +797,34 @@ const skill_divines_fury = new Skill(
 			elements: [
 				new ElementConsume({
 					element: FundamentalElementTypes.order,
-					amount: [2, 2, 2, 2, 2, 2, 2]
+					amount: [2, 2, 2, 2, 2, 2, 2],
 				}),
 				new ElementConsume({
 					element: FundamentalElementTypes.fire,
-					amount: [2, 2, 2, 2, 2, 2, 2]
-				})
-			]
+					amount: [2, 2, 2, 2, 2, 2, 2],
+				}),
+			],
 		}),
 		produce: new SkillProduce({
 			elements: [
 				new ElementProduce({
 					element: FundamentalElementTypes.geo,
-					amountRange: [[1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]
-				})
-			]
+					amountRange: [
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+					],
+				}),
+			],
 		}),
 		isSpell: true,
 		isAuto: false,
 		isWeaponAttack: false,
-		isReaction: false
+		isReaction: false,
 	},
 	skill_divines_fury_exec
 );
@@ -807,9 +838,13 @@ function skill_divines_fury_exec(
 ): TurnReport {
 	const targetType: TargetType = {
 		scope: TargetScope.All,
-		taunt: TargetTauntConsideration.TauntCount
+		taunt: TargetTauntConsideration.TauntCount,
 	};
-	const availableTargets = selectMultipleTargets(character, enemies, targetType);
+	const availableTargets = selectMultipleTargets(
+		character,
+		enemies,
+		targetType
+	);
 	if (availableTargets.length === 0) {
 		return noTarget(character, "cast divine's fury");
 	}
@@ -818,8 +853,9 @@ function skill_divines_fury_exec(
 	let targets = [];
 
 	// Base damage roll
-	let damage = Dice.roll(DiceEnum.TwoD6).sum + StatMod.value(character.status.charisma());
-	
+	let damage =
+		Dice.roll(DiceEnum.TwoD6).sum + StatMod.value(character.status.charisma());
+
 	// Additional damage dice per level
 	for (let i = 1; i <= skillLevel; i++) {
 		damage += Dice.roll(DiceEnum.OneD2).sum;
@@ -843,26 +879,27 @@ function skill_divines_fury_exec(
 			damage: finalDamage,
 			hitChance: hitChance,
 			damageType: DamageTypes.order,
-			locationName: context.location
+			locationName: context.location,
 		});
 
-		castString += `\n${target.name} ${result.dHit ? `takes ${result.damage} order damage.` : `avoided the attack.`}`;
+		castString += `\n${target.name} ${
+			result.dHit
+				? `takes ${result.damage} order damage.`
+				: `avoided the attack.`
+		}`;
 
 		if (result.dHit) {
 			targets.push({
 				character: turnCharacterIntoInterface(target),
 				damageTaken: result.damage,
-				effect: TargetSkillEffect.Order_3
+				effect: TargetSkillEffect.Order_3,
 			});
 
 			// 50% chance to inflict Awed
-            const saveRolls = target.saveRoll(CharacterStatusEnum.willpower);
-            const save = saveRolls[0] + saveRolls[1] + saveRolls[2];
+			const saveRolls = target.saveRoll(CharacterStatusEnum.willpower);
+			const save = saveRolls[0] + saveRolls[1] + saveRolls[2];
 			if (save < 10) {
-				const debuffResult = target.receiveDebuff(
-					BuffsAndDebuffsEnum.awed,
-					2
-				);
+				const debuffResult = target.receiveDebuff(BuffsAndDebuffsEnum.awed, 2);
 				castString += debuffResult.message;
 			}
 		}
@@ -873,583 +910,813 @@ function skill_divines_fury_exec(
 		skill: "skill_divines_fury",
 		actorSkillEffect: ActorSkillEffect.Order_Cast,
 		targets,
-		castString
+		castString,
 	};
 }
 
-// const skill_cleric_09 = new Skill(
-//     `skill_cleric_09`,
-//     `Divine Intervention`,
-//     `Revive a dead party member with 50% chance and heal for 20% hp.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'order', value: 5 }
-//         ],
-//         preRequireCharacterLevel: 0,
-//         preRequireCharacterTrait: [TraitRepository.trait_faithful]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
+const skill_divine_intervention = new Skill(
+	{
+		id: "skill_divine_intervention",
+		name: "Divine Intervention",
+		tier: Tier.rare,
+		description: `Revive a dead party member with DC13 willpower save, resurrected character got 1D6 + 5 + vitality Modifier HP back. Each level decrease the DC by 1 and HP by 1D3. DC + 2 3 4 when wearing light, medium and heavy armor respectively.`,
+		requirement: new SkillLearningRequirement({
+			preRequireSkillID: [],
+			preRequireElements: [
+				{ element: FundamentalElementTypes.order, value: 5 },
+			],
+			preRequireCharacterLevel: 0,
+			preRequireCharacterTrait: [TraitRepository.trait_faithful.id],
+		}),
+		equipmentNeeded: noEquipmentNeeded,
+		castString: "cast divine intervention",
+		consume: new SkillConsume({
+			sp: [3, 3, 3, 3, 3, 3, 3],
+			elements: [
+				new ElementConsume({
+					element: FundamentalElementTypes.order,
+					amount: [3, 3, 3, 3, 3, 3, 3],
+				}),
+				new ElementConsume({
+					element: FundamentalElementTypes.air,
+					amount: [2, 2, 2, 2, 2, 2, 2],
+				}),
+			],
+		}),
+		produce: new SkillProduce({
+			elements: [
+				new ElementProduce({
+					element: FundamentalElementTypes.geo,
+					amountRange: [
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+					],
+				}),
+				new ElementProduce({
+					element: FundamentalElementTypes.water,
+					amountRange: [
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+					],
+				}),
+			],
+		}),
+		isSpell: true,
+		isAuto: false,
+		isWeaponAttack: false,
+		isReaction: false,
+	},
+	skill_divine_intervention_exec
+);
 
-// new SkillActiveEffect(
-//     (actor: Character, selfParty: Party, oppositeParty: Party, level:number): ActionDetails => {
-//         const target = selfParty.getOneDeadTarget(actor);
-//         if (!target) {
-//             console.log('No dead character in party.');
-//             return new ActionDetails(actor, [], [], [], [], [], 'No dead character in party.');
-//         }
+function skill_divine_intervention_exec(
+	character: Character,
+	allies: Party,
+	enemies: Party,
+	skillLevel: number,
+	context: { time: GameTime; location: LocationName }
+): TurnReport {
+	const target = allies.getOneDeadTarget(character);
+	if (!target) {
+		return noTarget(character, "cast divine intervention");
+	}
 
-//         const castMessage = `(actor=${actor.name}) cast (skill=Divine Intervention) on (target=${target.name}).`;
-//         const sequenceMessage = [];
+	const castString = `${character.name} casts Divine Intervention on ${target.name}.`;
+	const armorTier = character.equipments.getArmorTier();
+	const penalty =
+		armorTier === "light"
+			? 2
+			: armorTier === "medium"
+			? 3
+			: armorTier === "heavy"
+			? 4
+			: 0;
 
-//         const penalty = actor.getArmorPentaltyForSpellCastingDamage();
-//         const reviveChance = 4 + actor.getModifier('attributes', 'willpower') - penalty + (level-1);
-//         const diceRoll = Dice.roll('1d20').sum;
+	const reviveDC = 13 + penalty - skillLevel;
+	const diceRoll = Dice.rollTwenty();
 
-//         let message;
-//         let success = false;
+	let message;
+	let success = false;
 
-//         if (diceRoll + reviveChance >= 15) {
-//             target.isDead = false;
-//             target.currentHP = Math.floor(target.maxHP() * (0.2 + (level/10))) - penalty;
-//             message = `(actor=${actor.name}) cast (skill=Divine Intervention) to revive (target=${target.name}), restoring them to (heal=${target.currentHP}) HP.`;
-//             success = true;
-//             sequenceMessage.push(message);
-//         } else {
-//             message = `(actor=${actor.name}) cast (skill=Divine Intervention) on (target=${target.name}) but fails.`;
-//             sequenceMessage.push(message);
-//         }
+	if (diceRoll >= reviveDC) {
+		target.isDead = false;
+		let healing =
+			Dice.roll(DiceEnum.OneD6).sum +
+			5 +
+			StatMod.value(character.status.vitality());
+		for (let i = 1; i <= skillLevel; i++) {
+			healing -= Dice.roll(DiceEnum.OneD3).sum;
+		}
+		target.hpUp(healing);
+		message = `${character.name} successfully revives ${target.name}, restoring them to ${target.currentHP} HP.`;
+		success = true;
+	} else {
+		message = `${character.name} attempts to revive ${target.name} but fails.`;
+	}
 
-//         return new ActionDetails(
-//             actor,
-//             [],
-//             [target],
-//             [ActorSkillEffect.Order_Cast],
-//             [],
-//             [TargetSkillEffect.heal],
-//             castMessage,
-//             sequenceMessage
-//         );
-//     }
-// ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0],
-//         mp: [0,0,0,0,0,0,0],
-//         sp: [3,3,3,3,3,3,3],
-//         elements: [
-//             new ElementConsume({ element: 'order', amount: [3,3,3,3,3,3,3]}),
-//             new ElementConsume({ element: 'air', amount: [2,2,2,2,2,2,2]}),
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'geo', amountRange: [[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1]]}),
-//             new ElementProduce({ element: 'water', amountRange: [[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1]]})
-//         ]
-//     })
-//     ,
-//     Tier.rare
-// )
+	return {
+		character: turnCharacterIntoInterface(character),
+		skill: "skill_divine_intervention",
+		actorSkillEffect: ActorSkillEffect.Order_Cast,
+		targets: [
+			{
+				character: turnCharacterIntoInterface(target),
+				damageTaken: 0,
+				effect: success ? TargetSkillEffect.heal : TargetSkillEffect.None,
+			},
+		],
+		castString: castString + " " + message,
+	};
+}
 
-// const skill_cleric_10 = new Skill(
-//     `skill_cleric_10`,
-//     `Harmony`,
-//     `Deals damge to enemy twice once with order and once with chaos, each attack deals 1d6 damage. If target is in awed status, the first attack will deal 2d6 damage. If target is in cursed status, the second attack will deal 2d6 damage.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'order', value: 1}
-//         ],
-//         preRequireCharacterLevel: 8,
-//         preRequireCharacterTrait: [TraitRepository.trait_enlightened]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const target = oppositeParty.getOnePreferredFrontRowTauntCount(actor);
-//             if (!target) throw new Error('Exceptional: No target found.');
+const skill_harmony = new Skill(
+	{
+		id: "skill_harmony",
+		name: "Harmony",
+		tier: Tier.epic,
+		description: `Deals damage to enemy twice, once with order and once with chaos, each attack deals 1d6 damage (+ willpower). If target is in awed status, the first attack will deal 2d6 damage. If target is in cursed status, the second attack will deal 2d6 damage. Each level increases the damage of each attack by 1 and at level 7 on each attack the user might roll for 14DC willpower to add awed or cursed status to the target for 2 turns.`,
+		requirement: new SkillLearningRequirement({
+			preRequireSkillID: [],
+			preRequireElements: [
+				{ element: FundamentalElementTypes.order, value: 1 },
+			],
+			preRequireCharacterLevel: 8,
+			preRequireCharacterTrait: [TraitRepository.trait_enlightened.id],
+		}),
+		equipmentNeeded: noEquipmentNeeded,
+		castString: "cast harmony",
+		consume: new SkillConsume({
+			mp: [5, 5, 7, 7, 8, 9, 10],
+			elements: [
+				new ElementConsume({
+					element: FundamentalElementTypes.order,
+					amount: [2, 2, 2, 2, 2, 2, 2],
+				}),
+				new ElementConsume({
+					element: FundamentalElementTypes.chaos,
+					amount: [2, 2, 2, 2, 2, 2, 2],
+				}),
+			],
+		}),
+		produce: new SkillProduce({
+			elements: [
+				new ElementProduce({
+					element: FundamentalElementTypes.order,
+					amountRange: [
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+					],
+				}),
+				new ElementProduce({
+					element: FundamentalElementTypes.chaos,
+					amountRange: [
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+					],
+				}),
+			],
+		}),
+		isSpell: true,
+		isAuto: false,
+		isWeaponAttack: false,
+		isReaction: false,
+	},
+	skill_harmony_exec
+);
 
-//             const castMessage = `(actor=${actor.name}) cast (skill=Harmony) on (target=${target.name}).`;
-//             const sequenceMessage = [];
+function skill_harmony_exec(
+	character: Character,
+	allies: Party,
+	enemies: Party,
+	skillLevel: number,
+	context: { time: GameTime; location: LocationName }
+): TurnReport {
+	const targetType: TargetType = {
+		scope: TargetScope.Single,
+		taunt: TargetTauntConsideration.TauntCount,
+	};
+	const target = selectOneTarget(character, enemies, targetType);
+	if (target === "NO_TARGET") {
+		return noTarget(character, "cast harmony");
+	}
 
-//             let message = `(actor=${actor.name}) attack (target=${target.name}) with Harmony, `;
-//             const firstAttack = actor.attack({
-//                 actor: actor,
-//                 target: target,
-//                 damageDice: target.buffsAndDebuffs.awed > 0 ? '2d6' : '1d6',
-//                 hitBonus: actor.getArmorPenaltyForSpellCastingHit(),
-//                 damageType: DamageTypes.order,
-//                 damageMultiplier: 1,
-//                 damageStatModifier: [new CharacterStatusModifier('charisma')],
-//                 penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                 additionalDamage: level
-//             });
-//             firstAttack.dHit ? message += `dealing (damage=${firstAttack.damage}) order damage.` : message += `but Missed!`;
+	let castString = `${character.name} casts Harmony on ${target.name}.`;
+	let targets = [];
 
-//             message += `(actor=${actor.name}) attack (target=${target.name}) again with Harmony, `;
-//             const secondAttack = actor.attack({
-//                 actor: actor,
-//                 target: target,
-//                 damageDice: target.buffsAndDebuffs.cursed > 0 ? '2d6' : '1d6',
-//                 hitBonus: actor.getArmorPenaltyForSpellCastingHit(),
-//                 damageType: DamageTypes.chaos,
-//                 damageMultiplier: 1,
-//                 damageStatModifier: [new CharacterStatusModifier('charisma')],
-//                 penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                 additionalDamage: level
-//             });
-//             secondAttack.dHit ? message += `dealing (damage=${secondAttack.damage}) chaos damage.` : firstAttack.dHit? `but Missed!` : message += `and Also Missed!`;
-//             sequenceMessage.push(message);
+	const [_, hitChance] = calculateCritAndHit(
+		character,
+		target,
+		AttributeEnum.intelligence,
+		AttributeEnum.luck
+	);
 
-//             return new ActionDetails(
-//                 actor,
-//                 [target],
-//                 [],
-//                 [ActorSkillEffect.Order_Cast, ActorSkillEffect.Chaos_Cast],
-//                 [TargetSkillEffect.Order_1, TargetSkillEffect.Chaos_1],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0],
-//         mp: [5,5,7,7,8,9,10],
-//         sp: [0,0,0,0,0,0,0],
-//         elements: [
-//             new ElementConsume({ element: 'order', amount: [2,2,2,2,2,2,2]}),
-//             new ElementConsume({ element: 'chaos', amount: [2,2,2,2,2,2,2]}),
-//             new ElementConsume({ element: 'none', amount: [1,1,1,1,1,1,1] })
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'order', amountRange: [[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1]]}),
-//             new ElementProduce({ element: 'chaos', amountRange: [[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1],[0, 1]]})
-//         ]
-//     }),
-//     Tier.epic
-// )
+	let damageOrder =
+		Dice.roll(DiceEnum.OneD6).sum +
+		skillLevel +
+		StatMod.value(character.status.willpower());
+	let damageChaos =
+		Dice.roll(DiceEnum.OneD6).sum +
+		skillLevel +
+		StatMod.value(character.status.willpower());
 
-// const skill_cleric_11 = new Skill(
-//     `skill_cleric_11`,
-//     `inspiration`,
-//     `Give an inspriing speech to all party members, all party members get
-//     +2 bonus for all saving roll for 1 turn.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [],
-//         preRequireCharacterLevel: 3,
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level:number): ActionDetails => {
-//             const targets = [];
-//             const castMessage = `(actor=${actor.name}) give an (skill=inspiration) speech to all party members.`;
-//             const sequenceMessage = [];
+	if (target.buffsAndDebuffs.awed > 0) {
+		damageOrder += Dice.roll(DiceEnum.OneD6).sum;
+	}
 
-//             let effectDurationFromLevel = 1;
-//             if (level < 3) {effectDurationFromLevel = 1}
-//             if (level < 5) {effectDurationFromLevel = 2}
-//             if (level === 5) {effectDurationFromLevel = 3}
+	if (target.buffsAndDebuffs.cursed > 0) {
+		damageChaos += Dice.roll(DiceEnum.OneD6).sum;
+	}
 
-//             for (const target of selfParty.characters) {
-//                 if (target) {
-//                     actor.inflictEffect({
-//                         actor: actor,
-//                         target: target,
-//                         inflictEffect: K.buffsAndDebuffs.inspiration,
-//                         effectDuration: effectDurationFromLevel
-//                     });
-//                     targets.push(target);
-//                     sequenceMessage.push(`(target=${target.name}) is feeling (skill=inspiring) and got inspired for ${effectDurationFromLevel} turns.`);
-//                 }
-//             }
+	let resultOrder = target.receiveDamage({
+		attacker: character,
+		damage: damageOrder,
+		hitChance: hitChance,
+		damageType: DamageTypes.order,
+		locationName: context.location,
+	});
 
-//             return new ActionDetails(
-//                 actor,
-//                 [],
-//                 targets,
-//                 [ActorSkillEffect.Order_Cast],
-//                 [],
-//                 [TargetSkillEffect.inspiration],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0],
-//         mp: [5,5,4,3,0],
-//         sp: [3,3,3,3,3],
-//         elements: [
-//             new ElementConsume({ element: 'none', amount: [1,1,1,1,1] })
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'order', amountRange: [[1, 1],[1, 1],[1, 1],[1, 1],[1, 1]]}),
-//         ]
-//     }),
-//     Tier.uncommon
-// )
+	castString += `\n${target.name} ${
+		resultOrder.dHit
+			? `takes ${resultOrder.damage} order damage.`
+			: `avoided the attack.`
+	}`;
 
-// const skill_cleric_12 = new Skill(
-//     'skill_cleric_12',
-//     `Laoh's Blessing`,
-//     `Heal all party members for 1d6 plus charisma modifier, and have a d6 chance to grant them bless status for 2 turn.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'order', value: 10}
-//         ],
-//         preRequireCharacterLevel: 10,
-//         preRequireCharacterTrait: [TraitRepository.trait_faithful]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const targets = [];
-//             const castMessage = `(actor=${actor.name}) is asking for (skill=Laoh's Blessing) on all party members.`;
-//             const sequenceMessage = [];
+	if (resultOrder.dHit) {
+		targets.push({
+			character: turnCharacterIntoInterface(target),
+			damageTaken: resultOrder.damage,
+			effect: TargetSkillEffect.Order_1,
+		});
+	}
 
-//             for (const target of selfParty.characters) {
-//                 if (target) {
-//                     const healAmount = actor.heal({
-//                         target: target,
-//                         healingDice: '1d6',
-//                         healingStatModifier: [new CharacterStatusModifier('charisma')],
-//                         penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                         additionalHealing: (level*2)
-//                     });
-//                     targets.push(target);
-//                     let message = `(actor=${actor.name}) cast (skill=Laoh's Blessing) on (target=${target.name}), healing for (heal=${healAmount}) HP.`;
+	if (skillLevel >= 7) {
+		const roll =
+			Dice.rollTwenty() + StatMod.value(character.status.willpower());
+		if (roll > 14) {
+			const debuffResult = target.receiveDebuff(
+				target.buffsAndDebuffs.awed > 0
+					? BuffsAndDebuffsEnum.cursed
+					: BuffsAndDebuffsEnum.awed,
+				2
+			);
+			castString += debuffResult.message;
+		}
+	}
 
-//                     const effectHit = Math.random() < 1 / 6;
-//                     if (effectHit) {
-//                         actor.inflictEffect({
-//                             actor: actor,
-//                             target: target,
-//                             inflictEffect: K.buffsAndDebuffs.bless,
-//                             effectDuration: 2
-//                         });
-//                         message += ` and granting them Bless status.`;
-//                     }
+	let resultChaos = target.receiveDamage({
+		attacker: character,
+		damage: damageChaos,
+		hitChance: hitChance,
+		damageType: DamageTypes.chaos,
+		locationName: context.location,
+	});
 
-//                     sequenceMessage.push(message);
-//                 }
-//             }
+	castString += `\n${target.name} ${
+		resultChaos.dHit
+			? `takes ${resultChaos.damage} chaos damage.`
+			: `avoided the attack.`
+	}`;
 
-//             return new ActionDetails(
-//                 actor,
-//                 [],
-//                 targets,
-//                 [ActorSkillEffect.Order_Cast],
-//                 [],
-//                 [TargetSkillEffect.bless],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0,0,0,0],
-//         mp: [10,10,9,9,8,8,7,7,6,6],
-//         sp: [0,0,0,0,0,0,0,0,0,0],
-//         elements: [
-//             new ElementConsume({ element: 'order', amount: [4,4,4,4,4,4,4,4,4,4]}),
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'chaos', amountRange: [[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1]]}),
-//             new ElementProduce({ element: 'geo', amountRange: [[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1]]}),
-//             new ElementProduce({ element: 'water', amountRange: [[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1]]})
-//         ]
-//     }),
-//     Tier.legendary
-// )
+	if (resultChaos.dHit) {
+		targets.push({
+			character: turnCharacterIntoInterface(target),
+			damageTaken: resultChaos.damage,
+			effect: TargetSkillEffect.Chaos_1,
+		});
+	}
 
-// const skill_cleric_13 = new Skill(
-//     `skill_cleric_13`,
-//     `Judgement of Laoh`,
-//     `Deals 3d6 order damage to all enemies, and have a 50% chance to inflict awed for 2 turns.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'order', value: 1}
-//         ],
-//         preRequireCharacterLevel: 10,
-//         preRequireCharacterTrait: [TraitRepository.trait_faithful]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const possibleTargets = oppositeParty.getAllPossibleTargets();
-//             const targets = [];
-//             const castMessage = `(actor=${actor.name}) chant for (skill=Judgement of Laoh) on all enemies.`;
-//             const sequenceMessage = [];
+	if (skillLevel >= 7) {
+		const roll =
+			Dice.rollTwenty() + StatMod.value(character.status.willpower());
+		if (roll > 14) {
+			const debuffResult = target.receiveDebuff(
+				target.buffsAndDebuffs.awed > 0
+					? BuffsAndDebuffsEnum.cursed
+					: BuffsAndDebuffsEnum.awed,
+				2
+			);
+			castString += debuffResult.message;
+		}
+	}
 
-//             for (const target of possibleTargets) {
-//                 let message = `(actor=${actor.name}) attack (target=${target.name}) with Judgement of Laoh, `;
-//                 const attackResult = actor.attack({
-//                     actor: actor,
-//                     target: target,
-//                     damageDice: '3d6',
-//                     hitBonus: actor.getArmorPenaltyForSpellCastingHit(),
-//                     damageType: DamageTypes.order,
-//                     damageMultiplier: 1,
-//                     damageStatModifier: [new CharacterStatusModifier('charisma')],
-//                     penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                     additionalDamage: level*2
-//                 });
-//                 attackResult.dHit ? targets.push(target) : null;
-//                 attackResult.dHit ? message += `dealing (damage=${attackResult.damage}) order damage.` : message += `but Missed!`;
+	return {
+		character: turnCharacterIntoInterface(character),
+		skill: "skill_harmony",
+		actorSkillEffect: ActorSkillEffect.Order_Cast,
+		targets,
+		castString,
+	};
+}
 
-//                 const effectHit = Math.random() < 0.5;
-//                 if (effectHit) {
-//                     actor.inflictEffect({
-//                         actor: actor,
-//                         target: target,
-//                         inflictEffect: K.buffsAndDebuffs.awed,
-//                         effectDuration: 2,
-//                         effectDC: 10 + actor.getArmorPenaltyForSpellCastingHit() + level/2
-//                     });
-//                     message += ` and inflicting Awed.`;
-//                 }
+const skill_inspiration = new Skill(
+	{
+		id: "skill_inspiration",
+		name: "Inspiration",
+		tier: Tier.uncommon,
+		description: `Give an inspiring speech to all party members, all party members get +2 bonus for all saving roll for 1 turn. At level 3 and 5 duration increases to 2 and 3 turns respectively.`,
+		requirement: new SkillLearningRequirement({
+			preRequireSkillID: [],
+			preRequireElements: [],
+			preRequireCharacterLevel: 3,
+			preRequireCharacterTrait: [],
+		}),
+		equipmentNeeded: noEquipmentNeeded,
+		castString: "cast inspiration",
+		consume: new SkillConsume({
+			mp: [5, 5, 4, 3, 0],
+			elements: [
+				new ElementConsume({
+					element: FundamentalElementTypes.none,
+					amount: [1, 1, 1, 1, 1],
+				}),
+			],
+		}),
+		produce: new SkillProduce({
+			elements: [
+				new ElementProduce({
+					element: FundamentalElementTypes.order,
+					amountRange: [
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+					],
+				}),
+			],
+		}),
+		isSpell: true,
+		isAuto: false,
+		isWeaponAttack: false,
+		isReaction: false,
+	},
+	skill_inspiration_exec
+);
 
-//                 sequenceMessage.push(message);
-//             }
+function skill_inspiration_exec(
+	character: Character,
+	allies: Party,
+	enemies: Party,
+	skillLevel: number,
+	context: { time: GameTime; location: LocationName }
+): TurnReport {
+	const targetType: TargetType = {
+		scope: TargetScope.All,
+		taunt: TargetTauntConsideration.TauntCount,
+	};
+	const availableTargets = selectMultipleTargets(character, allies, targetType);
+	if (availableTargets.length === 0) {
+		return noTarget(character, "cast inspiration");
+	}
 
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.Order_Cast],
-//                 [TargetSkillEffect.Order_3, TargetSkillEffect.awed],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0,0,0,0],
-//         mp: [15,15,15,15,15,10,10,10,10,10],
-//         sp: [0,0,0,0,0,0,0,0,0,0],
-//         elements: [
-//             new ElementConsume({ element: 'order', amount: [3,3,3,3,3,3,3,3,3,3]}),
-//             new ElementConsume({ element: 'fire', amount: [2,2,2,2,2,2,2,2,2,2]})
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [new ElementProduce({
-//             element: 'chaos',
-//             amountRange: [[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]]
-//         })]
-//     }),
-//     Tier.legendary
-// )
+	let castString = `${character.name} gives an inspiring speech to all party members.`;
+	let targets = [];
 
-// //Holy nova
-// const skill_cleric_14 = new Skill(
-//     `skill_cleric_14`,
-//     `Holy Nova`,
-//     `Deals 2d6 order damage to all enemies and heals all party members for 2d6 plus charisma modifier.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'order', value: 1}
-//         ],
-//         preRequireCharacterLevel: 10,
-//         preRequireCharacterTrait: [TraitRepository.trait_faithful]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const possibleTargets = oppositeParty.getAllPossibleTargets();
-//             const targets: Character[] = [];
-//             const positiveTargets: Character[] = [];
-//             const castMessage = `(actor=${actor.name}) cast (skill=Holy Nova) on all enemies.`;
-//             const sequenceMessage = [];
+	let duration = 1;
+	if (skillLevel >= 3) duration += 1;
+	if (skillLevel === 5) duration += 1;
 
-//             for (const target of possibleTargets) {
-//                 let message = `(actor=${actor.name}) attack (target=${target.name}) with Holy Nova, `;
-//                 const attackResult = actor.attack({
-//                     actor: actor,
-//                     target: target,
-//                     damageDice: '2d6',
-//                     hitBonus: actor.getArmorPenaltyForSpellCastingHit(),
-//                     damageType: DamageTypes.order,
-//                     damageMultiplier: 1,
-//                     damageStatModifier: [new CharacterStatusModifier('charisma')],
-//                     penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                     additionalDamage: level/2
-//                 });
-//                 attackResult.dHit ? targets.push(target) : null;
-//                 attackResult.dHit ? message += `dealing (damage=${attackResult.damage}) order damage.` : message += `but Missed!`;
+	for (const target of availableTargets) {
+		const buffResult = target.receiveBuff(
+			BuffsAndDebuffsEnum.inspiration,
+			duration
+		);
 
-//                 const effectHit = Math.random() < 1 / 6;
-//                 if (effectHit) {
-//                     actor.inflictEffect({
-//                         actor: actor,
-//                         target: target,
-//                         inflictEffect: K.buffsAndDebuffs.awed,
-//                         effectDuration: 2,
-//                         effectDC: 10 + actor.getArmorPenaltyForSpellCastingHit()
-//                     });
-//                     message += ` and inflicting Awed.`;
-//                 }
+		if (buffResult.result) {
+			targets.push({
+				character: turnCharacterIntoInterface(target),
+				damageTaken: 0,
+				effect: TargetSkillEffect.inspiration,
+			});
+		}
 
-//                 sequenceMessage.push(message);
-//             }
+		castString += buffResult.message;
+	}
 
-//             for (const target of selfParty.characters) {
-//                 if (target) {
-//                     if (target.isDead) {continue}
-//                     let healAmount = actor.heal({
-//                         target: target,
-//                         healingDice: '2d6',
-//                         healingStatModifier: [new CharacterStatusModifier('charisma')],
-//                         penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                         additionalHealing: level/2
-//                     });
-//                     positiveTargets.push(target);
-//                     sequenceMessage.push(`(actor=${actor.name}) heal (target=${target.name}) for (heal=${healAmount}) HP.`)
-//                 }
-//             }
+	return {
+		character: turnCharacterIntoInterface(character),
+		skill: "skill_inspiration",
+		actorSkillEffect: ActorSkillEffect.Order_Cast,
+		targets,
+		castString,
+	};
+}
 
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 positiveTargets,
-//                 [ActorSkillEffect.Holy_Cast],
-//                 [TargetSkillEffect.Holy_2, TargetSkillEffect.awed],
-//                 [TargetSkillEffect.heal],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0,0,0,0],
-//         mp: [10,10,12,12,14,14,16,16,18,18],
-//         sp: [0,0,0,0,0,0,0,0,0,0],
-//         elements: [
-//             new ElementConsume({ element: 'order', amount: [4,4,4,4,4,4,4,4,4,4]}),
-//             new ElementConsume({ element: 'fire', amount: [2,2,2,2,2,2,2,2,2,2]})
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [new ElementProduce({
-//             element: 'chaos',
-//             amountRange: [[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]]
-//         })]
-//     }),
-//     Tier.legendary
-// )
+const skill_laoh_blessing = new Skill(
+	{
+		id: `skill_laoh_blessing`,
+		name: "Laoh's Blessing",
+		tier: Tier.legendary,
+		description: `Heal all party members for 1d6 plus charisma modifier, and have a DC10 chance to grant them bless status for 2 turn. Each level increases the healing by 2 point, the DC decreases by 1 2 3 at level 3 5 7 respectively.`,
+		requirement: new SkillLearningRequirement({
+			preRequireSkillID: [],
+			preRequireElements: [
+				{ element: FundamentalElementTypes.order, value: 10 },
+			],
+			preRequireCharacterLevel: 10,
+			preRequireCharacterTrait: [TraitRepository.trait_faithful.id],
+		}),
+		equipmentNeeded: noEquipmentNeeded,
+		castString: "cast Laoh's Blessing",
+		consume: new SkillConsume({
+			mp: [10, 10, 9, 9, 8, 8, 7, 7, 6, 6],
+			elements: [
+				new ElementConsume({
+					element: FundamentalElementTypes.order,
+					amount: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+				}),
+			],
+		}),
+		produce: new SkillProduce({
+			elements: [
+				new ElementProduce({
+					element: FundamentalElementTypes.geo,
+					amountRange: [
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+					],
+				}),
+				new ElementProduce({
+					element: FundamentalElementTypes.water,
+					amountRange: [
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+						[0, 1],
+					],
+				}),
+			],
+		}),
+		isSpell: true,
+		isAuto: false,
+		isWeaponAttack: false,
+		isReaction: false,
+	},
+	skill_laoh_blessing_exec
+);
 
-// const skill_cleric_15 = new Skill(
-//     'skill_cleric_15',
-//     `Smite Infidel`,
-//     `Deals 1.2 weapon damage as order damage to one enemy plus charisma modifier. If target's order element is less than half of the caster's order element, the damage will be doubled. If the user is in the back row damage will redeuce by 50%.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'order', value: 5 }
-//         ],
-//         preRequireCharacterLevel: 10,
-//         preRequireCharacterTrait: [TraitRepository.trait_faithful]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: ['axe', 'blade', 'mace', 'sword', 'tome'],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const target = oppositeParty.getOnePreferredFrontRowTauntCount(actor);
-//             if (!target) throw new Error('Exceptional: No target found.');
-//             const castMessage = `(actor=${actor.name}) use (skill=smite) on (target=${target.name}).`;
-//             const sequenceMessage = [];
+function skill_laoh_blessing_exec(
+	character: Character,
+	allies: Party,
+	enemies: Party,
+	skillLevel: number,
+	context: { time: GameTime; location: LocationName }
+): TurnReport {
+	const targetType: TargetType = {
+		scope: TargetScope.All,
+		taunt: TargetTauntConsideration.TauntCount,
+	};
+	const availableTargets = selectMultipleTargets(character, allies, targetType);
+	if (availableTargets.length === 0) {
+		return noTarget(character, "cast Laoh's Blessing");
+	}
 
-//             let damageMultiplier = 1.2 + (level / 10);
+	let castString = `${character.name} casts Laoh's Blessing on all party members.`;
+	let targets = [];
 
-//             if (target.element('order') < actor.element('order') / 2) {
-//                 damageMultiplier = 2 + (level / 10);
-//             }
+	const baseHealing =
+		StatMod.value(character.status.charisma()) + skillLevel * 2;
 
-//             if (actor.position > 2) {
-//                 damageMultiplier = (damageMultiplier + (level/10)) / 2
-//             }
+	let dc = 10;
+	if (skillLevel >= 3) dc -= 1;
+	if (skillLevel >= 5) dc -= 1;
+	if (skillLevel >= 7) dc -= 1;
 
-//             const attackResult = actor.attack({
-//                 actor: actor,
-//                 target: target,
-//                 damageDice: '1d6',
-//                 hitBonus: actor.getArmorPenaltyForSpellCastingHit(),
-//                 damageType: DamageTypes.order,
-//                 damageMultiplier: damageMultiplier,
-//                 damageStatModifier: [new CharacterStatusModifier('charisma')],
-//                 penalty: actor.getArmorPentaltyForSpellCastingDamage()
-//             });
+	for (const target of availableTargets) {
+		let healing = baseHealing + Dice.roll(DiceEnum.OneD6).sum;
+		let bless = Dice.rollTwenty() > dc;
 
-//             attackResult.dHit ? sequenceMessage.push(`(actor=${actor.name}) attack (target=${target.name}) with the power of order, dealing (damage=${attackResult.damage}) order damage.`) : sequenceMessage.push(`(actor=${actor.name}) attack (target=${target.name}) with the power of order, but Missed!`);
+		let healResult = target.receiveHeal({
+			actor: character,
+			healing,
+		});
 
-//             return new ActionDetails(
-//                 actor,
-//                 [target],
-//                 [],
-//                 [ActorSkillEffect.Holy_Cast],
-//                 [TargetSkillEffect.Holy_2],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0,0,0,0],
-//         mp: [3,3,3,3,3,3,3,3,3,3],
-//         sp: [3,3,3,3,3,3,3,3,3,3],
-//         elements: [
-//             new ElementConsume({ element: 'order', amount: [3,3,3,3,3,3,3,3,3,3]}),
-//         ]
-//     }),
-//     new SkillProduce({
+		if (healResult.healHit) {
+			castString += `\n${target.name} heals for ${healResult.heal} HP.`;
+			targets.push({
+				character: turnCharacterIntoInterface(target),
+				damageTaken: -healResult.heal,
+				effect: TargetSkillEffect.heal,
+			});
+		}
 
-//         elements: [
-//             new ElementProduce({
-//                 element: 'fire',
-//                 amountRange: [[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]]
-//             })
-//         ]
-//     }),
-//     Tier.unique
-// )
+		let buffResult = {
+			result: false,
+			message: ``,
+		};
+
+		if (bless) {
+			buffResult = target.receiveBuff(BuffsAndDebuffsEnum.bless, 2);
+			castString += buffResult.message;
+		}
+	}
+
+	return {
+		character: turnCharacterIntoInterface(character),
+		skill: "skill_laoh_blessing",
+		actorSkillEffect: ActorSkillEffect.Order_Cast,
+		targets,
+		castString,
+	};
+}
+
+const skill_judgement_of_laoh = new Skill(
+	{
+		id: "skill_judgement_of_laoh",
+		name: "Judgement of Laoh",
+		tier: Tier.legendary,
+		description:
+			"Deal 2d6 order damage to all enemies and inflict Awed status for 2 turns. At level 4, damage increases to 3d6. At level 6, Awed duration increases to 3 turns. At level 8, damage increases to 4d6. At level 10, also inflicts Weakened status for 2 turns.",
+		requirement: new SkillLearningRequirement({
+			preRequireSkillID: [],
+			preRequireElements: [
+				{ element: FundamentalElementTypes.order, value: 10 },
+			],
+			preRequireCharacterLevel: 10,
+			preRequireCharacterTrait: [TraitRepository.trait_faithful.id],
+		}),
+		equipmentNeeded: noEquipmentNeeded,
+		castString: "cast Judgement of Laoh",
+		consume: new SkillConsume({
+			mp: [15, 15, 15, 15, 12, 12, 12, 10, 10, 10],
+			elements: [
+				new ElementConsume({
+					element: FundamentalElementTypes.order,
+					amount: [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+				}),
+				new ElementConsume({
+					element: FundamentalElementTypes.fire,
+					amount: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+				}),
+			],
+		}),
+		produce: new SkillProduce({
+			elements: [
+				new ElementProduce({
+					element: FundamentalElementTypes.chaos,
+					amountRange: [
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+					],
+				}),
+			],
+		}),
+		isSpell: true,
+		isAuto: false,
+		isWeaponAttack: false,
+		isReaction: false,
+	},
+	skill_judgement_of_laoh_exec
+);
+
+function skill_judgement_of_laoh_exec(
+	character: Character,
+	allies: Party,
+	enemies: Party,
+	skillLevel: number,
+	context: { time: GameTime; location: LocationName }
+): TurnReport {
+	const targetType: TargetType = {
+		scope: TargetScope.All,
+	};
+
+	const availableTargets = selectMultipleTargets(
+		character,
+		enemies,
+		targetType
+	);
+	if (availableTargets.length === 0) {
+		return noTarget(character, "cast Judgement of Laoh");
+	}
+
+	let castString = `${character.name} calls upon Laoh's divine judgment.`;
+	let targets = [];
+
+	let damageDice = DiceEnum.TwoD6;
+	if (skillLevel >= 4) damageDice = DiceEnum.ThreeD6;
+	if (skillLevel >= 8) damageDice = DiceEnum.FourD6;
+
+	let awedDuration = 2;
+	if (skillLevel >= 6) awedDuration = 3;
+
+	for (const target of availableTargets) {
+		const damage = Dice.roll(damageDice).sum;
+
+		const [_, hitChance] = calculateCritAndHit(
+			character,
+			target,
+			AttributeEnum.willpower
+		);
+
+		const result = target.receiveDamage({
+			attacker: character,
+			damage,
+			hitChance,
+			damageType: DamageTypes.order,
+			locationName: context.location,
+		});
+
+		if (result.dHit) {
+			target.receiveBuff(BuffsAndDebuffsEnum.awed, awedDuration);
+
+			if (skillLevel === 10) {
+				target.receiveBuff(BuffsAndDebuffsEnum.awed, 2);
+			}
+
+			targets.push({
+				character: turnCharacterIntoInterface(target),
+				damageTaken: result.damage,
+				effect: TargetSkillEffect.Order_3,
+			});
+		}
+	}
+
+	return {
+		character: turnCharacterIntoInterface(character),
+		skill: "skill_judgement_of_laoh",
+		actorSkillEffect: ActorSkillEffect.Order_Cast,
+		targets,
+		castString,
+	};
+}
+
+const skill_holy_nova = new Skill(
+	{
+		id: "skill_holy_nova",
+		name: "Holy Nova",
+		tier: Tier.legendary,
+		description: `Deals 2d6 order damage to all enemies and heals all party members for 2d6 (+ charisma modifier). Each level increases the damage and healing by 1, at level 10 the damage and healing will be 3d6.`,
+		requirement: new SkillLearningRequirement({
+			preRequireElements: [{ element: "order", value: 1 }],
+			preRequireCharacterLevel: 10,
+			preRequireCharacterTrait: [TraitRepository.trait_faithful.id],
+		}),
+		equipmentNeeded: noEquipmentNeeded,
+		castString: "cast Holy Nova",
+		consume: new SkillConsume({
+			mp: [10, 10, 12, 12, 14, 14, 16, 16, 18, 18],
+			elements: [
+				new ElementConsume({
+					element: FundamentalElementTypes.order,
+					amount: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+				}),
+				new ElementConsume({
+					element: FundamentalElementTypes.fire,
+					amount: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+				}),
+			],
+		}),
+		produce: new SkillProduce({
+			elements: [
+				new ElementProduce({
+					element: FundamentalElementTypes.chaos,
+					amountRange: [
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+						[1, 1],
+					],
+				}),
+			],
+		}),
+		isSpell: true,
+		isAuto: false,
+		isWeaponAttack: false,
+		isReaction: false,
+	},
+	skill_holy_nova_exec
+);
+
+function skill_holy_nova_exec(
+	character: Character,
+	allies: Party,
+	enemies: Party,
+	skillLevel: number,
+	context: { time: GameTime; location: LocationName }
+): TurnReport {
+	const targetType: TargetType = {
+		scope: TargetScope.All,
+	};
+
+	const availableOppositeTargets = selectMultipleTargets(
+		character,
+		enemies,
+		targetType
+	);
+
+	const availableAllyTargets = selectMultipleTargets(
+		character,
+		allies,
+		targetType
+	);
+
+	if (
+		availableOppositeTargets.length === 0 &&
+		availableAllyTargets.length === 0
+	) {
+		return noTarget(character, "cast Holy nove");
+	}
+
+	let diceFace = skillLevel >= 10 ? DiceEnum.ThreeD6 : DiceEnum.TwoD6;
+
+	let charismaModifier = StatMod.value(character.status.charisma());
+
+	let castString = `${character.name} cast holy nova,`;
+	let targetsResult = [];
+
+	for (const target of availableOppositeTargets) {
+		let damage = Dice.roll(diceFace).sum + charismaModifier;
+		const [_, hitChance] = calculateCritAndHit(
+			character,
+			target,
+			AttributeEnum.willpower
+		);
+    let result = target.receiveDamage({
+      attacker: character,
+      damage,
+      hitChance,
+      damageType: DamageTypes.order,
+      locationName: context.location,
+    });
+    if (result.dHit) {
+      targetsResult.push({
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.damage,
+        effect: TargetSkillEffect.Order_3,
+      });
+    }
+    castString += `\n${target.name} takes ${result.damage} order damage.`;
+	}
+
+	for (const ally of availableAllyTargets) {
+		let healing = Dice.roll(diceFace).sum + charismaModifier;
+    let healResult = ally.receiveHeal({
+      actor: character,
+      healing,
+    });
+    if (healResult.healHit) {
+      targetsResult.push({
+        character: turnCharacterIntoInterface(ally),
+        damageTaken: -healResult.heal,
+        effect: TargetSkillEffect.heal,
+      });
+    }
+    castString += `\n${ally.name} heals for ${healResult.heal} HP.`;
+	}
+
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_holy_nova",
+    actorSkillEffect: ActorSkillEffect.Order_Cast,
+    targets: targetsResult,
+    castString,
+  };
+}
