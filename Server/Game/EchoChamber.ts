@@ -1,10 +1,10 @@
 import { GameTime } from "./TimeAndDate/GameTime";
-import { battleManager, END_BATTLE } from "./Battle/BattleManager";
 import { screamer } from "../Utility/Screamer/Screamer";
 import { BattlePayload } from "./GameEvent/enums/battlePayload";
 import { REST_EVENT, RestEventEnum, RestEventPayload } from "../../Common/DTOsEnumsInterfaces/Events/RestEvents";
 import { webSocketManager } from "./Managers/WebSocketManager";
 import { EVENT_BATTLE } from "./GameEvent/battleEvent";
+import { Battle, END_BATTLE } from "./Battle/Battle";
 
 export class EchoChamber {
 	constructor() {
@@ -19,16 +19,14 @@ export class EchoChamber {
 export const echoChamber = new EchoChamber();
 
 function handleBattleStart(payload: BattlePayload) {
-	try {
-		battleManager.startNewBattle(
-			payload.partyA,
-			payload.partyB,
-			payload.location,
-			GameTime.getCurrentGameDate()
-		);
-	} catch (error) {
-		console.error("Error starting battle:", error);
-	}
+	const battle = new Battle(
+		payload.partyA,
+		payload.partyB,
+		payload.location,
+		GameTime.getCurrentGameDate(),
+		payload.battleType
+	);
+	battle.startBattle();
 }
 
 function handleBattleEnd(payload: BattlePayload) {

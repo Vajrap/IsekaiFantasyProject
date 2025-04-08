@@ -158,5 +158,18 @@ export class CharacterEquipments {
 		};
 	}
 
+	getArmorTier(): 'none' | 'light' | 'medium' | 'heavy' {
+		const tierOrder = { none: 0, light: 1, medium: 2, heavy: 3 };
+		const types = [
+			this.armor?.armorType ?? 'none',
+			this.headwear?.armorType ?? 'none',
+			this.gloves?.armorType ?? 'none',
+			this.boots?.armorType ?? 'none',
+		];
+		let maxTier = types.reduce((max, type) =>
+			tierOrder[type as keyof typeof tierOrder] > tierOrder[max as keyof typeof tierOrder] ? type : max, 'none');
+		return maxTier as 'none' | 'light' | 'medium' | 'heavy';
+	}
+	
 	
 }

@@ -229,145 +229,145 @@ export class GameLocation {
 		);
 	}
 
-	async processEncounters() {
-		if (this.parties.length === 0) return;
+		async processEncounters() {
+			if (this.parties.length === 0) return;
 
-		let justArrivedParties = this.parties
-			.filter((party) => party.justArrived)
-			.sort(() => Math.random() - 0.5);
+			let justArrivedParties = this.parties
+				.filter((party) => party.justArrived)
+				.sort(() => Math.random() - 0.5);
 
-		if (justArrivedParties.length === 0) return;
+			if (justArrivedParties.length === 0) return;
 
-		let otherParties = this.parties.filter((party) => !party.justArrived);
+			let otherParties = this.parties.filter((party) => !party.justArrived);
 
-		if (otherParties.length === 0 && justArrivedParties.length <= 1) return;
+			if (otherParties.length === 0 && justArrivedParties.length <= 1) return;
 
-		let encounteredParties = new Set<Party>();
+			let encounteredParties = new Set<Party>();
 
-		if (justArrivedParties.length === 1 && otherParties.length === 1) {
-			this.checkAndTriggerEncounterEvent(
-				justArrivedParties[0],
-				otherParties[0]
-			);
-			justArrivedParties[0].justArrived = false;
-			return;
+			if (justArrivedParties.length === 1 && otherParties.length === 1) {
+				this.checkAndTriggerEncounterEvent(
+					justArrivedParties[0],
+					otherParties[0]
+				);
+				justArrivedParties[0].justArrived = false;
+				return;
+			}
+
+			if (otherParties.length === 0 && justArrivedParties.length === 2) {
+				this.checkAndTriggerEncounterEvent(
+					justArrivedParties[0],
+					justArrivedParties[1]
+				);
+				justArrivedParties[0].justArrived = false;
+				justArrivedParties[1].justArrived = false;
+				return;
+			}
+
+			for (let party of justArrivedParties) {
+				if (encounteredParties.has(party)) continue;
+
+				let potentialPartners = [
+					...otherParties.filter((other) => !encounteredParties.has(other)),
+					...justArrivedParties.filter(
+						(other) => other !== party && !encounteredParties.has(other)
+					),
+				];
+
+				if (potentialPartners.length === 0) continue;
+
+				let partner =
+					potentialPartners[Math.floor(Math.random() * potentialPartners.length)];
+
+				this.checkAndTriggerEncounterEvent(party, partner);
+
+				encounteredParties.add(party);
+				encounteredParties.add(partner);
+				party.justArrived = false;
+				partner.justArrived = false;
+			}
 		}
 
-		if (otherParties.length === 0 && justArrivedParties.length === 2) {
-			this.checkAndTriggerEncounterEvent(
-				justArrivedParties[0],
-				justArrivedParties[1]
-			);
-			justArrivedParties[0].justArrived = false;
-			justArrivedParties[1].justArrived = false;
-			return;
-		}
+		async processActions(day: DayOfWeek, phase: TimeOfDay): Promise<void> {
+			if (this.parties.length === 0) return;
 
-		for (let party of justArrivedParties) {
-			if (encounteredParties.has(party)) continue;
+			for (let party of this.parties) {
+				const action = party.actionSequence[day][phase];
+	
+				if (action.type === LocationActionEnum.Travel) return
 
-			let potentialPartners = [
-				...otherParties.filter((other) => !encounteredParties.has(other)),
-				...justArrivedParties.filter(
-					(other) => other !== party && !encounteredParties.has(other)
-				),
-			];
-
-			if (potentialPartners.length === 0) continue;
-
-			let partner =
-				potentialPartners[Math.floor(Math.random() * potentialPartners.length)];
-
-			this.checkAndTriggerEncounterEvent(party, partner);
-
-			encounteredParties.add(party);
-			encounteredParties.add(partner);
-			party.justArrived = false;
-			partner.justArrived = false;
-		}
-	}
-
-	async processActions(day: DayOfWeek, phase: TimeOfDay): Promise<void> {
-		if (this.parties.length === 0) return;
-
-        for (let party of this.parties) {
-			const action = party.actionSequence[day][phase];
- 
-            if (action.type === LocationActionEnum.Travel) return
-
-            switch (action.type) {
-                case LocationActionEnum.Camping:
-					let camp_randomEvent = determineRandomEvent(this.region, party, "rest");
-					if (camp_randomEvent !== LocationEventEnum.None) {
-						executeRandomEventFromLocationEventEnum(camp_randomEvent);
+				switch (action.type) {
+					case LocationActionEnum.Camping:
+						let camp_randomEvent = determineRandomEvent(this.region, party, "rest");
+						if (camp_randomEvent !== LocationEventEnum.None) {
+							executeRandomEventFromLocationEventEnum(camp_randomEvent);
+							break;
+						} else {
+							event_rest_camp(party);
+							break;
+						}
+					case LocationActionEnum.HouseRest:
+						let house_randomEvent = determineRandomEvent(this.region, party, "rest");
+						if (house_randomEvent !== LocationEventEnum.None) {
+							executeRandomEventFromLocationEventEnum(house_randomEvent);
+							break;
+						} else {
+							event_rest_house(party);
+							break;
+						}
+					case LocationActionEnum.Inn:
+						if (this.innType === LocationInnType.None) { 
+							console.warn(`Error: Inn type 'Non' for location ${this.id}, party ${party.partyID}`); 
+							return; 
+						}
+						let inn_randomEvent = determineRandomEvent(this.region, party, "rest");
+						if (inn_randomEvent !== LocationEventEnum.None) {
+							executeRandomEventFromLocationEventEnum(inn_randomEvent);
+							break;
+						}
+						switch (this.innType) {
+							case LocationInnType.Poor:
+								event_rest_inn_poor(party);
+								break
+							case LocationInnType.Comfortable:
+								event_rest_inn_comfortable(party);
+								break
+							case LocationInnType.Premium:
+								event_rest_inn_premium(party);
+								break
+							case LocationInnType.Luxury:
+								event_rest_inn_luxury(party);
+								break
+							default:
+								console.warn(`Error: Inn type '${this.innType}' not found for location ${this.id}, party ${party.partyID}`);
+								break
+						}
 						break;
-					} else {
-						event_rest_camp(party);
+					case LocationActionEnum.Rest:
+						event_rest_force(party);
 						break;
-					}
-                case LocationActionEnum.HouseRest:
-					let house_randomEvent = determineRandomEvent(this.region, party, "rest");
-					if (house_randomEvent !== LocationEventEnum.None) {
-						executeRandomEventFromLocationEventEnum(house_randomEvent);
+					case LocationActionEnum.TrainArtisan || LocationActionEnum.TrainAttribute || LocationActionEnum.TrainProficiency || LocationActionEnum.TrainSkill:
+						const statTrainingPlayerCharacter = party.getPlayerCharacter();
+						if (!statTrainingPlayerCharacter) return;
+						event_train(statTrainingPlayerCharacter, action.detail as CharacterStatusEnum);
+						break;	
+					case LocationActionEnum.LearnSkill:
+						const learningPlayerCharacter =party.getPlayerCharacter();
+						if (!learningPlayerCharacter) return;
+						learnSkill(learningPlayerCharacter, action.detail);
 						break;
-					} else {
-						event_rest_house(party);
+					case LocationActionEnum.TrainSkill:
+						const trainingPlayerCharacter =party.getPlayerCharacter();
+						if (!trainingPlayerCharacter) return;
+						trainSkill(trainingPlayerCharacter, action.detail);
 						break;
-					}
-                case LocationActionEnum.Inn:
-					if (this.innType === LocationInnType.None) { 
-						console.warn(`Error: Inn type 'Non' for location ${this.id}, party ${party.partyID}`); 
-						return; 
-					}
-					let inn_randomEvent = determineRandomEvent(this.region, party, "rest");
-					if (inn_randomEvent !== LocationEventEnum.None) {
-						executeRandomEventFromLocationEventEnum(inn_randomEvent);
+					case LocationActionEnum.Craft:
+						event_craft(party);
 						break;
-					}
-					switch (this.innType) {
-						case LocationInnType.Poor:
-							event_rest_inn_poor(party);
-							break
-						case LocationInnType.Comfortable:
-							event_rest_inn_comfortable(party);
-							break
-						case LocationInnType.Premium:
-							event_rest_inn_premium(party);
-							break
-						case LocationInnType.Luxury:
-							event_rest_inn_luxury(party);
-							break
-						default:
-							console.warn(`Error: Inn type '${this.innType}' not found for location ${this.id}, party ${party.partyID}`);
-							break
-					}
-                    break;
-                case LocationActionEnum.Rest:
-					event_rest_force(party);
-                    break;
-				case LocationActionEnum.TrainArtisan || LocationActionEnum.TrainAttribute || LocationActionEnum.TrainProficiency || LocationActionEnum.TrainSkill:
-					const statTrainingPlayerCharacter = party.getPlayerCharacter();
-					if (!statTrainingPlayerCharacter) return;
-					event_train(statTrainingPlayerCharacter, action.detail as CharacterStatusEnum);
-					break;	
-				case LocationActionEnum.LearnSkill:
-					const learningPlayerCharacter =party.getPlayerCharacter();
-					if (!learningPlayerCharacter) return;
-					learnSkill(learningPlayerCharacter, action.detail);
-					break;
-				case LocationActionEnum.TrainSkill:
-					const trainingPlayerCharacter =party.getPlayerCharacter();
-					if (!trainingPlayerCharacter) return;
-					trainSkill(trainingPlayerCharacter, action.detail);
-					break;
-				case LocationActionEnum.Craft:
-					event_craft(party);
-					break;
-                default:
-                    break;
-            }
-        }
-    }	
+					default:
+						break;
+				}
+			}
+		}	
 }
 
 function determineRandomEvent(regionName: RegionNameEnum, party: Party, action: "travel" | "rest" | "train" | "stroll"): LocationEventEnum {

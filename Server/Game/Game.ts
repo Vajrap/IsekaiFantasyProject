@@ -3,7 +3,6 @@ import { db } from "../Database";
 import { characterManager } from "./Managers/CharacterManager";
 import { partyManager } from "./Managers/PartyManager";
 import { locationManager } from "./Managers/LocationManager";
-import { battleManager } from "./Battle/BattleManager";
 import { travelManager } from "../Entities/Location/TravelManager";
 import { webSocketManager } from "./Managers/WebSocketManager";
 
@@ -19,7 +18,6 @@ export class Game {
     characterManager = characterManager;
     partyManager = partyManager;
     locationManager = locationManager;
-    battleManager = battleManager;
     webSocketManager = webSocketManager;
     db = db;
     skillRepository = skillRepository;

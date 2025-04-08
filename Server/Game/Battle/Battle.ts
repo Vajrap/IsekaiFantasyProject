@@ -3,7 +3,7 @@ import { BattleReport } from "./BattleReport";
 import { Skill } from "../../Entities/Skills/Skill";
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { Character } from "../../Entities/Character/Character";
-import { EventEmitter } from "ws";
+// import { EventEmitter } from "ws";
 import { Dice } from "../../Utility/Dice";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { GameTimeInterface } from "../../../Common/DTOsEnumsInterfaces/GameTimeInterface";
@@ -13,12 +13,19 @@ import { GameLocation } from "../../Entities/Location/GameLocation";
 import { isSkillPlayable } from "./Calculators/isSkillPlayable";
 import { resolveBuffsAndDebuffs } from "./EffectResolverAndAppender/resolveBuffsAndDebuffs";
 import { skillRepository } from "../../Entities/Skills/SkillRepository";
+import { BattleReportInterface } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
+import { screamer } from "../../Utility/Screamer/Screamer";
+import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
+import { getLocationByName } from "../../Entities/Location/Locations";
+import { BattleType, battleTypeConfig } from "../GameEvent/battleEvent";
 
 enum BattleStatus {
 	END = "END",
 	DRAW_END = "DRAW_END",
 	CONTINUE = "CONTINUE",
 }
+
+export const END_BATTLE = "EndBattle";
 
 export class Battle {
 	isOngoing: boolean;
@@ -32,14 +39,15 @@ export class Battle {
 	// Battle Ended with winner party and losing party 'BOTH' gain experience
 	//
 	location: GameLocation;
-
-	private eventEmitter = new EventEmitter();
+	battleType: BattleType;
+	// private eventEmitter = new EventEmitter();
 
 	constructor(
 		partyA: Party,
 		partyB: Party,
-		location: GameLocation,
-		gameTime: GameTimeInterface
+		location: LocationName,
+		gameTime: GameTimeInterface,
+		battleType: BattleType
 	) {
 		this.isOngoing = true;
 		this.partyA = partyA;
@@ -48,27 +56,22 @@ export class Battle {
 			...partyA.getPosssibleTargetsAsCharacterArray(),
 			...partyB.getPosssibleTargetsAsCharacterArray(),
 		];
-		this.battleReport = new BattleReport(partyA, partyB, location.id, gameTime);
+		this.battleReport = new BattleReport(partyA, partyB, location, gameTime);
 		this.sortParticipantsBySpeed();
 		this.UID =
 			Math.random().toString(36).substring(2, 15) +
 			Math.random().toString(36).substring(2, 15);
-		this.location = location;
+		this.location = getLocationByName(location);
+		this.battleType = battleType;
 	}
 
-	on(event: string, listener: (...args: any[]) => void) {
-		this.eventEmitter.on(event, listener);
+	async startBattle() {
+		await this.battleLoop();
+		const result = this.makeReportInterface(this.battleReport);
+		screamer.scream(END_BATTLE, result);
 	}
 
-	off(event: string, listener: (...args: any[]) => void) {
-		this.eventEmitter.off(event, listener);
-	}
-
-	emit(event: string, ...args: any[]) {
-		this.eventEmitter.emit(event, ...args);
-	}
-
-	sortParticipantsBySpeed() {
+	private sortParticipantsBySpeed() {
 		this.allParticipants.sort((a, b) => {
 			const rollA = Math.floor(Dice.roll(DiceEnum.OneD20).sum / 4);
 			const rollB = Math.floor(Dice.roll(DiceEnum.OneD20).sum / 4);
@@ -78,13 +81,14 @@ export class Battle {
 		});
 	}
 
-	async startBattle(): Promise<BattleReport> {
-		try {
-			await this.battleLoop();
-			return this.battleReport;
-		} catch (error) {
-			throw error;
-		}
+	private makeReportInterface(battle: BattleReport): BattleReportInterface {
+		return {
+			startingPartyAMembers: battle.startingPartyAMembers,
+			startingPartyBMembers: battle.startingPartyBMembers,
+			battleTurn: battle.battleTurn,
+			location: battle.location,
+			gameTime: battle.gameTime,
+		};
 	}
 
 	/*
@@ -168,15 +172,34 @@ export class Battle {
 			actor.setAllBattleBonusToZero().clearBuffsAndDebuffs();
 		}
 
-		if (battleStatus.status === BattleStatus.END) {
-			console.log(
-				`Winner: ${battleStatus.winner?.partyID}, Defeated: ${battleStatus.defeated?.partyID}`
-			);
-			this.emit("battleEnd", this.battleReport);
-		} else if (battleStatus.status === BattleStatus.DRAW_END) {
-			console.log("Battle ended in a draw.");
-			this.emit("battleEnd", this.battleReport);
+		const battleType = battleTypeConfig[this.battleType];
+
+		if (battleType.allowXP && battleStatus.winner && battleStatus.defeated) {
+			this.battleEndedCalc(battleStatus.status, battleStatus.winner, battleStatus.defeated);
 		}
+
+		if (battleType.allowLoot) {
+
+		}
+
+		if (!battleType.allowDeath) {
+			for (const actor of this.allParticipants) {
+				if (actor.isDead) {
+					actor.isDead = false;
+					actor.hpUp(1);
+				}
+			}
+		}
+
+		if (battleType.resetHealth) {
+			for (const actor of this.allParticipants) {
+				actor.isDead = false;
+				actor.hpUp(actor.maxHP());
+				actor.mpUp(actor.maxMP());
+				actor.spUp(actor.maxSP());
+			}
+		}
+		
 	}
 
 	private updateabGauge(actor: Character) {
@@ -210,6 +233,7 @@ export class Battle {
 			actor,
 			this.getSelfGroup(actor),
 			this.getOppositeGroup(actor),
+			skillLevel,
 			{ time: GameTime, location: this.location.id }
 		);
 
@@ -321,7 +345,6 @@ export class Battle {
 
 		if (allPartyADead) {
 			console.log(`Party A is dead. Party B wins.`);
-			this.battleEndedCalc(this.partyB, this.partyA);
 			return {
 				status: BattleStatus.END,
 				winner: this.partyB,
@@ -331,7 +354,6 @@ export class Battle {
 
 		if (allPartyBDead) {
 			console.log(`Party B is dead. Party A wins.`);
-			this.battleEndedCalc(this.partyA, this.partyB);
 			return {
 				status: BattleStatus.END,
 				winner: this.partyA,
@@ -343,7 +365,7 @@ export class Battle {
 	}
 
 	//MARK: Battle Ended
-	private battleEndedCalc(winnerParty: Party, defeatedParty: Party) {
+	private battleEndedCalc(battleStatus: BattleStatus, winnerParty: Party, defeatedParty: Party) {
 		const possibleAttributesToBeTrained = [
 			CharacterStatusEnum.strength,
 			CharacterStatusEnum.agility,
@@ -355,6 +377,7 @@ export class Battle {
 
 		const timesOfTraining = 3;
 		const { winnerExp, loserExp } = this.experienceCalculation(
+			battleStatus,
 			winnerParty,
 			defeatedParty
 		);
@@ -394,9 +417,11 @@ export class Battle {
 	}
 
 	private experienceCalculation(
+		battleStatus: BattleStatus,
 		winner: Party,
 		loser: Party
 	): { winnerExp: number; loserExp: number } {
+
 		let baseExp = 30;
 
 		let winner_ps = this.getPartyStrength(winner);
@@ -422,7 +447,15 @@ export class Battle {
 		}
 
 		let winnerExp = Math.floor(party_a_base_exp);
-		let loserExp = Math.floor(party_b_base_exp / 2);
+		let loserExp = Math.floor(party_b_base_exp);
+		
+		if (battleStatus === BattleStatus.DRAW_END) {
+			winnerExp = Math.floor(winnerExp / 2);
+			loserExp = Math.floor(loserExp / 2);
+		} else {
+			winnerExp = Math.floor(winnerExp);
+			loserExp = Math.floor(loserExp/2);
+		}
 
 		return { winnerExp, loserExp };
 	}

@@ -39,6 +39,7 @@ import {
 } from "../../../Common/DTOsEnumsInterfaces/Character/SkillType";
 import { EffectAppender } from "../../Game/Battle/EffectResolverAndAppender/EffectAppender";
 import { BuffsAndDebuffsEnum } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
+import { CharacterTrait } from "./Subclasses/CharacterTrait";
 
 export class Character {
 	id: string;
