@@ -266,7 +266,7 @@ function skill_aid_exec(
   };
   const target = trySelectOneTarget(character, allies, targetType, "aid");
   if (!(target instanceof Character))
-    return skillExecNoTargetReport(character, "cast aid");
+    return skillExecNoTargetReport(character, "aid");
 
   let levelingHeal = 0;
   for (let i = 1; i <= skillLevel; i++) {
@@ -411,7 +411,7 @@ function skill_orderic_blast_exec(
     locationName: context.location,
   });
 
-  let castString = `(actor=${character.name}) used orderic blast on (target=${target.name}), `;
+  let castString = `${character.name} cast orderic blast on ${target.name}, `;
   if (crit) castString += `CRITICAL! `;
   if (result.dHit) {
     castString += `dealing (damage=${result.damage}) order damage.`;

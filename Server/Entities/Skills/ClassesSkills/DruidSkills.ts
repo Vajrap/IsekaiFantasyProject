@@ -17,15 +17,44 @@
 15. Sylvain's Protection
 */
 
+import {
+  ActorSkillEffect,
+  TargetSkillEffect,
+  TurnReport,
+} from "../../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
+import { AttributeEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/AttributeEnum";
+import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
+import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes";
+import { LocationName } from "../../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
+import {
+  BuffsAndDebuffsEnum,
+  TargetScope,
+  TargetTauntConsideration,
+  TargetType,
+} from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
+import { trySelectOneTarget } from "../../../Game/Battle/TargetSelectionProcess";
+import { GameTime } from "../../../Game/TimeAndDate/GameTime";
+import { Dice } from "../../../Utility/Dice";
+import { StatMod } from "../../../Utility/StatMod";
+import { Character } from "../../Character/Character";
+import { receiveDebuff } from "../../Character/Utils/buffsAndDebuffsFunctions";
+import { turnCharacterIntoInterface } from "../../Character/Utils/turnCharacterIntoInterface";
+import { Party } from "../../Party/Party";
 import { Skill } from "../Skill";
 import {
   ElementProduce,
   SkillConsume,
   SkillProduce,
 } from "../SubClasses/SkillConsume";
-import { noEquipmentNeeded, noRequirementNeeded } from "../Utils";
+import {
+  calculateCritAndHit,
+  getSpellDamageAfterArmorPenalty,
+  noEquipmentNeeded,
+  noRequirementNeeded,
+} from "../Utils";
+import { skillExecNoTargetReport } from "../Utils/report";
 
 const skill_entangle = new Skill(
   {
@@ -66,6 +95,81 @@ const skill_entangle = new Skill(
   },
   skill_entangle_exec,
 );
+
+function skill_entangle_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+    taunt: TargetTauntConsideration.TauntCount,
+  };
+  const target = trySelectOneTarget(character, allies, targetType, "entangle");
+  if (!(target instanceof Character))
+    return skillExecNoTargetReport(character, "entangle");
+
+  const isSpell = true;
+  const hitStat = AttributeEnum.intelligence;
+  const critStat = AttributeEnum.luck;
+  const [crit, hitChance] = calculateCritAndHit(
+    character,
+    target,
+    isSpell,
+    hitStat,
+    critStat,
+  );
+
+  let damage =
+    Dice.roll(DiceEnum.OneD4).sum +
+    (skillLevel - 1) +
+    StatMod.value(character.status.willpower());
+  if (crit) damage *= 2;
+  damage = getSpellDamageAfterArmorPenalty(character, damage);
+
+  let result = target.receiveDamage({
+    attacker: character,
+    damage: damage,
+    hitChance: hitChance,
+    damageType: DamageTypes.geo,
+    locationName: context.location,
+  });
+
+  let castString = `${character.name} cast entangle on ${target.name},`;
+  if (crit) castString += `CRITICAL! `;
+  if (result.dHit) {
+    castString += `dealing ${result.damage} geo damage, `;
+  } else {
+    castString += `but missed!`;
+  }
+
+  if (result.dHit) {
+    let debuffResult = receiveDebuff(
+      target,
+      BuffsAndDebuffsEnum.entangled,
+      skillLevel === 5 ? 3 : 2,
+    );
+    if (debuffResult.result) {
+      castString += debuffResult.message;
+    }
+  }
+
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_entangle",
+    actorSkillEffect: ActorSkillEffect.Geo_Cast,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.damage,
+        effect: TargetSkillEffect.entangled,
+      },
+    ],
+    castString,
+  };
+}
 
 // SkillRepository.skill_druid_01 = new Skill(
 //     `skill_druid_01`,
