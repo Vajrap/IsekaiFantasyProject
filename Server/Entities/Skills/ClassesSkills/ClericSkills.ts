@@ -73,6 +73,10 @@ import {
   skillExecSpellCastFailDueToArmorReport,
 } from "../Utils/report";
 import { Weapon } from "../../Items/Equipments/Weapon/Weapon";
+import {
+  receiveBuff,
+  receiveDebuff,
+} from "../../Character/Utils/buffsAndDebuffsFunctions";
 
 const skill_smite = new Skill(
   {
@@ -490,7 +494,8 @@ function skill_blessing_exec(
   let targets = [];
   for (const target of allies.characters) {
     if (target && target !== "none") {
-      const buffResult = target.receiveBuff(
+      const buffResult = receiveBuff(
+        target,
         BuffsAndDebuffsEnum.bless,
         duration,
       );
@@ -638,7 +643,7 @@ function skill_holy_water_exec(
         CharacterStatusEnum.willpower,
       );
       if (diceRoll + baseModifier + buffModifier < 10) {
-        const debuffResult = target.receiveDebuff(BuffsAndDebuffsEnum.awed, 2);
+        const debuffResult = receiveDebuff(target, BuffsAndDebuffsEnum.awed, 2);
         castString += debuffResult.message;
       }
     }
@@ -932,7 +937,7 @@ function skill_divines_fury_exec(
       const saveRolls = target.saveRoll(CharacterStatusEnum.willpower);
       const save = saveRolls[0] + saveRolls[1] + saveRolls[2];
       if (save < 10) {
-        const debuffResult = target.receiveDebuff(BuffsAndDebuffsEnum.awed, 2);
+        const debuffResult = receiveDebuff(target, BuffsAndDebuffsEnum.awed, 2);
         castString += debuffResult.message;
       }
     }
@@ -1207,7 +1212,8 @@ function skill_harmony_exec(
     const roll =
       Dice.rollTwenty() + StatMod.value(character.status.willpower());
     if (roll > 14) {
-      const debuffResult = target.receiveDebuff(
+      const debuffResult = receiveDebuff(
+        target,
         target.buffsAndDebuffs.awed > 0
           ? BuffsAndDebuffsEnum.cursed
           : BuffsAndDebuffsEnum.awed,
@@ -1243,7 +1249,8 @@ function skill_harmony_exec(
     const roll =
       Dice.rollTwenty() + StatMod.value(character.status.willpower());
     if (roll > 14) {
-      const debuffResult = target.receiveDebuff(
+      const debuffResult = receiveDebuff(
+        target,
         target.buffsAndDebuffs.awed > 0
           ? BuffsAndDebuffsEnum.cursed
           : BuffsAndDebuffsEnum.awed,
@@ -1333,7 +1340,8 @@ function skill_inspiration_exec(
   if (skillLevel === 5) duration += 1;
 
   for (const target of availableTargets) {
-    const buffResult = target.receiveBuff(
+    const buffResult = receiveBuff(
+      target,
       BuffsAndDebuffsEnum.inspiration,
       duration,
     );
@@ -1479,7 +1487,7 @@ function skill_laoh_blessing_exec(
     };
 
     if (bless) {
-      buffResult = target.receiveBuff(BuffsAndDebuffsEnum.bless, 2);
+      buffResult = receiveBuff(target, BuffsAndDebuffsEnum.bless, 2);
       castString += buffResult.message;
     }
   }
@@ -1596,10 +1604,10 @@ function skill_judgement_of_laoh_exec(
     });
 
     if (result.dHit) {
-      target.receiveBuff(BuffsAndDebuffsEnum.awed, awedDuration);
+      receiveBuff(target, BuffsAndDebuffsEnum.awed, awedDuration);
 
       if (skillLevel === 10) {
-        target.receiveBuff(BuffsAndDebuffsEnum.awed, 2);
+        receiveBuff(target, BuffsAndDebuffsEnum.awed, 2);
       }
 
       targets.push({

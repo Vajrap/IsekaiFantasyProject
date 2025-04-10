@@ -37,8 +37,6 @@ import {
   CharacterSkills,
   SkillMeta,
 } from "../../../Common/DTOsEnumsInterfaces/Character/SkillType";
-import { EffectAppender } from "../../Game/Battle/EffectResolverAndAppender/EffectAppender";
-import { BuffsAndDebuffsEnum } from "../../../Common/DTOsEnumsInterfaces/TargetTypes";
 
 export class Character {
   id: string;
@@ -1110,117 +1108,6 @@ export class Character {
     this.equipments[position] = equipmentInstance;
 
     return this;
-  }
-
-  receiveBuff(
-    buff: BuffsAndDebuffsEnum,
-    duration: number,
-  ): {
-    result: boolean;
-    message: string;
-  } {
-    let appendingResult = true;
-    let additionalMessage = ``;
-    // TODO: additional, some Trait or existing buff might affect the duration of the buff, need to manually check for those here.
-    if (
-      this.buffsAndDebuffs.cursed > 0 &&
-      this.buffsAndDebuffs.bless < this.buffsAndDebuffs.cursed
-    ) {
-      const save = Dice.rollTwenty() + StatMod.value(this.status.luck());
-      if (save < 10 + this.buffsAndDebuffs.cursed) {
-        return { result: false, message: "Buff failed due to curse." };
-      }
-    }
-    if (
-      buff === BuffsAndDebuffsEnum.bless &&
-      this.type === CharacterType.undead
-    ) {
-      return { result: false, message: "Undead cannot be blessed." };
-    }
-    if (
-      buff === BuffsAndDebuffsEnum.rejuvenate &&
-      this.type === CharacterType.undead
-    ) {
-      return { result: false, message: "Undead cannot be rejuvenated." };
-    }
-
-    let appenderFuntion = EffectAppender[buff];
-    appenderFuntion(this, duration);
-
-    additionalMessage += `\n${this.name} got ${buff} for ${duration} turns.`;
-    return { result: appendingResult, message: additionalMessage };
-  }
-
-  receiveDebuff(
-    debuff: BuffsAndDebuffsEnum,
-    duration: number,
-  ): {
-    result: boolean;
-    message: string;
-  } {
-    let appendingResult = true;
-    let additionalMessage = ``;
-    // TODO: Same as above, but the condition checking here is for debuffs appended only
-    if (
-      this.buffsAndDebuffs.bless > 0 &&
-      this.buffsAndDebuffs.cursed < this.buffsAndDebuffs.bless
-    ) {
-      const save = Dice.rollTwenty() + StatMod.value(this.status.luck());
-      if (save > 10 - this.buffsAndDebuffs.bless) {
-        return { result: false, message: "Debuff failed due to bless." };
-      }
-    }
-    if (
-      debuff === BuffsAndDebuffsEnum.bleed &&
-      this.type === CharacterType.undead
-    ) {
-      return { result: false, message: "Undead cannot bleed." };
-    }
-    if (
-      debuff === BuffsAndDebuffsEnum.poison &&
-      this.type === CharacterType.undead
-    ) {
-      return { result: false, message: "Undead cannot be poisoned." };
-    }
-    if (
-      debuff === BuffsAndDebuffsEnum.burn &&
-      this.buffsAndDebuffs.freeze > 0
-    ) {
-      this.buffsAndDebuffs.freeze = 0;
-      additionalMessage += `Freeze debuff removed.`;
-    }
-    if (
-      debuff === BuffsAndDebuffsEnum.burn &&
-      this.buffsAndDebuffs.soaked > 0
-    ) {
-      return { result: false, message: "Soaked target cannot be burned." };
-    }
-    if (
-      debuff === BuffsAndDebuffsEnum.freeze &&
-      this.buffsAndDebuffs.burn > 0
-    ) {
-      this.buffsAndDebuffs.burn = 0;
-      additionalMessage += `Burn debuff removed.`;
-    }
-    if (
-      debuff === BuffsAndDebuffsEnum.freeze &&
-      this.type === CharacterType.undead
-    ) {
-      return { result: false, message: "Undead cannot be frozen." };
-    }
-    if (
-      debuff === BuffsAndDebuffsEnum.soaked &&
-      this.buffsAndDebuffs.burn > 0
-    ) {
-      this.buffsAndDebuffs.burn = 0;
-      additionalMessage += `Burn debuff removed.`;
-    }
-
-    let appenderFuntion = EffectAppender[debuff];
-    appenderFuntion(this, duration);
-
-    additionalMessage += ` \n${this.name} got ${debuff} for ${duration} turns.`;
-    return { result: appendingResult, message: additionalMessage };
   }
 
   unequip(
