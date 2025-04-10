@@ -1,4 +1,5 @@
 import { autoAttackSkills } from "./ClassesSkills/AutoAttackSkills";
+import { clericSkills } from "./ClassesSkills/ClericSkills";
 import { Skill } from "./Skill";
 
 class SkillRepository {
@@ -17,8 +18,7 @@ class SkillRepository {
   }
 }
 
-// export const skillRepository = new SkillRepository({
-// 	...autoAttackSkills,
-// });
-
-export const skillRepository = new SkillRepository([...autoAttackSkills]);
+export const skillRepository = new SkillRepository([
+  ...autoAttackSkills,
+  ...clericSkills,
+]);

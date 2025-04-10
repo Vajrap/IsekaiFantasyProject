@@ -132,16 +132,6 @@ export function applyOnHitEffects(
   return [onHitString.trim(), outPutDamage];
 }
 
-export function buildNoTargetReport(character: Character): TurnReport {
-  return {
-    character: turnCharacterIntoInterface(character),
-    skill: "skill_auto_physical",
-    actorSkillEffect: ActorSkillEffect.None,
-    targets: [],
-    castString: `${character.name} tried to attack but there was no target.`,
-  };
-}
-
 const spellDamagePenalty = {
   medium: 0.7,
   heavy: 0.4,

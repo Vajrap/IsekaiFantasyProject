@@ -1,14 +1,14 @@
 import { Skill } from "../Skill";
 import {
-	ElementConsume,
-	SkillConsume,
-	SkillProduce,
+  ElementConsume,
+  SkillConsume,
+  SkillProduce,
 } from "../SubClasses/SkillConsume";
 import { ElementProduce } from "../SubClasses/SkillConsume";
 import {
-	TargetScope,
-	TargetTauntConsideration,
-	TargetType,
+  TargetScope,
+  TargetTauntConsideration,
+  TargetType,
 } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes";
 import { Character } from "../../Character/Character";
@@ -18,247 +18,250 @@ import { AttributeEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/
 import { Dice } from "../../../Utility/Dice";
 import { selectOneTarget } from "../../../Game/Battle/TargetSelectionProcess";
 import { Party } from "../../Party/Party";
-import { ActorSkillEffect, TurnReport } from "../../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
+import {
+  ActorSkillEffect,
+  TurnReport,
+} from "../../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
 import {
-	applyOnHitEffects,
-	buildCastString,
-	buildNoTargetReport,
-	calculateCritAndHit,
-	DamageSourceType,
-	extractWeaponStats,
-	noEquipmentNeeded,
-	noRequirementNeeded,
+  applyOnHitEffects,
+  buildCastString,
+  calculateCritAndHit,
+  DamageSourceType,
+  extractWeaponStats,
+  noEquipmentNeeded,
+  noRequirementNeeded,
 } from "../Utils";
 import { LocationName } from "../../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { turnCharacterIntoInterface } from "../../Character/Utils/turnCharacterIntoInterface";
+import { skillExecNoTargetReport } from "../Utils/report";
 
 const skill_auto_physical = new Skill(
-	{
-		id: "skill_auto_physical",
-		name: "Normal Physical Attack",
-		tier: Tier.common,
-		description: `Attack with weapon's physical damage.`,
-		requirement: noRequirementNeeded,
-		equipmentNeeded: noEquipmentNeeded,
-		castString: "attacks",
-		consume: new SkillConsume({
-			elements: [
-				new ElementConsume({
-					element: FundamentalElementTypes.none,
-					amount: [0, 0, 0, 0, 0],
-				}),
-			],
-		}),
-		produce: new SkillProduce({
-			elements: [
-				new ElementProduce({
-					element: FundamentalElementTypes.none,
-					amountRange: [
-						[0, 0],
-						[0, 0],
-						[0, 0],
-						[0, 0],
-						[0, 0],
-					],
-				}),
-			],
-		}),
-		isSpell: false,
-		isAuto: true,
-		isWeaponAttack: true,
-		isReaction: false,
-	},
-	skill_auto_physical_exec
+  {
+    id: "skill_auto_physical",
+    name: "Normal Physical Attack",
+    tier: Tier.common,
+    description: `Attack with weapon's physical damage.`,
+    requirement: noRequirementNeeded,
+    equipmentNeeded: noEquipmentNeeded,
+    castString: "attacks",
+    consume: new SkillConsume({
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.none,
+          amount: [0, 0, 0, 0, 0],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.none,
+          amountRange: [
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+          ],
+        }),
+      ],
+    }),
+    isSpell: false,
+    isAuto: true,
+    isWeaponAttack: true,
+    isReaction: false,
+  },
+  skill_auto_physical_exec,
 );
 
 const skill_auto_magical = new Skill(
-	{
-		id: "skill_auto_magical",
-		name: "Normal Magical Attack",
-		tier: Tier.common,
-		description: `Attack with weapon's magical damage.`,
-		requirement: noRequirementNeeded,
-		equipmentNeeded: noEquipmentNeeded,
-		castString: "attacks",
-		consume: new SkillConsume({
-			elements: [
-				new ElementConsume({
-					element: FundamentalElementTypes.none,
-					amount: [0, 0, 0, 0, 0],
-				}),
-			],
-		}),
-		produce: new SkillProduce({
-			elements: [
-				new ElementProduce({
-					element: FundamentalElementTypes.none,
-					amountRange: [
-						[0, 0],
-						[0, 0],
-						[0, 0],
-						[0, 0],
-						[0, 0],
-					],
-				}),
-			],
-		}),
-		isSpell: true,
-		isAuto: true,
-		isWeaponAttack: false,
-		isReaction: false,
-	},
-	skill_auto_magical_exec
+  {
+    id: "skill_auto_magical",
+    name: "Normal Magical Attack",
+    tier: Tier.common,
+    description: `Attack with weapon's magical damage.`,
+    requirement: noRequirementNeeded,
+    equipmentNeeded: noEquipmentNeeded,
+    castString: "attacks",
+    consume: new SkillConsume({
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.none,
+          amount: [0, 0, 0, 0, 0],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.none,
+          amountRange: [
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+            [0, 0],
+          ],
+        }),
+      ],
+    }),
+    isSpell: true,
+    isAuto: true,
+    isWeaponAttack: false,
+    isReaction: false,
+  },
+  skill_auto_magical_exec,
 );
 
 function skill_auto_physical_exec(
-	character: Character,
-	allies: Party,
-	enemies: Party,
-	skillLevel: number,
-	context: { time: GameTime; location: LocationName }
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
 ): TurnReport {
-	const { damageDice, bonusStat, damageType, preferredPosition, bonus } =
-		extractWeaponStats(character, DamageSourceType.Physical);
+  const { damageDice, bonusStat, damageType, preferredPosition, bonus } =
+    extractWeaponStats(character, DamageSourceType.Physical);
 
-	const targetType: TargetType = {
-		scope: TargetScope.Single,
-		taunt: TargetTauntConsideration.TauntCount,
-	};
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+    taunt: TargetTauntConsideration.TauntCount,
+  };
 
-	const target = selectOneTarget(character, enemies, targetType);
+  const target = selectOneTarget(character, enemies, targetType);
 
-	if (target === "NO_TARGET") {
-		return buildNoTargetReport(character);
-	}
+  if (target === "NO_TARGET") {
+    return skillExecNoTargetReport(character, "normal attack");
+  }
 
-	const [crit, hitChance] = calculateCritAndHit(
-		character,
-		target,
-		AttributeEnum.luck
-	);
-	let damage =
-		StatMod.value(character.status[bonusStat]()) +
-		Dice.roll(damageDice).sum +
-		bonus;
-	if (crit) {
-		damage *= 1.5;
-	}
+  const [crit, hitChance] = calculateCritAndHit(
+    character,
+    target,
+    AttributeEnum.luck,
+  );
+  let damage =
+    StatMod.value(character.status[bonusStat]()) +
+    Dice.roll(damageDice).sum +
+    bonus;
+  if (crit) {
+    damage *= 1.5;
+  }
 
-	const result = target.receiveDamage({
-		attacker: character,
-		damage,
-		hitChance,
-		damageType,
-		locationName: context.location,
-	});
+  const result = target.receiveDamage({
+    attacker: character,
+    damage,
+    hitChance,
+    damageType,
+    locationName: context.location,
+  });
 
-	let extraEffect = "";
-	if (result.dHit) {
-		const [onHitString, outPutDamage] = applyOnHitEffects(
-			character,
-			target,
-			result.damage
-		);
-		extraEffect = onHitString;
-		result.damage = outPutDamage;
-	}
+  let extraEffect = "";
+  if (result.dHit) {
+    const [onHitString, outPutDamage] = applyOnHitEffects(
+      character,
+      target,
+      result.damage,
+    );
+    extraEffect = onHitString;
+    result.damage = outPutDamage;
+  }
 
-	const castString = result.dHit
-		? buildCastString(
-				`${character.name} attacked ${target.name} and dealt ${result.damage} ${result.damageType} damage.`,
-				extraEffect
-		  )
-		: `${character.name} attacked ${target.name} but missed.`;
+  const castString = result.dHit
+    ? buildCastString(
+        `${character.name} attacked ${target.name} and dealt ${result.damage} ${result.damageType} damage.`,
+        extraEffect,
+      )
+    : `${character.name} attacked ${target.name} but missed.`;
 
-	return {
-		character: turnCharacterIntoInterface(character),
-		skill: "skill_auto_physical",
-		actorSkillEffect: ActorSkillEffect.None,
-		targets: [
-			{
-				character: turnCharacterIntoInterface(target),
-				damageTaken: result.damage,
-				effect: "none",
-			},
-		],
-		castString,
-	};
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_auto_physical",
+    actorSkillEffect: ActorSkillEffect.None,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.damage,
+        effect: "none",
+      },
+    ],
+    castString,
+  };
 }
 
 function skill_auto_magical_exec(
-	character: Character,
-	allies: Party,
-	enemies: Party,
-	skillLevel: number,
-	context: { time: GameTime; location: LocationName }
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
 ): TurnReport {
-	const { damageDice, bonusStat, damageType, preferredPosition, bonus } =
-		extractWeaponStats(character, DamageSourceType.Magical);
+  const { damageDice, bonusStat, damageType, preferredPosition, bonus } =
+    extractWeaponStats(character, DamageSourceType.Magical);
 
-	const targetType: TargetType = {
-		scope: TargetScope.Single,
-		taunt: TargetTauntConsideration.TauntCount,
-	};
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+    taunt: TargetTauntConsideration.TauntCount,
+  };
 
-	const target = selectOneTarget(character, enemies, targetType);
+  const target = selectOneTarget(character, enemies, targetType);
 
-	if (target === "NO_TARGET") {
-		return buildNoTargetReport(character);
-	}
+  if (target === "NO_TARGET") {
+    return skillExecNoTargetReport(character, "normal magic attack");
+  }
 
-	const [crit, hitChance] = calculateCritAndHit(
-		character,
-		target,
-		AttributeEnum.luck
-	);
-	let damage =
-		StatMod.value(character.status[bonusStat]()) +
-		Dice.roll(damageDice).sum +
-		bonus;
-	if (crit) {
-		damage *= 1.5;
-	}
+  const [crit, hitChance] = calculateCritAndHit(
+    character,
+    target,
+    AttributeEnum.luck,
+  );
+  let damage =
+    StatMod.value(character.status[bonusStat]()) +
+    Dice.roll(damageDice).sum +
+    bonus;
+  if (crit) {
+    damage *= 1.5;
+  }
 
-	const result = target.receiveDamage({
-		attacker: character,
-		damage,
-		hitChance,
-		damageType,
-		locationName: context.location,
-	});
+  const result = target.receiveDamage({
+    attacker: character,
+    damage,
+    hitChance,
+    damageType,
+    locationName: context.location,
+  });
 
-	let extraEffect = "";
-	if (result.dHit) {
-		const [onHitString, outPutDamage] = applyOnHitEffects(
-			character,
-			target,
-			result.damage
-		);
-		extraEffect = onHitString;
-		result.damage = outPutDamage;
-	}
+  let extraEffect = "";
+  if (result.dHit) {
+    const [onHitString, outPutDamage] = applyOnHitEffects(
+      character,
+      target,
+      result.damage,
+    );
+    extraEffect = onHitString;
+    result.damage = outPutDamage;
+  }
 
-	const castString = result.dHit
-		? buildCastString(
-				`${character.name} attacked ${target.name} and dealt ${result.damage} ${result.damageType} damage.`,
-				extraEffect
-		  )
-		: `${character.name} attacked ${target.name} but missed.`;
+  const castString = result.dHit
+    ? buildCastString(
+        `${character.name} attacked ${target.name} and dealt ${result.damage} ${result.damageType} damage.`,
+        extraEffect,
+      )
+    : `${character.name} attacked ${target.name} but missed.`;
 
-	return {
-		character: turnCharacterIntoInterface(character),
-		skill: "skill_auto_physical",
-		actorSkillEffect: ActorSkillEffect.None,
-		targets: [
-			{
-				character: turnCharacterIntoInterface(target),
-				damageTaken: result.damage,
-				effect: "none",
-			},
-		],
-		castString,
-	};
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_auto_physical",
+    actorSkillEffect: ActorSkillEffect.None,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.damage,
+        effect: "none",
+      },
+    ],
+    castString,
+  };
 }
 
 export const autoAttackSkills = [skill_auto_physical, skill_auto_magical];
