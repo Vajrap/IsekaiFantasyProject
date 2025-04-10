@@ -94,15 +94,26 @@ export function buildCastString(base: string, effect?: string): string {
 export function calculateCritAndHit(
   character: Character,
   target: Character,
+  isSpell: boolean,
   hitStat?: AttributeEnum,
   critStat?: AttributeEnum,
 ): [boolean, number] {
-  const hitRoll = Dice.rollTwenty();
+  let hitRoll = Dice.rollTwenty();
   if (hitRoll === 1) return [false, 1];
 
   let [hitModifier, critModifier] = [0, 0];
   if (hitStat) hitModifier = StatMod.value(character.status[hitStat]());
   if (critStat) critModifier = StatMod.value(character.status[critStat]());
+
+  if (isSpell && character.equipments.armor != undefined) {
+    const armorType = character.equipments.armor.armorType;
+    if (!(armorType === null)) {
+      const hasWarCaster = character.traits.some(
+        (t) => t.id === TraitEnum.trait_warCaster,
+      );
+      hitRoll = getSpellHitAfterArmorPenalty(armorType, hasWarCaster, hitRoll);
+    }
+  }
 
   if (hitRoll + critModifier >= 20) return [true, 20];
 
@@ -133,13 +144,15 @@ export function applyOnHitEffects(
 }
 
 const spellDamagePenalty = {
-  medium: 0.7,
-  heavy: 0.4,
+  light: 0.7,
+  medium: 0.5,
+  heavy: 0.3,
 };
 
 const spellHitPenalty = {
-  medium: 3,
-  heavy: 5,
+  light: 3,
+  medium: 5,
+  heavy: 7,
 };
 
 export function getSpellDamageAfterArmorPenalty(
@@ -153,6 +166,10 @@ export function getSpellDamageAfterArmorPenalty(
   if (!armor) return spellDamage;
 
   switch (armor.armorType) {
+    case ArmorType.light:
+      return hasWarCaster
+        ? spellDamage
+        : spellDamage * spellDamagePenalty.light;
     case ArmorType.medium:
       return hasWarCaster
         ? spellDamage
@@ -166,17 +183,14 @@ export function getSpellDamageAfterArmorPenalty(
   }
 }
 
-export function getSpellHitAfterArmorPenalty(
-  character: Character,
+function getSpellHitAfterArmorPenalty(
+  armorType: ArmorType,
+  hasWarCaster: boolean,
   spellHit: number,
 ): number {
-  const armor = character.equipments.armor;
-  const hasWarCaster = character.traits.some(
-    (t) => t.id === TraitEnum.trait_warCaster,
-  );
-  if (!armor) return spellHit;
-
-  switch (armor.armorType) {
+  switch (armorType) {
+    case ArmorType.light:
+      return hasWarCaster ? spellHit : spellHit - spellHitPenalty.light;
     case ArmorType.medium:
       return hasWarCaster ? spellHit : spellHit - spellHitPenalty.medium;
     case ArmorType.heavy:
@@ -186,4 +200,25 @@ export function getSpellHitAfterArmorPenalty(
     default:
       return spellHit;
   }
+}
+
+export function isSpellCastSuccessConcerningArmor(
+  character: Character,
+): boolean {
+  const armor = character.equipments.armor;
+  if (!armor) return true;
+
+  const diceRoll = Dice.rollTwenty();
+  switch (armor.armorType) {
+    case ArmorType.light:
+      if (diceRoll < 7) return false;
+    case ArmorType.medium:
+      if (diceRoll < 10) return false;
+      break;
+    case ArmorType.heavy:
+      if (diceRoll < 15) return false;
+      break;
+  }
+
+  return true;
 }

@@ -35,6 +35,8 @@ import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
 import {
   selectMultipleTargets,
   selectOneTarget,
+  selectTargets,
+  trySelectOneTarget,
 } from "../../../Game/Battle/TargetSelectionProcess";
 import { GameTime } from "../../../Game/TimeAndDate/GameTime";
 import { Skill } from "../Skill";
@@ -48,7 +50,7 @@ import { SkillLearningRequirement } from "../SubClasses/SkillLearningRequirement
 import {
   calculateCritAndHit,
   getSpellDamageAfterArmorPenalty,
-  getSpellHitAfterArmorPenalty,
+  isSpellCastSuccessConcerningArmor,
   noEquipmentNeeded,
   noRequirementNeeded,
 } from "../Utils";
@@ -70,6 +72,7 @@ import {
   skillExecNoTargetReport,
   skillExecSpellCastFailDueToArmorReport,
 } from "../Utils/report";
+import { Weapon } from "../../Items/Equipments/Weapon/Weapon";
 
 const skill_smite = new Skill(
   {
@@ -130,21 +133,23 @@ function skill_smite_exec(
     scope: TargetScope.Single,
     taunt: TargetTauntConsideration.TauntCount,
   };
-  const target = selectOneTarget(character, enemies, targetType);
-  if (target === "NO_TARGET") {
-    return skillExecNoTargetReport(character, "use smite");
-  }
+
+  const target = trySelectOneTarget(character, enemies, targetType, "smite");
+  if (!(target instanceof Character)) return target;
 
   let weapon = character.getWeapon();
-  if (weapon === "none") {
+  if (!(weapon instanceof Weapon))
     throw new Error("Exceptional: No weapon found");
-  }
 
+  const isSpell = true;
+  const hitStat = AttributeEnum.dexterity;
+  const critStat = AttributeEnum.luck;
   let [crit, hitChance] = calculateCritAndHit(
     character,
     target,
-    AttributeEnum.dexterity,
-    AttributeEnum.luck,
+    isSpell,
+    hitStat,
+    critStat,
   );
 
   let damage =
@@ -153,12 +158,8 @@ function skill_smite_exec(
     (StatMod.value(character.status.strength()) +
       StatMod.value(character.status.charisma()));
 
-  if (target.type === CharacterType.undead) {
-    damage *= 2;
-  }
-  if (crit) {
-    damage *= 2;
-  }
+  if (target.type === CharacterType.undead) damage *= 2;
+  if (crit) damage *= 2;
 
   const damageModifierFromPosition = DamageMultiplierFromBothPositions.get({
     preferredActorPosition: "front",
@@ -252,36 +253,16 @@ function skill_aid_exec(
   skillLevel: number,
   context: { time: GameTime; location: LocationName },
 ): TurnReport {
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "aid");
+
   const targetType: TargetType = {
     scope: TargetScope.Single,
     sort: TargetSortingOptions.LowestHP,
   };
-  const target = selectOneTarget(character, allies, targetType);
-
-  if (target === "NO_TARGET") {
+  const target = trySelectOneTarget(character, allies, targetType, "aid");
+  if (!(target instanceof Character))
     return skillExecNoTargetReport(character, "cast aid");
-  }
-
-  if (
-    character.equipments.armor?.armorType != ArmorType.cloth &&
-    character.equipments.armor?.armorType != ArmorType.light &&
-    character.equipments.armor != undefined
-  ) {
-    const diceRoll = Dice.rollTwenty();
-    let armorType = character.equipments.armor.armorType;
-    switch (armorType) {
-      case ArmorType.medium:
-        if (diceRoll < 10) {
-          return skillExecSpellCastFailDueToArmorReport(character, "aid");
-        }
-      case ArmorType.heavy:
-        if (diceRoll < 15) {
-          return skillExecSpellCastFailDueToArmorReport(character, "aid");
-        }
-      default:
-        break;
-    }
-  }
 
   let levelingHeal = 0;
   for (let i = 1; i <= skillLevel; i++) {
@@ -387,34 +368,35 @@ function skill_orderic_blast_exec(
     scope: TargetScope.Single,
     taunt: TargetTauntConsideration.TauntCount,
   };
-  const target = selectOneTarget(character, enemies, targetType);
-  if (target === "NO_TARGET") {
-    return skillExecNoTargetReport(character, "cast orderic blast");
-  }
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "orderic blast",
+  );
+  if (!(target instanceof Character)) return target;
 
   let weapon = character.getWeapon();
-  if (weapon === "none") {
+  if (!(weapon instanceof Weapon))
     throw new Error("Exceptional: No weapon found");
-  }
 
-  let [crit, hitChance] = calculateCritAndHit(
+  const isSpell = true;
+  const hitStat = AttributeEnum.intelligence;
+  const critStat = AttributeEnum.luck;
+  const [crit, hitChance] = calculateCritAndHit(
     character,
     target,
-    AttributeEnum.intelligence,
-    AttributeEnum.luck,
+    isSpell,
+    hitStat,
+    critStat,
   );
-
-  hitChance = getSpellHitAfterArmorPenalty(character, hitChance);
 
   let damage =
     Dice.roll(weapon.attackStats!.magicalDiceEnum).sum *
       (1.3 + 0.1 * skillLevel) +
     StatMod.value(character.status.charisma());
 
-  if (crit) {
-    damage *= 2;
-  }
-
+  if (crit) damage *= 2;
   damage = getSpellDamageAfterArmorPenalty(character, damage);
 
   let result = target.receiveDamage({
@@ -426,9 +408,7 @@ function skill_orderic_blast_exec(
   });
 
   let castString = `(actor=${character.name}) used orderic blast on (target=${target.name}), `;
-  if (crit) {
-    castString += `CRITICAL! `;
-  }
+  if (crit) castString += `CRITICAL! `;
   if (result.dHit) {
     castString += `dealing (damage=${result.damage}) order damage.`;
   } else {
@@ -497,11 +477,15 @@ function skill_blessing_exec(
   skillLevel: number,
   context: { time: GameTime; location: LocationName },
 ): TurnReport {
-  let castString = `${character.name} casts Blessing on all allies.`;
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "blessing");
 
-  let duration = 1;
-  if (skillLevel >= 3) duration += 1;
-  if (skillLevel === 5) duration += 1;
+  const _: TargetType = { scope: TargetScope.All };
+
+  const isSpell = true;
+  const duration = skillLevel === 5 ? 3 : skillLevel >= 3 ? 2 : 1;
+
+  let castString = `${character.name} casts Blessing on all allies.`;
 
   let targets = [];
   for (const target of allies.characters) {
@@ -596,6 +580,9 @@ function skill_holy_water_exec(
   skillLevel: number,
   context: { time: GameTime; location: LocationName },
 ): TurnReport {
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "holy water");
+
   const targetType: TargetType = {
     scope: TargetScope.All,
     taunt: TargetTauntConsideration.TauntCount,
@@ -609,6 +596,9 @@ function skill_holy_water_exec(
     return skillExecNoTargetReport(character, "cast holy water");
   }
 
+  const isSpell = true;
+  const hitStat = AttributeEnum.intelligence;
+  const critStat = AttributeEnum.luck;
   let castString = `${character.name} casts Holy Water, attacking all enemies.`;
 
   let targets = [];
@@ -617,14 +607,16 @@ function skill_holy_water_exec(
     Dice.roll(DiceEnum.OneD3).sum +
     StatMod.value(character.status.charisma()) +
     skillLevel;
+  damage = getSpellDamageAfterArmorPenalty(character, damage);
 
   for (const target of avaliableTargets) {
     //Can't crit
     const [_, hitChance] = calculateCritAndHit(
       character,
       target,
-      AttributeEnum.intelligence,
-      AttributeEnum.luck,
+      isSpell,
+      hitStat,
+      critStat,
     );
 
     let result = target.receiveDamage({
@@ -730,10 +722,17 @@ function skill_ball_of_light_exec(
     scope: TargetScope.Single,
     taunt: TargetTauntConsideration.TauntCount,
   };
-  const target = selectOneTarget(character, enemies, targetType);
-  if (target === "NO_TARGET") {
-    return skillExecNoTargetReport(character, "cast ball of light");
-  }
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "ball of light",
+  );
+  if (!(target instanceof Character)) return target;
+
+  const isSpell = true;
+  const hitStat = AttributeEnum.intelligence;
+  const critStat = AttributeEnum.luck;
 
   let castString = `${character.name} casts Ball of Light at ${target.name}.`;
   let targets = [];
@@ -741,15 +740,15 @@ function skill_ball_of_light_exec(
   const [crit, hitChance] = calculateCritAndHit(
     character,
     target,
-    AttributeEnum.intelligence,
-    AttributeEnum.luck,
+    isSpell,
+    hitStat,
+    critStat,
   );
 
   let damage =
     Dice.roll(DiceEnum.OneD8).sum + StatMod.value(character.status.charisma());
-  if (crit) {
-    damage *= 2;
-  }
+  if (crit) damage *= 2;
+  damage = getSpellDamageAfterArmorPenalty(character, damage);
 
   let result = target.receiveDamage({
     attacker: character,
@@ -880,24 +879,28 @@ function skill_divines_fury_exec(
     return skillExecNoTargetReport(character, "cast divine's fury");
   }
 
+  const isSpell = true;
+  const hitStat = AttributeEnum.intelligence;
+  const critStat = AttributeEnum.luck;
+
   let castString = `${character.name} casts Divine's Fury on all enemies.`;
   let targets = [];
 
-  // Base damage roll
   let damage =
     Dice.roll(DiceEnum.TwoD6).sum + StatMod.value(character.status.charisma());
-
-  // Additional damage dice per level
   for (let i = 1; i <= skillLevel; i++) {
     damage += Dice.roll(DiceEnum.OneD2).sum;
   }
+
+  damage = getSpellDamageAfterArmorPenalty(character, damage);
 
   for (const target of availableTargets) {
     const [crit, hitChance] = calculateCritAndHit(
       character,
       target,
-      AttributeEnum.intelligence,
-      AttributeEnum.luck,
+      isSpell,
+      hitStat,
+      critStat,
     );
 
     let finalDamage = damage;
@@ -926,7 +929,6 @@ function skill_divines_fury_exec(
         effect: TargetSkillEffect.Order_3,
       });
 
-      // 50% chance to inflict Awed
       const saveRolls = target.saveRoll(CharacterStatusEnum.willpower);
       const save = saveRolls[0] + saveRolls[1] + saveRolls[2];
       if (save < 10) {
@@ -1018,9 +1020,7 @@ function skill_divine_intervention_exec(
   context: { time: GameTime; location: LocationName },
 ): TurnReport {
   const target = allies.getOneDeadTarget(character);
-  if (!target) {
-    return skillExecNoTargetReport(character, "cast divine intervention");
-  }
+  if (!target) return skillExecNoTargetReport(character, "divine intervention");
 
   const castString = `${character.name} casts Divine Intervention on ${target.name}.`;
   const armorTier = character.equipments.getArmorTier();
@@ -1146,37 +1146,40 @@ function skill_harmony_exec(
     scope: TargetScope.Single,
     taunt: TargetTauntConsideration.TauntCount,
   };
-  const target = selectOneTarget(character, enemies, targetType);
-  if (target === "NO_TARGET") {
-    return skillExecNoTargetReport(character, "cast harmony");
-  }
+  const target = trySelectOneTarget(character, enemies, targetType, "harmony");
+  if (!(target instanceof Character)) return target;
 
-  let castString = `${character.name} casts Harmony on ${target.name}.`;
-  let targets = [];
-
+  const isSpell = true;
+  const hitStat = AttributeEnum.intelligence;
+  const critStat = AttributeEnum.luck;
   const [_, hitChance] = calculateCritAndHit(
     character,
     target,
-    AttributeEnum.intelligence,
-    AttributeEnum.luck,
+    isSpell,
+    hitStat,
+    critStat,
   );
+
+  let castString = `${character.name} casts Harmony on ${target.name}.`;
+  let targets = [];
 
   let damageOrder =
     Dice.roll(DiceEnum.OneD6).sum +
     skillLevel +
     StatMod.value(character.status.willpower());
+  if (target.buffsAndDebuffs.awed > 0) {
+    damageOrder += Dice.roll(DiceEnum.OneD6).sum;
+  }
+  damageOrder = getSpellDamageAfterArmorPenalty(character, damageOrder);
+
   let damageChaos =
     Dice.roll(DiceEnum.OneD6).sum +
     skillLevel +
     StatMod.value(character.status.willpower());
-
-  if (target.buffsAndDebuffs.awed > 0) {
-    damageOrder += Dice.roll(DiceEnum.OneD6).sum;
-  }
-
   if (target.buffsAndDebuffs.cursed > 0) {
     damageChaos += Dice.roll(DiceEnum.OneD6).sum;
   }
+  damageChaos = getSpellDamageAfterArmorPenalty(character, damageChaos);
 
   let resultOrder = target.receiveDamage({
     attacker: character,
@@ -1311,9 +1314,11 @@ function skill_inspiration_exec(
   skillLevel: number,
   context: { time: GameTime; location: LocationName },
 ): TurnReport {
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "inspiration");
+
   const targetType: TargetType = {
     scope: TargetScope.All,
-    taunt: TargetTauntConsideration.TauntCount,
   };
   const availableTargets = selectMultipleTargets(character, allies, targetType);
   if (availableTargets.length === 0) {
@@ -1427,6 +1432,9 @@ function skill_laoh_blessing_exec(
   skillLevel: number,
   context: { time: GameTime; location: LocationName },
 ): TurnReport {
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "blessing");
+
   const targetType: TargetType = {
     scope: TargetScope.All,
     taunt: TargetTauntConsideration.TauntCount,
@@ -1549,10 +1557,12 @@ function skill_judgement_of_laoh_exec(
   skillLevel: number,
   context: { time: GameTime; location: LocationName },
 ): TurnReport {
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "blessing");
+
   const targetType: TargetType = {
     scope: TargetScope.All,
   };
-
   const availableTargets = selectMultipleTargets(
     character,
     enemies,
@@ -1561,6 +1571,8 @@ function skill_judgement_of_laoh_exec(
   if (availableTargets.length === 0) {
     return skillExecNoTargetReport(character, "cast Judgement of Laoh");
   }
+
+  const isSpell = true;
 
   let castString = `${character.name} calls upon Laoh's divine judgment.`;
   let targets = [];
@@ -1575,16 +1587,10 @@ function skill_judgement_of_laoh_exec(
   for (const target of availableTargets) {
     const damage = Dice.roll(damageDice).sum;
 
-    const [_, hitChance] = calculateCritAndHit(
-      character,
-      target,
-      AttributeEnum.willpower,
-    );
-
     const result = target.receiveDamage({
       attacker: character,
       damage,
-      hitChance,
+      hitChance: 100,
       damageType: DamageTypes.order,
       locationName: context.location,
     });
@@ -1673,21 +1679,27 @@ function skill_holy_nova_exec(
   skillLevel: number,
   context: { time: GameTime; location: LocationName },
 ): TurnReport {
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "blessing");
+
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "blessing");
+
   const targetType: TargetType = {
     scope: TargetScope.All,
   };
-
   const availableOppositeTargets = selectMultipleTargets(
     character,
     enemies,
     targetType,
   );
-
   const availableAllyTargets = selectMultipleTargets(
     character,
     allies,
     targetType,
   );
+
+  const isSpell = true;
 
   if (
     availableOppositeTargets.length === 0 &&
@@ -1705,15 +1717,12 @@ function skill_holy_nova_exec(
 
   for (const target of availableOppositeTargets) {
     let damage = Dice.roll(diceFace).sum + charismaModifier;
-    const [_, hitChance] = calculateCritAndHit(
-      character,
-      target,
-      AttributeEnum.willpower,
-    );
+    damage = getSpellDamageAfterArmorPenalty(character, damage);
+
     let result = target.receiveDamage({
       attacker: character,
       damage,
-      hitChance,
+      hitChance: 100,
       damageType: DamageTypes.order,
       locationName: context.location,
     });
@@ -1729,6 +1738,7 @@ function skill_holy_nova_exec(
 
   for (const ally of availableAllyTargets) {
     let healing = Dice.roll(diceFace).sum + charismaModifier;
+    healing = getSpellDamageAfterArmorPenalty(character, healing);
     let healResult = ally.receiveHeal({
       actor: character,
       healing,
