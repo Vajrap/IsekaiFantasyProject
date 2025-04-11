@@ -1,8 +1,8 @@
 //MARK: Druid skills
 /*
 1. Entangle
-2. Healing Touch
-3. Spear Throw
+2. Spear Throw
+3. Healing Touch
 4. Absorb Resource
 5. Wild Growth
 6. Poisoned Land
@@ -431,24 +431,104 @@ function skill_healing_touch_exec(
   };
 }
 
-// SkillRepository.skill_druid_04 = new Skill(
-//     `skill_druid_04`,
-//     `Absorb Resource`,
-//     `Target must roll a 8DC willpower save or user will steals all of target's resources and add them to the user.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'geo', value: 2 },
-//             { element: 'chaos', value: 2 }
-//         ],
-//         preRequireCharacterLevel: 7,
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
+const skill_absorb_resource = new Skill(
+  {
+    id: `skill_absorb_resource`,
+    name: `Absorb Resource`,
+    tier: Tier.epic,
+    description: `For Each resource in the target resources pool that is greater than 0, target must roll a 5DC willpower save or the user will steals all of that resource from the target. Each level add DC by 1`,
+    requirement: new SkillLearningRequirement({
+      preRequireSkillID: [],
+      preRequireElements: [
+        { element: "geo", value: 2 },
+        { element: "chaos", value: 2 },
+      ],
+      preRequireCharacterLevel: 7,
+      preRequireCharacterTrait: [],
+    }),
+    equipmentNeeded: noEquipmentNeeded,
+    castString: `cast absorb resource`,
+    consume: new SkillConsume({
+      hp: [0, 0, 0, 0, 0, 0, 0],
+      mp: [5, 5, 5, 5, 5, 5, 5],
+      sp: [5, 5, 5, 5, 5, 5, 5],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.geo,
+          amount: [4, 4, 4, 4, 4, 4, 4],
+        }),
+        new ElementConsume({
+          element: FundamentalElementTypes.chaos,
+          amount: [4, 4, 4, 4, 4, 4, 4],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [],
+    }),
+
+    isSpell: true,
+    isAuto: false,
+    isWeaponAttack: false,
+    isReaction: false,
+  },
+  skill_absorb_resource_exec,
+);
+
+function skill_absorb_resource_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+  };
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "absorb resource",
+  );
+  if (!(target instanceof Character)) return target;
+
+  const dc = 5 + (skillLevel - 1);
+  const elements = ["order", "chaos", "fire", "geo", "water", "air"] as const;
+
+  let castString = `${character.name} casts Absorb Resource on ${target.name}.`;
+  let anyAbsorbed = false;
+
+  for (const element of elements) {
+    const targetValue = target.resources[element];
+    if (targetValue >= 1) {
+      const roll = Dice.rollTwenty();
+      if (roll >= dc) {
+        target.resources[element] = 0;
+        character.resources[element] = targetValue;
+        castString += `\nAbsorbed ${targetValue} ${element}.`;
+        anyAbsorbed = true;
+      } else {
+        castString += `\nFailed to absorb ${element}.`;
+      }
+    }
+  }
+
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_absorb_resource",
+    actorSkillEffect: ActorSkillEffect.NoElement_Cast,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: 0,
+        effect: TargetSkillEffect.absorbResource,
+      },
+    ],
+    castString,
+  };
+}
+
 //     new SkillActiveEffect(
 //         (actor: Character, selfParty: Party, oppositeParty: Party, level:number): ActionDetails => {
 //             const target = oppositeParty.getOnePreferredFrontRowTauntCount(actor);
