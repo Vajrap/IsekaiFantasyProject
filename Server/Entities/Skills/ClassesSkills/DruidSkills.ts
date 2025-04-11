@@ -26,6 +26,10 @@ import { AttributeEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/
 import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes";
+import {
+  WeaponSpecificType,
+  WeaponType,
+} from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { LocationName } from "../../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import {
   BuffsAndDebuffsEnum,
@@ -41,9 +45,12 @@ import { StatMod } from "../../../Utility/StatMod";
 import { Character } from "../../Character/Character";
 import { receiveDebuff } from "../../Character/Utils/buffsAndDebuffsFunctions";
 import { turnCharacterIntoInterface } from "../../Character/Utils/turnCharacterIntoInterface";
+import { Spear } from "../../Items/Equipments/Weapon/Spear/Spear";
+import { Weapon } from "../../Items/Equipments/Weapon/Weapon";
 import { Party } from "../../Party/Party";
 import { Skill } from "../Skill";
 import {
+  ElementConsume,
   ElementProduce,
   SkillConsume,
   SkillProduce,
@@ -54,6 +61,7 @@ import {
   noEquipmentNeeded,
   noRequirementNeeded,
 } from "../Utils";
+import { createCastString } from "../Utils/makeCastString";
 import { skillExecNoTargetReport } from "../Utils/report";
 
 const skill_entangle = new Skill(
@@ -171,85 +179,142 @@ function skill_entangle_exec(
   };
 }
 
-// SkillRepository.skill_druid_01 = new Skill(
-//     `skill_druid_01`,
-//     `Entangle`,
-//     `Deal 1d4 geo damage and Entangle the target for 2 turns. Entangled target need to roll 5DC strength save at the start of their turn or else they will be unable to move for 1 turn.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [],
-//         preRequireCharacterLevel: 0,
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level): ActionDetails => {
-//             const target = oppositeParty.getOnePreferredFrontRowTauntCount(actor);
-//             if (!target) throw new Error('Exceptional: No target found.');
+const skill_spear_throw = new Skill(
+  {
+    id: "skill_spear_throw",
+    name: "Spear throw",
+    tier: Tier.common,
+    description: `Throws a spear at the target, dealing 0.8 times weapon damage (+dexterity), if user and target is on a different row (back/front) the damage will be 1.5 times. Every level gives additional 1 damage, at level 5, base damage + 0.2 times. Spear used by this skill will be removed from user's hand, but will still be in item bag, only weapon with 'returning magic' will not be removed.`,
+    requirement: noRequirementNeeded,
+    equipmentNeeded: [
+      WeaponSpecificType.spear_dory,
+      WeaponSpecificType.spear_javelin,
+    ],
+    castString: "throw spear",
+    consume: new SkillConsume({
+      sp: [5, 7, 8, 10, 10],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.none,
+          amount: [2, 2, 2, 2, 2],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.geo,
+          amountRange: [
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+          ],
+        }),
+      ],
+    }),
+    isSpell: false,
+    isAuto: false,
+    isWeaponAttack: true,
+    isReaction: false,
+  },
+  skill_spear_throw_exec,
+);
 
-//             const castMessage = `(actor=${actor.name}) casts Entangle on (target=${target.name}).`;
-//             const sequenceMessage = [];
-//             const targets = [];
+function skill_spear_throw_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+    taunt: TargetTauntConsideration.TauntCount,
+  };
 
-//             let message = `(actor=${actor.name}) casts Entangle on (target=${target.name}), `;
-//             const attackResult = actor.attack({
-//                 actor: actor,
-//                 target: target,
-//                 damageDice: '1d4',
-//                 hitBonus: 0,
-//                 damageType: DamageTypes.geo,
-//                 damageMultiplier: 1,
-//                 damageStatModifier: [new CharacterStatusModifier('charisma')],
-//                 additionalDamage: (level-1)/2
-//             });
-//             attackResult.dHit ? message += `dealing (damage=${attackResult.damage}) geo damage and inflicting Entangle.` : message += `but Missed!`;
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "spear throw",
+  );
+  if (!(target instanceof Character)) return target;
 
-//             let effects = [];
-//             if (attackResult.dHit) {
-//                 actor.inflictEffect({
-//                     actor: actor,
-//                     target: target,
-//                     inflictEffect: K.buffsAndDebuffs.entangled,
-//                     effectDuration: 2
-//                 });
-//                 effects.push(new EffectDetails(K.buffsAndDebuffs.entangled, true));
-//                 message += ` And Entangled (target=${target.name}).`;
-//             }
+  let weapon = character.getWeapon();
+  if (weapon instanceof Weapon) {
+    if (weapon.weaponType != WeaponType.spear) {
+      throw new Error("Exceptional: Wrong weapon type");
+    }
+  } else {
+    throw new Error("Exceptional: No weapon found");
+  }
 
-//             sequenceMessage.push(message);
-//             targets.push(target);
+  const isSpell = false;
+  const hitStat = AttributeEnum.dexterity;
+  const critStat = AttributeEnum.luck;
+  let [crit, hitChance] = calculateCritAndHit(
+    character,
+    target,
+    isSpell,
+    hitStat,
+    critStat,
+  );
 
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.Geo_Cast],
-//                 [TargetSkillEffect.Geo_2, TargetSkillEffect.entangled],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0],
-//         mp: [5,5,5,4,3],
-//         sp: [0,0,0,0,0],
-//         elements: [
-//             new ElementConsume({ element: 'none', amount: [2,2,2,2,2]})
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'geo', amountRange: [[0, 1],[0, 1],[0, 1],[0, 1],[0, 1]] }),
-//         ]
-//     }),
-//     Tier.common
-// )
+  let rowModifier: number = 1;
+  if (character.position < 3) {
+    // case user === front row
+    if (target.position < 3) rowModifier = 0.8; // target front row
+    if (target.position >= 3) rowModifier = 1.5; // target back row
+  }
+  if (character.position >= 3) {
+    // case user === back row
+    if (target.position < 3) rowModifier = 1.5; // target front row
+    if (target.position >= 3) rowModifier = 0.8;
+  }
+
+  if (skillLevel >= 5) rowModifier += 0.2;
+
+  let damage =
+    Dice.roll(weapon.attackStats!.physicalDiceEnum).sum +
+    (skillLevel - 1) +
+    StatMod.value(character.status.dexterity());
+  if (crit) damage *= 2;
+  damage *= rowModifier;
+
+  const result = target.receiveDamage({
+    attacker: character,
+    damage: damage,
+    hitChance: hitChance,
+    damageType: DamageTypes.pierce,
+    locationName: context.location,
+  });
+
+  let castString = createCastString({
+    actor: character,
+    target: target,
+    skillName: "spear throw",
+    damage: result.damage,
+    dHit: result.dHit,
+    crit: crit,
+    damageType: result.damageType,
+  });
+
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_spear_throw",
+    actorSkillEffect: ActorSkillEffect.Pierce,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.damage,
+        effect: TargetSkillEffect.NoElement_Pierce_2,
+      },
+    ],
+    castString,
+  };
+}
 
 // SkillRepository.skill_druid_02 = new Skill(
 //     `skill_druid_02`,
