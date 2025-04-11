@@ -436,7 +436,7 @@ const skill_absorb_resource = new Skill(
     id: `skill_absorb_resource`,
     name: `Absorb Resource`,
     tier: Tier.epic,
-    description: `For Each resource in the target resources pool that is greater than 0, target must roll a 5DC willpower save or the user will steals all of that resource from the target. Each level add DC by 1`,
+    description: `For Each elemental resource (that is not ‘none’) in the target resources pool that is greater than 0, target must roll a 5DC willpower save or the user will steals all of that resource from the target. Each level add DC by 1`,
     requirement: new SkillLearningRequirement({
       preRequireSkillID: [],
       preRequireElements: [
@@ -503,7 +503,7 @@ function skill_absorb_resource_exec(
     const targetValue = target.resources[element];
     if (targetValue >= 1) {
       const roll = Dice.rollTwenty();
-      if (roll >= dc) {
+      if (roll < dc) {
         target.resources[element] = 0;
         character.resources[element] = targetValue;
         castString += `\nAbsorbed ${targetValue} ${element}.`;
@@ -528,89 +528,6 @@ function skill_absorb_resource_exec(
     castString,
   };
 }
-
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level:number): ActionDetails => {
-//             const target = oppositeParty.getOnePreferredFrontRowTauntCount(actor);
-//             if (!target) throw new Error('Exceptional: No target found.');
-//             const penalty = actor.getArmorPentaltyForSpellCastingDamage();
-
-//             const castMessage = `(actor=${actor.name}) attempts to absorb resources from (target=${target.name}).`;
-//             const sequenceMessage = [];
-//             const targets = [target];
-
-//             const [diceRoll, baseModifier, buffModifier] = target.saveRoll(new CharacterStatusModifier("willpower"));
-//             const saves = (diceRoll + baseModifier + buffModifier);
-
-//             if (saves >= ((8+(level-1))*penalty)) {
-//                 sequenceMessage.push(`(actor=${actor.name}) (skill=attempts) to absorb resources from (target=${target.name}) but fails.`);
-//                 return new ActionDetails(
-//                     actor,
-//                     targets,
-//                     [],
-//                     [ActorSkillEffect.NoElement_Cast],
-//                     [TargetSkillEffect.Arcane_2],
-//                     [],
-//                     castMessage,
-//                     sequenceMessage
-//                 );
-//             }
-
-//             const targetResources = target.resources;
-//             let availableResource: string[] = [];
-//             for (const resource in targetResources) {
-//                 if (targetResources[resource as keyof CharacterResources] > 0) {
-//                     availableResource.push(resource);
-//                 }
-//             }
-//             if (availableResource.length === 0) {
-//                 sequenceMessage.push(`(actor=${actor.name}) (skill=attempts) to absorb resources from (target=${target.name}) but there are no resources to absorb.`);
-//                 return new ActionDetails(
-//                     actor,
-//                     targets,
-//                     [],
-//                     [ActorSkillEffect.NoElement_Cast],
-//                     [TargetSkillEffect.Arcane_2],
-//                     [],
-//                     castMessage,
-//                     sequenceMessage
-//                 );
-//             }
-
-//             for (const resource in targetResources) {
-//                 let amount = targetResources[resource as keyof CharacterResources];
-//                 target.resources[resource as keyof CharacterResources] -= amount;
-//                 actor.resources[resource as keyof CharacterResources] += amount;
-//             }
-
-//             sequenceMessage.push(`(actor=${actor.name}) (skill=absorbs) resources from (target=${target.name}).`);
-
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.NoElement_Cast],
-//                 [TargetSkillEffect.Arcane_2],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0],
-//         mp: [5,5,5,5,5,5,5],
-//         sp: [5,5,5,5,5,5,5],
-//         elements: [
-//             new ElementConsume( {element: 'geo',  amount: [4,4,4,4,4,4,4]} ),
-//             new ElementConsume( {element: 'chaos',  amount: [4,4,4,4,4,4,4]} )
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: []
-//     }),
-//     Tier.epic
-// )
 
 // SkillRepository.skill_druid_05 = new Skill(
 //     `skill_druid_05`,
