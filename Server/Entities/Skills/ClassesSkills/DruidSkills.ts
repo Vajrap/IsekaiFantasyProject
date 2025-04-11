@@ -34,6 +34,7 @@ import { LocationName } from "../../../../Common/DTOsEnumsInterfaces/Map/Locatio
 import {
   BuffsAndDebuffsEnum,
   TargetScope,
+  TargetSortingOptions,
   TargetTauntConsideration,
   TargetType,
 } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
@@ -55,14 +56,19 @@ import {
   SkillConsume,
   SkillProduce,
 } from "../SubClasses/SkillConsume";
+import { SkillLearningRequirement } from "../SubClasses/SkillLearningRequirement";
 import {
   calculateCritAndHit,
   getSpellDamageAfterArmorPenalty,
+  isSpellCastSuccessConcerningArmor,
   noEquipmentNeeded,
   noRequirementNeeded,
 } from "../Utils";
 import { createCastString } from "../Utils/makeCastString";
-import { skillExecNoTargetReport } from "../Utils/report";
+import {
+  skillExecNoTargetReport,
+  skillExecSpellCastFailDueToArmorReport,
+} from "../Utils/report";
 
 const skill_entangle = new Skill(
   {
@@ -316,152 +322,114 @@ function skill_spear_throw_exec(
   };
 }
 
-// SkillRepository.skill_druid_02 = new Skill(
-//     `skill_druid_02`,
-//     `Spear Throw`,
-//     `Throws a spear at the target, dealing 0.8 times damage, if thrown from backrow to front row or frontrow to backrow deal 1.5 times damage, if thrown from back row to back row, deal 2.5 times damage`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [],
-//         preRequireCharacterLevel: 1,
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: ['spear'],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level:number): ActionDetails => {
-//             const target = oppositeParty.getOnePreferredBackRowTauntCount(actor);
-//             if (!target) throw new Error('Exceptional: No target found.');
-//             const weapon = SkillRepository.skill_druid_03.equipmentNeeded.getWeapon(actor);
-//             if (!weapon) throw new Error('Exceptional: No weapon found');
+const skill_healing_touch = new Skill(
+  {
+    id: "skill_healing_touch",
+    name: "Healing Touch",
+    tier: Tier.common,
+    description:
+      "Heal a party member with lowest HP for 1d4 hp (+willpower). Each level gives additional +1 healing, at level 5 the skill can be cast without armor penalty.",
+    requirement: new SkillLearningRequirement({
+      preRequireElements: [{ element: "geo", value: 1 }],
+    }),
+    equipmentNeeded: noEquipmentNeeded,
+    castString: "cast healing touch",
+    consume: new SkillConsume({
+      mp: [3, 3, 3, 3, 3],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.geo,
+          amount: [1, 1, 1, 1, 1],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.order,
+          amountRange: [
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+          ],
+        }),
+      ],
+    }),
+    isSpell: true,
+    isAuto: false,
+    isWeaponAttack: false,
+    isReaction: false,
+  },
+  skill_healing_touch_exec,
+);
 
-//             const castMessage = `(actor=${actor.name}) throws a spear at (target=${target.name}).`;
-//             const sequenceMessage = [];
-//             const targets = [];
+function skill_healing_touch_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  if (skillLevel < 5 && !isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "aid");
 
-//             let damageMultiplier = 0.8;
-//             if (actor.position !== null && actor.position < 2 && target.position !== null && target.position > 2) {
-//                 damageMultiplier = 1.5;
-//             }
-//             if (actor.position !== null && actor.position > 2 && target.position !== null && target.position < 2) {
-//                 damageMultiplier = 1.5;
-//             }
-//             if (actor.position !== null && actor.position > 2 && target.position !== null && target.position > 2) {
-//                 damageMultiplier = 2.5;
-//             }
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+    sort: TargetSortingOptions.LowestHP,
+  };
 
-//             damageMultiplier += ((level-1)/2)
+  const target = trySelectOneTarget(
+    character,
+    allies,
+    targetType,
+    "healing touch",
+  );
+  if (!(target instanceof Character))
+    return skillExecNoTargetReport(character, "healing touch");
 
-//             let message = `(actor=${actor.name}) throws a spear at (target=${target.name}), `;
-//             const attackResult = actor.attack({
-//                 actor: actor,
-//                 target: target,
-//                 damageDice: weapon.weaponAttack.physicalDiceEnum,
-//                 hitBonus: 0,
-//                 damageType: DamageTypes.pierce,
-//                 damageMultiplier: damageMultiplier
-//             });
-//             attackResult.dHit ? message += `dealing (damage=${attackResult.damage}) pierce damage.` : message += `but Missed!`;
-//             sequenceMessage.push(message);
-//             targets.push(target);
+  let healing = Math.max(
+    +Dice.roll(DiceEnum.OneD4).sum +
+      StatMod.value(character.status.willpower()) +
+      (skillLevel - 1),
+    0,
+  );
 
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.NoElement_Cast],
-//                 [TargetSkillEffect.NoElement_Pierce_2],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0],
-//         mp: [0,0,0,0,0],
-//         sp: [5,7,8,10,11],
-//         elements: [
-//             new ElementConsume({ element: 'none', amount: [2,2,2,2,2]}),
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [new ElementProduce({
-//             element: 'geo',
-//             amountRange: [[0,1],[0,1],[0,1],[0,1],[0,1]]
-//         })]
-//     }),
-//     Tier.common
-// )
+  const crit = Dice.rollTwenty() + StatMod.value(character.status.luck()) >= 20;
+  if (crit) healing *= 1.5;
 
-// SkillRepository.skill_druid_03 = new Skill(
-//     `skill_druid_03`,
-//     `Healing Touch`,
-//     `Heals a party member with lowest HP for 4d2 hp, can not target self.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'geo', value: 1}
-//         ],
-//         preRequireCharacterLevel: 0,
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level:number): ActionDetails => {
-//             const target = selfParty.getOnePreferredFrontRowTauntCount(actor);
-//             if (!target) throw new Error('Exceptional: No target found.');
+  if (skillLevel < 5)
+    healing = getSpellDamageAfterArmorPenalty(character, healing);
 
-//             const castMessage = `(actor=${actor.name}) casts Healing Touch on (target=${target.name}).`;
-//             const sequenceMessage = [];
-//             const targets = [];
+  const result = target.receiveHeal({
+    actor: character,
+    healing: healing,
+  });
 
-//             const healAmount = actor.heal({
-//                 target: target,
-//                 healingDice: '4d2',
-//                 healingStatModifier: [new CharacterStatusModifier('charisma')],
-//                 penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                 additionalHealing: (level-1)/2
-//             });
-//             sequenceMessage.push(`(actor=${actor.name}) casts Healing Touch on (target=${target.name}), healing (heal=${healAmount.heal}) HP.`);
-//             targets.push(target);
+  const castString = createCastString({
+    actor: character,
+    target: target,
+    skillName: `healing touch`,
+    healing: result.heal,
+    crit: crit,
+    dHit: result.healHit,
+  });
 
-//             return new ActionDetails(
-//                 actor,
-//                 [],
-//                 targets,
-//                 [ActorSkillEffect.Human_Cast],
-//                 [],
-//                 [TargetSkillEffect.heal],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0],
-//         mp: [5,5,4,4,3],
-//         sp: [0,0,0,0,0],
-//         elements: [new ElementConsume({
-//             element: 'geo',
-//             amount: [1,1,1,1,1]
-//         })]
-//     }),
-//     new SkillProduce({
-//         elements: [new ElementProduce({
-//             element: 'order',
-//             amountRange: [[1,1],[1,1],[1,1],[1,1],[1,1]]
-//         })]
-//     }),
-//     Tier.uncommon
-// )
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_healing_touch",
+    actorSkillEffect: ActorSkillEffect.Geo_Cast,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.heal,
+        effect: TargetSkillEffect.heal,
+      },
+    ],
+    castString,
+  };
+}
 
 // SkillRepository.skill_druid_04 = new Skill(
 //     `skill_druid_04`,

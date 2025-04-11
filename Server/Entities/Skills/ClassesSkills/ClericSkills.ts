@@ -215,7 +215,7 @@ const skill_aid = new Skill(
     id: "skill_aid",
     name: "Aid",
     tier: Tier.common,
-    description: `Heals one ally with least HP. The amount of healing is 1D4 + willpower modifier. Amount of healing is increased by 1D2 for each level of the skill.`,
+    description: `Heals one ally with least HP. The amount of healing is 1D4 + willpower modifier. Amount of healing is increased by 1D2 for each level of the skill, at level 5 base dice change to 2D4`,
     requirement: noRequirementNeeded,
     equipmentNeeded: noEquipmentNeeded,
     castString: "cast aid",
@@ -273,8 +273,9 @@ function skill_aid_exec(
     levelingHeal += Dice.roll(DiceEnum.OneD2).sum;
   }
 
+  const baseDice = skillLevel === 5 ? DiceEnum.OneD4 : DiceEnum.TwoD4;
   let healing = Math.max(
-    Dice.roll(DiceEnum.OneD4).sum +
+    Dice.roll(baseDice).sum +
       StatMod.value(character.status.willpower()) +
       levelingHeal,
     0,
@@ -287,13 +288,18 @@ function skill_aid_exec(
 
   healing = getSpellDamageAfterArmorPenalty(character, healing);
 
-  const castString = `${character.name} casts Aid on ${target.name}, ${
-    crit ? "with critical" : ""
-  } healing ${healing} HP.`;
-
   let result = target.receiveHeal({
     actor: character,
     healing: healing,
+  });
+
+  const castString = createCastString({
+    actor: character,
+    target: target,
+    skillName: `healing touch`,
+    healing: result.heal,
+    crit: crit,
+    dHit: result.healHit,
   });
 
   return {
