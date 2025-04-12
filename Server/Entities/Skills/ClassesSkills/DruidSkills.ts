@@ -4,9 +4,8 @@
 2. Spear Throw
 3. Healing Touch
 4. Absorb Resource
-5. Wild Growth
-6. Poisoned Land
-7. Nature's Wrath
+5. Poisoned Land
+6. Nature's Wrath
 8. Rock Spike
 9. Lava Burst
 10. Tidal Wave
@@ -39,7 +38,10 @@ import {
   TargetType,
 } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
-import { trySelectOneTarget } from "../../../Game/Battle/TargetSelectionProcess";
+import {
+  selectMultipleTargets,
+  trySelectOneTarget,
+} from "../../../Game/Battle/TargetSelectionProcess";
 import { GameTime } from "../../../Game/TimeAndDate/GameTime";
 import { Dice } from "../../../Utility/Dice";
 import { StatMod } from "../../../Utility/StatMod";
@@ -529,72 +531,117 @@ function skill_absorb_resource_exec(
   };
 }
 
-// SkillRepository.skill_druid_05 = new Skill(
-//     `skill_druid_05`,
-//     `Wild Growth`,
-//     `Heals all party members for 2d4(+charisma) hp.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'geo', value: 1 }
-//         ],
-//         preRequireCharacterLevel: 7,
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level:number): ActionDetails => {
-//             const castMessage = `(actor=${actor.name}) casts Wild Growth to heal all party members.`;
-//             const sequenceMessage = [];
-//             const targets = [];
+const skill_poisoned_land = new Skill(
+  {
+    id: "skill_poisoned_land",
+    name: "Poisoned Land",
+    tier: Tier.epic,
+    description: `Poison the land, dealing 1d4 (+ skill level) damage to all enemies and poison them for 3 turns, this skill can not be dodge. at level 4 and 7 the duration of poison is increased to 3 and 4 turns respectively.`,
+    requirement: new SkillLearningRequirement({
+      preRequireElements: [
+        { element: "geo", value: 2 },
+        { element: "chaos", value: 3 },
+      ],
+    }),
+    equipmentNeeded: noEquipmentNeeded,
+    castString: "cast poisoned land",
+    consume: new SkillConsume({
+      hp: [0, 0, 0, 0, 0, 0, 0],
+      mp: [5, 5, 5, 5, 7, 7, 7],
+      sp: [0, 0, 0, 0, 0, 0, 0],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.geo,
+          amount: [2, 2, 2, 2, 2, 2, 2],
+        }),
+        new ElementConsume({
+          element: FundamentalElementTypes.chaos,
+          amount: [2, 2, 2, 2, 2, 2, 2],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.none,
+          amountRange: [
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+          ],
+        }),
+      ],
+    }),
+    isSpell: true,
+    isAuto: false,
+    isWeaponAttack: false,
+    isReaction: false,
+  },
+  skill_poisoned_land_exec,
+);
 
-//             for (const target of selfParty.characters) {
-//                 if (target) {
-//                     const healAmount = actor.heal({
-//                         target: target,
-//                         healingDice: '2d4',
-//                         healingStatModifier: [new CharacterStatusModifier('charisma')],
-//                         penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                         additionalHealing: (level-1)/2
-//                     });
-//                     targets.push(target);
-//                     sequenceMessage.push(`(actor=${actor.name}) (skill=uses) Wild Growth to heal (target=${target.name}) for (heal=${healAmount.heal}) HP.`);
-//                 }
-//             }
+function skill_poisoned_land_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "poisoned land");
 
-//             return new ActionDetails(
-//                 actor,
-//                 [],
-//                 targets,
-//                 [ActorSkillEffect.Geo_Cast],
-//                 [],
-//                 [TargetSkillEffect.heal],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0],
-//         mp: [3,3,3,3,3,3,3],
-//         sp: [5,5,5,5,5,5,5],
-//         elements: [
-//             new ElementConsume({ element: 'geo', amount: [2,2,2,2,2,2,2] }),
-//             new ElementConsume({ element: 'water', amount: [2,2,2,2,2,2,2] })
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [new ElementProduce({
-//             element: 'order',
-//             amountRange: [[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]]
-//         })]
-//     }),
-//     Tier.rare
-// )
+  const targetType: TargetType = {
+    scope: TargetScope.All,
+  };
+
+  const targets = selectMultipleTargets(character, enemies, targetType);
+  if (targets.length === 0)
+    return skillExecNoTargetReport(character, `poisoned land`);
+
+  const damage = Dice.roll(DiceEnum.OneD4).sum + (skillLevel - 1);
+  const duration = skillLevel === 7 ? 5 : skillLevel >= 4 ? 4 : 3;
+  const resultTargets = [];
+  let castString = `${character.name} cast poisoned land, `;
+  for (const target of targets) {
+    const result = target.receiveDamage({
+      attacker: character,
+      damage,
+      hitChance: 100,
+      damageType: DamageTypes.poison,
+      locationName: context.location,
+    });
+    let effect = TargetSkillEffect.poison;
+    if (result.dHit) {
+      castString += `${target.name} take ${result.damage} poison damage, `;
+      const debuff = receiveDebuff(
+        target,
+        BuffsAndDebuffsEnum.poison,
+        duration,
+      );
+      if (debuff.result) {
+        effect = TargetSkillEffect.Poison_1;
+        castString += `${target.name} get poisoned for ${duration} turns.`;
+      }
+    }
+    resultTargets.push({
+      character: turnCharacterIntoInterface(target),
+      damageTaken: result.damage,
+      effect,
+    });
+  }
+
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_poisoned_land",
+    actorSkillEffect: ActorSkillEffect.Poison_Cast,
+    targets: resultTargets,
+    castString,
+  };
+}
 
 // SkillRepository.skill_druid_06 = new Skill(
 //     `skill_druid_06`,
