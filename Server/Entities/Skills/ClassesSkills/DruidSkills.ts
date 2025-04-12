@@ -603,9 +603,9 @@ function skill_poisoned_land_exec(
     return skillExecNoTargetReport(character, `poisoned land`);
 
   const damage = Dice.roll(DiceEnum.OneD4).sum + (skillLevel - 1);
-  const duration = skillLevel === 7 ? 5 : skillLevel >= 4 ? 4 : 3;
+  const duration = skillLevel === 7 ? 4 : skillLevel >= 4 ? 3 : 2;
   const resultTargets = [];
-  let castString = `${character.name} cast poisoned land, `;
+  let castString = `${character.name} cast Poisoned Land, `;
   for (const target of targets) {
     const result = target.receiveDamage({
       attacker: character,
