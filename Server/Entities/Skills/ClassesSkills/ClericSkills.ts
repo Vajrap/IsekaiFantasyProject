@@ -645,10 +645,7 @@ function skill_holy_water_exec(
     }`;
 
     if (result.dHit) {
-      const [diceRoll, baseModifier, buffModifier] = target.saveRoll(
-        CharacterStatusEnum.willpower,
-      );
-      if (diceRoll + baseModifier + buffModifier < 10) {
+      if (target.saveRoll(CharacterStatusEnum.willpower) < 10) {
         const debuffResult = receiveDebuff(target, BuffsAndDebuffsEnum.awed, 2);
         castString += debuffResult.message;
       }
@@ -940,9 +937,7 @@ function skill_divines_fury_exec(
         effect: TargetSkillEffect.Order_3,
       });
 
-      const saveRolls = target.saveRoll(CharacterStatusEnum.willpower);
-      const save = saveRolls[0] + saveRolls[1] + saveRolls[2];
-      if (save < 10) {
+      if (target.saveRoll(CharacterStatusEnum.willpower) < 10) {
         const debuffResult = receiveDebuff(target, BuffsAndDebuffsEnum.awed, 2);
         castString += debuffResult.message;
       }

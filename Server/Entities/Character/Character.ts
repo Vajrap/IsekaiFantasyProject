@@ -531,9 +531,7 @@ export class Character {
     }
   }
 
-  saveRoll(
-    saveStat: CharacterStatusEnum | null,
-  ): [diceRoll: number, baseModifier: number, buffModifier: number] {
+  saveRoll(saveStat: CharacterStatusEnum | null): number {
     let diceRoll = Dice.roll(DiceEnum.OneD20).sum;
 
     console.log(`${this.name} rolls ${diceRoll} for saving throw`);
@@ -567,7 +565,7 @@ export class Character {
       console.log(`${this.name} get -2 from awed`);
     }
 
-    return [diceRoll, baseModifier, buffModifier];
+    return diceRoll + baseModifier + buffModifier;
   }
 
   moodUp(value: number): void {

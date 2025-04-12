@@ -22,9 +22,11 @@ import {
   TurnReport,
 } from "../../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { AttributeEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/AttributeEnum";
+import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
 import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes";
+import { ArmorType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
 import {
   WeaponSpecificType,
   WeaponType,
@@ -643,245 +645,262 @@ function skill_poisoned_land_exec(
   };
 }
 
-// SkillRepository.skill_druid_06 = new Skill(
-//     `skill_druid_06`,
-//     `Poisoned Land`,
-//     `Poison the land, dealing 1d4 damage to all enemies and poison them for 3 turns, this skill can not be dodge except from critical miss roll.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'geo', value: 2},
-//             { element: 'chaos', value: 3}
-//         ],
-//         preRequireCharacterLevel: 8,
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({}),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const possibleTargets = oppositeParty.getAllPossibleTargets();
+const skill_natures_wrath = new Skill(
+  {
+    id: "skill_natures_wrath",
+    name: "Nature's Wrath",
+    tier: Tier.legendary,
+    description: `Unleash the fury of nature, dealing 2d4 base damage (+1 per level) to all enemies. If the target is entangled, the damage is doubled. If poisoned, all poison stacks are consumed and erupt, dealing 3 damage per stack. This skill can't miss or deal critical damage.`,
+    requirement: new SkillLearningRequirement({
+      preRequireElements: [{ element: FundamentalElementTypes.geo, value: 1 }],
+      preRequireCharacterLevel: 12,
+      preRequireCharacterTrait: [],
+    }),
+    equipmentNeeded: noEquipmentNeeded,
+    castString: "cast nature's wrath",
+    consume: new SkillConsume({
+      mp: [5, 5, 6, 6, 7, 7, 8, 8, 9, 9],
+      sp: [5, 5, 6, 6, 7, 7, 8, 8, 9, 9],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.geo,
+          amount: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        }),
+        new ElementConsume({
+          element: FundamentalElementTypes.chaos,
+          amount: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        }),
+        new ElementConsume({
+          element: FundamentalElementTypes.fire,
+          amount: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.none,
+          amountRange: Array(10).fill([1, 1]),
+        }),
+      ],
+    }),
+    isSpell: true,
+    isAuto: false,
+    isWeaponAttack: false,
+    isReaction: false,
+  },
+  function skill_natures_wrath_exec(
+    character: Character,
+    allies: Party,
+    enemies: Party,
+    skillLevel: number,
+    context: { time: GameTime; location: LocationName },
+  ): TurnReport {
+    if (!isSpellCastSuccessConcerningArmor(character))
+      return skillExecSpellCastFailDueToArmorReport(
+        character,
+        "nature's wrath",
+      );
 
-//             const castMessage = `(actor=${actor.name}) casts Poisoned Land to affect all enemies.`;
-//             const sequenceMessage = [];
-//             const targets = [];
+    const targets = selectMultipleTargets(character, enemies, {
+      scope: TargetScope.All,
+    });
+    if (targets.length === 0)
+      return skillExecNoTargetReport(character, "cast nature's wrath");
 
-//             for (const target of possibleTargets) {
-//                 let message = `(actor=${actor.name}) casts Poisoned Land on (target=${target.name}), `;
-//                 const attackResult = actor.attack({
-//                     actor: actor,
-//                     target: target,
-//                     damageDice: '1d4',
-//                     hitBonus: 1000, // Ensures hit unless critical miss
-//                     damageType: DamageTypes.poison,
-//                     damageMultiplier: 1,
-//                     penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                     additionalDamage: (level-1)/2
-//                 });
-//                 attackResult.dHit ? targets.push(target) : {};
-//                 attackResult.dHit ? message += `dealing (damage=${attackResult.damage}) poison damage, ` : message += `but Missed!`;
+    let castString = `${character.name} casts Nature's Wrath on all enemies.`;
+    const resultTargets = [];
 
-//                 const effectHit = actor.inflictEffect({
-//                     actor: actor,
-//                     target: target,
-//                     inflictEffect: K.buffsAndDebuffs.poison,
-//                     effectDuration: 2 + (level >= 5 ? 1:0) + (level === 7 ? 1:0),
-//                     effectDC: 1000
-//                 });
-//                 effectHit ? message += `and inflicting Poison.` : attackResult.dHit ? message += `but resisted Poison.` : message += '';
-//                 sequenceMessage.push(message);
-//             }
+    for (const target of targets) {
+      const poisonStacks = target.buffsAndDebuffs.poison;
+      const isEntangled = target.buffsAndDebuffs.entangled > 0;
+      const poisonBonus = poisonStacks * 3;
+      const baseDamage = Dice.roll(DiceEnum.TwoD4).sum + skillLevel;
+      let finalDamage = baseDamage + poisonBonus;
 
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.Poison_Cast],
-//                 [TargetSkillEffect.Poison_1, TargetSkillEffect.poison],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0],
-//         mp: [5,5,5,5,7,7,7],
-//         sp: [0,0,0,0,0,0,0],
-//         elements: [
-//             new ElementConsume({ element: 'geo', amount: [2,2,2,2,2,2,2]}),
-//             new ElementConsume({ element: 'chaos', amount: [2,2,2,2,2,2,2]})
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'none', amountRange: [[0,1],[0,1],[0,1],[0,1],[0,1],[0,1],[0,1]]})
-//         ]
-//     }),
-//     Tier.epic
-// )
+      if (isEntangled) finalDamage *= 2;
 
-// SkillRepository.skill_druid_07 = new Skill(
-//     `skill_druid_07`,
-//     `Nature's Wrath`,
-//     `Deals 2d4 damage to all enemies, if target is in entangled state, the damage will be doubled, and if target is poisoned, all poison stack will be erupted dealing 3*poison stack damage.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [
-//             { element: 'geo', value: 1}
-//         ],
-//         preRequireCharacterLevel: 12,
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const possibleTargets = oppositeParty.getAllPossibleTargets();
+      const result = target.receiveDamage({
+        attacker: character,
+        damage: finalDamage,
+        hitChance: 100,
+        damageType: DamageTypes.poison,
+        locationName: context.location,
+      });
 
-//             const castMessage = `(actor=${actor.name}) casts Nature's Wrath to affect all enemies.`;
-//             const sequenceMessage = [];
-//             const targets = [];
+      if (poisonStacks > 0) target.buffsAndDebuffs.poison = 0;
 
-//             for (const target of possibleTargets) {
-//                 let message = `(actor=${actor.name}) casts Nature's Wrath on (target=${target.name}), `;
-//                 let damageMultiplier = 1;
-//                 if (target.buffsAndDebuffs.entangled > 0) {
-//                     damageMultiplier = 2;
-//                 }
+      castString += `\n${target.name} takes ${result.damage} damage.`;
+      if (isEntangled) castString += ` Damage doubled due to entangled.`;
+      if (poisonStacks > 0)
+        castString += ` Poison stacks erupted for ${poisonBonus} damage.`;
 
-//                 const attackResult = actor.attack({
-//                     actor: actor,
-//                     target: target,
-//                     damageDice: '2d4',
-//                     hitBonus: 0,
-//                     damageType: DamageTypes.pierce,
-//                     damageMultiplier: damageMultiplier + ((level-1)/2),
-//                     penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                     additionalDamage: target.buffsAndDebuffs.poison * 3
-//                 });
-//                 attackResult.dHit ? targets.push(target) : {};
-//                 attackResult.dHit ? message += `dealing (damage=${attackResult.damage}) pierce damage.` : message += `but Missed!`;
-//                 target.buffsAndDebuffs.entangled > 0 ? message += ` the damage is doubled because the target is entangled.` : message += '';
-//                 target.buffsAndDebuffs.poison > 0 ? message += ` included additional (damage=${target.buffsAndDebuffs.poison*3}) poison damage.` : message += '';
-//                 target.buffsAndDebuffs.poison = 0;
-//                 sequenceMessage.push(message);
-//             }
+      resultTargets.push({
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.damage,
+        effect: TargetSkillEffect.Poison_3,
+      });
+    }
 
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.Geo_Cast],
-//                 [TargetSkillEffect.Geo_3],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//        }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0,0,0,0],
-//         mp: [5,5,6,6,7,7,8,8,9,9],
-//         sp: [5,5,6,6,7,7,8,8,9,9],
-//         elements: [
-//             new ElementConsume({ element: 'geo', amount: [2,2,2,2,2,2,2,2,2,2]}),
-//             new ElementConsume({ element: 'chaos', amount: [2,2,2,2,2,2,2,2,2,2]}),
-//             new ElementConsume({ element: 'fire', amount: [2,2,2,2,2,2,2,2,2,2]})
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'none', amountRange: [[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]]}),
-//         ]
-//     }),
-//     Tier.legendary
-// )
+    return {
+      character: turnCharacterIntoInterface(character),
+      skill: "skill_natures_wrath",
+      actorSkillEffect: ActorSkillEffect.Geo_Cast,
+      targets: resultTargets,
+      castString,
+    };
+  },
+);
 
-// SkillRepository.skill_druid_08 = new Skill(
-//     `skill_druid_08`,
-//     `Rock Spike`,
-//     `Summons a sharp rock on one enemy's location, dealing 2d6(+vitality) damage. target must throw a DC 10 save or suffer bleed for 2 turns.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [],
-//         preRequireElements: [],
-//         preRequireCharacterLevel: 0,
-//         preRequireCharacterTrait: [TraitRepository.trait_motherEarthBlessing]
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [],
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const target = oppositeParty.getOnePreferredFrontRowTauntCount(actor);
-//             if (!target) throw new Error('Exceptional: No target found.');
+const skill_rock_spike = new Skill(
+  {
+    id: "skill_rock_spike",
+    name: "Rock Spike",
+    tier: Tier.rare,
+    description:
+      "Summons a sharp rock beneath a single enemy, dealing 2d6 + vitality modifier + skill level geo damage. Target must succeed on a DC (10 + skill level - armor tier modifier) Willpower save or suffer Bleed for 2 to 4 turns based on skill level. This skill can crit and miss.",
+    requirement: new SkillLearningRequirement({
+      preRequireElements: [],
+      preRequireCharacterLevel: 0,
+      // preRequireCharacterTrait: [TratitR.trait_motherEarthBlessing],
+    }),
+    equipmentNeeded: noEquipmentNeeded,
+    castString: "cast rock spike",
+    consume: new SkillConsume({
+      mp: [5, 5, 5, 5, 6, 7, 8],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.geo,
+          amount: [2, 2, 2, 2, 2, 2, 2],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.fire,
+          amountRange: [
+            [1, 1],
+            [1, 1],
+            [1, 1],
+            [1, 1],
+            [1, 1],
+            [1, 1],
+            [1, 1],
+          ],
+        }),
+      ],
+    }),
+    isSpell: true,
+    isAuto: false,
+    isWeaponAttack: false,
+    isReaction: false,
+  },
+  skill_rock_spike_exec,
+);
 
-//             const castMessage = `(actor=${actor.name}) summons a Rock Spike on (target=${target.name}).`;
-//             const sequenceMessage = [];
-//             const targets = [];
+function skill_rock_spike_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  if (!isSpellCastSuccessConcerningArmor(character))
+    return skillExecSpellCastFailDueToArmorReport(character, "rock spike");
 
-//             let message = `(actor=${actor.name}) summons a Rock Spike on (target=${target.name}), `;
-//             const attackResult = actor.attack({
-//                 actor: actor,
-//                 target: target,
-//                 damageDice: '2d6',
-//                 hitBonus: actor.getArmorPenaltyForSpellCastingHit(),
-//                 damageType: DamageTypes.geo,
-//                 damageMultiplier: 1,
-//                 damageStatModifier: [new CharacterStatusModifier('vitality')],
-//                 penalty: actor.getArmorPentaltyForSpellCastingDamage(),
-//                 additionalDamage: (level-1)
-//             });
-//             attackResult.dHit ? message += `dealing (damage=${attackResult.damage}) geo damage.` : message += `but Missed!`;
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+    taunt: TargetTauntConsideration.TauntCount,
+  };
 
-//             let effectApply = false;
-//             if (attackResult.dHit) {
-//                 actor.inflictEffect({
-//                     actor: actor,
-//                     target: target,
-//                     inflictEffect: K.buffsAndDebuffs.bleed,
-//                     effectDuration: 2 + (level >= 5 ? 1:0),
-//                     effectDC: 10 + actor.getArmorPenaltyForSpellCastingHit()
-//                 });
-//                 effectApply = true;
-//                 message += ` And inflicting Bleed.`;
-//             }
-//             targets.push(target);
-//             sequenceMessage.push(message);
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "rock spike",
+  );
+  if (!(target instanceof Character)) return target;
 
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.Geo_Cast],
-//                 effectApply ? [TargetSkillEffect.Geo_1, TargetSkillEffect.bleed] : [TargetSkillEffect.Geo_1],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             );
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0],
-//         mp: [5,5,5,5,6,7,8],
-//         sp: [0,0,0,0,0,0,0],
-//         elements: [new ElementConsume({
-//             element: 'geo',
-//             amount: [2,2,2,2,2,2,2]
-//         })]
-//     }),
-//     new SkillProduce({
-//         elements: [new ElementProduce({
-//             element: 'fire',
-//             amountRange: [[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]]
-//         })]
-//     }),
-//     Tier.rare
-// )
+  const isSpell = true;
+  const hitStat = AttributeEnum.intelligence;
+  const critStat = AttributeEnum.luck;
+  const [crit, hitChance] = calculateCritAndHit(
+    character,
+    target,
+    isSpell,
+    hitStat,
+    critStat,
+  );
+
+  let damage =
+    Dice.roll(DiceEnum.TwoD6).sum +
+    StatMod.value(character.status.vitality()) +
+    skillLevel;
+  if (crit) damage *= 2;
+  damage = getSpellDamageAfterArmorPenalty(character, damage);
+
+  const result = target.receiveDamage({
+    attacker: character,
+    damage,
+    hitChance,
+    damageType: DamageTypes.geo,
+    locationName: context.location,
+  });
+
+  let effect = TargetSkillEffect.Geo_1;
+  let castString = `${character.name} summons a Rock Spike on ${target.name}, `;
+  if (crit) castString += `CRITICAL! `;
+  castString += result.dHit
+    ? `dealing ${result.damage} geo damage.`
+    : `but missed!`;
+
+  if (result.dHit) {
+    const baseDC = 10 + skillLevel;
+    let armorBonus = 0;
+    switch (target.equipments.armor?.armorType) {
+      case ArmorType.light:
+        armorBonus = 1;
+        break;
+      case ArmorType.medium:
+        armorBonus = 2;
+        break;
+      case ArmorType.heavy:
+        armorBonus = 3;
+        break;
+    }
+    const finalDC = baseDC - armorBonus;
+
+    const saveRoll = target.saveRoll(CharacterStatusEnum.willpower);
+
+    if (saveRoll < finalDC) {
+      const bleedDuration = 2 + Math.floor(skillLevel / 3);
+      const debuff = receiveDebuff(
+        target,
+        BuffsAndDebuffsEnum.bleed,
+        bleedDuration,
+      );
+      if (debuff.result) {
+        effect = TargetSkillEffect.bleed;
+        castString += ` ${target.name} is now bleeding.`;
+      }
+    }
+  }
+
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_rock_spike",
+    actorSkillEffect: ActorSkillEffect.Geo_Cast,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.damage,
+        effect,
+      },
+    ],
+    castString,
+  };
+}
 
 // SkillRepository.skill_druid_09 = new Skill(
 //     `skill_druid_09`,
