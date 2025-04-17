@@ -1,4 +1,4 @@
-import { Skill } from "../Skill";
+import { ActiveSkill, Skill } from "../Skill";
 import {
   ElementConsume,
   SkillConsume,
@@ -36,15 +36,16 @@ import { LocationName } from "../../../../Common/DTOsEnumsInterfaces/Map/Locatio
 import { turnCharacterIntoInterface } from "../../Character/Utils/turnCharacterIntoInterface";
 import { skillExecNoTargetReport } from "../Utils/report";
 
-const skill_auto_physical = new Skill(
+const skill_auto_physical = new ActiveSkill(
   {
     id: "skill_auto_physical",
     name: "Normal Physical Attack",
     tier: Tier.common,
     description: `Attack with weapon's physical damage.`,
     requirement: noRequirementNeeded,
+  },
+  {
     equipmentNeeded: noEquipmentNeeded,
-    castString: "attacks",
     consume: new SkillConsume({
       elements: [
         new ElementConsume({
@@ -68,22 +69,21 @@ const skill_auto_physical = new Skill(
       ],
     }),
     isSpell: false,
-    isAuto: true,
     isWeaponAttack: true,
-    isReaction: false,
+    executor: skill_auto_physical_exec,
   },
-  skill_auto_physical_exec,
 );
 
-const skill_auto_magical = new Skill(
+const skill_auto_magical = new ActiveSkill(
   {
     id: "skill_auto_magical",
     name: "Normal Magical Attack",
     tier: Tier.common,
     description: `Attack with weapon's magical damage.`,
     requirement: noRequirementNeeded,
+  },
+  {
     equipmentNeeded: noEquipmentNeeded,
-    castString: "attacks",
     consume: new SkillConsume({
       elements: [
         new ElementConsume({
@@ -107,11 +107,9 @@ const skill_auto_magical = new Skill(
       ],
     }),
     isSpell: true,
-    isAuto: true,
     isWeaponAttack: false,
-    isReaction: false,
+    executor: skill_auto_magical_exec,
   },
-  skill_auto_magical_exec,
 );
 
 function skill_auto_physical_exec(

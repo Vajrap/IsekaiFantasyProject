@@ -33,7 +33,7 @@ import { WeaponSpecificType } from "../../../../Common/DTOsEnumsInterfaces/Item/
 import { LocationName } from "../../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
 import { GameTime } from "../../../Game/TimeAndDate/GameTime";
-import { ActiveSkill, PassiveSkill } from "../Skill";
+import { ActiveSkill, PassiveSkill, Skill } from "../Skill";
 import {
   ElementConsume,
   ElementProduce,
@@ -1597,3 +1597,10 @@ function skill_taunt_exec(
 //     }),
 //     Tier.rare
 // );
+
+export const fighterSkills: Skill[] = [
+  skill_power_strike,
+  skill_defensive_stance,
+  skill_power_stance,
+  skill_taunt,
+];

@@ -1776,19 +1776,10 @@ function skill_holy_blast_exec(
 //   };
 // }
 
-export const clericSkills = [
+export const clericSkills: Skill[] = [
   skill_smite,
   skill_heal,
   skill_holy_blast,
   skill_chant,
   skill_blessing,
-  // skill_holy_water,
-  // skill_ball_of_light,
-  // skill_divines_fury,
-  // skill_divine_intervention,
-  // skill_harmony,
-  // skill_inspiration,
-  // skill_laoh_blessing,
-  // skill_judgement_of_laoh,
-  // skill_holy_nova,
 ];
