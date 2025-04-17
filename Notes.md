@@ -13,4 +13,5 @@ Go to PORTS -> forward ports, make it public and copy the URL gain from that.
 
 Running Step:
 1. npx ts-node server.ts: from server dir
+// tsx server.ts
 2. npm run build: from root dir

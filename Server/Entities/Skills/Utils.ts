@@ -11,6 +11,7 @@ import { turnCharacterIntoInterface } from "../Character/Utils/turnCharacterInto
 import { TurnReport } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
 import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
+import { SkillConsume, SkillProduce } from "./SubClasses/SkillConsume";
 
 export enum DamageSourceType {
   Physical,
@@ -28,6 +29,10 @@ export const noRequirementNeeded = new SkillLearningRequirement({
 });
 
 export const noEquipmentNeeded = [];
+
+export const noSkillConsume = new SkillConsume({ elements: [] });
+
+export const noSkillProduce = new SkillProduce({ elements: [] });
 
 export function extractWeaponStats(
   character: Character,

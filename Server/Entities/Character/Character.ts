@@ -37,6 +37,8 @@ import {
   CharacterSkills,
   SkillMeta,
 } from "../../../Common/DTOsEnumsInterfaces/Character/SkillType";
+import { skillRepository } from "../Skills/SkillRepository";
+import { PassiveSkill } from "../Skills/Skill";
 
 export class Character {
   id: string;

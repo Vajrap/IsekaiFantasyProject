@@ -138,6 +138,8 @@ function skill_auto_physical_exec(
   const [crit, hitChance] = calculateCritAndHit(
     character,
     target,
+    false,
+    AttributeEnum.dexterity,
     AttributeEnum.luck,
   );
   let damage =
@@ -213,6 +215,8 @@ function skill_auto_magical_exec(
   const [crit, hitChance] = calculateCritAndHit(
     character,
     target,
+    true,
+    AttributeEnum.intelligence,
     AttributeEnum.luck,
   );
   let damage =
