@@ -1,7 +1,10 @@
 import { autoAttackSkills } from "./ClassesSkills/AutoAttackSkills";
 import { clericSkills } from "./ClassesSkills/ClericSkills";
+import { druidSkills } from "./ClassesSkills/DruidSkills";
 import { fighterSkills } from "./ClassesSkills/FighterSkills";
 import { mageSkills } from "./ClassesSkills/MageSkills";
+import { rogueSkills } from "./ClassesSkills/RogueSkills";
+import { warlockSkills } from "./ClassesSkills/WarlockSkills";
 import { ActiveSkill, Skill } from "./Skill";
 
 class SkillRepository {
@@ -42,6 +45,9 @@ class SkillRepository {
 export const skillRepository = new SkillRepository([
   ...autoAttackSkills,
   ...clericSkills,
+  ...druidSkills,
   ...fighterSkills,
   ...mageSkills,
+  ...rogueSkills,
+  ...warlockSkills,
 ]);
