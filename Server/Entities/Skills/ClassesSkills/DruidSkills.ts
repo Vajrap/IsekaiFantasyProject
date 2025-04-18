@@ -140,7 +140,11 @@ function skill_entangle_exec(
 
   if (result.dHit) {
     const duration = skillLevel >= 5 ? 3 : 2;
-    const debuff = receiveDebuff(target, BuffsAndDebuffsEnum.entangled, duration);
+    const debuff = receiveDebuff(
+      target,
+      BuffsAndDebuffsEnum.entangled,
+      duration,
+    );
     if (debuff.result) {
       castString += ` ${target.name} is entangled for ${duration} turns!`;
     }
@@ -215,7 +219,12 @@ function skill_healing_touch_exec(
     sort: TargetSortingOptions.LowestHP,
   };
 
-  const target = trySelectOneTarget(character, allies, targetType, "healing touch");
+  const target = trySelectOneTarget(
+    character,
+    allies,
+    targetType,
+    "healing touch",
+  );
   if (!(target instanceof Character)) return target;
 
   let healing = Math.max(
@@ -315,7 +324,12 @@ function skill_rock_spike_exec(
     taunt: TargetTauntConsideration.TauntCount,
   };
 
-  const target = trySelectOneTarget(character, enemies, targetType, "rock spike");
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "rock spike",
+  );
   if (!(target instanceof Character)) return target;
 
   const isSpell = true;
@@ -434,7 +448,12 @@ function skill_spear_throw_exec(
     taunt: TargetTauntConsideration.TauntCount,
   };
 
-  const target = trySelectOneTarget(character, enemies, targetType, "spear throw");
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "spear throw",
+  );
   if (!(target instanceof Character)) return target;
 
   const weapon = character.getWeapon();
@@ -453,17 +472,18 @@ function skill_spear_throw_exec(
     critStat,
   );
 
-  let baseMultiplier = skillLevel >= 5 ? 1.0 : 0.8;
   let rowModifier = 1.0;
-  
+
   if (character.position < 3) {
-    if (target.position < 3) rowModifier = baseMultiplier;
-    if (target.position >= 3) rowModifier = 1.5;
+    if (target.position < 3) rowModifier = 0.8;
+    if (target.position >= 3) rowModifier = 1.2;
   }
   if (character.position >= 3) {
-    if (target.position < 3) rowModifier = 1.5;
-    if (target.position >= 3) rowModifier = baseMultiplier;
+    if (target.position < 3) rowModifier = 1.2;
+    if (target.position >= 3) rowModifier = 1.5;
   }
+
+  if (skillLevel >= 5) rowModifier += 0.2;
 
   let damage =
     Dice.roll(weapon.attackStats!.physicalDiceEnum).sum * rowModifier +
