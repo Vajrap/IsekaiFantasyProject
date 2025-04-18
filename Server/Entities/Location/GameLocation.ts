@@ -31,6 +31,8 @@ import { event_craft } from "../../Game/GameEvent/craftEvent";
 import { learnSkill, trainSkill } from "../Character/Utils/skillFunctions";
 import { Dice } from "../../Utility/Dice";
 import { RelationEnum } from "../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
+import { updateRelation } from "../Character/Utils/updateRelation";
+import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 
 export enum LocationInnType {
   Poor = "Poor",
@@ -181,7 +183,7 @@ export class GameLocation {
       (merchantTypes.has(partyB.behavior.partyType) && !this.isHostile(partyA))
     ) {
       executeTradeEvent(partyA, partyB);
-      updateRelation(partyA, partyB, 2);
+      updateRelation(partyA, partyB, Dice.roll(DiceEnum.OneD2).sum);
       return;
     }
 
@@ -388,58 +390,4 @@ function executeRandomEventFromLocationEventEnum(
   eventEnum: LocationEventEnum,
 ): Function {
   return () => {};
-}
-
-function updateRelation(partyA: Party, partyB: Party, amount: number) {
-  for (const baseCharacter of partyA.characters) {
-    if (baseCharacter != "none") {
-      for (const targetCharacter of partyB.characters) {
-        if (targetCharacter != "none") {
-          baseCharacter.relation[targetCharacter.id].value += amount;
-        }
-      }
-    }
-  }
-}
-
-function updateStatus(characterA: Character, characterB: Character) {
-  const value =
-    (characterA.relation[characterB.id].value +
-      characterB.relation[characterA.id].value) /
-    2;
-
-  const specialRelation = [
-    RelationEnum.Lover,
-    RelationEnum.Spouse,
-    RelationEnum.RomanticInterest,
-    RelationEnum.SecretAdmirer,
-    RelationEnum.Hirer,
-    RelationEnum.Hired,
-  ];
-
-  let a_to_b = characterA.relation[characterB.id].status;
-  let b_to_a = characterB.relation[characterA.id].status;
-  if (specialRelation.includes(a_to_b) || specialRelation.includes(b_to_a))
-    return;
-
-  const relationStatusMap = new Map<[number, number], RelationEnum>([
-    [[-100, -81], RelationEnum.Nemesis],
-    [[-80, -61], RelationEnum.BitterRival],
-    [[-60, -41], RelationEnum.Hostile],
-    [[-40, -21], RelationEnum.Disliked],
-    [[-20, 19], RelationEnum.Neutral],
-    [[20, 39], RelationEnum.Acquaintance],
-    [[40, 59], RelationEnum.Familiar],
-    [[60, 79], RelationEnum.Friend],
-    [[80, 95], RelationEnum.CloseFriend],
-    [[96, 100], RelationEnum.TrustedCompanion],
-  ]);
-
-  for (const [[min, max], status] of relationStatusMap) {
-    if (value >= min && value <= max) {
-      characterA.relation[characterB.id].status = status;
-      characterB.relation[characterA.id].status = status;
-      break;
-    }
-  }
 }
