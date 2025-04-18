@@ -29,6 +29,8 @@ import { getRegionFromName } from "./Region";
 import { StatMod } from "../../Utility/StatMod";
 import { event_craft } from "../../Game/GameEvent/craftEvent";
 import { learnSkill, trainSkill } from "../Character/Utils/skillFunctions";
+import { Dice } from "../../Utility/Dice";
+import { RelationEnum } from "../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
 
 export enum LocationInnType {
   Poor = "Poor",
@@ -179,6 +181,7 @@ export class GameLocation {
       (merchantTypes.has(partyB.behavior.partyType) && !this.isHostile(partyA))
     ) {
       executeTradeEvent(partyA, partyB);
+      updateRelation(partyA, partyB, 2);
       return;
     }
 
@@ -241,60 +244,27 @@ export class GameLocation {
   }
 
   async processEncounters() {
-    if (this.parties.length === 0) return;
+    if (this.parties.length < 2) return;
 
-    let justArrivedParties = this.parties
-      .filter((party) => party.justArrived)
-      .sort(() => Math.random() - 0.5);
+    const shuffled = [...this.parties].sort(() => Math.random() - 0.5);
 
-    if (justArrivedParties.length === 0) return;
+    const candidates = shuffled.filter((party) => Dice.rollTwenty() % 2 === 1);
 
-    let otherParties = this.parties.filter((party) => !party.justArrived);
+    if (candidates.length < 2) return;
 
-    if (otherParties.length === 0 && justArrivedParties.length <= 1) return;
+    const encountered = new Set<Party>();
+    for (let i = 0; i < candidates.length - 1; i++) {
+      const candidateA = candidates[i];
+      if (encountered.has(candidateA)) continue;
 
-    let encounteredParties = new Set<Party>();
+      for (let j = i + 1; j < candidates.length; j++) {
+        const candidateB = candidates[j];
+        if (encountered.has(candidateB)) continue;
 
-    if (justArrivedParties.length === 1 && otherParties.length === 1) {
-      this.checkAndTriggerEncounterEvent(
-        justArrivedParties[0],
-        otherParties[0],
-      );
-      justArrivedParties[0].justArrived = false;
-      return;
-    }
-
-    if (otherParties.length === 0 && justArrivedParties.length === 2) {
-      this.checkAndTriggerEncounterEvent(
-        justArrivedParties[0],
-        justArrivedParties[1],
-      );
-      justArrivedParties[0].justArrived = false;
-      justArrivedParties[1].justArrived = false;
-      return;
-    }
-
-    for (let party of justArrivedParties) {
-      if (encounteredParties.has(party)) continue;
-
-      let potentialPartners = [
-        ...otherParties.filter((other) => !encounteredParties.has(other)),
-        ...justArrivedParties.filter(
-          (other) => other !== party && !encounteredParties.has(other),
-        ),
-      ];
-
-      if (potentialPartners.length === 0) continue;
-
-      let partner =
-        potentialPartners[Math.floor(Math.random() * potentialPartners.length)];
-
-      this.checkAndTriggerEncounterEvent(party, partner);
-
-      encounteredParties.add(party);
-      encounteredParties.add(partner);
-      party.justArrived = false;
-      partner.justArrived = false;
+        this.checkAndTriggerEncounterEvent(candidateA, candidateB);
+        encountered.add(candidateA);
+        encountered.add(candidateB);
+      }
     }
   }
 
@@ -418,4 +388,58 @@ function executeRandomEventFromLocationEventEnum(
   eventEnum: LocationEventEnum,
 ): Function {
   return () => {};
+}
+
+function updateRelation(partyA: Party, partyB: Party, amount: number) {
+  for (const baseCharacter of partyA.characters) {
+    if (baseCharacter != "none") {
+      for (const targetCharacter of partyB.characters) {
+        if (targetCharacter != "none") {
+          baseCharacter.relation[targetCharacter.id].value += amount;
+        }
+      }
+    }
+  }
+}
+
+function updateStatus(characterA: Character, characterB: Character) {
+  const value =
+    (characterA.relation[characterB.id].value +
+      characterB.relation[characterA.id].value) /
+    2;
+
+  const specialRelation = [
+    RelationEnum.Lover,
+    RelationEnum.Spouse,
+    RelationEnum.RomanticInterest,
+    RelationEnum.SecretAdmirer,
+    RelationEnum.Hirer,
+    RelationEnum.Hired,
+  ];
+
+  let a_to_b = characterA.relation[characterB.id].status;
+  let b_to_a = characterB.relation[characterA.id].status;
+  if (specialRelation.includes(a_to_b) || specialRelation.includes(b_to_a))
+    return;
+
+  const relationStatusMap = new Map<[number, number], RelationEnum>([
+    [[-100, -81], RelationEnum.Nemesis],
+    [[-80, -61], RelationEnum.BitterRival],
+    [[-60, -41], RelationEnum.Hostile],
+    [[-40, -21], RelationEnum.Disliked],
+    [[-20, 19], RelationEnum.Neutral],
+    [[20, 39], RelationEnum.Acquaintance],
+    [[40, 59], RelationEnum.Familiar],
+    [[60, 79], RelationEnum.Friend],
+    [[80, 95], RelationEnum.CloseFriend],
+    [[96, 100], RelationEnum.TrustedCompanion],
+  ]);
+
+  for (const [[min, max], status] of relationStatusMap) {
+    if (value >= min && value <= max) {
+      characterA.relation[characterB.id].status = status;
+      characterB.relation[characterA.id].status = status;
+      break;
+    }
+  }
 }

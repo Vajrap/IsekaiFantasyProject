@@ -20,7 +20,7 @@ export async function runSchedule() {
   if (isTestMode) {
     nextScheduledTime = new Date(now.getTime() + 10_000);
   } else {
-    const next = new Date(
+    nextScheduledTime = new Date(
       now.getFullYear(),
       now.getMonth(),
       now.getDate(),
@@ -29,7 +29,6 @@ export async function runSchedule() {
       0,
       0,
     );
-    nextScheduledTime = next;
   }
 
   const delay = nextScheduledTime.getTime() - now.getTime();

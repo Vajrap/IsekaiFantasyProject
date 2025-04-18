@@ -1,39 +1,22 @@
 export enum RelationEnum {
-    // General relationships
-    Acquaintance = 'Acquaintance',
-    Friend = 'Friend',
-    CloseFriend = 'CloseFriend',
-    BestFriend = 'BestFriend',
-    Family = 'Family',
-    DistantFamily = 'DistantFamily',
-    Rival = 'Rival',
-    Ally = 'Ally',
-    Neutral = 'Neutral',
-    Unknown = 'Unknown',
-    
-    // Romantic relationships
-    Lover = 'Lover',
-    Spouse = 'Spouse',
-    RomanticInterest = 'RomanticInterest', // Building attraction
-    SecretAdmirer = 'SecretAdmirer',      // Hidden affection
-    CasualLover = 'CasualLover',          // Non-committal romance
-    PassionateLover = 'PassionateLover',  // Intense emotional connection
-    ExLover = 'ExLover',                  // Past romantic partner
-    ForbiddenLove = 'ForbiddenLove',      // Taboo or risky relationship
-    
-    // Complex dynamics
-    Betrayer = 'Betrayer',
-    Nemesis = 'Nemesis',
-    Protector = 'Protector',
-    Dependent = 'Dependent',
-    Contracted = 'Contracted',            // Arranged relationship or agreement
-    Obsessed = 'Obsessed',
-    Idolized = 'Idolized',
-    Rescuer = 'Rescuer',
-    Rescued = 'Rescued',
-    Manipulator = 'Manipulator',          // Exploitative dynamic
-    Manipulated = 'Manipulated',
-    Blackmailer = 'Blackmailer',          // Control through coercion
-    SlaveOwner = 'SlaveOwner',            // Dark and controversial dynamic
-    Slave = 'Slave',                      // Opposite end of control
+  Nemesis = "Nemesis", // -100 to -81
+  BitterRival = "Bitter Rival", // -80 to -61
+  Hostile = "Hostile", // -60 to -41
+  Disliked = "Disliked", // -40 to -21
+  Neutral = "Neutral", // -20 to 19
+  Acquaintance = "Acquaintance", // 20 to 39
+  Familiar = "Familiar", // 40 to 59
+  Friend = "Friend", // 60 to 79
+  CloseFriend = "Close Friend", // 80 to 95
+  TrustedCompanion = "Trusted Companion", // 96 to 100
+
+  // Romantic relationships
+  Lover = "Lover",
+  Spouse = "Spouse",
+  RomanticInterest = "RomanticInterest", // Building attraction
+  SecretAdmirer = "SecretAdmirer", // Hidden affection
+
+  // Complex dynamics
+  Hirer = "Hirer",
+  Hired = "Hired",
 }

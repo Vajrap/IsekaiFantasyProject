@@ -39,6 +39,7 @@ import {
 } from "../../../Common/DTOsEnumsInterfaces/Character/SkillType";
 import { skillRepository } from "../Skills/SkillRepository";
 import { PassiveSkill } from "../Skills/Skill";
+import { RelationEnum } from "../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
 
 export class Character {
   id: string;
@@ -97,7 +98,7 @@ export class Character {
   storyFlags: StoryFlags;
   // Relationship to other characters, key = character ID, value = relation value from -100 to 100, and status is the relationship status enum
   relation: {
-    [key: string]: { value: number; status: RelationShipStatusEnum };
+    [key: string]: { value: number; status: RelationEnum };
   } = {};
   isPlayerCharacter: boolean = false;
   character: any;
