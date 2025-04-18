@@ -242,6 +242,7 @@ export class Party {
   inventory: Record<string, number> = {};
   gold: number = 0;
   justArrived: boolean = false;
+  informations: Record<string, number> = {};
 
   constructor(
     characters: Character[],
@@ -482,5 +483,15 @@ export class Party {
       0,
     );
     return totalLuck / characters.length;
+  }
+
+  getPartyAverageIntelligence(): number {
+    const characters = this.getAvailableCharacters();
+    const totalIntelligence = characters.reduce(
+      (total, character) =>
+        total + character.status.attributes.intelligence.base,
+      0,
+    );
+    return totalIntelligence / characters.length;
   }
 }

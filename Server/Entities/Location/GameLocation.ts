@@ -30,9 +30,9 @@ import { StatMod } from "../../Utility/StatMod";
 import { event_craft } from "../../Game/GameEvent/craftEvent";
 import { learnSkill, trainSkill } from "../Character/Utils/skillFunctions";
 import { Dice } from "../../Utility/Dice";
-import { RelationEnum } from "../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
 import { updateRelation } from "../Character/Utils/updateRelation";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
+import { exchangeKnowledge } from "../Information/exchangeKnowledge";
 
 export enum LocationInnType {
   Poor = "Poor",
@@ -191,7 +191,8 @@ export class GameLocation {
       scholarTypes.has(partyA.behavior.partyType) &&
       scholarTypes.has(partyB.behavior.partyType)
     ) {
-      //TODO: Implement knowledge exchange (increase intelligence, gain skills, share lore)
+      exchangeKnowledge(partyA, partyB, "scholarly");
+      updateRelation(partyA, partyB, Dice.roll(DiceEnum.OneD2).sum);
       return;
     }
 
