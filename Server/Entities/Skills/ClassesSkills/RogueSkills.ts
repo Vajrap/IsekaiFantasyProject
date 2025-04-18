@@ -1,482 +1,556 @@
-// import { SkillRepository } from "../SkillRepository"
-// import { Skill } from "../Skill"
-// import { SkillLearningRequirement } from "../SubClasses/SkillLearningRequirement"
-// import { SkillEquipmentRequirement } from "../SubClasses/SkillEquipmentRequirement"
-// import { SkillActiveEffect } from "../SubClasses/SkillActiveEffect"
-// import { Character } from "../../../Entities/Character/Character"
-// import { Party } from "../../Party"
-// import { DamageMultiplierFromPosition } from "../../Utility/DamageMultiplierFromPosition"
-// import { CharacterStatusModifier } from "../../../Entities/Character/Subclasses/CharacterStatusModifier"
-// import { SkillConsume, SkillProduce } from "../SubClasses/SkillConsume"
-// import { ElementConsume, ElementProduce } from "../SubClasses/SkillConsume"
-// import { K } from "../../Utility/Constants"
-// import { Dice } from "../../Utility/Dice"
-// import { ActionDetails, TargetSkillEffect, ActorSkillEffect } from "../../DTO/BattleReportDTO"
-// import { Tier } from "../../Utility/Tier"
-// import { DamageTypes } from "../../Utility/Enum/DamageTypes"
+import {
+  ActorSkillEffect,
+  TargetSkillEffect,
+  TurnReport,
+} from "../../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
+import { FundamentalElementTypes } from "../../../../Common/DTOsEnumsInterfaces/ElementTypes";
+import { WeaponSpecificType } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
+import { LocationName } from "../../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
+import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
+import { GameTime } from "../../../Game/TimeAndDate/GameTime";
+import { ActiveSkill, Skill } from "../Skill";
+import {
+  ElementConsume,
+  ElementProduce,
+  SkillConsume,
+  SkillProduce,
+} from "../SubClasses/SkillConsume";
+import {
+  calculateCritAndHit,
+  noEquipmentNeeded,
+  noRequirementNeeded,
+} from "../Utils";
+import { Character } from "../../Character/Character";
+import { Party } from "../../Party/Party";
+import {
+  BuffsAndDebuffsEnum,
+  TargetScope,
+  TargetTauntConsideration,
+  TargetType,
+} from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
+import { trySelectOneTarget } from "../../../Game/Battle/TargetSelectionProcess";
+import { AttributeEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/AttributeEnum";
+import { Dice } from "../../../Utility/Dice";
+import { DiceEnum } from "../../../../Common/DTOsEnumsInterfaces/DiceEnum";
+import { StatMod } from "../../../Utility/StatMod";
+import { DamageTypes } from "../../../../Common/DTOsEnumsInterfaces/DamageTypes";
+import { CharacterStatusEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
+import { createCastString } from "../Utils/makeCastString";
+import { turnCharacterIntoInterface } from "../../Character/Utils/turnCharacterIntoInterface";
+import { receiveDebuff } from "../../Character/Utils/buffsAndDebuffsFunctions";
 
-// //MARK: Rogue skills
-// /*
-// 1. Stealth
-// 2. Disruption
-// 3. Poisoned Blade
-// 4. Backstab
-// 5. Triple Slash
-// 6. Cautions
-// */
+const skill_triple_slash = new ActiveSkill(
+  {
+    id: `skill_triple_slash`,
+    name: `Triple Slash`,
+    tier: Tier.common,
+    description: `“Slash the enemy three times, each hit dealing 0.3x weapon damage (+0.05 per level). Each consecutive hit slightly increases critical chance. Damage is based on Dexterity and may critically hit.”.`,
+    requirement: noRequirementNeeded,
+  },
+  {
+    equipmentNeeded: [
+      WeaponSpecificType.sword_long,
+      WeaponSpecificType.sword_short,
+      WeaponSpecificType.blade_katana,
+      WeaponSpecificType.blade_cutlass,
+      WeaponSpecificType.blade_falchion,
+      WeaponSpecificType.blade_scimitar,
+      WeaponSpecificType.dagger_knife,
+      WeaponSpecificType.dagger_stiletto,
+    ],
+    consume: new SkillConsume({
+      sp: [5, 6, 7, 8, 9],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.none,
+          amount: [2, 2, 2, 2, 2],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.air,
+          amountRange: [
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+            [0, 1],
+          ],
+        }),
+      ],
+    }),
+    isSpell: false,
+    isWeaponAttack: true,
+    executor: skill_triple_slash_exec,
+  },
+);
 
-// SkillRepository.skill_rogue_01 = new Skill(
-//     `skill_rogue_01`,
-//     `Triple Slash`,
-//     `Attack a target 3 times with 0.4 weapon damage each, each hit increase critical chance.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [], 
-//         preRequireElements: [], 
-//         preRequireCharacterLevel: 3, 
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: ['sword', 'blade', 'dagger'],
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const weapon = actor.equipments.mainHand
-//             if (!weapon) { throw new Error('No weapon found, should have been taken care of from the getWeapon method') }
-    
-//             const target = oppositeParty.getOnePreferredFrontRowTauntCount(actor)
-//             if (!target) throw new Error('Exceptional: No target found, should have been taken care of from the getTarget method')
-    
-//             const castMessage = `(actor=${actor.name} use (skill=triple slash) on (target=${target.name}))`
-//             const sequenceMessage = [];
-//             const targets = [target];
+function skill_triple_slash_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+    taunt: TargetTauntConsideration.TauntCount,
+  };
 
-//             const damageMultiplier = DamageMultiplierFromPosition.get({
-//                 preferPosition: 'front',
-//                 rightModifier: (level >= 5 ? 0.5 : 0.4),
-//                 wrongModifier: 0.25,
-//                 actor: actor
-//             })
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "Triple Slash",
+  );
+  if (!(target instanceof Character)) return target;
 
-//             let critChanceBonus = (level >= 5 ? 2 : 1)
-    
-//             let message = `(actor=${actor.name} attack (target=${target.name}) with triple slash, `
-//             for (let i = 0; i < 3; i++) {
-//                 message += `hit ${i+1}, `
-//                 actor.status.battlers.pCRT.bonus += critChanceBonus
-//                 const hit = actor.attack({
-//                     actor: actor,
-//                     target: target,
-//                     damageDice: weapon.weaponAttack.physicalDiceEnum,
-//                     hitBonus: 0,
-//                     damageType: weapon.weaponAttack.physicalType,
-//                     damageMultiplier: damageMultiplier,
-//                     damageStatModifier: [new CharacterStatusModifier('dexterity')],
-//                     hitStatModifier: new CharacterStatusModifier('dexterity')
-//                 })
-//                 hit.dHit ? message += `dealing ${hit.damage} damage.` : message += `Missed! `
-//             }
-//             actor.status.battlers.pCRT.bonus -= critChanceBonus * 3
-//             sequenceMessage.push(message)
-    
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.NoElement_Cast],
-//                 [TargetSkillEffect.NoElement_Slash_1, TargetSkillEffect.NoElement_Slash_1, TargetSkillEffect.NoElement_Slash_1],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             )
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0],
-//         mp: [0,0,0,0,0],
-//         sp: [5,6,7,8,9],
-//         elements: [
-//             new ElementConsume({ element: 'none', amount: [2,2,2,2,2] }),
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'air', amountRange: [[0,1],[0,1],[0,1],[0,1],[0,1]] }),
-//         ]
-//     }),
-//     Tier.common
-// )
+  const weapon = character.getWeapon();
+  let baseMultiplier = 0.3;
+  if (skillLevel > 1) baseMultiplier += (skillLevel - 1) * 0.05;
+  let castString = `${character.name} uses Triple Slash on ${target.name}!`;
+  let totalDamage = 0;
 
-// SkillRepository.skill_rogue_02 = new Skill(
-//     `skill_rogue_02`,
-//     `Disruption`,
-//     `Throw a smoke bomb at the enemy party, target must roll an intelligence saving throw to avoid being slowed for 2 turns.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [], 
-//         preRequireElements: [], 
-//         preRequireCharacterLevel: 0, 
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [], 
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const possibleTargets = oppositeParty.getAllPossibleTargets()
-//             if (!possibleTargets) throw new Error('Exceptional: No target found.')
+  const isSpell = false;
+  const hitStat = AttributeEnum.dexterity;
+  const critStat = AttributeEnum.luck;
 
-//             const castMessage = `(actor=${actor.name} throw a (skill=Disruption bomb)`
-//             const sequenceMessage = [];
-//             const targets = []
-    
-//             for (const target of possibleTargets) {
-//                 const effectHit = actor.inflictEffect({
-//                     actor: actor,
-//                     target: target,
-//                     inflictEffect: K.buffsAndDebuffs.slow,
-//                     effectDuration: 2 + (level === 5 ? 1: 0),
-//                     effectDC: 8 + (level -1) + (level === 5 ? 2 : 0),
-//                     inflictorStatModifier: new CharacterStatusModifier('dexterity'),
-//                     savingStatModifier: new CharacterStatusModifier('intelligence')
-//                 })
-//                 effectHit ? targets.push(target) : {}
-//                 let message = effectHit ? `(target=${target.name}) was slowed by the bomb` : `(target=${target.name}) avoided the bomb.`
-                
-//                 if (level >= 5 && effectHit) {
-//                     const effectHit_second = actor.inflictEffect({
-//                         actor: actor,
-//                         target: target,
-//                         inflictEffect: K.buffsAndDebuffs.burn,
-//                         effectDuration: 2,
-//                         effectDC: 100,
-//                     })
-//                     effectHit_second ? message += `And was burned for 2 turns` : ``
-//                 }
+  const dice =
+    weapon != "none" ? weapon.attackStats!.physicalDiceEnum : DiceEnum.TwoD6;
 
-//                 sequenceMessage.push(message)
-//             }
-        
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.NoElement_Cast],
-//                 [TargetSkillEffect.slow, TargetSkillEffect.Chaos_1],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             )
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0], 
-//         mp: [0,0,0,0,0], 
-//         sp: [5,5,5,5,5], 
-//         elements: [
-//             new ElementConsume({element: 'none', amount: [2,2,2,2,2]}),
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'chaos', amountRange: [[0,1],[0,1],[0,1],[0,1],[0,1]] }),
-//         ]
-//     }),
-//     Tier.common
-// )
+  const damageType =
+    weapon != "none" ? weapon.attackStats!.physicalType : DamageTypes.slash;
 
-// SkillRepository.skill_rogue_03 = new Skill(
-//     `skill_rogue_03`,
-//     `Poisoned Blade`,
-//     `Attack with a weapon imbued with poison, dealing damage and poisoning the target for 3 turns. if the target is poisoned, deal 2 times weapon damage instead. and increase the poison duration by 1 turn.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [], 
-//         preRequireElements: [], 
-//         preRequireCharacterLevel: 4, 
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: ['dagger'], 
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const weapon = SkillRepository.skill_rogue_03.equipmentNeeded.getWeapon(actor)
-//             if (!weapon) { throw new Error('No weapon found, should have been taken care of from the getWeapon method') }
-    
-//             const target = oppositeParty.getOneRandomTargetTauntCount(actor)
-//             if (!target) throw new Error('Exceptional: No target found, should have been taken care of from the getTarget method')
-    
-//             const castMessage = `(actor=${actor.name} use (skill=poisoned blade) on (target=${target.name}))`
-//             const sequenceMessage = [];
-//             const targets = [target];
-            
-//             let message = `(actor=${actor.name} attack (target=${target.name} with his poisoned blade, ))`
-//             const isTargetPoisoned = target.buffsAndDebuffs.poison > 0
+  let allCritBonus = 0;
 
-//             const actionResult = actor.attack({
-//                 actor: actor,
-//                 target: target,
-//                 damageDice: weapon.weaponAttack.physicalDiceEnum,
-//                 hitBonus: 0,
-//                 damageType: DamageTypes.pierce,
-//                 damageMultiplier: isTargetPoisoned ? 2 : 1,
-//                 damageStatModifier: [new CharacterStatusModifier('dexterity')],
-//                 hitStatModifier: new CharacterStatusModifier('dexterity'),
-//                 additionalDamage: level-1
-//             })
+  for (let i = 0; i < 3; i++) {
+    let additionalCrit = i;
+    if (skillLevel === 5) additionalCrit += 1;
+    character.status.battlers.pCRT.bonus += additionalCrit;
+    allCritBonus += additionalCrit;
+    let [crit, hitChance] = calculateCritAndHit(
+      character,
+      target,
+      isSpell,
+      hitStat,
+      critStat,
+    );
 
-//             actionResult.dHit ? message += isTargetPoisoned ? message += `since the target is already poisoned the damage is higher, dealing ${actionResult.damage} poison damage and extended the poison duration for 1 turn.` : message += `dealing ${actionResult.damage} poison damage.` : message += `But Missed!`
-    
-//             let effectHit = false
-//             if (isTargetPoisoned === false && actionResult.dHit) {
-//                 effectHit = actor.inflictEffect({
-//                     actor: actor,
-//                     target: target,
-//                     inflictEffect: K.buffsAndDebuffs.poison,
-//                     effectDuration: isTargetPoisoned ? target.buffsAndDebuffs.poison + 1 : 3
-//                 })
-//                 effectHit ? message += `and poisoned the target.` : message += `but failed to poisoned the target.`
-//             }
-    
-//             sequenceMessage.push(message)
-    
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.Poison_Cast],
-//                 [TargetSkillEffect.poison, TargetSkillEffect.NoElement_Pierce_1],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             )
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0], 
-//         mp: [0,0,0,0,0,0,0], 
-//         sp: [5,5,5,5,5,5,5], 
-//         elements: [
-//             new ElementConsume({ element: 'chaos', amount: [1,1,1,1,1,1,1] }),
-//             new ElementConsume({ element: 'geo', amount: [1,1,1,1,1,1,1] })
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'air', amountRange: [[0,2],[0,2],[0,2],[0,2],[0,2],[0,2],[0,2]] }),
-//         ]
-//     }),
-//     Tier.rare
-// )
+    let damage =
+      Dice.roll(dice).sum * baseMultiplier +
+      StatMod.value(character.status.dexterity());
+    if (crit) damage *= 2;
+    if (character.position < 3) damage = damage * 0.7;
 
-// SkillRepository.skill_rogue_04 = new Skill(
-//     `skill_rogue_04`,
-//     `Back Stab`,
-//     `Attack the target from behind, dealing 1.2 weapon damage. If used while in stealth, deal additional 80% damage, and remove stealth. if the target is poisoned, each turn of poison left will increase the damage by 40% and remove the poison.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [], 
-//         preRequireElements: [], 
-//         preRequireCharacterLevel: 7, 
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: ['dagger'], 
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const weapon = SkillRepository.skill_rogue_04.equipmentNeeded.getWeapon(actor)
-//             if (!weapon) { throw new Error('No weapon found, should have been taken care of from the getWeapon method') }
-    
-//             const target = oppositeParty.getOnePreferredBackRowTauntCount(actor)
-//             if (!target) throw new Error('Exceptional: No target found, should have been taken care of from the getTarget method')
-    
-//             const isTargetPoisoned = target.buffsAndDebuffs.poison > 0
-//             const damageMultiplier = (level >= 5 ? 1.5 : 1.2) + (actor.buffsAndDebuffs.stealth ? 0.8 : 0) + (isTargetPoisoned ? 0.4 * target.buffsAndDebuffs.poison : 0)
-    
-//             const castMessage = actor.buffsAndDebuffs.stealth > 0 ? `While in stealth (actor=${actor.name} (skill=back stab) (target=${target.name})` : `(actor=${actor.name} (skill=back stab) (target=${target.name})`
-//             const sequenceMessage = [];
-//             const targets = [target];
+    let result = target.receiveDamage({
+      attacker: character,
+      damage,
+      hitChance,
+      damageType,
+      locationName: context.location,
+    });
 
-//             let message = `(actor=${actor.name} attack (target=${target.name}) with back stab), `
-//             const actionResult = actor.attack({
-//                 actor: actor,
-//                 target: target,
-//                 damageDice: weapon.weaponAttack.physicalDiceEnum,
-//                 hitBonus: 0,
-//                 damageType: DamageTypes.pierce,
-//                 damageMultiplier: damageMultiplier,
-//                 damageStatModifier: [new CharacterStatusModifier('dexterity')],
-//                 additionalDamage: level-1
-//             })
+    if (result.dHit) {
+      totalDamage += result.damage;
+      castString += ` Hit ${i + 1} deals ${result.damage} damage${
+        crit ? " (Critical!)" : ""
+      }!`;
+    } else {
+      castString += ` Hit ${i + 1} missed!`;
+    }
+  }
 
-//             actionResult.dHit && isTargetPoisoned ? message += `(target=${target.name} is poisoned, dealing more damage, )` : {}
-//             actionResult.dHit && actor.buffsAndDebuffs.stealth > 0 ? message += `(actor=${actor.name} is in stealth mode, dealing more damage)` : {}
-//             actionResult.dHit ? message += `dealing ${actionResult.damage} poison damage` : message += `but Missed!`
+  character.status.battlers.pCRT.bonus -= allCritBonus;
 
-//             sequenceMessage.push(message);
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_triple_slash",
+    actorSkillEffect: ActorSkillEffect.Slash,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: totalDamage,
+        effect: TargetSkillEffect.NoElement_Slash_1,
+      },
+    ],
+    castString,
+  };
+}
 
-//             if (actionResult.dHit) {
-//                 actor.buffsAndDebuffs.stealth = 0
-//                 target.buffsAndDebuffs.poison = 0
-//             }
-        
-//             return new ActionDetails(
-//                 actor,
-//                 targets,
-//                 [],
-//                 [ActorSkillEffect.Chaos_Cast],
-//                 [TargetSkillEffect.Chaos_1, TargetSkillEffect.NoElement_Pierce_1],
-//                 [],
-//                 castMessage,
-//                 sequenceMessage
-//             )
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0], 
-//         mp: [0,0,0,0,0,0,0], 
-//         sp: [5,5,5,5,5,5,5], 
-//         elements: [
-//             new ElementConsume({ element: 'air', amount: [2,2,2,2,1,1,1] }),
-//             new ElementConsume({ element: 'fire', amount: [1,1,1,1,1,1,1] })
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'none', amountRange: [[1,1],[1,1],[1,1],[1,1],[1,1],[1,1],[1,1]] }),
-//         ]
-//     }),
-//     Tier.rare
-// )
+const skill_poisoned_blade = new ActiveSkill(
+  {
+    id: `skill_poisoned_blade`,
+    name: `Poisoned Blade`,
+    tier: Tier.common,
+    description: `Attack with a weapon imbued with poison, dealing damage and poisoning the target for 3 turns. +1 damage per level, +1 duration at level 5.`,
+    requirement: noRequirementNeeded,
+  },
+  {
+    equipmentNeeded: [
+      WeaponSpecificType.dagger_knife,
+      WeaponSpecificType.dagger_stiletto,
+    ],
+    consume: new SkillConsume({
+      sp: [5, 5, 5, 5, 5],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.chaos,
+          amount: [1, 1, 1, 1, 1],
+        }),
+        new ElementConsume({
+          element: FundamentalElementTypes.geo,
+          amount: [1, 1, 1, 1, 1],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.air,
+          amountRange: [
+            [0, 2],
+            [0, 2],
+            [0, 2],
+            [0, 2],
+            [0, 2],
+          ],
+        }),
+      ],
+    }),
+    isSpell: false,
+    isWeaponAttack: true,
+    executor: skill_poisoned_blade_exec,
+  },
+);
 
-// SkillRepository.skill_rogue_05 = new Skill(
-//     `skill_rogue_05`,
-//     `Stealth`,
-//     `Get into stealth mode, While in stealth mode, most enemies will not be able to target you. Stealth mode active longer if the user has higher agility.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [], 
-//         preRequireElements: [], 
-//         preRequireCharacterLevel: 3, 
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [], 
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level:number): ActionDetails => {
-//             const diceRoll = Dice.roll('1d20').sum + actor.getModifier('attributes', 'agility')
-//             const effectHit = diceRoll > 5
-    
-//             const castMessage = `${actor.name} use stealth.`
-//             const sequenceMessage = [];
-//             const targets = [actor];
+function skill_poisoned_blade_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+    taunt: TargetTauntConsideration.TauntCount,
+  };
 
-//             let message = `(actor=${actor.name}) attempts to go into stealth mode.`
-//             effectHit? message += `and stealth for 2 turns.` : `but failed! Remains visible.`
-//             if (effectHit) {
-//                 actor.inflictEffect({
-//                     actor: actor,
-//                     target: actor,
-//                     inflictEffect: K.buffsAndDebuffs.stealth,
-//                     effectDuration: 2 + (level >= 5 ? 1 : 0) + actor.getModifier('attributes', 'agility')
-//                 })
-//             }
-//             sequenceMessage.push(message)
-    
-//             return new ActionDetails(
-//                 actor,
-//                 [],
-//                 targets,
-//                 [ActorSkillEffect.Chaos_Cast],
-//                 [],
-//                 [TargetSkillEffect.stealth],
-//                 castMessage,
-//                 sequenceMessage
-//             )
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0,0,0], 
-//         mp: [0,0,0,0,0,0,0], 
-//         sp: [5,5,5,5,5,5,5], 
-//         elements: [
-//             new ElementConsume({ element: 'none', amount: [3,3,3,3,3,3,3] }),
-//         ]
-//     }),
-//     new SkillProduce({
-//         elements: [
-//             new ElementProduce({ element: 'air', amountRange: [[0,2],[0,2],[0,2],[0,2],[0,2],[0,2],[0,2]] }),
-//             new ElementProduce({ element: 'fire', amountRange: [[0,2],[0,2],[0,2],[0,2],[0,2],[0,2],[0,2]] })
-//         ]
-//     }),
-//     Tier.rare
-// )
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "Poisoned Blade",
+  );
+  if (!(target instanceof Character)) return target;
 
-// SkillRepository.skill_rogue_06 = new Skill(
-//     `skill_rogue_06`,
-//     `Cautious`,
-//     `Prepare for the incoming attack, gain extra dodge, each stack of cautious increase dodge by 1 and will be decreased by 1 each turn.`,
-//     new SkillLearningRequirement({
-//         preRequireSkillID: [], 
-//         preRequireElements: [], 
-//         preRequireCharacterLevel: 3, 
-//         preRequireCharacterTrait: []
-//     }),
-//     new SkillEquipmentRequirement({
-//         weapon: [], 
-//         armor: [],
-//         accessory: []
-//     }),
-//     new SkillActiveEffect(
-//         (actor: Character, selfParty: Party, oppositeParty: Party, level: number): ActionDetails => {
-//             const castMessage = `(actor=${actor.name} use (skill=cautious))`
-//             const sequenceMessage = [];
-//             const targets = [actor];
+  const weapon = character.getWeapon();
 
-//             let message = `(actor=${actor.name}) prepare for the incoming attack.`
-//             const effectHit = actor.inflictEffect({
-//                 actor: actor,
-//                 target: actor,
-//                 inflictEffect: K.buffsAndDebuffs.cautious,
-//                 effectDuration: 2 + (level >= 5 ? 1 : 0),
-//                 effectDC: 10,
-//                 inflictorStatModifier: new CharacterStatusModifier('agility'),
-//             })
-//             effectHit ? message += `and gain extra dodge.` : message += `but failed!`
-//             sequenceMessage.push(message);
-        
-//             return new ActionDetails(
-//                 actor,
-//                 [],
-//                 targets,
-//                 [ActorSkillEffect.NoElement_Cast],
-//                 [],
-//                 [TargetSkillEffect.cautious],
-//                 castMessage,
-//                 sequenceMessage
-//             )
-//         }
-//     ),
-//     new SkillConsume({
-//         hp: [0,0,0,0,0], 
-//         mp: [0,0,0,0,0], 
-//         sp: [5,5,5,5,5],
-//         elements: [new ElementConsume({
-//             element: 'none', 
-//             amount: [1, 1, 1, 1, 1]
-//         })]
-//     }),
-//     new SkillProduce({
-//         elements: [new ElementProduce({
-//             element: 'air', 
-//             amountRange: [[1,1],[1,1],[1,1],[1,1],[1,1]]
-//         })]
-//     }),
-//     Tier.uncommon
-// )
+  const isSpell = false;
+  const hitStat = AttributeEnum.dexterity;
+  const critStat = AttributeEnum.luck;
+  let [crit, hitChance] = calculateCritAndHit(
+    character,
+    target,
+    isSpell,
+    hitStat,
+    critStat,
+  );
+
+  const dice =
+    weapon != "none" ? weapon.attackStats!.physicalDiceEnum : DiceEnum.TwoD6;
+
+  let damage =
+    Dice.roll(dice).sum +
+    StatMod.value(character.status.dexterity()) +
+    skillLevel;
+  if (crit) damage *= 2;
+  if (character.position < 3) damage *= 0.7;
+
+  const damageType = DamageTypes.pierce;
+
+  let result = target.receiveDamage({
+    attacker: character,
+    damage,
+    hitChance,
+    damageType,
+    locationName: context.location,
+  });
+
+  let castString = createCastString({
+    actor: character,
+    target: target,
+    skillName: "Poisoned Blade",
+    damage: result.damage,
+    dHit: result.dHit,
+    crit: crit,
+    damageType: damageType,
+  });
+
+  if (result.dHit) {
+    const poisonDuration = skillLevel >= 5 ? 4 : 3;
+    const buffResult = receiveDebuff(
+      target,
+      BuffsAndDebuffsEnum.poison,
+      poisonDuration,
+    );
+    if (buffResult.result) {
+      castString += ` ${target.name} is poisoned for ${poisonDuration} turns!`;
+    }
+  }
+
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_poisoned_blade",
+    actorSkillEffect: ActorSkillEffect.Poison_Cast,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.damage,
+        effect: TargetSkillEffect.poison,
+      },
+    ],
+    castString,
+  };
+}
+
+const skill_stealth = new ActiveSkill(
+  {
+    id: `skill_stealth`,
+    name: `Stealth`,
+    tier: Tier.common,
+    description: `Enter stealth mode. Must pass a DC10 agility save (DC reduced by 1 per level). Duration increased at level 5.`,
+    requirement: noRequirementNeeded,
+  },
+  {
+    equipmentNeeded: noEquipmentNeeded,
+    consume: new SkillConsume({
+      sp: [5, 5, 5, 5, 5],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.none,
+          amount: [3, 3, 3, 3, 3],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.air,
+          amountRange: [
+            [0, 2],
+            [0, 2],
+            [0, 2],
+            [0, 2],
+            [0, 2],
+          ],
+        }),
+        new ElementProduce({
+          element: FundamentalElementTypes.fire,
+          amountRange: [
+            [0, 2],
+            [0, 2],
+            [0, 2],
+            [0, 2],
+            [0, 2],
+          ],
+        }),
+      ],
+    }),
+    isSpell: false,
+    isWeaponAttack: false,
+    executor: skill_stealth_exec,
+  },
+);
+
+function skill_stealth_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  const dc = 10 - (skillLevel - 1);
+  const saveRoll = character.saveRoll(CharacterStatusEnum.agility);
+  const success = saveRoll >= dc;
+  const duration = skillLevel >= 5 ? 3 : 2;
+
+  let castString = `${character.name} attempts to enter stealth mode. `;
+
+  if (success) {
+    const buffResult = receiveDebuff(
+      character,
+      BuffsAndDebuffsEnum.stealth,
+      duration,
+    );
+    if (buffResult.result) {
+      castString += `Successfully enters stealth for ${duration} turns!`;
+    }
+  } else {
+    castString += `Failed to enter stealth!`;
+  }
+
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_stealth",
+    actorSkillEffect: ActorSkillEffect.Chaos_Cast,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(character),
+        damageTaken: 0,
+        effect: TargetSkillEffect.stealth,
+      },
+    ],
+    castString,
+  };
+}
+
+const skill_back_stab = new ActiveSkill(
+  {
+    id: `skill_back_stab`,
+    name: `Back Stab`,
+    tier: Tier.common,
+    description: `Attack from behind, dealing 1.2 weapon damage. If used while in stealth, deal additional 80% damage and remove stealth. If target is poisoned, each turn of poison left will increase damage by 40%. Damage increases by level.`,
+    requirement: noRequirementNeeded,
+  },
+  {
+    equipmentNeeded: [
+      WeaponSpecificType.dagger_knife,
+      WeaponSpecificType.dagger_stiletto,
+    ],
+    consume: new SkillConsume({
+      sp: [5, 5, 5, 5, 5],
+      elements: [
+        new ElementConsume({
+          element: FundamentalElementTypes.air,
+          amount: [2, 2, 2, 2, 1],
+        }),
+        new ElementConsume({
+          element: FundamentalElementTypes.fire,
+          amount: [1, 1, 1, 1, 1],
+        }),
+      ],
+    }),
+    produce: new SkillProduce({
+      elements: [
+        new ElementProduce({
+          element: FundamentalElementTypes.none,
+          amountRange: [
+            [1, 1],
+            [1, 1],
+            [1, 1],
+            [1, 1],
+            [1, 1],
+          ],
+        }),
+      ],
+    }),
+    isSpell: false,
+    isWeaponAttack: true,
+    executor: skill_back_stab_exec,
+  },
+);
+
+function skill_back_stab_exec(
+  character: Character,
+  allies: Party,
+  enemies: Party,
+  skillLevel: number,
+  context: { time: GameTime; location: LocationName },
+): TurnReport {
+  const targetType: TargetType = {
+    scope: TargetScope.Single,
+    taunt: TargetTauntConsideration.TauntCount,
+  };
+
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "Back Stab",
+  );
+  if (!(target instanceof Character)) return target;
+
+  const weapon = character.getWeapon();
+
+  const isSpell = false;
+  const hitStat = AttributeEnum.dexterity;
+  const critStat = AttributeEnum.luck;
+  let [crit, hitChance] = calculateCritAndHit(
+    character,
+    target,
+    isSpell,
+    hitStat,
+    critStat,
+  );
+
+  const dice =
+    weapon != "none" ? weapon.attackStats!.physicalDiceEnum : DiceEnum.TwoD6;
+
+  // Calculate damage multiplier
+  let damageMultiplier = 1.2 + skillLevel * 0.1; // Base multiplier + level bonus
+  if (character.buffsAndDebuffs.stealth > 0) {
+    damageMultiplier += 0.8;
+  }
+  if (target.buffsAndDebuffs.poison > 0) {
+    damageMultiplier += 0.4 * target.buffsAndDebuffs.poison;
+  }
+
+  let damage =
+    Dice.roll(dice).sum * damageMultiplier +
+    StatMod.value(character.status.dexterity());
+  if (crit) damage *= 2;
+
+  const damageType = DamageTypes.pierce;
+
+  let result = target.receiveDamage({
+    attacker: character,
+    damage,
+    hitChance,
+    damageType,
+    locationName: context.location,
+  });
+
+  let castString = createCastString({
+    actor: character,
+    target: target,
+    skillName: "Back Stab",
+    damage: result.damage,
+    dHit: result.dHit,
+    crit: crit,
+    damageType: damageType,
+  });
+
+  if (result.dHit) {
+    if (character.buffsAndDebuffs.stealth > 0) {
+      character.buffsAndDebuffs.stealth = 0;
+      castString += ` ${character.name} leaves stealth!`;
+    }
+    if (target.buffsAndDebuffs.poison > 0) {
+      target.buffsAndDebuffs.poison = 0;
+      castString += ` ${target.name}'s poison is consumed!`;
+    }
+  }
+
+  return {
+    character: turnCharacterIntoInterface(character),
+    skill: "skill_back_stab",
+    actorSkillEffect: ActorSkillEffect.Chaos_Cast,
+    targets: [
+      {
+        character: turnCharacterIntoInterface(target),
+        damageTaken: result.damage,
+        effect: TargetSkillEffect.NoElement_Pierce_1,
+      },
+    ],
+    castString,
+  };
+}
+
+export const rogueSkills: Skill[] = [
+  skill_triple_slash,
+  skill_poisoned_blade,
+  skill_stealth,
+  skill_back_stab,
+];
