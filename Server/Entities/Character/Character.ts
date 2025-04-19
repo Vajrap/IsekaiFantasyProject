@@ -30,15 +30,12 @@ import { Armor } from "../Items/Equipments/Armors/Armor";
 import { getItem } from "../Items/Repository";
 import { Equipment } from "../Items/Equipments/Equipment";
 import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
-import { RelationShipStatusEnum } from "./RelationshipStatusEnum";
 import { getExpNeededForStatus } from "./getLevelContribution";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import {
   CharacterSkills,
   SkillMeta,
 } from "../../../Common/DTOsEnumsInterfaces/Character/SkillType";
-import { skillRepository } from "../Skills/SkillRepository";
-import { PassiveSkill } from "../Skills/Skill";
 import { RelationEnum } from "../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
 
 export class Character {

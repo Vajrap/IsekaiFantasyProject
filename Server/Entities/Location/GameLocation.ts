@@ -160,83 +160,66 @@ export class GameLocation {
   }
 
   private handleNeutralEncounter(partyA: Party, partyB: Party) {
-    const merchantTypes = new Set([PartyType.merchant]);
-    const scholarTypes = new Set([PartyType.scholar, PartyType.hermit]);
-    const militaryTypes = new Set([
-      PartyType.knight,
-      PartyType.soldier,
-      PartyType.nobleRetinue,
-    ]);
-    const rogueTypes = new Set([
-      PartyType.rogue,
-      PartyType.bandit,
-      PartyType.criminal,
-      PartyType.raider,
-    ]);
-    const nobleTypes = new Set([PartyType.nobleRetinue]);
-    const religiousTypes = new Set([PartyType.pilgrim, PartyType.hermit]);
-    const laborTypes = new Set([PartyType.peasant, PartyType.artisan]);
+    const typeA = partyA.behavior.partyType;
+    const typeB = partyB.behavior.partyType;
+
+    const isScholar = (type: PartyType) =>
+      [PartyType.scholar, PartyType.hermit].includes(type);
+    const isMilitary = (type: PartyType) =>
+      [PartyType.knight, PartyType.soldier, PartyType.nobleRetinue].includes(
+        type,
+      );
+    const isMerchant = (type: PartyType) => type === PartyType.merchant;
+    const isRogue = (type: PartyType) =>
+      [
+        PartyType.rogue,
+        PartyType.bandit,
+        PartyType.criminal,
+        PartyType.raider,
+      ].includes(type);
+    const isNoble = (type: PartyType) => type === PartyType.nobleRetinue;
+    const isReligious = (type: PartyType) =>
+      [PartyType.pilgrim, PartyType.hermit].includes(type);
+    const isLabor = (type: PartyType) =>
+      [PartyType.peasant, PartyType.artisan].includes(type);
 
     if (
-      (merchantTypes.has(partyA.behavior.partyType) &&
-        !this.isHostile(partyB)) ||
-      (merchantTypes.has(partyB.behavior.partyType) && !this.isHostile(partyA))
+      (isMerchant(typeA) && !this.isHostile(partyB)) ||
+      (isMerchant(typeB) && !this.isHostile(partyA))
     ) {
       executeTradeEvent(partyA, partyB);
-      updateRelation(partyA, partyB, Dice.roll(DiceEnum.OneD2).sum);
-      return;
+      exchangeKnowledge(partyA, partyB);
     }
 
-    if (
-      scholarTypes.has(partyA.behavior.partyType) &&
-      scholarTypes.has(partyB.behavior.partyType)
-    ) {
+    if (isScholar(typeA) && isScholar(typeB)) {
       exchangeKnowledge(partyA, partyB, "scholarly");
-      updateRelation(partyA, partyB, Dice.roll(DiceEnum.OneD2).sum);
-      return;
     }
 
-    if (
-      militaryTypes.has(partyA.behavior.partyType) &&
-      militaryTypes.has(partyB.behavior.partyType)
-    ) {
-      //TODO: Implement friendly duels, combat training, or tactical discussions
-      return;
+    if (isMilitary(typeA) && isMilitary(typeB)) {
+      exchangeKnowledge(partyA, partyB, "military");
     }
 
-    if (
-      nobleTypes.has(partyA.behavior.partyType) &&
-      militaryTypes.has(partyB.behavior.partyType)
-    ) {
-      //TODO: Implement recruitment event where nobles hire knights or mercenaries
-      return;
+    if (isNoble(typeA) && isMilitary(typeB)) {
+      exchangeKnowledge(partyA, partyB, "military");
     }
 
-    if (
-      rogueTypes.has(partyA.behavior.partyType) &&
-      rogueTypes.has(partyB.behavior.partyType)
-    ) {
-      //TODO: Implement underworld deals (black market trades, secretive missions, bounties)
-      return;
+    if (isMilitary(typeA) && isNoble(typeB)) {
+      exchangeKnowledge(partyA, partyB, "military");
     }
 
-    if (
-      religiousTypes.has(partyA.behavior.partyType) &&
-      religiousTypes.has(partyB.behavior.partyType)
-    ) {
-      //TODO: Implement blessings, confessions, or divine favor system
-      return;
+    if (isRogue(typeA) && isRogue(typeB)) {
+      exchangeKnowledge(partyA, partyB, "underworld");
     }
 
-    if (
-      laborTypes.has(partyA.behavior.partyType) &&
-      merchantTypes.has(partyB.behavior.partyType)
-    ) {
-      //TODO: Implement crafting offers, trade deals, or job assignments
-      return;
+    if (isReligious(typeA) && isReligious(typeB)) {
+      exchangeKnowledge(partyA, partyB, "religious");
     }
 
-    //TODO: Handle situations where no action occurs but relations improve slightly over time
+    if (isLabor(typeA) && isLabor(typeB)) {
+      exchangeKnowledge(partyA, partyB, "folk");
+    }
+
+    updateRelation(partyA, partyB, Dice.roll(DiceEnum.OneD2).sum);
     return;
   }
 
@@ -277,6 +260,13 @@ export class GameLocation {
     for (let party of this.parties) {
       const action = party.actionSequence[day][phase];
 
+      if (!this.actions.includes(action.type)) {
+        console.warn(
+          `Party with ID:${party.partyID} Action: ${action.type} at ${day}: ${phase} not allowed in ${this.id};`,
+        );
+        action.type = LocationActionEnum.Rest;
+      }
+
       if (action.type === LocationActionEnum.Travel) return;
 
       switch (action.type) {
@@ -287,7 +277,12 @@ export class GameLocation {
             "rest",
           );
           if (camp_randomEvent !== LocationEventEnum.None) {
-            executeRandomEventFromLocationEventEnum(camp_randomEvent);
+            executeRandomEventFromLocationEventEnum(
+              camp_randomEvent,
+              party,
+              this,
+              "camp",
+            );
             break;
           } else {
             event_rest_camp(party);
@@ -300,7 +295,12 @@ export class GameLocation {
             "rest",
           );
           if (house_randomEvent !== LocationEventEnum.None) {
-            executeRandomEventFromLocationEventEnum(house_randomEvent);
+            executeRandomEventFromLocationEventEnum(
+              house_randomEvent,
+              party,
+              this,
+              "house",
+            );
             break;
           } else {
             event_rest_house(party);
@@ -319,7 +319,12 @@ export class GameLocation {
             "rest",
           );
           if (inn_randomEvent !== LocationEventEnum.None) {
-            executeRandomEventFromLocationEventEnum(inn_randomEvent);
+            executeRandomEventFromLocationEventEnum(
+              inn_randomEvent,
+              party,
+              this,
+              "inn",
+            );
             break;
           }
           switch (this.innType) {
@@ -389,6 +394,9 @@ function determineRandomEvent(
 
 function executeRandomEventFromLocationEventEnum(
   eventEnum: LocationEventEnum,
+  party: Party,
+  location: GameLocation,
+  type: "camp" | "house" | "inn",
 ): Function {
   return () => {};
 }
