@@ -270,115 +270,205 @@ export class GameLocation {
       if (action.type === LocationActionEnum.Travel) return;
 
       switch (action.type) {
-        case LocationActionEnum.Camping:
-          let camp_randomEvent = determineRandomEvent(
-            this.region,
-            party,
-            "rest",
-          );
-          if (camp_randomEvent !== LocationEventEnum.None) {
-            executeRandomEventFromLocationEventEnum(
-              camp_randomEvent,
-              party,
-              this,
-              "camp",
-            );
-            break;
-          } else {
-            event_rest_camp(party);
-            break;
-          }
-        case LocationActionEnum.HouseRest:
-          let house_randomEvent = determineRandomEvent(
-            this.region,
-            party,
-            "rest",
-          );
-          if (house_randomEvent !== LocationEventEnum.None) {
-            executeRandomEventFromLocationEventEnum(
-              house_randomEvent,
-              party,
-              this,
-              "house",
-            );
-            break;
-          } else {
-            event_rest_house(party);
-            break;
-          }
-        case LocationActionEnum.Inn:
-          if (this.innType === LocationInnType.None) {
-            console.warn(
-              `Error: Inn type 'Non' for location ${this.id}, party ${party.partyID}`,
-            );
-            return;
-          }
-          let inn_randomEvent = determineRandomEvent(
-            this.region,
-            party,
-            "rest",
-          );
-          if (inn_randomEvent !== LocationEventEnum.None) {
-            executeRandomEventFromLocationEventEnum(
-              inn_randomEvent,
-              party,
-              this,
-              "inn",
-            );
-            break;
-          }
-          switch (this.innType) {
-            case LocationInnType.Poor:
-              event_rest_inn_poor(party);
-              break;
-            case LocationInnType.Comfortable:
-              event_rest_inn_comfortable(party);
-              break;
-            case LocationInnType.Premium:
-              event_rest_inn_premium(party);
-              break;
-            case LocationInnType.Luxury:
-              event_rest_inn_luxury(party);
-              break;
-            default:
-              console.warn(
-                `Error: Inn type '${this.innType}' not found for location ${this.id}, party ${party.partyID}`,
-              );
-              break;
-          }
+        case LocationActionEnum.Rest ||
+          LocationActionEnum.Inn ||
+          LocationActionEnum.Camping ||
+          LocationActionEnum.HouseRest:
+          handleRestAction(party, this, action.type);
           break;
-        case LocationActionEnum.Rest:
-          event_rest_force(party);
-          break;
-        case LocationActionEnum.TrainArtisan ||
-          LocationActionEnum.TrainAttribute ||
+        case LocationActionEnum.TrainAttribute ||
           LocationActionEnum.TrainProficiency ||
+          LocationActionEnum.TrainArtisan ||
           LocationActionEnum.TrainSkill:
-          const statTrainingPlayerCharacter = party.getPlayerCharacter();
-          if (!statTrainingPlayerCharacter) return;
-          event_train(
-            statTrainingPlayerCharacter,
-            action.detail as CharacterStatusEnum,
-          );
+          handleTrainAction(party, this, action.detail);
           break;
         case LocationActionEnum.LearnSkill:
-          const learningPlayerCharacter = party.getPlayerCharacter();
-          if (!learningPlayerCharacter) return;
-          learnSkill(learningPlayerCharacter, action.detail);
-          break;
-        case LocationActionEnum.TrainSkill:
-          const trainingPlayerCharacter = party.getPlayerCharacter();
-          if (!trainingPlayerCharacter) return;
-          trainSkill(trainingPlayerCharacter, action.detail);
-          break;
+          handleLearnSkillAction(party, action.detail);
         case LocationActionEnum.Craft:
-          event_craft(party);
-          break;
-        default:
-          break;
+          handleCraftAction(party);
+        case LocationActionEnum.None:
+          event_rest_force(party);
       }
+
+      //   switch (action.type) {
+      //     case LocationActionEnum.Camping:
+      //       let camp_randomEvent = determineRandomEvent(
+      //         this.region,
+      //         party,
+      //         "rest",
+      //       );
+      //       if (camp_randomEvent !== LocationEventEnum.None) {
+      //         executeRandomEventFromLocationEventEnum(
+      //           camp_randomEvent,
+      //           party,
+      //           this,
+      //           "camp",
+      //         );
+      //         break;
+      //       } else {
+      //         event_rest_camp(party);
+      //         break;
+      //       }
+      //     case LocationActionEnum.HouseRest:
+      //       let house_randomEvent = determineRandomEvent(
+      //         this.region,
+      //         party,
+      //         "rest",
+      //       );
+      //       if (house_randomEvent !== LocationEventEnum.None) {
+      //         executeRandomEventFromLocationEventEnum(
+      //           house_randomEvent,
+      //           party,
+      //           this,
+      //           "house",
+      //         );
+      //         break;
+      //       } else {
+      //         event_rest_house(party);
+      //         break;
+      //       }
+      //     case LocationActionEnum.Inn:
+      //       if (this.innType === LocationInnType.None) {
+      //         console.warn(
+      //           `Error: Inn type 'Non' for location ${this.id}, party ${party.partyID}`,
+      //         );
+      //         return;
+      //       }
+      //       let inn_randomEvent = determineRandomEvent(
+      //         this.region,
+      //         party,
+      //         "rest",
+      //       );
+      //       if (inn_randomEvent !== LocationEventEnum.None) {
+      //         executeRandomEventFromLocationEventEnum(
+      //           inn_randomEvent,
+      //           party,
+      //           this,
+      //           "inn",
+      //         );
+      //         break;
+      //       }
+      //       switch (this.innType) {
+      //         case LocationInnType.Poor:
+      //           event_rest_inn_poor(party);
+      //           break;
+      //         case LocationInnType.Comfortable:
+      //           event_rest_inn_comfortable(party);
+      //           break;
+      //         case LocationInnType.Premium:
+      //           event_rest_inn_premium(party);
+      //           break;
+      //         case LocationInnType.Luxury:
+      //           event_rest_inn_luxury(party);
+      //           break;
+      //         default:
+      //           console.warn(
+      //             `Error: Inn type '${this.innType}' not found for location ${this.id}, party ${party.partyID}`,
+      //           );
+      //           break;
+      //       }
+      //       break;
+      //     case LocationActionEnum.Rest:
+      //       event_rest_force(party);
+      //       break;
+      //     case LocationActionEnum.TrainArtisan ||
+      //       LocationActionEnum.TrainAttribute ||
+      //       LocationActionEnum.TrainProficiency ||
+      //       LocationActionEnum.TrainSkill:
+      //       const statTrainingPlayerCharacter = party.getPlayerCharacter();
+      //       if (!statTrainingPlayerCharacter) return;
+      //       event_train(
+      //         statTrainingPlayerCharacter,
+      //         action.detail as CharacterStatusEnum,
+      //       );
+      //       break;
+      //     case LocationActionEnum.LearnSkill:
+      //       const learningPlayerCharacter = party.getPlayerCharacter();
+      //       if (!learningPlayerCharacter) return;
+      //       learnSkill(learningPlayerCharacter, action.detail);
+      //       break;
+      //     case LocationActionEnum.TrainSkill:
+      //       const trainingPlayerCharacter = party.getPlayerCharacter();
+      //       if (!trainingPlayerCharacter) return;
+      //       trainSkill(trainingPlayerCharacter, action.detail);
+      //       break;
+      //     case LocationActionEnum.Craft:
+      //       event_craft(party);
+      //       break;
+      //     default:
+      //       break;
+      //   }
     }
   }
+}
+
+function handleRestAction(
+  party: Party,
+  location: GameLocation,
+  restType:
+    | LocationActionEnum.Rest
+    | LocationActionEnum.Camping
+    | LocationActionEnum.HouseRest
+    | LocationActionEnum.Inn,
+) {
+  const randomEvent = determineRandomEvent(location.region, party, "rest");
+  if (randomEvent !== LocationEventEnum.None) {
+    executeRandomEventFromLocationEventEnum(randomEvent, party, location);
+  } else {
+    switch (restType) {
+      case LocationActionEnum.Rest:
+        event_rest_force(party);
+        break;
+      case LocationActionEnum.Camping:
+        event_rest_camp(party);
+        break;
+      case LocationActionEnum.HouseRest:
+        event_rest_house(party);
+        break;
+      case LocationActionEnum.Inn:
+        switch (location.innType) {
+          case LocationInnType.None:
+            event_rest_force(party);
+            break;
+          case LocationInnType.Poor:
+            event_rest_inn_poor(party);
+            break;
+          case LocationInnType.Comfortable:
+            event_rest_inn_comfortable(party);
+            break;
+          case LocationInnType.Premium:
+            event_rest_inn_premium(party);
+            break;
+          case LocationInnType.Luxury:
+            event_rest_inn_luxury(party);
+            break;
+        }
+    }
+  }
+}
+
+function handleTrainAction(
+  party: Party,
+  location: GameLocation,
+  detail: string,
+) {
+  const randomEvent = determineRandomEvent(location.region, party, "train");
+  if (randomEvent != LocationEventEnum.None) {
+    executeRandomEventFromLocationEventEnum(randomEvent, party, location);
+  } else {
+    const playerCharacter = party.getPlayerCharacter();
+    event_train(playerCharacter, detail as CharacterStatusEnum);
+  }
+}
+
+function handleLearnSkillAction(party: Party, detail: string) {
+  const learningPlayerCharacter = party.getPlayerCharacter();
+  if (!learningPlayerCharacter) return;
+  learnSkill(learningPlayerCharacter, detail);
+}
+
+function handleCraftAction(party: Party) {
+  event_craft(party);
 }
 
 function determineRandomEvent(
@@ -396,7 +486,6 @@ function executeRandomEventFromLocationEventEnum(
   eventEnum: LocationEventEnum,
   party: Party,
   location: GameLocation,
-  type: "camp" | "house" | "inn",
 ): Function {
   return () => {};
 }
