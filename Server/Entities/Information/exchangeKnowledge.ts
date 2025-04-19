@@ -5,6 +5,42 @@ import { Party } from "../Party/Party";
 import { Information } from "./information";
 import { informationRepository } from "./repository";
 
+/**
+ * Handles knowledge exchange between two parties, typically triggered when
+ * scholar-type parties encounter each other. This models social interactions where
+ * lore, secrets, or learned content are partially transferred based on contextual intelligence.
+ *
+ * --- FUNCTIONAL OVERVIEW ---
+ * 1. Gathers all unique information IDs known to either party.
+ * 2. Splits them into "preferred" (matching the given `typeHint`) and "other".
+ * 3. Randomly selects a topic:
+ *    - 80% chance to prioritize preferred topics.
+ *    - 20% chance to explore other types of information (social noise, off-topic insights).
+ * 4. Chooses the party with more progress in that topic as the "teller", and the one with less as "listener".
+ *    - If both parties are at the same sequence index, no transfer occurs.
+ * 5. Performs a difficulty check (DC):
+ *    - DC = 10 + half the difference in knowledge depth (rounded down).
+ *    - Listener rolls 1d20 + average intelligence modifier.
+ *    - If successful, the listener gains 1 step in that topic (if any remains).
+ * 6. Bonus mechanic:
+ *    - If the roll also exceeds 10, both parties’ members have a chance to receive a slight
+ *      intelligence training tick, symbolizing mental stimulation from discussion.
+ *
+ * --- PARAMETERS ---
+ * @param partyA First party involved in the exchange.
+ * @param partyB Second party involved in the exchange.
+ * @param typeHint Optional. A suggested category of information to prioritize in the conversation.
+ *
+ * --- SIDE EFFECTS ---
+ * - May update the `informations` object of the receiving party.
+ * - May trigger stat training events (INT) for both parties.
+ *
+ * --- NOTES ---
+ * - This system allows lore to propagate dynamically through non-player encounters,
+ *   preserving realism while building an emergent narrative.
+ * - The knowledge type system enables modular topic-based control (e.g., military, divine, arcane).
+ */
+
 export function exchangeKnowledge(
   partyA: Party,
   partyB: Party,
@@ -55,23 +91,20 @@ export function exchangeKnowledge(
     teller = partyB;
     listener = partyA;
   } else {
-    return; // Same level of knowledge, no exchange
+    return;
   }
 
-  // 4. Knowledge DC roll (simulate charisma-based storytelling check)
-  const dc = 10 + Math.floor(Math.abs(aSeq - bSeq) / 2); // harder if knowledge gap is big
+  const dc = 10 + Math.floor(Math.abs(aSeq - bSeq) / 2);
   const roll =
     Dice.rollTwenty() + StatMod.value(listener.getPartyAverageIntelligence());
 
-  if (roll < dc) return; // Failed to convey
+  if (roll < dc) return;
 
-  // 5. Listener learns next part of the sequence
   listener.informations[infoID] = Math.max(
     listener.informations[infoID] ?? -1,
     Math.min(teller.informations[infoID] ?? 0, info.sequence.length - 1),
   );
 
-  // 6. Optional: Reward small int boost or lore progress
   if (Dice.rollTwenty() > 10) {
     for (const char of listener.getAvailableCharacters()) {
       char.train(CharacterStatusEnum.intelligence);
