@@ -10,11 +10,12 @@ import {
   event_rest_inn_premium,
 } from "./restEvents";
 import { event_train } from "./trains";
+import { event_craft } from "./craftEvent";
 
 // Now EventRepostiry is just a dictionary.
 // We don't need to export them anymore, used only for checking.
 const eventRepository: { [key in LocationEventEnum]: Function } = {
-  [LocationEventEnum.None]: () => { },
+  [LocationEventEnum.None]: () => {},
   [LocationEventEnum.BattleEvent]: event_battle,
   [LocationEventEnum.RestCamp]: event_rest_camp,
   [LocationEventEnum.RestHouse]: event_rest_house,
@@ -27,5 +28,12 @@ const eventRepository: { [key in LocationEventEnum]: Function } = {
   [LocationEventEnum.TrainArtisan]: event_train,
   [LocationEventEnum.SkillTrain]: event_battle,
   [LocationEventEnum.SkillLearn]: event_skill_learn,
-  [LocationEventEnum.Craft]: () => { },
+  [LocationEventEnum.Craft]: () => event_craft,
+  [LocationEventEnum.StrollEvent]: () => {},
+  [LocationEventEnum.DialogueEvent]: () => {},
+  [LocationEventEnum.QuestGiverEvent]: () => {},
+  [LocationEventEnum.QuestUpdateEvent]: () => {},
+  [LocationEventEnum.QuestCompleteEvent]: () => {},
+  [LocationEventEnum.ItemPickupEvent]: () => {},
+  [LocationEventEnum.ItemShopEvent]: () => {},
 };

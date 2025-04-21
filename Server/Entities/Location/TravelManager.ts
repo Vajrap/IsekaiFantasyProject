@@ -1,4 +1,4 @@
-import { getRegionFromName, Region, PartyActions } from "./Region";
+import { getRegionFromName, Region } from "./Region";
 import { TravelMethodEnum } from "../../../Common/DTOsEnumsInterfaces/Map/TravelMethodEnum";
 import { Dice } from "../../Utility/Dice";
 import { StatMod } from "../../Utility/StatMod";
@@ -6,11 +6,9 @@ import { screamer } from "../../Utility/Screamer/Screamer";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { Party } from "../Party/Party";
 import { GameLocation } from "./GameLocation";
+import { didRandomEventTrigger } from "./didRandomEventTrigger";
 import { getLocationByName } from "./Locations";
-import {
-  LocationActionEnum,
-  LocationEventEnum,
-} from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { getEnemyFromRepository } from "../Character/Enemy/EnemyRepository";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { Enemy } from "../Character/Enemy/Enemy";
@@ -19,7 +17,11 @@ import {
   TimeOfDay,
 } from "../../../Common/DTOsEnumsInterfaces/TimeOfDay";
 import { checkIfCombatInitiated } from "../../Game/Battle/Calculators/checkIfCombatInitiated";
-import { BattleType, event_battle } from "../../Game/GameEvent/battleEvent";
+import {
+  assignPreferredPosition,
+  BattleType,
+  event_battle,
+} from "../../Game/GameEvent/battleEvent";
 
 export interface travelingParty {
   party: Party;
@@ -276,45 +278,22 @@ class TravelManager {
       regionToUse = getRegionFromName(party.currentLocation.region);
     }
 
-    const randomEventChance = Dice.rollTwenty();
-    let eventEnum = regionToUse.getRandomEvent(
-      PartyActions.TRAVEL,
-      randomEventChance,
-    );
     let isEventHappen = false;
 
-    switch (eventEnum) {
-      // case LocationEventEnum.AttributeTrain:
-      // TODO:
-      // case LocationEventEnum.ArtisanTrain:
-      // TODO:
-      // case LocationEventEnum.ProficiencyTrain:
-      // TODO:
-      // case LocationEventEnum.SkillTrain:
-      // TODO:
-      case LocationEventEnum.BattleEvent:
-        const averageLuckModifier = getAverageLuckModifier(party);
-        isEventHappen = await this._executeBattleEvent(
-          party,
-          averageLuckModifier,
-        );
-        isEventHappen = true;
-      // case LocationEventEnum.TravelEvent:
-      // TODO:
+    const randomEventTrigger = didRandomEventTrigger(
+      party.currentLocation.eventDC,
+      "travel",
+    );
+    if (randomEventTrigger) {
+      isEventHappen = true;
+      const event = regionToUse.getRandomEvent();
+      event.effect(party.party);
     }
 
     this.updateDistace(party, isEventHappen);
 
-    if (!party.checkIfArrivingNextLocation()) {
-      // Not arrived at next location, so might trigger random events
-    } else {
-      // Arrived at next location, might trigger encounter events
-      party.arrivedNextLocation();
-      const location = party.currentLocation;
-      // let encounterEventHappened = location.checkAndTriggerEncounterEvent(party.party)
-    }
+    if (party.checkIfArrivingNextLocation()) party.arrivedNextLocation();
 
-    // Mood and energy decrease
     for (const character of party.party.characters) {
       let pace = party.party.behavior.travelPace;
       if (character !== "none") {
@@ -434,6 +413,7 @@ class TravelManager {
     if (
       !checkIfCombatInitiated(
         travelingParty.party,
+        // Check between two parties
         new Party([]),
         enemyCombatPolicy,
       )
@@ -540,26 +520,6 @@ function getTravelSpeedAndAverageLuckModifier(party: travelingParty): {
       paceModifier,
     averageLuckModifier: StatMod.value(totalLuck / numberOfCharacter),
   };
-}
-
-function assignPreferredPosition(
-  enemy: Enemy,
-  possiblePositions: number[],
-): number {
-  let preferredPositions =
-    enemy.preferredPosition === "front"
-      ? possiblePositions.filter((pos) => pos < 3)
-      : enemy.preferredPosition === "back"
-        ? possiblePositions.filter((pos) => pos >= 3)
-        : [...possiblePositions];
-
-  if (preferredPositions.length === 0) {
-    preferredPositions = [...possiblePositions]; // Fallback
-  }
-
-  return preferredPositions[
-    Math.floor(Math.random() * preferredPositions.length)
-  ];
 }
 
 export const travelManager = new TravelManager();

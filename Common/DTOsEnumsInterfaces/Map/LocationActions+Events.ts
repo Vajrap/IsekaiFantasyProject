@@ -9,7 +9,7 @@ export enum LocationActionEnum {
   TrainArtisan = "Train Artisan",
   TrainSkill = "Train Skill",
   LearnSkill = "Learn Skill",
-
+  Stroll = "Stroll",
   Craft = "Craft",
   // Blacksmith = 'Blacksmith',
   // Apothecary = 'Apothecary',

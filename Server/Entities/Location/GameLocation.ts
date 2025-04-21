@@ -23,16 +23,19 @@ import {
 } from "../../Game/GameEvent/restEvents";
 import { BattleType, event_battle } from "../../Game/GameEvent/battleEvent";
 import { executeTradeEvent } from "../../Game/Trade/executeTradeEvent";
-import { event_train } from "../../Game/GameEvent/trains";
-import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
-import { getRegionFromName } from "./Region";
-import { StatMod } from "../../Utility/StatMod";
-import { event_craft } from "../../Game/GameEvent/craftEvent";
-import { learnSkill, trainSkill } from "../Character/Utils/skillFunctions";
 import { Dice } from "../../Utility/Dice";
 import { updateRelation } from "../Character/Utils/updateRelation";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { exchangeKnowledge } from "../Information/exchangeKnowledge";
+import { getRegionFromName } from "./Region";
+import { StatMod } from "../../Utility/StatMod";
+import { getEnemyFromRepository } from "../Character/Enemy/EnemyRepository";
+import { learnSkill } from "../Character/Utils/skillFunctions";
+import { event_train } from "../../Game/GameEvent/trains";
+import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Character/CharacterStatusTypes";
+import { event_craft } from "../../Game/GameEvent/craftEvent";
+import { assignPreferredPosition } from "../../Game/GameEvent/battleEvent";
+import { didRandomEventTrigger } from "./didRandomEventTrigger";
 
 export enum LocationInnType {
   Poor = "Poor",
@@ -51,6 +54,7 @@ export class GameLocation {
   region: RegionNameEnum;
   parties: Party[] = [];
   innType: LocationInnType = LocationInnType.None;
+  eventDC: number;
 
   constructor(
     id: LocationName,
@@ -58,6 +62,7 @@ export class GameLocation {
     actions: LocationActionEnum[],
     mainRegion: RegionNameEnum,
     region: RegionNameEnum,
+    eventDC: number,
     innType?: LocationInnType,
   ) {
     this.id = id;
@@ -65,6 +70,7 @@ export class GameLocation {
     this.actions = actions;
     this.mainRegion = mainRegion;
     this.region = region;
+    this.eventDC = eventDC;
     innType ? (this.innType = innType) : (this.innType = LocationInnType.None);
   }
 
@@ -105,8 +111,6 @@ export class GameLocation {
     );
 
     this.parties.push(party);
-
-    // this.checkEncounterEvent(party);
   }
 
   partyMoveOut(party: Party) {
@@ -283,123 +287,25 @@ export class GameLocation {
           handleTrainAction(party, this, action.detail);
           break;
         case LocationActionEnum.LearnSkill:
-          handleLearnSkillAction(party, action.detail);
+          handleLearnSkillAction(party, this, action.detail);
+          break;
         case LocationActionEnum.Craft:
-          handleCraftAction(party);
+          handleCraftAction(party, this);
+          break;
         case LocationActionEnum.None:
           event_rest_force(party);
+          break;
+        case LocationActionEnum.Stroll:
+          handleStrollAction(party, this);
+          break;
       }
-
-      //   switch (action.type) {
-      //     case LocationActionEnum.Camping:
-      //       let camp_randomEvent = determineRandomEvent(
-      //         this.region,
-      //         party,
-      //         "rest",
-      //       );
-      //       if (camp_randomEvent !== LocationEventEnum.None) {
-      //         executeRandomEventFromLocationEventEnum(
-      //           camp_randomEvent,
-      //           party,
-      //           this,
-      //           "camp",
-      //         );
-      //         break;
-      //       } else {
-      //         event_rest_camp(party);
-      //         break;
-      //       }
-      //     case LocationActionEnum.HouseRest:
-      //       let house_randomEvent = determineRandomEvent(
-      //         this.region,
-      //         party,
-      //         "rest",
-      //       );
-      //       if (house_randomEvent !== LocationEventEnum.None) {
-      //         executeRandomEventFromLocationEventEnum(
-      //           house_randomEvent,
-      //           party,
-      //           this,
-      //           "house",
-      //         );
-      //         break;
-      //       } else {
-      //         event_rest_house(party);
-      //         break;
-      //       }
-      //     case LocationActionEnum.Inn:
-      //       if (this.innType === LocationInnType.None) {
-      //         console.warn(
-      //           `Error: Inn type 'Non' for location ${this.id}, party ${party.partyID}`,
-      //         );
-      //         return;
-      //       }
-      //       let inn_randomEvent = determineRandomEvent(
-      //         this.region,
-      //         party,
-      //         "rest",
-      //       );
-      //       if (inn_randomEvent !== LocationEventEnum.None) {
-      //         executeRandomEventFromLocationEventEnum(
-      //           inn_randomEvent,
-      //           party,
-      //           this,
-      //           "inn",
-      //         );
-      //         break;
-      //       }
-      //       switch (this.innType) {
-      //         case LocationInnType.Poor:
-      //           event_rest_inn_poor(party);
-      //           break;
-      //         case LocationInnType.Comfortable:
-      //           event_rest_inn_comfortable(party);
-      //           break;
-      //         case LocationInnType.Premium:
-      //           event_rest_inn_premium(party);
-      //           break;
-      //         case LocationInnType.Luxury:
-      //           event_rest_inn_luxury(party);
-      //           break;
-      //         default:
-      //           console.warn(
-      //             `Error: Inn type '${this.innType}' not found for location ${this.id}, party ${party.partyID}`,
-      //           );
-      //           break;
-      //       }
-      //       break;
-      //     case LocationActionEnum.Rest:
-      //       event_rest_force(party);
-      //       break;
-      //     case LocationActionEnum.TrainArtisan ||
-      //       LocationActionEnum.TrainAttribute ||
-      //       LocationActionEnum.TrainProficiency ||
-      //       LocationActionEnum.TrainSkill:
-      //       const statTrainingPlayerCharacter = party.getPlayerCharacter();
-      //       if (!statTrainingPlayerCharacter) return;
-      //       event_train(
-      //         statTrainingPlayerCharacter,
-      //         action.detail as CharacterStatusEnum,
-      //       );
-      //       break;
-      //     case LocationActionEnum.LearnSkill:
-      //       const learningPlayerCharacter = party.getPlayerCharacter();
-      //       if (!learningPlayerCharacter) return;
-      //       learnSkill(learningPlayerCharacter, action.detail);
-      //       break;
-      //     case LocationActionEnum.TrainSkill:
-      //       const trainingPlayerCharacter = party.getPlayerCharacter();
-      //       if (!trainingPlayerCharacter) return;
-      //       trainSkill(trainingPlayerCharacter, action.detail);
-      //       break;
-      //     case LocationActionEnum.Craft:
-      //       event_craft(party);
-      //       break;
-      //     default:
-      //       break;
-      //   }
     }
   }
+}
+function handleRandomEvent(party: Party, location: GameLocation) {
+  const region = getRegionFromName(location.region);
+  const event = region.getRandomEvent();
+  event.effect(party);
 }
 
 function handleRestAction(
@@ -411,9 +317,8 @@ function handleRestAction(
     | LocationActionEnum.HouseRest
     | LocationActionEnum.Inn,
 ) {
-  const randomEvent = determineRandomEvent(location.region, party, "rest");
-  if (randomEvent !== LocationEventEnum.None) {
-    executeRandomEventFromLocationEventEnum(randomEvent, party, location);
+  if (didRandomEventTrigger(location.eventDC, "train")) {
+    handleRandomEvent(party, location);
   } else {
     switch (restType) {
       case LocationActionEnum.Rest:
@@ -452,40 +357,65 @@ function handleTrainAction(
   location: GameLocation,
   detail: string,
 ) {
-  const randomEvent = determineRandomEvent(location.region, party, "train");
-  if (randomEvent != LocationEventEnum.None) {
-    executeRandomEventFromLocationEventEnum(randomEvent, party, location);
+  if (didRandomEventTrigger(location.eventDC, "train")) {
+    handleRandomEvent(party, location);
   } else {
     const playerCharacter = party.getPlayerCharacter();
     event_train(playerCharacter, detail as CharacterStatusEnum);
   }
 }
 
-function handleLearnSkillAction(party: Party, detail: string) {
-  const learningPlayerCharacter = party.getPlayerCharacter();
-  if (!learningPlayerCharacter) return;
-  learnSkill(learningPlayerCharacter, detail);
-}
-
-function handleCraftAction(party: Party) {
-  event_craft(party);
-}
-
-function determineRandomEvent(
-  regionName: RegionNameEnum,
-  party: Party,
-  action: "travel" | "rest" | "train" | "stroll",
-): LocationEventEnum {
-  return getRegionFromName(regionName).getRandomEvent(
-    action,
-    StatMod.value(party.getPartyAverageLuck()),
-  );
-}
-
-function executeRandomEventFromLocationEventEnum(
-  eventEnum: LocationEventEnum,
+function handleLearnSkillAction(
   party: Party,
   location: GameLocation,
-): Function {
-  return () => {};
+  detail: string,
+) {
+  if (didRandomEventTrigger(location.eventDC, "learn")) {
+    handleRandomEvent(party, location);
+  } else {
+    const learningPlayerCharacter = party.getPlayerCharacter();
+    if (!learningPlayerCharacter) return;
+    learnSkill(learningPlayerCharacter, detail);
+  }
+}
+
+function handleCraftAction(party: Party, location: GameLocation) {
+  if (didRandomEventTrigger(location.eventDC, "craft")) {
+    handleRandomEvent(party, location);
+  } else {
+    event_craft(party);
+  }
+}
+
+function handleStrollAction(party: Party, location: GameLocation) {
+  handleRandomEvent(party, location);
+}
+
+export function handleBattleEvent(party: Party, location: GameLocation) {
+  const region = getRegionFromName(location.region);
+  const { enemyList, enemyCombatPolicy } = region.rollForEnemies(
+    StatMod.value(party.getPartyAverageLuck()),
+  );
+
+  if (enemyList.length === 0) return;
+
+  let possiblePositions = [0, 1, 2, 3, 4, 5];
+  const enemies = enemyList.map(getEnemyFromRepository);
+  const firstEnemyPosition = assignPreferredPosition(
+    enemies[0],
+    possiblePositions,
+  );
+
+  const enemyParty = new Party([enemies[0]], location.id, firstEnemyPosition);
+  possiblePositions = possiblePositions.filter(
+    (pos) => pos !== firstEnemyPosition,
+  );
+
+  for (let i = 1; i < enemies.length; i++) {
+    const pos = assignPreferredPosition(enemies[i], possiblePositions);
+    enemyParty.addCharacterToParty(enemies[i], pos);
+    possiblePositions = possiblePositions.filter((p) => p !== pos);
+  }
+
+  event_battle(party, enemyParty, location.id, BattleType.Normal);
 }
