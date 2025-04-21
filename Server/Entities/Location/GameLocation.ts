@@ -1,9 +1,6 @@
 import { Character } from "../../Entities/Character/Character";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
-import {
-  LocationActionEnum,
-  LocationEventEnum,
-} from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
+import { LocationActionEnum } from "../../../Common/DTOsEnumsInterfaces/Map/LocationActions+Events";
 import { RegionNameEnum } from "../../../Common/DTOsEnumsInterfaces/Map/RegionNameEnum";
 import { Party } from "../Party/Party";
 import { PartyType } from "../Party/PartyType";
@@ -47,8 +44,8 @@ export enum LocationInnType {
 
 export class GameLocation {
   id: LocationName;
-  description: string;
   actions: LocationActionEnum[];
+  description: string;
   connectedLocations: { location: GameLocation; distance: number }[] = [];
   mainRegion: RegionNameEnum;
   region: RegionNameEnum;
@@ -62,7 +59,7 @@ export class GameLocation {
     actions: LocationActionEnum[],
     mainRegion: RegionNameEnum,
     region: RegionNameEnum,
-    eventDC: number,
+    eventDC?: number,
     innType?: LocationInnType,
   ) {
     this.id = id;
@@ -70,7 +67,7 @@ export class GameLocation {
     this.actions = actions;
     this.mainRegion = mainRegion;
     this.region = region;
-    this.eventDC = eventDC;
+    this.eventDC = eventDC ? eventDC : 10;
     innType ? (this.innType = innType) : (this.innType = LocationInnType.None);
   }
 

@@ -2,107 +2,74 @@ import { RelationShipStatusEnum } from "../Character/RelationshipStatusEnum";
 import { Party } from "./Party";
 
 const statusModifier: { [key in RelationShipStatusEnum]: number } = {
-    // Core Relations
-    LOVER: 3,
-    FRIEND: 1.5,
-    FAMILY: 2,
-    ACQUAINTANCE: 1.2,
-    STRANGER: 1,
-    UNKNOWN: 1,
-    ENEMY: 3,
-
-    // Stronger Positive Bonds
-    BEST_FRIEND: 2,
-    ALLY: 1.8,
-    SWORN_BROTHER: 2.5, // Close to family, often bonded by deep loyalty
-    MENTOR: 1.7,
-    APPRENTICE: 1.5,
-    PROTECTOR: 2,
-    VASSAL: 2.2,
-    LOYALIST: 2.5,
-
-    // Competitive / Conflicted Relationships
-    RIVAL: 1.2, // Can be both positive or negative depending on context
-    TEMPORARY_ALLY: 1.3, // Less stable than a true ally
-    BUSINESS_PARTNER: 1.4,
-
-    // Negative Relations
-    BETRAYER: 3.5,
-    TRAITOR: 4, // More severe than betrayer
-    NEMESIS: 4.5, // A deeply personal enemy
-    OPPRESSOR: 3,
-    SERVANT: 1, // Might be neutral but with potential power imbalance
-    SLAVE: 0.5, // Forced servitude, might have suppressed feelings
-
-
-    // Situational Relations
-    COMPETITOR: 1.3,
-    MASTER: 1.6, // Depends on the nature of control
-    UNDERLING: 1.3,
-    PATRON: 1.7,
-    DEBTOR: 1.1,
-    CREDITOR: 1.2,
-    CONSPIRATOR: 1.8, // Stronger than temporary allies due to secrecy
-    INFORMANT: 1.3,
-    NEUTRAL: 0
+  Nemesis: 3,
+  BitterRival: 2.5,
+  Hostile: 2,
+  Disliked: 1.5,
+  Neutral: 1,
+  Acquaintance: 1,
+  Familiar: 1.5,
+  CloseFriend: 2,
+  TrustedCompanion: 2.5,
+  BestFriend: 3,
+  Lover: 4,
+  Spouse: 4,
+  SwornSibling: 3.5,
+  Mentor: 2.5,
+  Apprentice: 2.5,
+  Patron: 2.5,
+  Vassal: 2.5,
 };
 
 const isStatusPositiveOrNeutral = (status: RelationShipStatusEnum): boolean => {
-    return status === RelationShipStatusEnum.LOVER ||
-        status === RelationShipStatusEnum.FRIEND ||
-        status === RelationShipStatusEnum.FAMILY ||
-        status === RelationShipStatusEnum.ACQUAINTANCE ||
-        status === RelationShipStatusEnum.STRANGER ||
-        status === RelationShipStatusEnum.UNKNOWN ||
-        status === RelationShipStatusEnum.BEST_FRIEND ||
-        status === RelationShipStatusEnum.ALLY ||
-        status === RelationShipStatusEnum.SWORN_BROTHER ||
-        status === RelationShipStatusEnum.MENTOR ||
-        status === RelationShipStatusEnum.APPRENTICE ||
-        status === RelationShipStatusEnum.PROTECTOR ||
-        status === RelationShipStatusEnum.VASSAL ||
-        status === RelationShipStatusEnum.LOYALIST ||
-        status === RelationShipStatusEnum.TEMPORARY_ALLY ||
-        status === RelationShipStatusEnum.BUSINESS_PARTNER ||
-        status === RelationShipStatusEnum.MASTER ||
-        status === RelationShipStatusEnum.UNDERLING ||
-        status === RelationShipStatusEnum.PATRON ||
-        status === RelationShipStatusEnum.DEBTOR ||
-        status === RelationShipStatusEnum.CREDITOR ||
-        status === RelationShipStatusEnum.CONSPIRATOR ||
-        status === RelationShipStatusEnum.INFORMANT ||
-        status === RelationShipStatusEnum.NEUTRAL;
+  return (
+    status === RelationShipStatusEnum.Acquaintance ||
+    status === RelationShipStatusEnum.Apprentice ||
+    status === RelationShipStatusEnum.BestFriend ||
+    status === RelationShipStatusEnum.CloseFriend ||
+    status === RelationShipStatusEnum.Familiar ||
+    status === RelationShipStatusEnum.Lover ||
+    status === RelationShipStatusEnum.Mentor ||
+    status === RelationShipStatusEnum.Neutral ||
+    status === RelationShipStatusEnum.Patron ||
+    status === RelationShipStatusEnum.Spouse ||
+    status === RelationShipStatusEnum.SwornSibling ||
+    status === RelationShipStatusEnum.TrustedCompanion ||
+    status === RelationShipStatusEnum.Vassal
+  );
 };
 
-export function checkPersonalRelations(partyA: Party, partyB: Party): number {    
-    let totalRelation = 0;
-    let relationPair = 0;
-    for (const baseCharacter of partyA.characters) {
-        if (baseCharacter !== 'none') {
-            for (const targetCharacter of partyB.characters) {
-                if (targetCharacter !== 'none') {
-                    if (!baseCharacter.relation[targetCharacter.id]) {
-                        baseCharacter.relation[targetCharacter.id] = {
-                            value: 0,
-                            status: RelationShipStatusEnum.STRANGER,
-                        };
-                    }
+export function checkPersonalRelations(partyA: Party, partyB: Party): number {
+  let totalRelation = 0;
+  let relationPair = 0;
+  for (const baseCharacter of partyA.characters) {
+    if (baseCharacter !== "none") {
+      for (const targetCharacter of partyB.characters) {
+        if (targetCharacter !== "none") {
+          if (!baseCharacter.relation[targetCharacter.id]) {
+            baseCharacter.relation[targetCharacter.id] = {
+              value: 0,
+              status: RelationShipStatusEnum.Neutral,
+            };
+          }
 
-                    let relation = baseCharacter.relation[targetCharacter.id];
+          let relation = baseCharacter.relation[targetCharacter.id];
 
-                    let isPositive = isStatusPositiveOrNeutral(relation.status);
-                    let value = relation.value;
+          let isPositive = isStatusPositiveOrNeutral(relation.status);
+          let value = relation.value;
 
-                    let usageValue = isPositive 
-                        ? Math.max(value, 1)
-                        : Math.min(value, -1);
+          let usageValue = isPositive
+            ? Math.max(value, 1)
+            : Math.min(value, -1);
 
-                    totalRelation += usageValue * statusModifier[baseCharacter.relation[targetCharacter.id].status];
-                    relationPair++;
-                }
-            }
+          totalRelation +=
+            usageValue *
+            statusModifier[baseCharacter.relation[targetCharacter.id].status];
+          relationPair++;
         }
+      }
     }
+  }
 
-    return relationPair > 0 ? totalRelation / relationPair : 0;
+  return relationPair > 0 ? totalRelation / relationPair : 0;
 }
