@@ -110,17 +110,21 @@ export enum ClassEnum {
 }
 
 export enum RaceEnum {
-    HUMAN = 'HUMAN',
-    ELVEN = 'ELVEN',
-    ORC = 'ORC',
-    TRITON = 'TRITON',
-    DWARF = 'DWARF',
-    HALFLING = 'HALFLING',
-    HALF_ELF = 'HALF_ELF',
-    HALF_ORC = 'HALF_ORC',
-    HALF_TRITON = 'HALF_TRITON',
-    DWARFLING = 'DWARFLING',
-    ELVON = 'ELVON',
+    UNDEFINED = "UNDEFINED",
+    HUMAN = "HUMAN",
+    ELVEN = "ELVEN",
+    ORC = "ORC",
+    DWARF = "DWARF",
+    HALFLING = "HALFLING",
+    TRITON = "TRITON",
+    HALF_ELF = "HALF_ELF",
+    HALF_ORC = "HALF_ORC",
+    HALF_TRITON = "HALF_TRITON",
+    DWARFLING = "DWARFLING",
+    ELVON = "ELVON",
+    UNDEAD = "UNDEAD",
+    GOBLIN = "GOBLIN",
+    SLIME = "SLIME",
 
     // HUMAN = 'มนุษย์',
     // ELVEN = 'เอลฟ์',
@@ -135,7 +139,6 @@ export enum RaceEnum {
     // ELVON = 'เอลวอน',
 
     // Monster
-    GOBLIN = 'GOBLIN',
     KOBOLD = 'KOBOLD',
     FELINE = 'FELINE',
     CANINE = 'CANINE',
@@ -154,9 +157,6 @@ export enum RaceEnum {
     MONSTROSITY = 'MONSTROSITY',
     FIEND = 'FIEND',
     DEMON = 'DEMON',
-    UNDEAD = 'UNDEAD',
     TROLL = 'TROLL',
-
-    // Undefined
-    UNDEFINED = 'UNDEFINED'
+    BEAST = 'BEAST',
 }

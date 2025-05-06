@@ -68,6 +68,7 @@ export class Battle {
   async startBattle() {
     await this.battleLoop();
     const result = this.makeReportInterface(this.battleReport);
+    // console.log(result.battleTurn);
     screamer.scream(END_BATTLE, result);
   }
 
@@ -84,7 +85,9 @@ export class Battle {
   private makeReportInterface(battle: BattleReport): BattleReportInterface {
     return {
       startingPartyAMembers: battle.startingPartyAMembers,
+      partyAPlayer: battle.partyAPlayer,
       startingPartyBMembers: battle.startingPartyBMembers,
+      partyBPlayer: battle.partyBPlayer,
       battleTurn: battle.battleTurn,
       location: battle.location,
       gameTime: battle.gameTime,
@@ -232,7 +235,6 @@ export class Battle {
     );
 
     this.actorRemoveResource(actor, skillThatCanBePlay, skillLevel);
-
     const result = skillThatCanBePlay.executor(
       actor,
       this.getSelfGroup(actor),

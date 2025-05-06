@@ -33,6 +33,7 @@ import { CharacterStatusEnum } from "../../../Common/DTOsEnumsInterfaces/Charact
 import { event_craft } from "../../Game/GameEvent/craftEvent";
 import { assignPreferredPosition } from "../../Game/GameEvent/battleEvent";
 import { didRandomEventTrigger } from "./didRandomEventTrigger";
+import { Enemy } from "../Character/Enemy";
 
 export enum LocationInnType {
   Poor = "Poor",
@@ -358,6 +359,7 @@ function handleTrainAction(
     handleRandomEvent(party, location);
   } else {
     const playerCharacter = party.getPlayerCharacter();
+    if (playerCharacter === "none") return;
     event_train(playerCharacter, detail as CharacterStatusEnum);
   }
 }
@@ -372,6 +374,7 @@ function handleLearnSkillAction(
   } else {
     const learningPlayerCharacter = party.getPlayerCharacter();
     if (!learningPlayerCharacter) return;
+    if (learningPlayerCharacter === "none") return;
     learnSkill(learningPlayerCharacter, detail);
   }
 }
@@ -399,7 +402,7 @@ export function handleBattleEvent(party: Party, location: GameLocation) {
   let possiblePositions = [0, 1, 2, 3, 4, 5];
   const enemies = enemyList.map(getEnemyFromRepository);
   const firstEnemyPosition = assignPreferredPosition(
-    enemies[0],
+    enemies[0] as Enemy,
     possiblePositions,
   );
 
@@ -409,7 +412,7 @@ export function handleBattleEvent(party: Party, location: GameLocation) {
   );
 
   for (let i = 1; i < enemies.length; i++) {
-    const pos = assignPreferredPosition(enemies[i], possiblePositions);
+    const pos = assignPreferredPosition(enemies[i] as Enemy, possiblePositions);
     enemyParty.addCharacterToParty(enemies[i], pos);
     possiblePositions = possiblePositions.filter((p) => p !== pos);
   }

@@ -16,11 +16,11 @@ import {
   ArtisanMap,
   AttributeMap,
   CoreElementMap,
+  ElementEnum,
   ProficiencyMap,
 } from "./Subclasses/CharacterDataEnum";
 import { DamageTypes } from "../../../Common/DTOsEnumsInterfaces/DamageTypes";
 import { StoryFlags } from "../../Game/StoryEvent/StoryFlags";
-import { db } from "../../Database";
 import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { calculateBaseStat } from "./CalculateHPMPSP";
 import { RaceEnum } from "../../../Common/RequestResponse/characterCreation";
@@ -36,7 +36,6 @@ import {
   CharacterSkills,
   SkillMeta,
 } from "../../../Common/DTOsEnumsInterfaces/Character/SkillType";
-import { RelationEnum } from "../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
 import { RelationShipStatusEnum } from "./RelationshipStatusEnum";
 
 export class Character {
@@ -100,12 +99,15 @@ export class Character {
   } = {};
   isPlayerCharacter: boolean = false;
   character: any;
-  constructor(data: {
-    id: string;
-    name: string;
-    gender: "MALE" | "FEMALE" | "NONE";
-    portrait: string;
-  }) {
+  constructor(
+    data: {
+      id: string;
+      name: string;
+      gender: "MALE" | "FEMALE" | "NONE";
+      portrait: string;
+    },
+    meta?: Partial<Character>,
+  ) {
     this.id = data.id;
     this.name = data.name;
     this.type = CharacterType.none;
@@ -155,6 +157,9 @@ export class Character {
     this.arcaneAptitude = new CharacterArcaneAptitude();
     this.bagSize = 15;
     this.storyFlags = new StoryFlags();
+    if (meta) {
+      Object.assign(this, meta);
+    }
   }
 
   setBodyValue(): Character {
@@ -233,7 +238,9 @@ export class Character {
     );
   }
 
-  element(element: string): number {
+  element(element: ElementEnum): number {
+    if (element === null) return 0;
+
     if (element === "physical") {
       return 0;
     }
@@ -944,7 +951,7 @@ export class Character {
   }
 
   //MARK: EQUIPMENTS
-  async equip(
+  equip(
     position:
       | "mainHand"
       | "offHand"
@@ -956,41 +963,8 @@ export class Character {
       | "ring_R"
       | "ring_L",
     equipment: string,
-  ): Promise<Character> {
+  ): Character {
     let equipmentInstance = getItem(equipment) as Equipment;
-
-    if (equipmentInstance === undefined || equipmentInstance === null) {
-      switch (position) {
-        case "mainHand":
-          equipmentInstance = await db.getWeapon(equipment);
-          break;
-        case "offHand":
-          equipmentInstance = await db.getWeapon(equipment);
-          break;
-        case "armor":
-          equipmentInstance = await db.getArmor(equipment);
-          break;
-        case "headwear":
-          equipmentInstance = await db.getArmor(equipment);
-          break;
-        case "gloves":
-          equipmentInstance = await db.getArmor(equipment);
-          break;
-        case "boots":
-          equipmentInstance = await db.getArmor(equipment);
-          break;
-        case "necklace":
-          equipmentInstance = await db.getAccessory(equipment);
-          break;
-        case "ring_R":
-          equipmentInstance = await db.getAccessory(equipment);
-          break;
-        case "ring_L":
-          equipmentInstance = await db.getAccessory(equipment);
-          break;
-      }
-    }
-
     // If equipment is still undefined, throw an error
     if (equipmentInstance === undefined) {
       throw new Error(`Equipment ${equipment} not found in database!`);

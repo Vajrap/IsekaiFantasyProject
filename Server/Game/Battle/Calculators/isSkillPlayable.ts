@@ -45,7 +45,7 @@ export function validateSkillLearning(
     }
   }
 
-  if (requirement.preRequireSkillID) {
+  if (requirement.preRequireSkillID.length >= 1) {
     const knownSkillIDs = [
       ...Object.keys(character.skills),
       ...character.activeSkills.map((s) => s.id),
@@ -58,7 +58,7 @@ export function validateSkillLearning(
     }
   }
 
-  if (requirement.preRequireElements) {
+  if (requirement.preRequireElements.length >= 1) {
     for (const elementRequired of requirement.preRequireElements) {
       if (
         character.status.elements[
@@ -70,7 +70,7 @@ export function validateSkillLearning(
     }
   }
 
-  if (requirement.preRequireProficiencies) {
+  if (requirement.preRequireProficiencies.length >= 1) {
     for (const proficiencyRequired of requirement.preRequireProficiencies) {
       if (
         character.status.proficiencies[
@@ -82,7 +82,7 @@ export function validateSkillLearning(
     }
   }
 
-  if (requirement.preRequireAttributes) {
+  if (requirement.preRequireAttributes.length >= 1) {
     for (const attributeRequired of requirement.preRequireAttributes) {
       if (
         character.status.attributes[
@@ -94,7 +94,7 @@ export function validateSkillLearning(
     }
   }
 
-  if (requirement.preRequireArtisans) {
+  if (requirement.preRequireArtisans.length >= 1) {
     for (const artisanRequired of requirement.preRequireArtisans) {
       if (
         character.status.artisans[
@@ -106,7 +106,7 @@ export function validateSkillLearning(
     }
   }
 
-  if (requirement.preRequireCharacterTrait) {
+  if (requirement.preRequireCharacterTrait.length >= 1) {
     if (
       !character.traits.some((trait) =>
         requirement.preRequireCharacterTrait?.includes(trait.id),

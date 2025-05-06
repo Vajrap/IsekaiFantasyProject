@@ -260,7 +260,9 @@ export enum TargetSkillEffect {
 
 export interface BattleReportInterface {
   startingPartyAMembers: CharacterDataInterface[];
+  partyAPlayer: string | "none";
   startingPartyBMembers: CharacterDataInterface[];
+  partyBPlayer: string | "none";
   battleTurn: TurnReport[];
   location: string;
   gameTime: GameTimeInterface;

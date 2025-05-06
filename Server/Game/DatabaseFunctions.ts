@@ -12,6 +12,8 @@ import { Party } from "../Entities/Party/Party";
 import { characterManager } from "./Managers/CharacterManager";
 import { partyManager } from "./Managers/PartyManager";
 import { GameTime } from "./TimeAndDate/GameTime";
+import { itemRepository } from "../Entities/Items/Repository";
+import { locationManager } from "./Managers/LocationManager";
 
 export async function initializeDatabase() {
   try {
@@ -39,9 +41,6 @@ export async function saveGameStateToDB(): Promise<void> {
       saveGameTimeToDB(),
       saveItemsToDB(),
       saveCharactersToDB(),
-      saveLocationsToDB(),
-      saveQuestsToDB(),
-      saveDialoguesToDB(),
       savePartiesToDB(),
     ]);
     console.log("Successfully saved game state to database");
@@ -56,9 +55,6 @@ async function loadGameStateFromDB() {
     await loadGameTimeFromDB();
     await loadItemsFromDB();
     await loadCharactersFromDB();
-    await loadLocationsFromDB();
-    await loadQuestsFromDB();
-    await loadDialoguesFromDB();
     await loadPartiesFromDB();
   } catch (error) {
     console.error("Error loading game state from database:", error);
@@ -158,7 +154,9 @@ async function saveCharactersToDB() {
 // =======================
 async function loadItemsFromDB() {
   try {
-    // Load Item from database and put into ItemRepository?
+    // Like
+    // const item = await db.read<Item>("Items", "id", "itemID");
+    //itemRepository['itemID'] = item;
   } catch (error) {
     console.error("Error loading items from database:", error);
   }
@@ -166,68 +164,13 @@ async function loadItemsFromDB() {
 
 async function saveItemsToDB() {
   try {
-    // Save Item from ItemRepository to database?
+    // Like
+    // await db.writeOver({ tableName: "Items", primaryKeyColumnName: "id", primaryKeyValue: "itemID" }, [{ dataKey: "item", value: item }]);
   } catch (error) {
     console.error("Error saving items to database:", error);
   }
 }
 
-// =======================
-// Location Functions
-// =======================
-async function loadLocationsFromDB() {
-  try {
-    // Load locations from database and put into LocationManager?
-  } catch (error) {
-    console.error("Error loading locations from database:", error);
-  }
-}
-
-async function saveLocationsToDB() {
-  try {
-    // Save locations from LocationManager to database?
-  } catch (error) {
-    console.error("Error saving locations to database:", error);
-  }
-}
-
-// =======================
-// Quest Functions
-// =======================
-async function loadQuestsFromDB() {
-  try {
-    // Load quests from database and put into QuestManager?
-  } catch (error) {
-    console.error("Error loading quests from database:", error);
-  }
-}
-
-async function saveQuestsToDB() {
-  try {
-    // Save quests from QuestManager to database?
-  } catch (error) {
-    console.error("Error saving quests to database:", error);
-  }
-}
-
-// =======================
-// Dialogue Functions
-// =======================
-async function loadDialoguesFromDB() {
-  try {
-    // Load dialogues from database and put into DialogueManager?
-  } catch (error) {
-    console.error("Error loading dialogues from database:", error);
-  }
-}
-
-async function saveDialoguesToDB() {
-  try {
-    // Save dialogues from DialogueManager to database?
-  } catch (error) {
-    console.error("Error saving dialogues to database:", error);
-  }
-}
 
 // =======================
 // Party Functions
@@ -288,6 +231,10 @@ async function loadPartiesFromDB() {
       newParty.actionSequence = party.actionSequence;
 
       partyManager.addParty(newParty);
+      const location = locationManager.getLocation(party.location);
+      if (location) {
+        location.partyMoveIn(newParty);
+      }
     }
   } catch (error) {
     console.error("Error loading parties from database:", error);
@@ -298,6 +245,22 @@ async function savePartiesToDB() {
   // Save parties to database
   try {
     // Save parties from PartyManager to database?
+    for (const party of partyManager.parties) {
+      await db.writeOver(
+        { tableName: "parties", primaryKeyColumnName: "partyID", primaryKeyValue: party.partyID },
+          [
+            { dataKey: "characters", value: party.characters.map(c => c === "none" ? "none" : c.id) },
+            { dataKey: "actionSequence", value: party.actionSequence },
+            { dataKey: "isTraveling", value: party.isTraveling },
+            { dataKey: "location", value: party.location },
+            { dataKey: "behavior", value: party.behavior },
+            { dataKey: "inventory", value: party.inventory },
+            { dataKey: "gold", value: party.gold },
+            { dataKey: "justArrived", value: party.justArrived },
+            { dataKey: "informations", value: party.informations }
+          ]
+        );
+    }
   } catch (error) {
     console.error("Error saving parties to database:", error);
   }

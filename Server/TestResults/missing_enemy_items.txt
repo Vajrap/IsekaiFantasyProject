@@ -1,0 +1,9 @@
+Missing Enemy items (8/23):
+skeleton_fighter
+skeleton_knight
+skeleton_cleric
+skeleton_thief
+skeleton_mage
+skeleton_archer
+bear_basic
+wolf_basic

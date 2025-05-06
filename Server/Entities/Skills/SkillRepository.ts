@@ -5,7 +5,8 @@ import { fighterSkills } from "./ClassesSkills/FighterSkills";
 import { mageSkills } from "./ClassesSkills/MageSkills";
 import { rogueSkills } from "./ClassesSkills/RogueSkills";
 import { warlockSkills } from "./ClassesSkills/WarlockSkills";
-import { ActiveSkill, Skill } from "./Skill";
+import { monsterSkills } from "./ClassesSkills/MonsterSkills";
+import { ActiveSkill, Skill, SkillEnum } from "./Skill";
 
 class SkillRepository {
   skills: { [key: string]: Skill };
@@ -23,10 +24,11 @@ class SkillRepository {
   }
 
   getAutoSkill(type: "physical" | "magical"): ActiveSkill {
-    const skill =
-      type === "physical"
-        ? this.skills[`skill_auto_physical`]
-        : this.skills[`skill_auto_magical`];
+    const skillID = type === "physical" 
+      ? SkillEnum.AUTO_PHYSICAL 
+      : SkillEnum.AUTO_MAGICAL;
+    
+    const skill = this.skills[skillID];
     if (!skill) throw new Error(`can't find auto skill`);
     if (!(skill instanceof ActiveSkill))
       throw new Error(`Skill type mismatched`);
@@ -34,10 +36,10 @@ class SkillRepository {
   }
 
   getActiveSkill(skillID: string): ActiveSkill {
-    const skill = this.skills[`skill_auto_physical`];
-    if (!skill) throw new Error(`can't find auto skill`);
+    const skill = this.skills[skillID];
+    if (!skill) throw new Error(`can't find skill: ${skillID}`);
     if (!(skill instanceof ActiveSkill))
-      throw new Error(`Skill type mismatched`);
+      throw new Error(`Skill type mismatched: ${skillID} is not an ActiveSkill`);
     return skill;
   }
 }
@@ -50,4 +52,5 @@ export const skillRepository = new SkillRepository([
   ...mageSkills,
   ...rogueSkills,
   ...warlockSkills,
+  ...monsterSkills,
 ]);

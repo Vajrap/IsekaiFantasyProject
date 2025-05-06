@@ -1,334 +1,176 @@
-// import { CharacterArchetype } from "../Subclasses/CharacterArchetype";
-// import { CharacterType } from "../Subclasses/CharacterType";
-// import { CharacterAlignment } from "../Subclasses/CharacterAlignment";
-// import { SkillRepository } from "../../Skills/SkillRepository";
-// import { InternalRepository } from "../../Internal/Internal";
+import { CharacterType } from "../Enums/CharacterType";
+import { MobCharacterEnum } from "../../../../Common/DTOsEnumsInterfaces/Map/MobCharacterEnum";
+import { RaceEnum } from "../../../../Common/RequestResponse/characterCreation";
+import { EnemyArchetype, Enemy } from "./Enemy";
+import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
+import { ResourceNameEnum } from "../../Items/Resource/ResourceNameEnum";
 
-// //Green Slime is the weakest of the slimes, low level no special skills
-// //Blue Slime is a bit stronger, can spit acid
-// //Red Slime is more stronger, can spit fire and have magic resistance
-// //Black Slime is the strongest, can spit poison and fire and have high physical and magic resistance
+// Base slime archetype with common traits and stats
+const baseSlimeArchetype = {
+	type: CharacterType.slime,
+	gender: "NONE" as const,
+	race: RaceEnum.SLIME,
+	level: 1,
+	alignment: { good: 0, evil: 0, law: -10, chaos: 10 }, // Slimes are chaotic but not inherently evil
+	HPrange: { min: 10, max: 15 },
+	MPrange: { min: 5, max: 10 },
+	SPrange: { min: 8, max: 12 },
+	attributeRange: {
+		strength: { min: 6, max: 8 },
+		dexterity: { min: 4, max: 6 },
+		agility: { min: 4, max: 6 },
+		vitality: { min: 8, max: 10 },
+		endurance: { min: 8, max: 10 },
+		intelligence: { min: 2, max: 4 },
+		willpower: { min: 4, max: 6 },
+		charisma: { min: 1, max: 3 },
+		luck: { min: 4, max: 6 },
+		leadership: { min: 1, max: 3 },
+		breath: { min: 4, max: 6 },
+		planar: { min: 2, max: 4 }
+	},
+	baseACRange: { min: 6, max: 8 },
+	arcaneAptitudeRange: { min: 0, max: 2 },
+	traits: [TraitEnum.trait_bodySize_small],
+	dropList: [
+		{ itemID: ResourceNameEnum.resource_slime_core, chance: 0.5 },
+		{ itemID: ResourceNameEnum.resource_slime_jelly, chance: 0.8 }
+	]
+};
 
-// const archetype_enemy_slime_green = new CharacterArchetype({
-// 	type: new CharacterType("Ooze"),
-// 	level: 1,
-// 	attributes: {
-// 		charisma: 1,
-// 		luck: 1,
-// 		breath: 1,
-// 		planar: 10,
-// 		dexterity: 7,
-// 		agility: 5,
-// 		intelligence: 5,
-// 		leadership: 1,
-// 		strength: 7,
-// 		endurance: 8,
-// 		vitality: 8,
-// 		willpower: 5,
-// 	},
-// 	proficiencies: {
-// 		bareHand: 8,
-// 		sword: 6,
-// 		spear: 6,
-// 		staff: 6,
-// 		mace: 6,
-// 		tome: 6,
-// 		magicWand: 6,
-// 		orb: 6,
-// 		bow: 6,
-// 		dagger: 6,
-// 		blade: 6,
-// 		axe: 6,
-// 		shield: 6,
-// 	},
-// 	battlers: {
-// 		pATK: 0,
-// 		pHIT: 0,
-// 		pDEF: 0,
-// 		pCRT: 0,
-// 		mATK: 0,
-// 		mHIT: 0,
-// 		mDEF: 0,
-// 		mCRT: 0,
-// 		dodge: 0,
-// 	},
-// 	elements: {
-// 		order: 0,
-// 		chaos: 0,
-// 		geo: 0,
-// 		water: 0,
-// 		air: 0,
-// 		fire: 0,
-// 	},
-// 	artisans: {
-// 		tailoring: 0,
-// 		leatherWorking: 0,
-// 		smithing: 0,
-// 		woodWorking: 0,
-// 		jewelCrafting: 0,
-// 		alchemy: 0,
-// 		cooking: 0,
-// 		enchanting: 0,
-// 	},
-// 	alignment: [
-// 		new CharacterAlignment({
-// 			lawVsChaos: 30,
-// 			goodVsEvil: 30,
-// 		}),
-// 	],
-// 	skillSet: [[SkillRepository.skill_slime_01.id]],
-// 	internalSet: [InternalRepository.internal_none_01],
-// 	traitSet: [],
-// 	armorSet: [],
-// 	accessorySet: [],
-// 	mainHandSet: [],
-// 	offHandSet: [],
-// });
+// Basic Slime - most common type
+export class BasicSlimeArchetype extends EnemyArchetype {
+	constructor() {
+		super({
+			name: MobCharacterEnum.slime_basic,
+			type: baseSlimeArchetype.type,
+			gender: baseSlimeArchetype.gender,
+			level: baseSlimeArchetype.level,
+			race: baseSlimeArchetype.race,
+			alignment: baseSlimeArchetype.alignment,
+			HPrange: baseSlimeArchetype.HPrange,
+			MPrange: baseSlimeArchetype.MPrange,
+			SPrange: baseSlimeArchetype.SPrange,
+			attributeRange: baseSlimeArchetype.attributeRange,
+			proficiencyRange: {
+				bareHand: { min: 1, max: 3 }
+			},
+			equipments: {
+				mainHand: null,
+				offHand: null,
+				armor: null,
+				headWear: null,
+				necklace: null,
+				ring: null
+			},
+			baseACRange: baseSlimeArchetype.baseACRange,
+			traits: [...baseSlimeArchetype.traits],
+			dropList: baseSlimeArchetype.dropList,
+			preferredPosition: 'front'
+		});
+	}
+}
 
-// const archetype_enemy_slime_blue = new CharacterArchetype({
-// 	type: new CharacterType("Ooze"),
-// 	level: 2,
-// 	attributes: {
-// 		charisma: 1,
-// 		luck: 1,
-// 		breath: 1,
-// 		planar: 10,
-// 		dexterity: 10,
-// 		agility: 5,
-// 		intelligence: 5,
-// 		leadership: 1,
-// 		strength: 10,
-// 		endurance: 10,
-// 		vitality: 10,
-// 		willpower: 5,
-// 	},
-// 	proficiencies: {
-// 		bareHand: 8,
-// 		sword: 6,
-// 		spear: 6,
-// 		staff: 6,
-// 		mace: 6,
-// 		tome: 6,
-// 		magicWand: 6,
-// 		orb: 6,
-// 		bow: 6,
-// 		dagger: 6,
-// 		blade: 6,
-// 		axe: 6,
-// 		shield: 6,
-// 	},
-// 	battlers: {
-// 		pATK: 0,
-// 		pHIT: 0,
-// 		pDEF: 0,
-// 		pCRT: 0,
-// 		mATK: 0,
-// 		mHIT: 0,
-// 		mDEF: 0,
-// 		mCRT: 0,
-// 		dodge: 0,
-// 	},
-// 	elements: {
-// 		order: 0,
-// 		chaos: 0,
-// 		geo: 0,
-// 		water: 0,
-// 		air: 0,
-// 		fire: 0,
-// 	},
-// 	artisans: {
-// 		tailoring: 0,
-// 		leatherWorking: 0,
-// 		smithing: 0,
-// 		woodWorking: 0,
-// 		jewelCrafting: 0,
-// 		alchemy: 0,
-// 		cooking: 0,
-// 		enchanting: 0,
-// 	},
-// 	alignment: [
-// 		new CharacterAlignment({
-// 			lawVsChaos: 30,
-// 			goodVsEvil: 30,
-// 		}),
-// 	],
-// 	skillSet: [[SkillRepository.skill_slime_02, SkillRepository.skill_slime_01]],
-// 	internalSet: [InternalRepository.internal_none_01],
-// 	traitSet: [],
-// 	armorSet: [],
-// 	accessorySet: [],
-// 	mainHandSet: [],
-// 	offHandSet: [],
-// });
+// Fire Slime - elemental variant with fire affinity
+export class FireSlimeArchetype extends EnemyArchetype {
+	constructor() {
+		super({
+			name: MobCharacterEnum.slime_fire,
+			type: baseSlimeArchetype.type,
+			gender: baseSlimeArchetype.gender,
+			level: baseSlimeArchetype.level + 2,
+			race: baseSlimeArchetype.race,
+			alignment: baseSlimeArchetype.alignment,
+			HPrange: { min: 12, max: 18 },
+			MPrange: { min: 10, max: 15 },
+			SPrange: baseSlimeArchetype.SPrange,
+			attributeRange: {
+				...baseSlimeArchetype.attributeRange,
+				intelligence: { min: 6, max: 8 },
+				willpower: { min: 6, max: 8 }
+			},
+			elementRange: {
+				fire: { min: 4, max: 6 }
+			},
+			proficiencyRange: {
+				bareHand: { min: 2, max: 4 }
+			},
+			equipments: {
+				mainHand: null,
+				offHand: null,
+				armor: null,
+				headWear: null,
+				necklace: null,
+				ring: null
+			},
+			baseACRange: baseSlimeArchetype.baseACRange,
+			arcaneAptitudeRange: { min: 2, max: 4 },
+			traits: [
+				...baseSlimeArchetype.traits
+			],
+			dropList: [
+				...baseSlimeArchetype.dropList,
+				{ itemID: ResourceNameEnum.resource_fire_slime_essence, chance: 0.4 }
+			],
+			preferredPosition: 'front'
+		});
+	}
+}
 
-// const archetype_enemy_slime_red = new CharacterArchetype({
-// 	type: new CharacterType("Ooze"),
-// 	level: 3,
-// 	attributes: {
-// 		charisma: 1,
-// 		luck: 1,
-// 		breath: 1,
-// 		planar: 10,
-// 		dexterity: 12,
-// 		agility: 5,
-// 		intelligence: 5,
-// 		leadership: 1,
-// 		strength: 12,
-// 		endurance: 12,
-// 		vitality: 12,
-// 		willpower: 5,
-// 	},
-// 	proficiencies: {
-// 		bareHand: 8,
-// 		sword: 6,
-// 		spear: 6,
-// 		staff: 6,
-// 		mace: 6,
-// 		tome: 6,
-// 		magicWand: 6,
-// 		orb: 6,
-// 		bow: 6,
-// 		dagger: 6,
-// 		blade: 6,
-// 		axe: 6,
-// 		shield: 6,
-// 	},
-// 	battlers: {
-// 		pATK: 0,
-// 		pHIT: 0,
-// 		pDEF: 0,
-// 		pCRT: 0,
-// 		mATK: 0,
-// 		mHIT: 0,
-// 		mDEF: 4,
-// 		mCRT: 0,
-// 		dodge: 0,
-// 	},
-// 	elements: {
-// 		order: 0,
-// 		chaos: 0,
-// 		geo: 0,
-// 		water: 0,
-// 		air: 0,
-// 		fire: 0,
-// 	},
-// 	artisans: {
-// 		tailoring: 0,
-// 		leatherWorking: 0,
-// 		smithing: 0,
-// 		woodWorking: 0,
-// 		jewelCrafting: 0,
-// 		alchemy: 0,
-// 		cooking: 0,
-// 		enchanting: 0,
-// 	},
-// 	alignment: [
-// 		new CharacterAlignment({
-// 			lawVsChaos: 30,
-// 			goodVsEvil: 30,
-// 		}),
-// 	],
-// 	skillSet: [
-// 		[
-// 			SkillRepository.skill_slime_03,
-// 			SkillRepository.skill_slime_02,
-// 			SkillRepository.skill_slime_01,
-// 		],
-// 	],
-// 	internalSet: [InternalRepository.internal_none_01],
-// 	traitSet: [],
-// 	armorSet: [],
-// 	accessorySet: [],
-// 	mainHandSet: [],
-// 	offHandSet: [],
-// });
+// Giant Slime - larger, tougher variant
+export class GiantSlimeArchetype extends EnemyArchetype {
+	constructor() {
+		super({
+			name: MobCharacterEnum.slime_giant,
+			type: baseSlimeArchetype.type,
+			gender: baseSlimeArchetype.gender,
+			level: baseSlimeArchetype.level + 3,
+			race: baseSlimeArchetype.race,
+			alignment: baseSlimeArchetype.alignment,
+			HPrange: { min: 25, max: 35 },
+			MPrange: baseSlimeArchetype.MPrange,
+			SPrange: { min: 15, max: 20 },
+			attributeRange: {
+				...baseSlimeArchetype.attributeRange,
+				strength: { min: 10, max: 12 },
+				vitality: { min: 12, max: 14 },
+				endurance: { min: 12, max: 14 }
+			},
+			proficiencyRange: {
+				bareHand: { min: 3, max: 5 }
+			},
+			battlerRange: {
+				pATK: { min: 3, max: 5 },
+				pDEF: { min: 3, max: 5 }
+			},
+			equipments: {
+				mainHand: null,
+				offHand: null,
+				armor: null,
+				headWear: null,
+				necklace: null,
+				ring: null
+			},
+			baseACRange: { min: 10, max: 12 },
+			traits: [
+				TraitEnum.trait_bodySize_large
+			],
+			dropList: [
+				{ itemID: ResourceNameEnum.resource_slime_core, chance: 1.0 },
+				{ itemID: ResourceNameEnum.resource_slime_jelly, chance: 1.0 },
+				{ itemID: ResourceNameEnum.resource_giant_slime_core, chance: 0.3 }
+			],
+			preferredPosition: 'front'
+		});
+	}
+}
 
-// const archetype_enemy_slime_black = new CharacterArchetype({
-// 	type: new CharacterType("Ooze"),
-// 	level: 4,
-// 	attributes: {
-// 		charisma: 1,
-// 		luck: 1,
-// 		breath: 1,
-// 		planar: 10,
-// 		dexterity: 14,
-// 		agility: 5,
-// 		intelligence: 5,
-// 		leadership: 1,
-// 		strength: 14,
-// 		endurance: 14,
-// 		vitality: 14,
-// 		willpower: 5,
-// 	},
-// 	proficiencies: {
-// 		bareHand: 8,
-// 		sword: 6,
-// 		spear: 6,
-// 		staff: 6,
-// 		mace: 6,
-// 		tome: 6,
-// 		magicWand: 6,
-// 		orb: 6,
-// 		bow: 6,
-// 		dagger: 6,
-// 		blade: 6,
-// 		axe: 6,
-// 		shield: 6,
-// 	},
-// 	battlers: {
-// 		pATK: 0,
-// 		pHIT: 0,
-// 		pDEF: 4,
-// 		pCRT: 0,
-// 		mATK: 0,
-// 		mHIT: 0,
-// 		mDEF: 4,
-// 		mCRT: 0,
-// 		dodge: 0,
-// 	},
-// 	elements: {
-// 		order: 0,
-// 		chaos: 0,
-// 		geo: 0,
-// 		water: 0,
-// 		air: 0,
-// 		fire: 0,
-// 	},
-// 	artisans: {
-// 		tailoring: 0,
-// 		leatherWorking: 0,
-// 		smithing: 0,
-// 		woodWorking: 0,
-// 		jewelCrafting: 0,
-// 		alchemy: 0,
-// 		cooking: 0,
-// 		enchanting: 0,
-// 	},
-// 	alignment: [
-// 		new CharacterAlignment({
-// 			lawVsChaos: 30,
-// 			goodVsEvil: 30,
-// 		}),
-// 	],
-// 	skillSet: [
-// 		[
-// 			SkillRepository.skill_slime_04,
-// 			SkillRepository.skill_slime_03,
-// 			SkillRepository.skill_slime_02,
-// 			SkillRepository.skill_slime_01,
-// 		],
-// 	],
-// 	internalSet: [InternalRepository.internal_none_01],
-// 	traitSet: [],
-// 	armorSet: [],
-// 	accessorySet: [],
-// 	mainHandSet: [],
-// 	offHandSet: [],
-// });
+const basicSlime = new BasicSlimeArchetype();
+const fireSlime = new FireSlimeArchetype();
+const giantSlime = new GiantSlimeArchetype();
 
-// export {
-// 	archetype_enemy_slime_green,
-// 	archetype_enemy_slime_blue,
-// 	archetype_enemy_slime_red,
-// 	archetype_enemy_slime_black,
-// };
+export const slimeEnemyRepository = [
+	basicSlime,
+	fireSlime,
+	giantSlime
+];

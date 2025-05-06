@@ -308,9 +308,9 @@ export function selectOneTarget(
 ): Character | "NO_TARGET" {
   const targets = selectTargets(targetParty, actor, targetType);
   if (targets.length === 0) {
-    return targets[0];
-  } else {
     return "NO_TARGET";
+  } else {
+    return targets[0];
   }
 }
 
@@ -329,6 +329,7 @@ export function trySelectOneTarget(
   skillName: string,
 ): Character | TurnReport {
   const target = selectOneTarget(actor, targetParty, targetType);
+
   if (target === "NO_TARGET") {
     return skillExecNoTargetReport(actor, skillName);
   }

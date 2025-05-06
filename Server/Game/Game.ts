@@ -7,7 +7,7 @@ import { webSocketManager } from "./Managers/WebSocketManager";
 import { screamer } from "../Utility/Screamer/Screamer";
 import { echoChamber } from "./EchoChamber";
 import { skillRepository } from "../Entities/Skills/SkillRepository";
-import { initializeDatabase } from "./DatabaseFunctions";
+import { initializeDatabase, saveGameStateToDB } from "./DatabaseFunctions";
 import { runSchedule } from "./GameLoop";
 
 export class Game {
@@ -48,6 +48,10 @@ export class Game {
   private startTiming() {
     console.log("Game Time Started");
     runSchedule();
+  }
+
+  public async save() {
+    await saveGameStateToDB();
   }
 }
 

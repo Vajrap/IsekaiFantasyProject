@@ -33,6 +33,8 @@ export function learnSkill(
     return LearnSkillResult.SkillAlreadyLearned;
   }
 
+  console.log(actor.skills);
+
   const isActive = skill instanceof ActiveSkill;
   if (isActive) {
     skill instanceof ActiveSkill;
@@ -40,7 +42,10 @@ export function learnSkill(
     skill instanceof PassiveSkill;
   }
 
+  console.log(`isActive: ${isActive}`);
+
   if (validateSkillLearning(actor, skill.meta.requirement)) {
+    console.log(`Validated skill learning`);
     actor.skills[skillID] = {
       id: skillID,
       name: skill.meta.name,

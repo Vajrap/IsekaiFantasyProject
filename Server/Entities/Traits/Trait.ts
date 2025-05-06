@@ -5284,6 +5284,31 @@ export const trait_determined = new Trait(
     })
 );
 
+export const trait_venomous = new Trait(
+    TraitEnum.trait_venomous,
+    'Venomous',
+    'The creature is venomous and can inflict poison damage.',
+);
+
+export const trait_constrictor = new Trait(
+    TraitEnum.trait_constrictor,
+    'Constrictor',
+    'The creature is a constrictor and can grip and constrict a target.',
+);
+
+export const trait_coldblooded = new Trait(
+    TraitEnum.trait_coldblooded,
+    'Coldblooded',
+    'The creature is coldblooded and can withstand cold environments.',
+);
+
+export const trait_poison_immunity = new Trait(
+    TraitEnum.trait_poison_immunity,
+    'Poison Immunity',
+    'The creature is immune to poison damage.',
+);
+
+
 export const TraitRepository = {
     // MARK: class traits
     'trait_fighter_01': trait_fighter_01,
@@ -5841,4 +5866,20 @@ export const TraitRepository = {
     'trait_bornSurvivor': trait_bornSurvivor,
     'trait_lightWalker': trait_lightWalker,
     'trait_determined': trait_determined,
+
+
+    // MARK: Beast traits
+    'trait_venomous': trait_venomous,
+    'trait_constrictor': trait_constrictor,
+    'trait_coldblooded': trait_coldblooded,
+    'trait_poison_immunity': trait_poison_immunity,
+    
+    
+    
 };
+
+
+
+
+
+

@@ -1,5 +1,6 @@
 import { equipmentRepository } from "./Equipments/Repository";
 import { Item } from "./Items";
+import { resourcesRepository } from "./Resource/Repository";
 
 type ItemRepository = {
     [key: string]: any;
@@ -8,7 +9,7 @@ type ItemRepository = {
 export const itemRepository: ItemRepository = {
     ...equipmentRepository,
     // ...consumableRepository
-    // ...resourceRepository
+    ...resourcesRepository
 }
 
 export function getItem(id: string): Item  {

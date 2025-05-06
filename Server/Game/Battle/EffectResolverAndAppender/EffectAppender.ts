@@ -1,5 +1,6 @@
 import { BuffsAndDebuffsEnum } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { Character } from "../../../Entities/Character/Character";
+import { trait_poison_immunity } from "../../../Entities/Traits/Trait";
 
 class EffectAppenderFunction {
 	static stun(character: Character, value: number) {
@@ -23,6 +24,9 @@ class EffectAppenderFunction {
 	}
 
 	static poison(character: Character, value: number) {
+		if (character.traits.includes(trait_poison_immunity)) {
+			return;
+		}
 		character.buffsAndDebuffs.poison += value;
 	}
 

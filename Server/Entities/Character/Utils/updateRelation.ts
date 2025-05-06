@@ -1,4 +1,3 @@
-import { RelationEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/RelationEnums";
 import { Party } from "../../Party/Party";
 import { Character } from "../Character";
 import { RelationShipStatusEnum } from "../RelationshipStatusEnum";

@@ -7,7 +7,66 @@ import { Tier } from "../../../Common/DTOsEnumsInterfaces/Tier";
 import { LocationName } from "../../../Common/DTOsEnumsInterfaces/Map/LocationNames";
 import { Party } from "../Party/Party";
 import { WeaponSpecificType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
-import { extend } from "vue";
+
+/**
+ * Enum containing all skill IDs in the game
+ * Organized by skill type/class for better readability
+ */
+export enum SkillEnum {
+  // Auto attacks
+  AUTO_PHYSICAL = "skill_auto_physical",
+  AUTO_MAGICAL = "skill_auto_magical",
+  
+  // Fighter skills
+  POWER_STRIKE = "skill_power_strike",
+  DEFENSIVE_STANCE = "skill_defensive_stance",
+  RECKLESS_ATTACK = "skill_reckless_attack",
+  SECOND_WIND = "skill_second_wind",
+  TRIPLE_SLASH = "skill_triple_slash",
+  
+  // Rogue skills
+  BACKSTAB = "skill_back_stab",
+  POISONED_BLADE = "skill_poisoned_blade",
+  STEALTH = "skill_stealth",
+  
+  // Mage skills
+  FIREBALL = "skill_fireball",
+  FROSTBOLT = "skill_frostbolt",
+  LIGHTNING_BOLT = "skill_lightning_bolt",
+  ARCANE_MISSILE = "skill_arcane_missile",
+  
+  // Cleric skills
+  HEAL = "skill_aid",
+  SMITE = "skill_smite",
+  BLESSING = "skill_blessing",
+  HOLY_BLAST = "skill_holy_blast",
+  CHANT = "skill_chant",
+  
+  // Druid skills
+  ENTANGLE = "skill_entangle",
+  WILDSHAPE = "skill_wildshape",
+  NATURE_TOUCH = "skill_nature_touch",
+  
+  // Warlock skills
+  SHADOW_BOLT = "skill_shadow_bolt",
+  LIFE_DRAIN = "skill_life_drain",
+  CURSE = "skill_curse",
+  
+  // Beast/Animal skills
+  BITE = "skill_bite",
+  CLAW_SWIPE = "skill_claw_swipe",
+  MAUL = "skill_maul",
+  HOWL = "skill_howl",
+  PACK_HUNT = "skill_pack_hunt",
+  
+  // Snake specific skills
+  VENOM_BITE = "skill_venom_bite",
+  CONSTRICTIVE_COIL = "skill_constrictive_coil",
+  
+  // Spider skills
+  VENOM_SPRAY = "skill_venom_spray",
+  WEB_SHOT = "skill_web_shot"
+}
 
 export class Skill {
   meta: {

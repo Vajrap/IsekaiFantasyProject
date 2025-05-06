@@ -668,4 +668,19 @@ export enum TraitEnum {
      trait_determined = 'trait_determined',
      trait_mageApprentice = 'trait_mageApprentice',
      
+     // Reptile traits
+    trait_venomous = 'trait_venomous', // Ability to inflict poison damage
+    trait_constrictor = 'trait_constrictor', // Ability to grip and constrict a target
+    trait_coldblooded = 'trait_coldblooded', // Reduced activity in cold environments
+    trait_poison_immunity = 'trait_poison_immunity', // Immune to poison damage
+     
+
+    // Shield Parry Traits: Implement when taking physical damage
+    trait_parry_1 = 'trait_parry_1',
+    trait_parry_2 = 'trait_parry_2',
+    trait_parry_3 = 'trait_parry_3',
+    trait_parry_4 = 'trait_parry_4',
+    trait_magic_parry_1 = 'trait_magic_parry_1',
+    trait_magic_parry_2 = 'trait_magic_parry_2',
+    
 }

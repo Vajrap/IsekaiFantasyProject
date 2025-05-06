@@ -433,7 +433,7 @@ class TravelManager {
     }
 
     let firstEnemyPosition = assignPreferredPosition(
-      enemies[0],
+      enemies[0] as Enemy,
       possiblePositions,
     );
     const enemyParty = new Party(
@@ -447,7 +447,7 @@ class TravelManager {
 
     for (let i = 1; i < enemies.length; i++) {
       let enemyPosition = assignPreferredPosition(
-        enemies[i],
+        enemies[i] as Enemy,
         possiblePositions,
       );
       enemyParty.addCharacterToParty(enemies[i], enemyPosition);

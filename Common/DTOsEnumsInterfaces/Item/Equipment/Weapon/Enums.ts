@@ -38,6 +38,9 @@ export enum WeaponSpecificType {
 
     dagger_stiletto = 'dagger_stiletto',
     dagger_knife = 'dagger_knife',
+    dagger_kunai = 'dagger_kunai',
+    dagger_parrying = 'dagger_parrying',
+    dagger_throwing = 'dagger_throwing',
 
     wand_magic = 'wand_magic',
     wand_scepter = 'wand_scepter',
@@ -143,6 +146,18 @@ export enum WeaponEnum {
     dagger_knife = 'dagger_knife', // common
     dagger_knife_one = 'dagger_knife_one', // uncommon the + 1 version
     dagger_knife_two = 'dagger_knife_two', // rare the + 2 version
+
+    dagger_kunai = 'dagger_kunai', // common
+    dagger_kunai_one = 'dagger_kunai_one', // uncommon the + 1 version
+    dagger_kunai_two = 'dagger_kunai_two', // rare the + 2 version
+
+    dagger_parrying = 'dagger_parrying', // common
+    dagger_parrying_one = 'dagger_parrying_one', // uncommon the + 1 version
+    dagger_parrying_two = 'dagger_parrying_two', // rare the + 2 version
+
+    dagger_throwing = 'dagger_throwing', // common
+    dagger_throwing_one = 'dagger_throwing_one', // uncommon the + 1 version
+    dagger_throwing_two = 'dagger_throwing_two', // rare the + 2 version
 
     wand_magic = 'wand_magic', // common
     wand_magic_one = 'wand_magic_one', // uncommon the + 1 version

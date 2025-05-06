@@ -286,10 +286,21 @@ export class Party {
     ) as Character;
   }
 
-  getPlayerCharacter(): Character {
-    return this.characters.find(
-      (character) => character != "none" && character.isPlayerCharacter,
-    ) as Character;
+  getPlayerCharacter(): Character | "none" {
+    for (const character of this.characters) {
+      if (character != "none" && character.isPlayerCharacter === true) {
+        return character;
+      }
+    }
+    return "none";
+  }
+
+  getPlayerCharacterID(): string | "none" {
+    const playerCharacter = this.getPlayerCharacter();
+    if (playerCharacter === "none") {
+      return "none";
+    }
+    return playerCharacter.id;
   }
 
   //this only used for temporarily battle scene party for targeting

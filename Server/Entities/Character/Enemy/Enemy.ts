@@ -2,11 +2,11 @@ import { TraitEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/Trai
 import { WeaponEnum } from "../../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { MobCharacterEnum } from "../../../../Common/DTOsEnumsInterfaces/Map/MobCharacterEnum";
 import { RaceEnum } from "../../../../Common/RequestResponse/characterCreation";
-import { ItemResourceEnum } from "../../../Database/Item/Resource/resource";
 import { Character } from "../../../Entities/Character/Character";
 import { CharacterArchetype } from "../../../Entities/Character/Subclasses/CharacterArchetype";
 import { CharacterStatus } from "../Subclasses/CharacterStatus";
 import { CharacterType } from "../Enums/CharacterType";
+import { ResourceNameEnum } from "../../Items/Resource/ResourceNameEnum";
 
 // TODO: Add item dropList?
 
@@ -77,7 +77,7 @@ export class EnemyArchetype {
         arcaneAptitudeRange?: { min: number, max: number };
         givenExpRange?: { min: number, max: number };
         givenGoldRange?: { min: number, max: number };
-        dropList?: { itemID: ItemResourceEnum | WeaponEnum , chance: number }[];
+        dropList?: { itemID: ResourceNameEnum | WeaponEnum , chance: number }[];
         isBoss?: boolean;
         preferredPosition?: 'front' | 'back' | 'any';
     }) {

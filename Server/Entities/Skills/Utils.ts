@@ -4,11 +4,8 @@ import { DiceEnum } from "../../../Common/DTOsEnumsInterfaces/DiceEnum";
 import { PreferredPosition } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Weapon/Enums";
 import { SkillLearningRequirement } from "./SubClasses/SkillLearningRequirement";
 import { Character } from "../Character/Character";
-import { ActorSkillEffect } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { Dice } from "../../Utility/Dice";
 import { StatMod } from "../../Utility/StatMod";
-import { turnCharacterIntoInterface } from "../Character/Utils/turnCharacterIntoInterface";
-import { TurnReport } from "../../../Common/DTOsEnumsInterfaces/Battle/battleInterfaces";
 import { ArmorType } from "../../../Common/DTOsEnumsInterfaces/Item/Equipment/Armor/Enums";
 import { TraitEnum } from "../../../Common/DTOsEnumsInterfaces/Character/TraitEnums";
 import { SkillConsume, SkillProduce } from "./SubClasses/SkillConsume";
@@ -62,7 +59,9 @@ export function extractWeaponStats(
 
   if (weapon !== "none" && weapon.attackStats) {
     if (damageSource === DamageSourceType.Magical) {
-      damageDice = weapon.attackStats.magicalDiceEnum;
+      damageDice = weapon.attackStats.magicalDiceEnum
+        ? weapon.attackStats.magicalDiceEnum
+        : DiceEnum.OneD6;
       bonusStat = weapon.attackStats.magicalDamageStat;
       damageType = weapon.attackStats.magicalType;
       bonus =

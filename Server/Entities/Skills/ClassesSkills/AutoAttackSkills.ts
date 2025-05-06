@@ -16,7 +16,10 @@ import { GameTime } from "../../../Game/TimeAndDate/GameTime";
 import { StatMod } from "../../../Utility/StatMod";
 import { AttributeEnum } from "../../../../Common/DTOsEnumsInterfaces/Character/AttributeEnum";
 import { Dice } from "../../../Utility/Dice";
-import { selectOneTarget } from "../../../Game/Battle/TargetSelectionProcess";
+import {
+  selectOneTarget,
+  trySelectOneTarget,
+} from "../../../Game/Battle/TargetSelectionProcess";
 import { Party } from "../../Party/Party";
 import {
   ActorSkillEffect,
@@ -204,10 +207,15 @@ function skill_auto_magical_exec(
     taunt: TargetTauntConsideration.TauntCount,
   };
 
-  const target = selectOneTarget(character, enemies, targetType);
+  const target = trySelectOneTarget(
+    character,
+    enemies,
+    targetType,
+    "Auto Magic Attack",
+  );
 
-  if (target === "NO_TARGET") {
-    return skillExecNoTargetReport(character, "normal magic attack");
+  if (!(target instanceof Character)) {
+    return target;
   }
 
   const [crit, hitChance] = calculateCritAndHit(
@@ -217,10 +225,10 @@ function skill_auto_magical_exec(
     AttributeEnum.intelligence,
     AttributeEnum.luck,
   );
-  let damage =
-    StatMod.value(character.status[bonusStat]()) +
-    Dice.roll(damageDice).sum +
-    bonus;
+  const bonusFromStat = bonusStat
+    ? StatMod.value(character.status[bonusStat]())
+    : 0;
+  let damage = Dice.roll(damageDice).sum + bonusFromStat + bonus;
   if (crit) {
     damage *= 1.5;
   }

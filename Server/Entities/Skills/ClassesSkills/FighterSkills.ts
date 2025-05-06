@@ -120,6 +120,7 @@ function skill_power_strike_exec(
     targetType,
     "Power Strike",
   );
+
   if (!(target instanceof Character)) return target;
 
   const weapon = character.getWeapon();

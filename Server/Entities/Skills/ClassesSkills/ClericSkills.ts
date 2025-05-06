@@ -14,12 +14,7 @@ import {
   TargetType,
 } from "../../../../Common/DTOsEnumsInterfaces/TargetTypes";
 import { Tier } from "../../../../Common/DTOsEnumsInterfaces/Tier";
-import {
-  selectMultipleTargets,
-  selectOneTarget,
-  selectTargets,
-  trySelectOneTarget,
-} from "../../../Game/Battle/TargetSelectionProcess";
+import { trySelectOneTarget } from "../../../Game/Battle/TargetSelectionProcess";
 import { GameTime } from "../../../Game/TimeAndDate/GameTime";
 import { ActiveSkill, PassiveSkill, Skill } from "../Skill";
 import {
@@ -34,8 +29,6 @@ import {
   isSpellCastSuccessConcerningArmor,
   noEquipmentNeeded,
   noRequirementNeeded,
-  noSkillConsume,
-  noSkillProduce,
 } from "../Utils";
 import { Character } from "../../Character/Character";
 import { Party } from "../../Party/Party";
@@ -53,10 +46,7 @@ import {
   skillExecSpellCastFailDueToArmorReport,
 } from "../Utils/report";
 import { Weapon } from "../../Items/Equipments/Weapon/Weapon";
-import {
-  receiveBuff,
-  receiveDebuff,
-} from "../../Character/Utils/buffsAndDebuffsFunctions";
+import { receiveBuff } from "../../Character/Utils/buffsAndDebuffsFunctions";
 
 const skill_heal = new ActiveSkill(
   {

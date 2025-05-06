@@ -1,18 +1,15 @@
-// import { Party } from "../../Party";
-// import { Character } from "../../../Entities/Character/Character";
-// import { CharacterArchetype } from "../../../Entities/Character/Subclasses/CharacterArchetype";
+import { Character } from "../../../Entities/Character/Character";
+import { CharacterArchetype } from "../../../Entities/Character/Subclasses/CharacterArchetype";
 
-// export class Summon extends Character {
-//     constructor(
-//         name: string,
-//         archeType: CharacterArchetype,
-//         portrait: string,
-//     ){
-//         super(name, 'none', archeType)
-//         this.portrait = portrait
-//         this.isSummoned = true
-//     }
-//     unSummon(party: Party) {
-//         party.removeCharacterFromParty(this)
-//     }
-// }
+export class Summon extends Character {
+  constructor(
+    id: string,
+    name: string,
+    archeType: CharacterArchetype,
+    portrait: string,
+    meta?: Partial<Character>,
+  ) {
+    super({ id: id, name: name, gender: "NONE", portrait: portrait }, meta);
+    this.isSummoned = true;
+  }
+}

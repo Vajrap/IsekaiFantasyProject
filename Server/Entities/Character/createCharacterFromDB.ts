@@ -1,4 +1,6 @@
 import { CharacterDB } from "../../Database/Character/CharacterDB";
+import { Equipment } from "../Items/Equipments/Equipment";
+import { getItem, itemRepository } from "../Items/Repository";
 import { ActiveSkill } from "../Skills/Skill";
 import { skillRepository } from "../Skills/SkillRepository";
 import { TraitRepository } from "../Traits/Trait";
@@ -54,35 +56,27 @@ export async function createCharacterFromDB(
   character.status.battlers = dbCharacter.status.battlers;
   character.status.artisans = dbCharacter.status.artisans;
   character.status.elements = dbCharacter.status.elements;
+  character.isPlayerCharacter = dbCharacter.isPlayerCharacter;
 
   character.equipments = new CharacterEquipments();
 
-  if (dbCharacter.equipments.mainHand !== null) {
-    await character.equip("mainHand", dbCharacter.equipments.mainHand);
-  }
-  if (dbCharacter.equipments.offHand !== null) {
-    await character.equip("offHand", dbCharacter.equipments.offHand);
-  }
-  if (dbCharacter.equipments.armor !== null) {
-    await character.equip("armor", dbCharacter.equipments.armor);
-  }
-  if (dbCharacter.equipments.headwear !== null) {
-    await character.equip("headwear", dbCharacter.equipments.headwear);
-  }
-  if (dbCharacter.equipments.gloves !== null) {
-    await character.equip("gloves", dbCharacter.equipments.gloves);
-  }
-  if (dbCharacter.equipments.boots !== null) {
-    await character.equip("boots", dbCharacter.equipments.boots);
-  }
-  if (dbCharacter.equipments.necklace !== null) {
-    await character.equip("necklace", dbCharacter.equipments.necklace);
-  }
-  if (dbCharacter.equipments.ring_R !== null) {
-    await character.equip("ring_R", dbCharacter.equipments.ring_R);
-  }
-  if (dbCharacter.equipments.ring_L !== null) {
-    await character.equip("ring_L", dbCharacter.equipments.ring_L);
+  const equipSlots = [
+    "mainHand",
+    "offHand",
+    "armor",
+    "headwear",
+    "gloves",
+    "boots",
+    "necklace",
+    "ring_R",
+    "ring_L",
+  ] as const;
+
+  for (const slot of equipSlots) {
+    const itemId = dbCharacter.equipments[slot];
+    if (itemId) {
+      character.equipments[slot] = getItem(itemId) as Equipment;
+    }
   }
 
   if (dbCharacter.traits.length > 0) {
@@ -153,9 +147,13 @@ export async function createCharacterFromDB(
     });
   }
 
-  // TODO: Item look up.
-  // TODO: Internal Implementation still in progress
-  // TODO: Relation Implementation still in progress
+  for (const itemId in dbCharacter.itemsBag) {
+    const itemObj = getItem(itemId);
+    const quantity = dbCharacter.itemsBag[itemId];
+    character.itemsBag.items.push({ item: itemObj, quantity });
+  }
+
+  character.relation = dbCharacter.relation;
 
   return character;
 }
