@@ -655,4 +655,16 @@ export var TraitEnum;
     TraitEnum["trait_lightWalker"] = "trait_lightWalker";
     TraitEnum["trait_determined"] = "trait_determined";
     TraitEnum["trait_mageApprentice"] = "trait_mageApprentice";
+    // Reptile traits
+    TraitEnum["trait_venomous"] = "trait_venomous";
+    TraitEnum["trait_constrictor"] = "trait_constrictor";
+    TraitEnum["trait_coldblooded"] = "trait_coldblooded";
+    TraitEnum["trait_poison_immunity"] = "trait_poison_immunity";
+    // Shield Parry Traits: Implement when taking physical damage
+    TraitEnum["trait_parry_1"] = "trait_parry_1";
+    TraitEnum["trait_parry_2"] = "trait_parry_2";
+    TraitEnum["trait_parry_3"] = "trait_parry_3";
+    TraitEnum["trait_parry_4"] = "trait_parry_4";
+    TraitEnum["trait_magic_parry_1"] = "trait_magic_parry_1";
+    TraitEnum["trait_magic_parry_2"] = "trait_magic_parry_2";
 })(TraitEnum || (TraitEnum = {}));

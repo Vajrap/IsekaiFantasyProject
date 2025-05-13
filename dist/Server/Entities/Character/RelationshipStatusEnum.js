@@ -1,0 +1,20 @@
+export var RelationShipStatusEnum;
+(function (RelationShipStatusEnum) {
+    RelationShipStatusEnum["Nemesis"] = "Nemesis";
+    RelationShipStatusEnum["BitterRival"] = "BitterRival";
+    RelationShipStatusEnum["Hostile"] = "Hostile";
+    RelationShipStatusEnum["Disliked"] = "Disliked";
+    RelationShipStatusEnum["Neutral"] = "Neutral";
+    RelationShipStatusEnum["Acquaintance"] = "Acquaintance";
+    RelationShipStatusEnum["Familiar"] = "Familiar";
+    RelationShipStatusEnum["CloseFriend"] = "CloseFriend";
+    RelationShipStatusEnum["TrustedCompanion"] = "TrustedCompanion";
+    RelationShipStatusEnum["BestFriend"] = "BestFriend";
+    RelationShipStatusEnum["Lover"] = "Lover";
+    RelationShipStatusEnum["Spouse"] = "Spouse";
+    RelationShipStatusEnum["SwornSibling"] = "SwornSibling";
+    RelationShipStatusEnum["Mentor"] = "Mentor";
+    RelationShipStatusEnum["Apprentice"] = "Apprentice";
+    RelationShipStatusEnum["Patron"] = "Patron";
+    RelationShipStatusEnum["Vassal"] = "Vassal";
+})(RelationShipStatusEnum || (RelationShipStatusEnum = {}));

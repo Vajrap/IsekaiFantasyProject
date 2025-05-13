@@ -6,26 +6,31 @@ import { errorHandlerMiddleware } from './Middleware/errorHandler';
 import { game } from './Game/Game';
 import readline from 'readline';
 import { router } from './API/Routes/routes';
+import { serverConfig } from './config';
 
 const app = express();
-const port = process.env.PORT || 3030;
+const port = serverConfig.port;
 
 // MARK: CORS
-const allowedOrigins = [
-    'http://127.0.0.1:5500',
-    'https://4cskhjm2-3030.asse.devtunnels.ms/'
-];
-
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
+        // In development mode with allowAllOrigins enabled, accept all origins
+        if (serverConfig.cors.allowAllOrigins) {
+            callback(null, true);
+            return;
+        }
+        
+        // Otherwise check against allowed origins list
+        if (!origin || serverConfig.cors.origins.includes(origin)) {
             callback(null, true);
         } else {
+            console.log(`CORS blocked request from origin: ${origin}`);
             callback(new Error('Not allowed by CORS'));
         }
     },
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    methods: serverConfig.cors.methods,
+    credentials: serverConfig.cors.credentials,
+    optionsSuccessStatus: serverConfig.cors.optionsSuccessStatus,
 }));
 
 app.options('*', cors());
@@ -43,7 +48,7 @@ let server: any;
 async function startServer() {
     try {
         server = app.listen(port, async () => {
-            console.log(`Server running on port ${port}`);
+            console.log(`Server running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`);
             await game.start();
         });
 

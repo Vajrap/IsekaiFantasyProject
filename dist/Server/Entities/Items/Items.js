@@ -1,6 +1,8 @@
 import { ItemCost } from "./ItemCost";
 export class Item {
     constructor(id, itemType, name, description, image, weight, tier, cost) {
+        this.isCraftable = false;
+        this.resource = new Map();
         this.id = id;
         this.itemType = itemType;
         this.name = name;
@@ -24,7 +26,9 @@ export class ItemBag {
             quantity: item.quantity,
             cost: item.item.cost,
             itemType: item.item.itemType,
-            weight: item.item.weight
+            weight: item.item.weight,
+            isCraftable: item.item.isCraftable,
+            resource: item.item.resource
         }));
     }
 }

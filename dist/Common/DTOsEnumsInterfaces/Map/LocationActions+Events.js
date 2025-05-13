@@ -10,6 +10,8 @@ export var LocationActionEnum;
     LocationActionEnum["TrainArtisan"] = "Train Artisan";
     LocationActionEnum["TrainSkill"] = "Train Skill";
     LocationActionEnum["LearnSkill"] = "Learn Skill";
+    LocationActionEnum["Stroll"] = "Stroll";
+    LocationActionEnum["Craft"] = "Craft";
     // Blacksmith = 'Blacksmith',
     // Apothecary = 'Apothecary',
     // Tailor = 'Tailor',
@@ -58,24 +60,19 @@ export var LocationEventEnum;
     //Skill events
     LocationEventEnum["SkillLearn"] = "skillLearn";
     LocationEventEnum["SkillTrain"] = "skillTrain";
+    //Crafting events
+    LocationEventEnum["Craft"] = "craft";
     //Explorations and Travel events
-    // StrollEvent = "strollEvent", //Stroll event take 3 arguments, the party, the player, and the event() -> {} to execute, maybe about gaining insight or call a check to call for another event
-    //Combat events
-    // BattleEvent = "battleEvent", //Start combat, take party and pre-defined enemy party (needed implementation)
+    LocationEventEnum["StrollEvent"] = "strollEvent";
     //Dialogue events
-    // DialogueEvent = "dialogueEvent", //Dialogue with NPC, take player character and NPCDialogue (needed implementation) -> NPC Dialogue class would be needed, determine the dialogue tree and the outcome
+    LocationEventEnum["DialogueEvent"] = "dialogueEvent";
     //Quest events
-    // QuestGiverEvent = "questGiverEvent", //Take character and quest, might check if the character has the quest already, if true -> update quest instead.
-    // QuestUpdateEvent = "questUpdateEvent",
-    // QuestCompleteEvent = "questCompleteEvent",
+    LocationEventEnum["QuestGiverEvent"] = "questGiverEvent";
+    LocationEventEnum["QuestUpdateEvent"] = "questUpdateEvent";
+    LocationEventEnum["QuestCompleteEvent"] = "questCompleteEvent";
     //Item events
-    // ItemPickupEvent = "itemPickupEvent", //Take character and item, add item to character inventory
-    // ItemShopEvent = "itemShopEvent", //Take character and shop, open shop interface, buy/sell items
-    //Travel events
-    // TravelEvent = "travelEvent",
-    // TradeEvent = "tradeEvent", //Take 2 parties, execute trade event
-    // QuestEvent = "questEvent", //Take 1 parties, execute quest event
-    // ItemEvent = "itemEvent", //Take 1 parties, execute item event
+    LocationEventEnum["ItemPickupEvent"] = "itemPickupEvent";
+    LocationEventEnum["ItemShopEvent"] = "itemShopEvent";
     LocationEventEnum["None"] = "none";
 })(LocationEventEnum || (LocationEventEnum = {}));
 export class UserInputAction {

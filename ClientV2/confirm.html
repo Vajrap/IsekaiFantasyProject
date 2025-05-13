@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Confirm Your Email - Arcane Beam Electric Dream</title>
+        <link rel="stylesheet" href="styles/main.css" />
+        <link rel="stylesheet" href="styles/index.css" />
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>Arcane Beam Electric Dream</h1>
+            </header>
+
+            <main>
+                <div class="confirm-panel">
+                    <div class="panel-header">
+                        <h2>Email Confirmation</h2>
+                    </div>
+                    <p class="confirm-message">
+                        Please enter the confirmation code sent to your email, or click the confirmation link in your inbox.
+                    </p>
+                    <div class="form-group">
+                        <label for="confirmationCode">Confirmation Code</label>
+                        <input
+                            type="text"
+                            id="confirmationCode"
+                            name="confirmationCode"
+                            placeholder="Enter your confirmation code"
+                        />
+                    </div>
+                    <div class="button-group">
+                        <button id="submitConfirm" class="primary-button">
+                            Confirm Email
+                        </button>
+                        <a href="index.html" class="secondary-button" style="text-align:center;display:inline-block;">Return to Main Screen</a>
+                    </div>
+                    <div id="confirmStatus" class="status-message"></div>
+                </div>
+            </main>
+
+            <footer>
+                <p>
+                    &copy; 2024 Arcane Beam Electric Dream. All rights reserved.
+                </p>
+            </footer>
+        </div>
+
+        <script type="module" src="dist/screens/confirm.js"></script>
+    </body>
+</html> 

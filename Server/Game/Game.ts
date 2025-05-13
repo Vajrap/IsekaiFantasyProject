@@ -11,11 +11,11 @@ import { initializeDatabase, saveGameStateToDB } from "./DatabaseFunctions";
 import { runSchedule } from "./GameLoop";
 
 export class Game {
+  db = db;
   characterManager = characterManager;
   partyManager = partyManager;
   locationManager = locationManager;
   webSocketManager = webSocketManager;
-  db = db;
   skillRepository = skillRepository;
   travelManager = travelManager;
   screamer = screamer;

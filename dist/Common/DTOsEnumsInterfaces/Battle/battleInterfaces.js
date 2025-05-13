@@ -206,14 +206,6 @@ export var TargetSkillEffect;
     TargetSkillEffect["SpiritSword"] = "spiritSword-buff";
     //Heal
     TargetSkillEffect["heal"] = "heal";
-    //Chi
-    TargetSkillEffect["chiCold_1"] = "chiCold_1";
-    TargetSkillEffect["chiCold_2"] = "chiCold_2";
-    TargetSkillEffect["chiCold_3"] = "chiCold_3";
-    TargetSkillEffect["chiWarm_1"] = "chiWarm_1";
-    TargetSkillEffect["chiWarm_2"] = "chiWarm_2";
-    TargetSkillEffect["chiWarm_3"] = "chiWarm_3";
-    TargetSkillEffect["chiHarmony_1"] = "chiHarmony_1";
-    TargetSkillEffect["chiHarmony_2"] = "chiHarmony_2";
-    TargetSkillEffect["chiHarmony_3"] = "chiHarmony_3";
+    //Absorb resources
+    TargetSkillEffect["absorbResource"] = "absorbResource";
 })(TargetSkillEffect || (TargetSkillEffect = {}));

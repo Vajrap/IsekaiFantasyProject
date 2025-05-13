@@ -1,0 +1,26 @@
+export var CharacterType;
+(function (CharacterType) {
+    CharacterType["abberration"] = "abberration";
+    CharacterType["beast"] = "beast";
+    CharacterType["celestial"] = "celestial";
+    CharacterType["construct"] = "construct";
+    CharacterType["dragon"] = "dragon";
+    CharacterType["elemental"] = "elemental";
+    CharacterType["fey"] = "fey";
+    CharacterType["fiend"] = "fiend";
+    CharacterType["demon"] = "demon";
+    CharacterType["devil"] = "devil";
+    CharacterType["shapechanger"] = "shapechanger";
+    CharacterType["giant"] = "giant";
+    CharacterType["humanoid"] = "humanoid";
+    CharacterType["monstrosity"] = "monstrosity";
+    CharacterType["ooze"] = "ooze";
+    CharacterType["plant"] = "plant";
+    CharacterType["undead"] = "undead";
+    CharacterType["summoned"] = "summoned";
+    CharacterType["magical"] = "magical";
+    CharacterType["vermin"] = "vermin";
+    CharacterType["none"] = "none";
+    CharacterType["slime"] = "slime";
+    CharacterType["insect"] = "insect";
+})(CharacterType || (CharacterType = {}));

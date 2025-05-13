@@ -16,11 +16,6 @@
     },
     "lib": ["ES2016", "DOM"]
   },
-  "include": [
-    "Client/**/*",
-    "Common/**/*", 
-  ],
-  "exclude": [
-    "Server/**/*"
-  ]
+  "include": ["NewClient/**/*"],
+  "exclude": ["Server/**/*"]
 }

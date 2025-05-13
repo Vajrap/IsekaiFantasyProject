@@ -6,4 +6,26 @@ export var MobCharacterEnum;
     MobCharacterEnum["skeleton_thief"] = "skeleton_thief";
     MobCharacterEnum["skeleton_mage"] = "skeleton_mage";
     MobCharacterEnum["skeleton_archer"] = "skeleton_archer";
+    // Goblin types
+    MobCharacterEnum["goblin_scout"] = "goblin_scout";
+    MobCharacterEnum["goblin_warrior"] = "goblin_warrior";
+    MobCharacterEnum["goblin_shaman"] = "goblin_shaman";
+    // Slime types
+    MobCharacterEnum["slime_basic"] = "slime_basic";
+    MobCharacterEnum["slime_fire"] = "slime_fire";
+    MobCharacterEnum["slime_giant"] = "slime_giant";
+    // Human types
+    MobCharacterEnum["human_bandit"] = "human_bandit";
+    MobCharacterEnum["human_mercenary"] = "human_mercenary";
+    MobCharacterEnum["human_battlemage"] = "human_battlemage";
+    //Natural Beast types
+    MobCharacterEnum["dire_wolf"] = "dire_wolf";
+    MobCharacterEnum["bear_basic"] = "bear_basic";
+    MobCharacterEnum["giant_spider"] = "giant_spider";
+    MobCharacterEnum["wolf_basic"] = "wolf_basic";
+    MobCharacterEnum["bear"] = "bear";
+    MobCharacterEnum["wolf"] = "wolf";
+    // Reptile types
+    MobCharacterEnum["snake_basic"] = "snake_basic";
+    MobCharacterEnum["snake_giant"] = "snake_giant";
 })(MobCharacterEnum || (MobCharacterEnum = {}));

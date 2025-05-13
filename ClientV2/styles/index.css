@@ -1,0 +1,347 @@
+/*
+ * Arcane Beam Electric Dream
+ * Index Page Specific Stylesheet - Medieval High Fantasy Theme
+ */
+
+/* Layout */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../assets/images/parchment-bg.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.3;
+    z-index: -2;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-md);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.container::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(42, 32, 24, 0.5);
+    z-index: -1;
+}
+
+/* Header */
+header {
+    padding: var(--spacing-xl) 0;
+    text-align: center;
+    position: relative;
+}
+
+header h1 {
+    color: var(--accent-1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: var(--spacing-lg);
+    font-size: 3rem;
+    letter-spacing: 0.05em;
+    position: relative;
+}
+
+header h1::after {
+    content: "";
+    display: block;
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--secondary-color), transparent);
+    margin: 0.5rem auto;
+}
+
+/* Main Content */
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-xl) 0;
+}
+
+/* Panels - Login, Register, Forgot Password */
+.login-panel,
+.register-panel,
+.forgot-password-panel {
+    background-color: var(--bg-tertiary);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-xl);
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--primary-color);
+    position: relative;
+    animation: fadeIn 0.8s ease-out;
+    background-image: url("../assets/images/leather-texture.png");
+    background-size: cover;
+}
+
+.login-panel::before,
+.register-panel::before,
+.forgot-password-panel::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 1px solid rgba(201, 185, 156, 0.2);
+    pointer-events: none;
+}
+
+/* Hidden panels */
+.hidden {
+    display: none;
+}
+
+/* Panel Headers */
+.panel-header {
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.panel-header h2 {
+    color: var(--accent-1);
+    font-size: 1.8rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-weight: 500;
+    color: var(--accent-1);
+    font-family: var(--font-heading);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+input {
+    width: 100%;
+    padding: var(--spacing-md);
+    background-color: rgba(42, 32, 24, 0.7);
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: var(--font-body);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent-1);
+    box-shadow: 0 0 0 2px rgba(217, 158, 64, 0.25);
+}
+
+input::placeholder {
+    color: rgba(201, 185, 156, 0.5);
+}
+
+/* Checkbox styles */
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-top: var(--spacing-sm);
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    margin-right: var(--spacing-sm);
+}
+
+.checkbox-label {
+    margin-bottom: 0;
+    font-size: 0.85rem;
+    text-transform: none;
+}
+
+input[type="checkbox"] {
+    accent-color: var(--secondary-color);
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Terms text */
+.terms-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.4;
+    padding: var(--spacing-sm);
+    border-left: 2px solid var(--primary-color);
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Panel links */
+.panel-links {
+    text-align: center;
+    margin-top: var(--spacing-md);
+}
+
+.panel-links a {
+    font-size: 0.9rem;
+    color: var(--accent-1);
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.panel-links a:hover {
+    opacity: 1;
+    text-decoration: none;
+}
+
+/* Buttons */
+.button-group {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+button {
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-weight: 600;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+button:hover::before {
+    left: 100%;
+}
+
+button:active {
+    transform: translateY(2px);
+}
+
+.primary-button {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    flex: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(201, 185, 156, 0.2);
+}
+
+.primary-button:hover,
+.primary-button:focus {
+    background-color: #d68035;
+}
+
+.secondary-button {
+    background-color: rgba(75, 57, 38, 0.8);
+    color: var(--text-color);
+    flex: 1;
+    border: 1px solid var(--primary-color);
+}
+
+.secondary-button:hover,
+.secondary-button:focus {
+    background-color: rgba(101, 77, 51, 0.9);
+}
+
+/* Footer */
+footer {
+    padding: var(--spacing-lg) 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    border-top: 1px solid rgba(155, 118, 83, 0.2);
+    font-family: var(--font-main);
+    letter-spacing: 0.03em;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2.2rem;
+    }
+
+    .login-panel,
+    .register-panel,
+    .forgot-password-panel {
+        padding: var(--spacing-lg);
+        margin: 0 var(--spacing-md);
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .login-panel,
+    .register-panel,
+    .forgot-password-panel {
+        padding: var(--spacing-md);
+    }
+
+    input {
+        padding: var(--spacing-sm);
+    }
+}
+
+/* Animations */
+@keyframes shimmer {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+/* Label decorations */
+.login-panel label:not(.checkbox-label)::after,
+.register-panel label:not(.checkbox-label)::after,
+.forgot-password-panel label:not(.checkbox-label)::after {
+    content: "";
+    display: block;
+    width: 50px;
+    height: 1px;
+    background-color: var(--accent-1);
+    margin-top: 3px;
+    opacity: 0.7;
+}

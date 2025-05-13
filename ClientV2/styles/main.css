@@ -1,0 +1,204 @@
+/*
+ * Arcane Beam Electric Dream
+ * Main Theme Stylesheet - Core Variables and Base Styles
+ * Medieval High Fantasy with Early Electricity Theme
+ */
+
+/* Theme Variables */
+:root {
+    /* Primary Theme Colors */
+    --primary-color: #9b7653; /* Warm brown - like aged wood or leather */
+    --primary-dark: #6d5238; /* Darker brown for hover states */
+    --secondary-color: #c87533; /* Copper/bronze - for electrical elements */
+
+    /* Text Colors */
+    --text-color: #f9f3e5; /* Parchment/off-white text */
+    --text-muted: #c9b99c; /* Faded parchment */
+
+    /* Background Colors */
+    --bg-primary: #2a2018; /* Deep brown - like ancient wood or tavern */
+    --bg-secondary: #3c2d20; /* Slightly lighter brown */
+    --bg-tertiary: #4e3926; /* For panels and cards - warm wood */
+
+    /* Accent Colors */
+    --accent-1: #d99e40; /* Gold/amber - candlelight */
+    --accent-2: #708f6c; /* Forest green */
+    --accent-3: #615262; /* Muted purple - for arcane elements */
+
+    /* Utility Colors */
+    --success-color: #667f44; /* Natural green */
+    --error-color: #a13d2d; /* Burnt red */
+    --warning-color: #d4a04f; /* Amber warning */
+
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2.5rem;
+
+    /* Border Radius */
+    --border-radius: 0.25rem; /* Subtle rounding */
+
+    /* Fonts */
+    --font-main: "Cinzel", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    --font-heading: "Cinzel Decorative", "Cinzel", serif;
+    --font-body: "Cormorant Garamond", Georgia, serif;
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    font-family: var(--font-body);
+    font-size: 16px;
+    background-color: var(--bg-primary);
+    color: var(--text-color);
+    line-height: 1.5;
+    background-image: url("../assets/images/parchment-bg.png");
+    background-size: cover;
+    background-blend-mode: overlay;
+    background-repeat: repeat;
+}
+
+/* Base Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.2;
+    font-weight: normal;
+    letter-spacing: 0.03em;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.75rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.25rem;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+    font-family: var(--font-body);
+}
+
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover,
+a:focus {
+    color: var(--accent-1);
+    text-decoration: underline;
+}
+
+/* Form Base Styles */
+input,
+select,
+textarea,
+button {
+    font-family: var(--font-main);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px rgba(216, 158, 64, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(216, 158, 64, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(216, 158, 64, 0.5);
+    }
+}
+
+/* Utility Classes */
+.text-center {
+    text-align: center;
+}
+.text-left {
+    text-align: left;
+}
+.text-right {
+    text-align: right;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+.mb-1 {
+    margin-bottom: var(--spacing-xs);
+}
+.mb-2 {
+    margin-bottom: var(--spacing-sm);
+}
+.mb-3 {
+    margin-bottom: var(--spacing-md);
+}
+.mb-4 {
+    margin-bottom: var(--spacing-lg);
+}
+.mb-5 {
+    margin-bottom: var(--spacing-xl);
+}
+
+.mt-0 {
+    margin-top: 0;
+}
+.mt-1 {
+    margin-top: var(--spacing-xs);
+}
+.mt-2 {
+    margin-top: var(--spacing-sm);
+}
+.mt-3 {
+    margin-top: var(--spacing-md);
+}
+.mt-4 {
+    margin-top: var(--spacing-lg);
+}
+.mt-5 {
+    margin-top: var(--spacing-xl);
+}

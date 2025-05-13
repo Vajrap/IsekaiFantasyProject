@@ -1,5 +1,6 @@
 export var RegionNameEnum;
 (function (RegionNameEnum) {
+    RegionNameEnum["None"] = "None";
     RegionNameEnum["GrassLand_1"] = "Grass Land 1";
     RegionNameEnum["GrassLand_2"] = "Grass Land 2";
     RegionNameEnum["GrassLand_3"] = "Grass Land 3";

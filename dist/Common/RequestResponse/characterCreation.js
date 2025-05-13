@@ -51,17 +51,21 @@ export var ClassEnum;
 })(ClassEnum || (ClassEnum = {}));
 export var RaceEnum;
 (function (RaceEnum) {
+    RaceEnum["UNDEFINED"] = "UNDEFINED";
     RaceEnum["HUMAN"] = "HUMAN";
     RaceEnum["ELVEN"] = "ELVEN";
     RaceEnum["ORC"] = "ORC";
-    RaceEnum["TRITON"] = "TRITON";
     RaceEnum["DWARF"] = "DWARF";
     RaceEnum["HALFLING"] = "HALFLING";
+    RaceEnum["TRITON"] = "TRITON";
     RaceEnum["HALF_ELF"] = "HALF_ELF";
     RaceEnum["HALF_ORC"] = "HALF_ORC";
     RaceEnum["HALF_TRITON"] = "HALF_TRITON";
     RaceEnum["DWARFLING"] = "DWARFLING";
     RaceEnum["ELVON"] = "ELVON";
+    RaceEnum["UNDEAD"] = "UNDEAD";
+    RaceEnum["GOBLIN"] = "GOBLIN";
+    RaceEnum["SLIME"] = "SLIME";
     // HUMAN = 'มนุษย์',
     // ELVEN = 'เอลฟ์',
     // ORC = 'ออร์ค',
@@ -74,7 +78,6 @@ export var RaceEnum;
     // DWARFLING = 'ดวาร์ฟลิง',
     // ELVON = 'เอลวอน',
     // Monster
-    RaceEnum["GOBLIN"] = "GOBLIN";
     RaceEnum["KOBOLD"] = "KOBOLD";
     RaceEnum["FELINE"] = "FELINE";
     RaceEnum["CANINE"] = "CANINE";
@@ -93,8 +96,6 @@ export var RaceEnum;
     RaceEnum["MONSTROSITY"] = "MONSTROSITY";
     RaceEnum["FIEND"] = "FIEND";
     RaceEnum["DEMON"] = "DEMON";
-    RaceEnum["UNDEAD"] = "UNDEAD";
     RaceEnum["TROLL"] = "TROLL";
-    // Undefined
-    RaceEnum["UNDEFINED"] = "UNDEFINED";
+    RaceEnum["BEAST"] = "BEAST";
 })(RaceEnum || (RaceEnum = {}));
